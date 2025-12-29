@@ -289,21 +289,82 @@ export const mockContent: Content[] = [
   { id: "3", title: "Calculus Formulas", type: "ppt", subject: "Mathematics", chapter: "Calculus", topic: "Derivatives", description: "All important formulas for derivatives", size: "5.2 MB", url: "#", createdAt: "2024-10-01" },
 ];
 
-// Institute Tiers
+// Institute Tiers - Feature Categories
+export type FeatureCategory = "content" | "questions" | "exams" | "analytics" | "customization" | "support";
+export type FeatureType = "boolean" | "limit" | "value";
+
+export interface TierFeature {
+  id: string;
+  name: string;
+  category: FeatureCategory;
+  type: FeatureType;
+  included: boolean;
+  value?: string | number;
+}
+
 export interface InstituteTier {
   id: string;
   name: string;
   price: number;
   billingCycle: "monthly" | "yearly";
-  features: {
-    name: string;
-    included: boolean;
-    limit?: number;
-  }[];
   maxStudents: number;
   maxTeachers: number;
   color: string;
+  features: TierFeature[];
 }
+
+// Master list of all features for tier management
+export const masterFeatureList: Omit<TierFeature, "included" | "value">[] = [
+  // Content Management
+  { id: "content_library", name: "Content Library", category: "content", type: "limit" },
+  { id: "video_storage", name: "Video Storage", category: "content", type: "limit" },
+  { id: "pdf_notes", name: "PDF Notes Access", category: "content", type: "boolean" },
+  { id: "unlimited_downloads", name: "Unlimited Downloads", category: "content", type: "boolean" },
+  
+  // Question Bank
+  { id: "question_bank", name: "Question Bank Access", category: "questions", type: "value" },
+  { id: "ai_generator", name: "AI Question Generator", category: "questions", type: "limit" },
+  { id: "grand_test_bank", name: "Grand Test Bank", category: "questions", type: "boolean" },
+  
+  // Exams & Assessments
+  { id: "live_exams", name: "Live Assessments", category: "exams", type: "value" },
+  { id: "exam_recording", name: "Exam Recording", category: "exams", type: "boolean" },
+  { id: "previous_papers", name: "Previous Year Papers", category: "exams", type: "value" },
+  { id: "proctoring", name: "AI Proctoring", category: "exams", type: "boolean" },
+  
+  // Analytics & Reports
+  { id: "analytics", name: "Analytics Dashboard", category: "analytics", type: "value" },
+  { id: "student_reports", name: "Student Performance Reports", category: "analytics", type: "value" },
+  { id: "export_reports", name: "Export Reports", category: "analytics", type: "boolean" },
+  
+  // Customization
+  { id: "custom_branding", name: "Custom Branding", category: "customization", type: "value" },
+  { id: "white_label", name: "White-labeling", category: "customization", type: "boolean" },
+  { id: "api_access", name: "API Access", category: "customization", type: "boolean" },
+  
+  // Support
+  { id: "support", name: "Support", category: "support", type: "value" },
+  { id: "dedicated_manager", name: "Dedicated Account Manager", category: "support", type: "boolean" },
+  { id: "training", name: "Training Sessions", category: "support", type: "limit" },
+];
+
+export const featureCategoryLabels: Record<FeatureCategory, string> = {
+  content: "Content Management",
+  questions: "Question Bank",
+  exams: "Exams & Assessments",
+  analytics: "Analytics & Reports",
+  customization: "Customization",
+  support: "Support",
+};
+
+export const featureCategoryIcons: Record<FeatureCategory, string> = {
+  content: "library",
+  questions: "help-circle",
+  exams: "clipboard-list",
+  analytics: "bar-chart-3",
+  customization: "palette",
+  support: "headphones",
+};
 
 export const instituteTiers: InstituteTier[] = [
   {
@@ -315,14 +376,26 @@ export const instituteTiers: InstituteTier[] = [
     maxTeachers: 25,
     color: "donut-teal",
     features: [
-      { name: "Student Management", included: true },
-      { name: "Basic Reports", included: true },
-      { name: "Question Bank Access", included: true, limit: 1000 },
-      { name: "Content Library", included: true, limit: 50 },
-      { name: "AI Question Generator", included: false },
-      { name: "Live Exams", included: false },
-      { name: "Advanced Analytics", included: false },
-      { name: "Custom Branding", included: false },
+      { id: "content_library", name: "Content Library", category: "content", type: "limit", included: true, value: "50 items" },
+      { id: "video_storage", name: "Video Storage", category: "content", type: "limit", included: false },
+      { id: "pdf_notes", name: "PDF Notes Access", category: "content", type: "boolean", included: true },
+      { id: "unlimited_downloads", name: "Unlimited Downloads", category: "content", type: "boolean", included: false },
+      { id: "question_bank", name: "Question Bank Access", category: "questions", type: "value", included: true, value: "Basic" },
+      { id: "ai_generator", name: "AI Question Generator", category: "questions", type: "limit", included: false },
+      { id: "grand_test_bank", name: "Grand Test Bank", category: "questions", type: "boolean", included: false },
+      { id: "live_exams", name: "Live Assessments", category: "exams", type: "value", included: false },
+      { id: "exam_recording", name: "Exam Recording", category: "exams", type: "boolean", included: false },
+      { id: "previous_papers", name: "Previous Year Papers", category: "exams", type: "value", included: true, value: "Limited" },
+      { id: "proctoring", name: "AI Proctoring", category: "exams", type: "boolean", included: false },
+      { id: "analytics", name: "Analytics Dashboard", category: "analytics", type: "value", included: true, value: "Basic" },
+      { id: "student_reports", name: "Student Performance Reports", category: "analytics", type: "value", included: true, value: "Weekly" },
+      { id: "export_reports", name: "Export Reports", category: "analytics", type: "boolean", included: false },
+      { id: "custom_branding", name: "Custom Branding", category: "customization", type: "value", included: false },
+      { id: "white_label", name: "White-labeling", category: "customization", type: "boolean", included: false },
+      { id: "api_access", name: "API Access", category: "customization", type: "boolean", included: false },
+      { id: "support", name: "Support", category: "support", type: "value", included: true, value: "Email" },
+      { id: "dedicated_manager", name: "Dedicated Account Manager", category: "support", type: "boolean", included: false },
+      { id: "training", name: "Training Sessions", category: "support", type: "limit", included: false },
     ],
   },
   {
@@ -334,14 +407,26 @@ export const instituteTiers: InstituteTier[] = [
     maxTeachers: 100,
     color: "donut-orange",
     features: [
-      { name: "Student Management", included: true },
-      { name: "Basic Reports", included: true },
-      { name: "Question Bank Access", included: true, limit: 10000 },
-      { name: "Content Library", included: true, limit: 500 },
-      { name: "AI Question Generator", included: true, limit: 100 },
-      { name: "Live Exams", included: true },
-      { name: "Advanced Analytics", included: true },
-      { name: "Custom Branding", included: false },
+      { id: "content_library", name: "Content Library", category: "content", type: "limit", included: true, value: "500 items" },
+      { id: "video_storage", name: "Video Storage", category: "content", type: "limit", included: true, value: "10 GB" },
+      { id: "pdf_notes", name: "PDF Notes Access", category: "content", type: "boolean", included: true },
+      { id: "unlimited_downloads", name: "Unlimited Downloads", category: "content", type: "boolean", included: false },
+      { id: "question_bank", name: "Question Bank Access", category: "questions", type: "value", included: true, value: "Full" },
+      { id: "ai_generator", name: "AI Question Generator", category: "questions", type: "limit", included: true, value: "100/month" },
+      { id: "grand_test_bank", name: "Grand Test Bank", category: "questions", type: "boolean", included: false },
+      { id: "live_exams", name: "Live Assessments", category: "exams", type: "value", included: true, value: "Standard" },
+      { id: "exam_recording", name: "Exam Recording", category: "exams", type: "boolean", included: false },
+      { id: "previous_papers", name: "Previous Year Papers", category: "exams", type: "value", included: true, value: "Full" },
+      { id: "proctoring", name: "AI Proctoring", category: "exams", type: "boolean", included: false },
+      { id: "analytics", name: "Analytics Dashboard", category: "analytics", type: "value", included: true, value: "Advanced" },
+      { id: "student_reports", name: "Student Performance Reports", category: "analytics", type: "value", included: true, value: "Daily" },
+      { id: "export_reports", name: "Export Reports", category: "analytics", type: "boolean", included: true },
+      { id: "custom_branding", name: "Custom Branding", category: "customization", type: "value", included: true, value: "Basic" },
+      { id: "white_label", name: "White-labeling", category: "customization", type: "boolean", included: false },
+      { id: "api_access", name: "API Access", category: "customization", type: "boolean", included: false },
+      { id: "support", name: "Support", category: "support", type: "value", included: true, value: "Priority" },
+      { id: "dedicated_manager", name: "Dedicated Account Manager", category: "support", type: "boolean", included: false },
+      { id: "training", name: "Training Sessions", category: "support", type: "limit", included: true, value: "2 sessions" },
     ],
   },
   {
@@ -353,14 +438,26 @@ export const instituteTiers: InstituteTier[] = [
     maxTeachers: -1,
     color: "donut-coral",
     features: [
-      { name: "Student Management", included: true },
-      { name: "Basic Reports", included: true },
-      { name: "Question Bank Access", included: true },
-      { name: "Content Library", included: true },
-      { name: "AI Question Generator", included: true },
-      { name: "Live Exams", included: true },
-      { name: "Advanced Analytics", included: true },
-      { name: "Custom Branding", included: true },
+      { id: "content_library", name: "Content Library", category: "content", type: "limit", included: true, value: "Unlimited" },
+      { id: "video_storage", name: "Video Storage", category: "content", type: "limit", included: true, value: "Unlimited" },
+      { id: "pdf_notes", name: "PDF Notes Access", category: "content", type: "boolean", included: true },
+      { id: "unlimited_downloads", name: "Unlimited Downloads", category: "content", type: "boolean", included: true },
+      { id: "question_bank", name: "Question Bank Access", category: "questions", type: "value", included: true, value: "Full + Grand" },
+      { id: "ai_generator", name: "AI Question Generator", category: "questions", type: "limit", included: true, value: "Unlimited" },
+      { id: "grand_test_bank", name: "Grand Test Bank", category: "questions", type: "boolean", included: true },
+      { id: "live_exams", name: "Live Assessments", category: "exams", type: "value", included: true, value: "Advanced + Recording" },
+      { id: "exam_recording", name: "Exam Recording", category: "exams", type: "boolean", included: true },
+      { id: "previous_papers", name: "Previous Year Papers", category: "exams", type: "value", included: true, value: "Full + Analysis" },
+      { id: "proctoring", name: "AI Proctoring", category: "exams", type: "boolean", included: true },
+      { id: "analytics", name: "Analytics Dashboard", category: "analytics", type: "value", included: true, value: "Full Dashboard" },
+      { id: "student_reports", name: "Student Performance Reports", category: "analytics", type: "value", included: true, value: "Real-time" },
+      { id: "export_reports", name: "Export Reports", category: "analytics", type: "boolean", included: true },
+      { id: "custom_branding", name: "Custom Branding", category: "customization", type: "value", included: true, value: "Full" },
+      { id: "white_label", name: "White-labeling", category: "customization", type: "boolean", included: true },
+      { id: "api_access", name: "API Access", category: "customization", type: "boolean", included: true },
+      { id: "support", name: "Support", category: "support", type: "value", included: true, value: "24/7 Dedicated" },
+      { id: "dedicated_manager", name: "Dedicated Account Manager", category: "support", type: "boolean", included: true },
+      { id: "training", name: "Training Sessions", category: "support", type: "limit", included: true, value: "Unlimited" },
     ],
   },
 ];
