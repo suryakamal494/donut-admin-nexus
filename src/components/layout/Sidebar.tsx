@@ -130,21 +130,22 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
     <aside
       className={cn(
         "fixed left-0 top-0 z-40 h-screen transition-all duration-300 ease-in-out",
-        "bg-sidebar border-r border-sidebar-border",
+        "border-r",
         collapsed ? "w-16" : "w-64"
       )}
       style={{
-        background: "linear-gradient(180deg, hsl(220 25% 14%) 0%, hsl(220 25% 10%) 100%)",
+        background: "linear-gradient(180deg, hsl(30 40% 96%) 0%, hsl(30 35% 94%) 100%)",
+        borderColor: "hsl(30 25% 88%)",
       }}
     >
       {/* Logo Section */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
+      <div className="h-16 flex items-center justify-between px-4 border-b" style={{ borderColor: "hsl(30 25% 88%)" }}>
         {!collapsed && (
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl gradient-button flex items-center justify-center shadow-glow">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">DonutAI</span>
+            <span className="font-bold text-lg text-primary">DonutAI</span>
           </div>
         )}
         <Button
@@ -152,7 +153,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
           size="icon"
           onClick={onToggle}
           className={cn(
-            "text-sidebar-foreground hover:text-white hover:bg-sidebar-accent",
+            "text-muted-foreground hover:text-primary hover:bg-primary/10",
             collapsed && "mx-auto"
           )}
         >
@@ -174,11 +175,11 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                  "text-sidebar-foreground hover:text-white hover:bg-sidebar-accent",
-                  isActive && "bg-sidebar-accent text-white sidebar-active"
+                  "text-foreground/70 hover:text-primary hover:bg-primary/10",
+                  isActive && "bg-primary/15 text-primary font-semibold"
                 )}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
                 {!collapsed && <span className="font-medium">{item.title}</span>}
               </NavLink>
             );
@@ -194,11 +195,11 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 <button
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                    "text-sidebar-foreground hover:text-white hover:bg-sidebar-accent",
-                    isActive && "text-white"
+                    "text-foreground/70 hover:text-primary hover:bg-primary/10",
+                    isActive && "text-primary"
                   )}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
                   {!collapsed && (
                     <>
                       <span className="font-medium flex-1 text-left">{item.title}</span>
@@ -215,17 +216,18 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 <CollapsibleContent className="pl-4 mt-1 space-y-1">
                   {item.children?.map((child) => {
                     const ChildIcon = child.icon;
+                    const isChildActive = isActiveRoute(child.href);
                     return (
                       <NavLink
                         key={child.href}
                         to={child.href}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
-                          "text-sidebar-muted hover:text-white hover:bg-sidebar-accent text-sm",
-                          isActiveRoute(child.href) && "bg-sidebar-accent text-white sidebar-active"
+                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-sm",
+                          "text-foreground/60 hover:text-primary hover:bg-primary/10",
+                          isChildActive && "bg-primary/15 text-primary font-semibold"
                         )}
                       >
-                        {ChildIcon && <ChildIcon className="w-4 h-4" />}
+                        {ChildIcon && <ChildIcon className={cn("w-4 h-4", isChildActive && "text-primary")} />}
                         <span>{child.title}</span>
                       </NavLink>
                     );
