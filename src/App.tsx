@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Institutes from "./pages/institutes/Institutes";
 import CreateInstitute from "./pages/institutes/CreateInstitute";
 import InstituteTiers from "./pages/institutes/InstituteTiers";
+import EditTier from "./pages/institutes/EditTier";
 import Users from "./pages/users/Users";
 import Parameters from "./pages/parameters/Parameters";
 import Roles from "./pages/roles/Roles";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="institutes" element={<Institutes />} />
             <Route path="institutes/create" element={<CreateInstitute />} />
             <Route path="institutes/tiers" element={<InstituteTiers />} />
+            <Route path="institutes/tiers/edit/:tierId" element={<EditTier />} />
             <Route path="users" element={<Users />} />
             <Route path="parameters" element={<Parameters />} />
             <Route path="roles" element={<Roles />} />
