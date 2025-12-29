@@ -40,7 +40,6 @@ const App = () => (
             <Route path="users" element={<Users />} />
             <Route path="parameters" element={<Parameters />} />
             <Route path="roles" element={<Roles />} />
-            <Route path="roles/types" element={<Roles />} />
             <Route path="questions" element={<Questions />} />
             <Route path="questions/create" element={<CreateQuestion />} />
             <Route path="questions/ai" element={<AIQuestions />} />
