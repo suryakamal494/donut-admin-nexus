@@ -11,7 +11,6 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronRight,
-  Plus,
   Crown,
   Sparkles,
   PanelLeftClose,
@@ -48,7 +47,6 @@ const navItems: NavItem[] = [
     icon: Building2,
     children: [
       { title: "All Institutes", href: "/superadmin/institutes", icon: Building2 },
-      { title: "Create Institute", href: "/superadmin/institutes/create", icon: Plus },
       { title: "Tier Management", href: "/superadmin/institutes/tiers", icon: Crown },
     ],
   },
@@ -65,19 +63,12 @@ const navItems: NavItem[] = [
   {
     title: "Roles & Access",
     icon: Shield,
-    children: [
-      { title: "Role Types", href: "/superadmin/roles/types", icon: Shield },
-      { title: "All Roles", href: "/superadmin/roles", icon: Users },
-    ],
+    href: "/superadmin/roles",
   },
   {
     title: "Question Bank",
     icon: FileQuestion,
-    children: [
-      { title: "All Questions", href: "/superadmin/questions", icon: FileQuestion },
-      { title: "Create Question", href: "/superadmin/questions/create", icon: Plus },
-      { title: "AI Generator", href: "/superadmin/questions/ai", icon: Sparkles },
-    ],
+    href: "/superadmin/questions",
   },
   {
     title: "Exams",
@@ -153,13 +144,17 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 key={item.title}
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                  "text-foreground/70 hover:text-primary hover:bg-primary/10",
-                  isActive && "bg-primary/15 text-primary font-semibold"
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                  "text-foreground/90 font-semibold hover:bg-pink-100/60",
+                  isActive && "text-white shadow-md"
                 )}
+                style={isActive ? {
+                  background: "linear-gradient(135deg, #F97316 0%, #EC4899 100%)",
+                  boxShadow: "0 4px 12px rgba(249, 115, 22, 0.35)"
+                } : undefined}
               >
-                <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
-                {!collapsed && <span className="font-medium">{item.title}</span>}
+                <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-white")} />
+                {!collapsed && <span>{item.title}</span>}
               </NavLink>
             );
           }
@@ -173,15 +168,15 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
               <CollapsibleTrigger asChild>
                 <button
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                    "text-foreground/70 hover:text-primary hover:bg-primary/10",
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                    "text-foreground/90 font-semibold hover:bg-pink-100/60",
                     isActive && "text-primary"
                   )}
                 >
                   <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
                   {!collapsed && (
                     <>
-                      <span className="font-medium flex-1 text-left">{item.title}</span>
+                      <span className="flex-1 text-left">{item.title}</span>
                       {isOpen ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
@@ -201,12 +196,16 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                         key={child.href}
                         to={child.href}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-sm",
-                          "text-foreground/60 hover:text-primary hover:bg-primary/10",
-                          isChildActive && "bg-primary/15 text-primary font-semibold"
+                          "flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 text-sm",
+                          "text-foreground/80 font-medium hover:bg-pink-100/60",
+                          isChildActive && "text-white shadow-md"
                         )}
+                        style={isChildActive ? {
+                          background: "linear-gradient(135deg, #F97316 0%, #EC4899 100%)",
+                          boxShadow: "0 4px 12px rgba(249, 115, 22, 0.35)"
+                        } : undefined}
                       >
-                        {ChildIcon && <ChildIcon className={cn("w-4 h-4", isChildActive && "text-primary")} />}
+                        {ChildIcon && <ChildIcon className={cn("w-4 h-4", isChildActive && "text-white")} />}
                         <span>{child.title}</span>
                       </NavLink>
                     );
