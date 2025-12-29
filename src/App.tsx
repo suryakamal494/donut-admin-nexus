@@ -10,7 +10,6 @@ import Institutes from "./pages/institutes/Institutes";
 import CreateInstitute from "./pages/institutes/CreateInstitute";
 import InstituteTiers from "./pages/institutes/InstituteTiers";
 import Users from "./pages/users/Users";
-import Batches from "./pages/users/Batches";
 import Parameters from "./pages/parameters/Parameters";
 import Roles from "./pages/roles/Roles";
 import Questions from "./pages/questions/Questions";
@@ -39,8 +38,7 @@ const App = () => (
             <Route path="institutes/create" element={<CreateInstitute />} />
             <Route path="institutes/tiers" element={<InstituteTiers />} />
             <Route path="users" element={<Users />} />
-            <Route path="batches" element={<Batches />} />
-            <Route path="parameters/*" element={<Parameters />} />
+            <Route path="parameters" element={<Parameters />} />
             <Route path="roles" element={<Roles />} />
             <Route path="roles/types" element={<Roles />} />
             <Route path="questions" element={<Questions />} />
