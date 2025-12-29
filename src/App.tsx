@@ -6,6 +6,20 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import AdminLayout from "./components/layout/AdminLayout";
 import Dashboard from "./pages/Dashboard";
+import Institutes from "./pages/institutes/Institutes";
+import CreateInstitute from "./pages/institutes/CreateInstitute";
+import InstituteTiers from "./pages/institutes/InstituteTiers";
+import Users from "./pages/users/Users";
+import Batches from "./pages/users/Batches";
+import Parameters from "./pages/parameters/Parameters";
+import Roles from "./pages/roles/Roles";
+import Questions from "./pages/questions/Questions";
+import CreateQuestion from "./pages/questions/CreateQuestion";
+import AIQuestions from "./pages/questions/AIQuestions";
+import Exams from "./pages/exams/Exams";
+import CreateExam from "./pages/exams/CreateExam";
+import Content from "./pages/content/Content";
+import UploadContent from "./pages/content/UploadContent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +35,21 @@ const App = () => (
           <Route path="/superadmin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/superadmin/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="institutes" element={<Institutes />} />
+            <Route path="institutes/create" element={<CreateInstitute />} />
+            <Route path="institutes/tiers" element={<InstituteTiers />} />
+            <Route path="users" element={<Users />} />
+            <Route path="batches" element={<Batches />} />
+            <Route path="parameters/*" element={<Parameters />} />
+            <Route path="roles" element={<Roles />} />
+            <Route path="roles/types" element={<Roles />} />
+            <Route path="questions" element={<Questions />} />
+            <Route path="questions/create" element={<CreateQuestion />} />
+            <Route path="questions/ai" element={<AIQuestions />} />
+            <Route path="exams" element={<Exams />} />
+            <Route path="exams/create" element={<CreateExam />} />
+            <Route path="content" element={<Content />} />
+            <Route path="content/upload" element={<UploadContent />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
