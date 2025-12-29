@@ -135,22 +135,81 @@ export const subjects = [
   { id: "5", name: "English", code: "ENG", courseIds: ["4", "5", "6"] },
 ];
 
+// Chapters (Dependent on Class + Subject)
 export const chapters = [
-  { id: "1", name: "Mechanics", subjectId: "1", order: 1 },
-  { id: "2", name: "Thermodynamics", subjectId: "1", order: 2 },
-  { id: "3", name: "Electrostatics", subjectId: "1", order: 3 },
-  { id: "4", name: "Organic Chemistry", subjectId: "2", order: 1 },
-  { id: "5", name: "Inorganic Chemistry", subjectId: "2", order: 2 },
-  { id: "6", name: "Calculus", subjectId: "3", order: 1 },
-  { id: "7", name: "Algebra", subjectId: "3", order: 2 },
+  // Class 10 - Physics
+  { id: "1", name: "Light - Reflection and Refraction", classId: "5", subjectId: "1", order: 1 },
+  { id: "2", name: "Electricity", classId: "5", subjectId: "1", order: 2 },
+  { id: "3", name: "Magnetic Effects of Electric Current", classId: "5", subjectId: "1", order: 3 },
+  { id: "4", name: "Sources of Energy", classId: "5", subjectId: "1", order: 4 },
+  
+  // Class 11 - Physics
+  { id: "5", name: "Units and Measurements", classId: "6", subjectId: "1", order: 1 },
+  { id: "6", name: "Motion in a Straight Line", classId: "6", subjectId: "1", order: 2 },
+  { id: "7", name: "Laws of Motion", classId: "6", subjectId: "1", order: 3 },
+  { id: "8", name: "Work, Energy and Power", classId: "6", subjectId: "1", order: 4 },
+  
+  // Class 12 - Physics
+  { id: "9", name: "Electric Charges and Fields", classId: "7", subjectId: "1", order: 1 },
+  { id: "10", name: "Electrostatic Potential and Capacitance", classId: "7", subjectId: "1", order: 2 },
+  { id: "11", name: "Current Electricity", classId: "7", subjectId: "1", order: 3 },
+  { id: "12", name: "Ray Optics and Optical Instruments", classId: "7", subjectId: "1", order: 4 },
+  
+  // Class 10 - Mathematics
+  { id: "13", name: "Real Numbers", classId: "5", subjectId: "3", order: 1 },
+  { id: "14", name: "Polynomials", classId: "5", subjectId: "3", order: 2 },
+  { id: "15", name: "Pair of Linear Equations", classId: "5", subjectId: "3", order: 3 },
+  { id: "16", name: "Quadratic Equations", classId: "5", subjectId: "3", order: 4 },
+  
+  // Class 11 - Mathematics
+  { id: "17", name: "Sets", classId: "6", subjectId: "3", order: 1 },
+  { id: "18", name: "Relations and Functions", classId: "6", subjectId: "3", order: 2 },
+  { id: "19", name: "Trigonometric Functions", classId: "6", subjectId: "3", order: 3 },
+  
+  // Class 12 - Mathematics
+  { id: "20", name: "Matrices", classId: "7", subjectId: "3", order: 1 },
+  { id: "21", name: "Determinants", classId: "7", subjectId: "3", order: 2 },
+  { id: "22", name: "Integrals", classId: "7", subjectId: "3", order: 3 },
+  
+  // Class 10 - Chemistry
+  { id: "23", name: "Chemical Reactions and Equations", classId: "5", subjectId: "2", order: 1 },
+  { id: "24", name: "Acids, Bases and Salts", classId: "5", subjectId: "2", order: 2 },
+  
+  // Class 11 - Chemistry
+  { id: "25", name: "Some Basic Concepts of Chemistry", classId: "6", subjectId: "2", order: 1 },
+  { id: "26", name: "Structure of Atom", classId: "6", subjectId: "2", order: 2 },
 ];
 
+// Topics (Dependent on Chapter)
 export const topics = [
-  { id: "1", name: "Newton's Laws of Motion", chapterId: "1", order: 1 },
-  { id: "2", name: "Work, Energy & Power", chapterId: "1", order: 2 },
-  { id: "3", name: "Laws of Thermodynamics", chapterId: "2", order: 1 },
-  { id: "4", name: "Coulomb's Law", chapterId: "3", order: 1 },
-  { id: "5", name: "Hydrocarbons", chapterId: "4", order: 1 },
+  // Light - Reflection and Refraction (Class 10 Physics)
+  { id: "1", name: "Reflection of Light", chapterId: "1", order: 1 },
+  { id: "2", name: "Spherical Mirrors", chapterId: "1", order: 2 },
+  { id: "3", name: "Image Formation by Spherical Mirrors", chapterId: "1", order: 3 },
+  { id: "4", name: "Refraction of Light", chapterId: "1", order: 4 },
+  { id: "5", name: "Refraction by Spherical Lenses", chapterId: "1", order: 5 },
+  
+  // Electricity (Class 10 Physics)
+  { id: "6", name: "Electric Current and Circuit", chapterId: "2", order: 1 },
+  { id: "7", name: "Electric Potential and Potential Difference", chapterId: "2", order: 2 },
+  { id: "8", name: "Ohm's Law", chapterId: "2", order: 3 },
+  { id: "9", name: "Resistance and Resistivity", chapterId: "2", order: 4 },
+  { id: "10", name: "Heating Effect of Electric Current", chapterId: "2", order: 5 },
+  
+  // Units and Measurements (Class 11 Physics)
+  { id: "11", name: "The International System of Units", chapterId: "5", order: 1 },
+  { id: "12", name: "Measurement of Length", chapterId: "5", order: 2 },
+  { id: "13", name: "Significant Figures", chapterId: "5", order: 3 },
+  
+  // Electric Charges and Fields (Class 12 Physics)
+  { id: "14", name: "Electric Charges", chapterId: "9", order: 1 },
+  { id: "15", name: "Coulomb's Law", chapterId: "9", order: 2 },
+  { id: "16", name: "Electric Field", chapterId: "9", order: 3 },
+  
+  // Real Numbers (Class 10 Mathematics)
+  { id: "17", name: "Euclid's Division Lemma", chapterId: "13", order: 1 },
+  { id: "18", name: "Fundamental Theorem of Arithmetic", chapterId: "13", order: 2 },
+  { id: "19", name: "Irrational Numbers", chapterId: "13", order: 3 },
 ];
 
 // Roles Data
