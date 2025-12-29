@@ -13,11 +13,6 @@ import {
   ChevronRight,
   Plus,
   Crown,
-  GraduationCap,
-  BookOpen,
-  Layers,
-  FileText,
-  Target,
   Sparkles,
   PanelLeftClose,
   PanelLeft,
@@ -58,24 +53,14 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    title: "Users & Batches",
+    title: "Users",
     icon: Users,
-    children: [
-      { title: "Direct Users", href: "/superadmin/users", icon: Users },
-      { title: "Batch Management", href: "/superadmin/batches", icon: GraduationCap },
-    ],
+    href: "/superadmin/users",
   },
   {
     title: "Parameters",
     icon: Settings,
-    children: [
-      { title: "Classes", href: "/superadmin/parameters/classes", icon: BookOpen },
-      { title: "Courses", href: "/superadmin/parameters/courses", icon: Target },
-      { title: "Curriculum", href: "/superadmin/parameters/curriculum", icon: Layers },
-      { title: "Subjects", href: "/superadmin/parameters/subjects", icon: FileText },
-      { title: "Chapters", href: "/superadmin/parameters/chapters", icon: BookOpen },
-      { title: "Topics", href: "/superadmin/parameters/topics", icon: Target },
-    ],
+    href: "/superadmin/parameters",
   },
   {
     title: "Roles & Access",
@@ -97,18 +82,12 @@ const navItems: NavItem[] = [
   {
     title: "Exams",
     icon: ClipboardList,
-    children: [
-      { title: "All Exams", href: "/superadmin/exams", icon: ClipboardList },
-      { title: "Create Exam", href: "/superadmin/exams/create", icon: Plus },
-    ],
+    href: "/superadmin/exams",
   },
   {
     title: "Content Library",
     icon: FolderOpen,
-    children: [
-      { title: "All Content", href: "/superadmin/content", icon: FolderOpen },
-      { title: "Upload Content", href: "/superadmin/content/upload", icon: Plus },
-    ],
+    href: "/superadmin/content",
   },
 ];
 
