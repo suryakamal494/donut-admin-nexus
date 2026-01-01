@@ -40,6 +40,9 @@ import AddStudent from "./pages/institute/students/AddStudent";
 import InstituteTimetable from "./pages/institute/timetable/Timetable";
 import InstituteQuestions from "./pages/institute/questions/Questions";
 import InstituteAIQuestions from "./pages/institute/questions/AIQuestions";
+import InstituteExams from "./pages/institute/exams/Exams";
+import InstituteCreateExam from "./pages/institute/exams/CreateExam";
+import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +95,9 @@ const App = () => (
             <Route path="timetable" element={<InstituteTimetable />} />
             <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
+            <Route path="exams" element={<InstituteExams />} />
+            <Route path="exams/create" element={<InstituteCreateExam />} />
+            <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
