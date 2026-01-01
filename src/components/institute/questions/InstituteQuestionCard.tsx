@@ -1,0 +1,266 @@
+import { Lock, Building2, Eye, Edit, Trash2, ChevronDown, ChevronUp, Clock, Award, Calendar, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SubjectBadge } from "@/components/subject/SubjectBadge";
+import { QuestionTypeIcon } from "@/components/questions/QuestionTypeIcon";
+import { 
+  Question, 
+  questionTypeLabels, 
+  difficultyConfig, 
+  languageConfig,
+  statusConfig 
+} from "@/data/questionsData";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface InstituteQuestion extends Question {
+  sourceType: "global" | "institute";
+}
+
+interface InstituteQuestionCardProps {
+  question: InstituteQuestion;
+  onView?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
+export const InstituteQuestionCard = ({ 
+  question, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: InstituteQuestionCardProps) => {
+  const [showSolution, setShowSolution] = useState(false);
+
+  const difficultyStyle = difficultyConfig[question.difficulty];
+  const languageLabel = languageConfig[question.language];
+  const statusStyle = statusConfig[question.status];
+  const isGlobal = question.sourceType === "global";
+
+  const renderOptions = () => {
+    if (!question.options) return null;
+
+    if (question.type === "true_false") {
+      return (
+        <div className="flex gap-3 mt-3">
+          {question.options.map((opt) => (
+            <div
+              key={opt.id}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm border flex-1 text-center",
+                opt.isCorrect 
+                  ? "bg-success/10 border-success/30 text-success font-medium" 
+                  : "bg-muted/30 border-border/50"
+              )}
+            >
+              {opt.text}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+        {question.options.map((opt, i) => (
+          <div
+            key={opt.id}
+            className={cn(
+              "p-3 rounded-lg text-sm border flex items-start gap-2",
+              opt.isCorrect 
+                ? "bg-success/10 border-success/30 text-success" 
+                : "bg-muted/30 border-border/50"
+            )}
+          >
+            <span className="font-semibold shrink-0">
+              {String.fromCharCode(65 + i)}.
+            </span>
+            <span>{opt.text}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderAssertion = () => {
+    if (!question.assertion || !question.reason) return null;
+
+    return (
+      <div className="mt-3 space-y-2">
+        <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <p className="text-sm font-medium text-primary mb-1">Assertion (A):</p>
+          <p className="text-sm">{question.assertion}</p>
+        </div>
+        <div className="p-3 bg-secondary/50 rounded-lg border border-border/50">
+          <p className="text-sm font-medium text-muted-foreground mb-1">Reason (R):</p>
+          <p className="text-sm">{question.reason}</p>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn(
+      "bg-card rounded-2xl p-5 shadow-soft border hover:shadow-lg transition-shadow",
+      isGlobal ? "border-blue-200/50" : "border-amber-200/50"
+    )}>
+      {/* Source Badge */}
+      <div className="flex items-center justify-between mb-3">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "gap-1.5 cursor-help",
+                isGlobal 
+                  ? "bg-blue-50 text-blue-700 border-blue-200" 
+                  : "bg-amber-50 text-amber-700 border-amber-200"
+              )}
+            >
+              {isGlobal ? <Lock className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
+              {isGlobal ? "Global" : "Institute"}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isGlobal 
+              ? "Shared by platform. View only - cannot edit or delete." 
+              : "Created by your institute. You can edit or delete this question."}
+          </TooltipContent>
+        </Tooltip>
+
+        {question.status !== "approved" && (
+          <Badge variant="outline" className={cn("text-xs", statusStyle.className)}>
+            {statusStyle.label}
+          </Badge>
+        )}
+      </div>
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">
+            {question.questionId}
+          </span>
+          <Badge variant="outline" className="gap-1.5 bg-muted/50">
+            <QuestionTypeIcon type={question.type} size={12} />
+            {questionTypeLabels[question.type]}
+          </Badge>
+          <Badge variant="outline" className={cn("capitalize", difficultyStyle.className)}>
+            {difficultyStyle.label}
+          </Badge>
+          {question.language !== "english" && (
+            <Badge variant="outline" className="bg-primary/5 border-primary/20 text-primary">
+              {languageLabel.nativeLabel}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Subject & Classification */}
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <SubjectBadge subject={question.subjectId} size="sm" />
+        <span className="text-muted-foreground text-sm">›</span>
+        <span className="text-sm text-muted-foreground">{question.chapter}</span>
+        <span className="text-muted-foreground text-sm">›</span>
+        <span className="text-sm text-muted-foreground">{question.topic}</span>
+      </div>
+
+      {/* Question Text */}
+      <p className="text-foreground font-medium leading-relaxed">
+        {question.questionText}
+      </p>
+
+      {/* Assertion-Reasoning Display */}
+      {question.type === "assertion_reasoning" && renderAssertion()}
+
+      {/* Options */}
+      {(question.type === "mcq_single" || question.type === "mcq_multiple" || question.type === "true_false" || question.type === "assertion_reasoning") && renderOptions()}
+
+      {/* Numerical/Short Answer Display */}
+      {(question.type === "numerical" || question.type === "fill_blanks") && (
+        <div className="mt-3 p-3 bg-success/10 border border-success/30 rounded-lg">
+          <span className="text-sm font-medium text-success">Answer: </span>
+          <span className="text-sm text-success">{question.correctAnswer}</span>
+        </div>
+      )}
+
+      {/* Solution Toggle */}
+      <Collapsible open={showSolution} onOpenChange={setShowSolution}>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm" className="mt-3 gap-2 text-muted-foreground hover:text-foreground">
+            {showSolution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showSolution ? "Hide Solution" : "View Solution"}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="mt-2 p-4 bg-muted/30 rounded-lg border border-border/30">
+            <p className="text-sm text-muted-foreground leading-relaxed">{question.solution}</p>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-border/50">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+          <span className="flex items-center gap-1.5">
+            <Award className="w-4 h-4" />
+            +{question.marks} / -{question.negativeMarks}
+          </span>
+          {question.timeRecommended && (
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4" />
+              {Math.floor(question.timeRecommended / 60)}:{(question.timeRecommended % 60).toString().padStart(2, '0')} min
+            </span>
+          )}
+          {question.source && (
+            <span className="flex items-center gap-1.5">
+              <ExternalLink className="w-4 h-4" />
+              {question.source}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-1">
+          {onView && (
+            <Button variant="ghost" size="icon" onClick={onView}>
+              <Eye className="w-4 h-4" />
+            </Button>
+          )}
+          {onEdit && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={onEdit}
+                  disabled={isGlobal}
+                  className={isGlobal ? "opacity-50 cursor-not-allowed" : ""}
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              {isGlobal && <TooltipContent>Global questions cannot be edited</TooltipContent>}
+            </Tooltip>
+          )}
+          {onDelete && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn("text-destructive", isGlobal && "opacity-50 cursor-not-allowed")}
+                  onClick={onDelete}
+                  disabled={isGlobal}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              {isGlobal && <TooltipContent>Global questions cannot be deleted</TooltipContent>}
+            </Tooltip>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
