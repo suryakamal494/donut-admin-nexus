@@ -55,7 +55,7 @@ export const ParagraphQuestionGroup = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <SubjectBadge subjectId={firstQuestion.subjectId} size="sm" />
+            <SubjectBadge subject={firstQuestion.subjectId} size="sm" />
             <Badge variant="outline" className="bg-background">
               +{totalMarks} marks
             </Badge>
