@@ -174,7 +174,7 @@ const AddStudent = () => {
       <PageHeader
         title="Add Students"
         description="Add students one by one or upload multiple students at once using copy-paste."
-        action={
+        actions={
           <Button variant="outline" onClick={() => navigate("/institute/students")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Students

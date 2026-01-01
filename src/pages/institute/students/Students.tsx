@@ -102,7 +102,7 @@ const Students = () => {
       <PageHeader
         title="Students"
         description="Manage students organized by their batches. Click on a batch to view its students."
-        action={
+        actions={
           <Button
             onClick={() => navigate("/institute/students/add")}
             className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"

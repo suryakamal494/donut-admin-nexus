@@ -76,7 +76,7 @@ const CreateBatch = () => {
       <PageHeader
         title="Create New Batch"
         description="Set up a new batch by following these simple steps. A batch groups students who study together."
-        action={
+        actions={
           <Button variant="outline" onClick={() => navigate("/institute/batches")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Batches

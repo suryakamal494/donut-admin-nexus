@@ -56,7 +56,7 @@ const BatchDashboard = () => {
       <PageHeader
         title={`${batch.className} - ${batch.name}`}
         description={`Manage students, teachers, timetable, and tests for this batch. Academic Year: ${batch.academicYear}`}
-        action={
+        actions={
           <Button variant="outline" onClick={() => navigate("/institute/batches")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Batches
