@@ -3,6 +3,7 @@ import { FileText, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { QuestionCard } from "./QuestionCard";
 import { SubjectBadge } from "@/components/subject/SubjectBadge";
 import { Question, difficultyConfig } from "@/data/questionsData";
@@ -40,6 +41,9 @@ export const ParagraphQuestionGroup = ({
   // Calculate total marks
   const totalMarks = questions.reduce((sum, q) => sum + q.marks, 0);
 
+  // Determine if paragraph needs scrolling (rough heuristic: > 500 chars)
+  const needsScrolling = paragraphText.length > 500;
+
   return (
     <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
       {/* Paragraph Header */}
@@ -51,7 +55,7 @@ export const ParagraphQuestionGroup = ({
             </div>
             <div>
               <h3 className="font-semibold text-foreground">Paragraph-Based Questions</h3>
-              <p className="text-sm text-muted-foreground">{questions.length} questions linked</p>
+              <p className="text-sm text-muted-foreground">{questions.length} questions linked • Single Choice</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -78,11 +82,23 @@ export const ParagraphQuestionGroup = ({
           ))}
         </div>
 
-        {/* Paragraph Text */}
-        <div className="bg-background/80 rounded-xl p-4 border border-border/30">
-          <p className="text-sm leading-relaxed text-foreground">
-            {paragraphText}
-          </p>
+        {/* Paragraph Text - Scrollable for long content */}
+        <div className="bg-background/80 rounded-xl border border-border/30">
+          {needsScrolling ? (
+            <ScrollArea className="h-[200px] w-full">
+              <div className="p-4">
+                <p className="text-sm leading-relaxed text-foreground whitespace-pre-line">
+                  {paragraphText}
+                </p>
+              </div>
+            </ScrollArea>
+          ) : (
+            <div className="p-4">
+              <p className="text-sm leading-relaxed text-foreground whitespace-pre-line">
+                {paragraphText}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
