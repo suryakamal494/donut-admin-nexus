@@ -19,7 +19,8 @@ import AIQuestions from "./pages/questions/AIQuestions";
 import UploadPDF from "./pages/questions/UploadPDF";
 import ReviewQuestions from "./pages/questions/ReviewQuestions";
 import Exams from "./pages/exams/Exams";
-import CreateExam from "./pages/exams/CreateExam";
+import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
+import CreateGrandTest from "./pages/exams/CreateGrandTest";
 import Content from "./pages/content/Content";
 import UploadContent from "./pages/content/UploadContent";
 import NotFound from "./pages/NotFound";
@@ -50,7 +51,8 @@ const App = () => (
             <Route path="questions/upload-pdf" element={<UploadPDF />} />
             <Route path="questions/review" element={<ReviewQuestions />} />
             <Route path="exams" element={<Exams />} />
-            <Route path="exams/create" element={<CreateExam />} />
+            <Route path="exams/previous-year/create" element={<CreatePreviousYearPaper />} />
+            <Route path="exams/grand-test/create" element={<CreateGrandTest />} />
             <Route path="content" element={<Content />} />
             <Route path="content/upload" element={<UploadContent />} />
           </Route>
