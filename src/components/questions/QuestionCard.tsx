@@ -193,7 +193,7 @@ export const QuestionCard = ({
       {question.type === "matrix_match" && renderMatrixMatch()}
 
       {/* Options */}
-      {(question.type === "mcq_single" || question.type === "mcq_multiple" || question.type === "true_false" || question.type === "assertion_reasoning") && renderOptions()}
+      {(question.type === "mcq_single" || question.type === "mcq_multiple" || question.type === "true_false" || question.type === "assertion_reasoning" || question.type === "paragraph") && renderOptions()}
 
       {/* Numerical/Short Answer Display */}
       {(question.type === "numerical" || question.type === "fill_blanks") && (

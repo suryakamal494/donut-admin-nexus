@@ -1809,7 +1809,13 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-phy-001",
-    paragraphText: "A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. Consider g = 10 m/s². Answer the following questions based on this scenario.",
+    paragraphText: `A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. The building is located in an area where air resistance can be neglected for the purpose of this calculation. Consider the acceleration due to gravity g = 10 m/s². The ball rises until its velocity becomes zero, then falls back down past the building top and eventually hits the ground.
+
+During the upward motion, the ball decelerates uniformly due to gravity. At the maximum height, the instantaneous velocity is zero, but the acceleration remains constant at 10 m/s² downward. After reaching the peak, the ball accelerates downward, gaining speed until it reaches the ground.
+
+This scenario is commonly encountered in competitive examinations like JEE and NEET, where understanding of kinematics equations is crucial. The three equations of motion - v = u + at, s = ut + ½at², and v² = u² + 2as - are fundamental to solving such problems. Students should also understand the concept of taking proper sign conventions for displacement, velocity, and acceleration.
+
+Answer the following questions based on this scenario:`,
     paragraphOrder: 1,
     questionText: "What is the maximum height reached by the ball above the ground?",
     options: [
@@ -1845,7 +1851,13 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-phy-001",
-    paragraphText: "A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. Consider g = 10 m/s². Answer the following questions based on this scenario.",
+    paragraphText: `A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. The building is located in an area where air resistance can be neglected for the purpose of this calculation. Consider the acceleration due to gravity g = 10 m/s². The ball rises until its velocity becomes zero, then falls back down past the building top and eventually hits the ground.
+
+During the upward motion, the ball decelerates uniformly due to gravity. At the maximum height, the instantaneous velocity is zero, but the acceleration remains constant at 10 m/s² downward. After reaching the peak, the ball accelerates downward, gaining speed until it reaches the ground.
+
+This scenario is commonly encountered in competitive examinations like JEE and NEET, where understanding of kinematics equations is crucial. The three equations of motion - v = u + at, s = ut + ½at², and v² = u² + 2as - are fundamental to solving such problems. Students should also understand the concept of taking proper sign conventions for displacement, velocity, and acceleration.
+
+Answer the following questions based on this scenario:`,
     paragraphOrder: 2,
     questionText: "How long does it take for the ball to reach the maximum height?",
     options: [
@@ -1881,7 +1893,13 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-phy-001",
-    paragraphText: "A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. Consider g = 10 m/s². Answer the following questions based on this scenario.",
+    paragraphText: `A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. The building is located in an area where air resistance can be neglected for the purpose of this calculation. Consider the acceleration due to gravity g = 10 m/s². The ball rises until its velocity becomes zero, then falls back down past the building top and eventually hits the ground.
+
+During the upward motion, the ball decelerates uniformly due to gravity. At the maximum height, the instantaneous velocity is zero, but the acceleration remains constant at 10 m/s² downward. After reaching the peak, the ball accelerates downward, gaining speed until it reaches the ground.
+
+This scenario is commonly encountered in competitive examinations like JEE and NEET, where understanding of kinematics equations is crucial. The three equations of motion - v = u + at, s = ut + ½at², and v² = u² + 2as - are fundamental to solving such problems. Students should also understand the concept of taking proper sign conventions for displacement, velocity, and acceleration.
+
+Answer the following questions based on this scenario:`,
     paragraphOrder: 3,
     questionText: "What is the velocity of the ball when it hits the ground?",
     options: [
@@ -1917,7 +1935,13 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-phy-001",
-    paragraphText: "A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. Consider g = 10 m/s². Answer the following questions based on this scenario.",
+    paragraphText: `A ball is thrown vertically upward with an initial velocity of 20 m/s from the top of a building 45 m high. The building is located in an area where air resistance can be neglected for the purpose of this calculation. Consider the acceleration due to gravity g = 10 m/s². The ball rises until its velocity becomes zero, then falls back down past the building top and eventually hits the ground.
+
+During the upward motion, the ball decelerates uniformly due to gravity. At the maximum height, the instantaneous velocity is zero, but the acceleration remains constant at 10 m/s² downward. After reaching the peak, the ball accelerates downward, gaining speed until it reaches the ground.
+
+This scenario is commonly encountered in competitive examinations like JEE and NEET, where understanding of kinematics equations is crucial. The three equations of motion - v = u + at, s = ut + ½at², and v² = u² + 2as - are fundamental to solving such problems. Students should also understand the concept of taking proper sign conventions for displacement, velocity, and acceleration.
+
+Answer the following questions based on this scenario:`,
     paragraphOrder: 4,
     questionText: "What is the total time of flight (from throw to hitting ground)?",
     options: [
@@ -1955,7 +1979,15 @@ print(func(3))`,
     difficulty: "medium",
     language: "english",
     paragraphId: "para-che-001",
-    paragraphText: "Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. The reaction is exothermic in the forward direction. Answer the following questions about how the equilibrium shifts.",
+    paragraphText: `Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. This is the famous Haber-Bosch process, which is fundamental to the industrial production of ammonia. The reaction is exothermic in the forward direction, releasing approximately 92 kJ of energy per mole of nitrogen consumed.
+
+Le Chatelier's principle states that when a system at equilibrium is subjected to a stress (change in concentration, pressure, or temperature), the system will shift in a direction that tends to reduce that stress. Understanding this principle is crucial for optimizing industrial chemical processes and predicting the behavior of chemical systems.
+
+In the Haber process, the industrial conditions are carefully chosen to maximize ammonia yield while maintaining economically viable reaction rates. Typically, temperatures around 400-500°C and pressures of 150-300 atmospheres are used, along with iron catalysts containing promoters like potassium oxide and aluminum oxide.
+
+The equilibrium constant (Kp) for this reaction is temperature-dependent and decreases with increasing temperature due to the exothermic nature of the forward reaction. At 25°C, Kp is about 6.0 × 10⁵, but at 500°C, it drops to about 0.16.
+
+Answer the following questions about how the equilibrium shifts:`,
     paragraphOrder: 1,
     questionText: "What happens to equilibrium when temperature is increased?",
     options: [
@@ -1991,7 +2023,15 @@ print(func(3))`,
     difficulty: "medium",
     language: "english",
     paragraphId: "para-che-001",
-    paragraphText: "Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. The reaction is exothermic in the forward direction. Answer the following questions about how the equilibrium shifts.",
+    paragraphText: `Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. This is the famous Haber-Bosch process, which is fundamental to the industrial production of ammonia. The reaction is exothermic in the forward direction, releasing approximately 92 kJ of energy per mole of nitrogen consumed.
+
+Le Chatelier's principle states that when a system at equilibrium is subjected to a stress (change in concentration, pressure, or temperature), the system will shift in a direction that tends to reduce that stress. Understanding this principle is crucial for optimizing industrial chemical processes and predicting the behavior of chemical systems.
+
+In the Haber process, the industrial conditions are carefully chosen to maximize ammonia yield while maintaining economically viable reaction rates. Typically, temperatures around 400-500°C and pressures of 150-300 atmospheres are used, along with iron catalysts containing promoters like potassium oxide and aluminum oxide.
+
+The equilibrium constant (Kp) for this reaction is temperature-dependent and decreases with increasing temperature due to the exothermic nature of the forward reaction. At 25°C, Kp is about 6.0 × 10⁵, but at 500°C, it drops to about 0.16.
+
+Answer the following questions about how the equilibrium shifts:`,
     paragraphOrder: 2,
     questionText: "What happens when pressure is increased?",
     options: [
@@ -2027,7 +2067,15 @@ print(func(3))`,
     difficulty: "easy",
     language: "english",
     paragraphId: "para-che-001",
-    paragraphText: "Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. The reaction is exothermic in the forward direction. Answer the following questions about how the equilibrium shifts.",
+    paragraphText: `Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. This is the famous Haber-Bosch process, which is fundamental to the industrial production of ammonia. The reaction is exothermic in the forward direction, releasing approximately 92 kJ of energy per mole of nitrogen consumed.
+
+Le Chatelier's principle states that when a system at equilibrium is subjected to a stress (change in concentration, pressure, or temperature), the system will shift in a direction that tends to reduce that stress. Understanding this principle is crucial for optimizing industrial chemical processes and predicting the behavior of chemical systems.
+
+In the Haber process, the industrial conditions are carefully chosen to maximize ammonia yield while maintaining economically viable reaction rates. Typically, temperatures around 400-500°C and pressures of 150-300 atmospheres are used, along with iron catalysts containing promoters like potassium oxide and aluminum oxide.
+
+The equilibrium constant (Kp) for this reaction is temperature-dependent and decreases with increasing temperature due to the exothermic nature of the forward reaction. At 25°C, Kp is about 6.0 × 10⁵, but at 500°C, it drops to about 0.16.
+
+Answer the following questions about how the equilibrium shifts:`,
     paragraphOrder: 3,
     questionText: "What happens when a catalyst is added?",
     options: [
@@ -2063,7 +2111,15 @@ print(func(3))`,
     difficulty: "medium",
     language: "english",
     paragraphId: "para-che-001",
-    paragraphText: "Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. The reaction is exothermic in the forward direction. Answer the following questions about how the equilibrium shifts.",
+    paragraphText: `Consider the following equilibrium reaction: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat. This is the famous Haber-Bosch process, which is fundamental to the industrial production of ammonia. The reaction is exothermic in the forward direction, releasing approximately 92 kJ of energy per mole of nitrogen consumed.
+
+Le Chatelier's principle states that when a system at equilibrium is subjected to a stress (change in concentration, pressure, or temperature), the system will shift in a direction that tends to reduce that stress. Understanding this principle is crucial for optimizing industrial chemical processes and predicting the behavior of chemical systems.
+
+In the Haber process, the industrial conditions are carefully chosen to maximize ammonia yield while maintaining economically viable reaction rates. Typically, temperatures around 400-500°C and pressures of 150-300 atmospheres are used, along with iron catalysts containing promoters like potassium oxide and aluminum oxide.
+
+The equilibrium constant (Kp) for this reaction is temperature-dependent and decreases with increasing temperature due to the exothermic nature of the forward reaction. At 25°C, Kp is about 6.0 × 10⁵, but at 500°C, it drops to about 0.16.
+
+Answer the following questions about how the equilibrium shifts:`,
     paragraphOrder: 4,
     questionText: "What happens when NH₃ is continuously removed from the system?",
     options: [
@@ -2101,7 +2157,15 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-bio-001",
-    paragraphText: "DNA replication is a complex process involving multiple enzymes. The process begins at specific sites called origins of replication. DNA helicase unwinds the double helix, and primase synthesizes RNA primers. DNA polymerase III synthesizes the new strand in the 5' to 3' direction. Answer the following questions based on DNA replication.",
+    paragraphText: `DNA replication is one of the most fundamental processes in molecular biology, ensuring the accurate transmission of genetic information from one generation to the next. This semiconservative process was elegantly demonstrated by Meselson and Stahl in 1958 using E. coli and nitrogen isotopes (¹⁵N and ¹⁴N).
+
+The replication machinery is remarkably complex, involving over a dozen different proteins working in concert. DNA helicase unwinds the double helix at the replication fork, creating single-stranded templates. Single-strand binding proteins (SSBs) stabilize the separated strands and prevent them from re-annealing. Topoisomerase relieves the tension created ahead of the replication fork by introducing temporary breaks in the DNA backbone.
+
+Primase, a specialized RNA polymerase, synthesizes short RNA primers that provide the 3'-OH groups necessary for DNA polymerase to begin synthesis. DNA polymerase III, the main replicative enzyme in prokaryotes, adds nucleotides in the 5' to 3' direction with remarkable fidelity (one error per 10⁹-10¹⁰ nucleotides incorporated). The leading strand is synthesized continuously, while the lagging strand is synthesized in short Okazaki fragments (100-200 nucleotides in eukaryotes, 1000-2000 in prokaryotes).
+
+After synthesis, RNA primers are removed by DNA polymerase I and replaced with DNA. DNA ligase then seals the remaining nicks, creating a continuous sugar-phosphate backbone. The entire process in E. coli occurs at approximately 1000 nucleotides per second.
+
+Answer the following questions based on DNA replication:`,
     paragraphOrder: 1,
     questionText: "Which enzyme is responsible for unwinding the DNA double helix?",
     options: [
@@ -2137,7 +2201,15 @@ print(func(3))`,
     difficulty: "hard",
     language: "english",
     paragraphId: "para-bio-001",
-    paragraphText: "DNA replication is a complex process involving multiple enzymes. The process begins at specific sites called origins of replication. DNA helicase unwinds the double helix, and primase synthesizes RNA primers. DNA polymerase III synthesizes the new strand in the 5' to 3' direction. Answer the following questions based on DNA replication.",
+    paragraphText: `DNA replication is one of the most fundamental processes in molecular biology, ensuring the accurate transmission of genetic information from one generation to the next. This semiconservative process was elegantly demonstrated by Meselson and Stahl in 1958 using E. coli and nitrogen isotopes (¹⁵N and ¹⁴N).
+
+The replication machinery is remarkably complex, involving over a dozen different proteins working in concert. DNA helicase unwinds the double helix at the replication fork, creating single-stranded templates. Single-strand binding proteins (SSBs) stabilize the separated strands and prevent them from re-annealing. Topoisomerase relieves the tension created ahead of the replication fork by introducing temporary breaks in the DNA backbone.
+
+Primase, a specialized RNA polymerase, synthesizes short RNA primers that provide the 3'-OH groups necessary for DNA polymerase to begin synthesis. DNA polymerase III, the main replicative enzyme in prokaryotes, adds nucleotides in the 5' to 3' direction with remarkable fidelity (one error per 10⁹-10¹⁰ nucleotides incorporated). The leading strand is synthesized continuously, while the lagging strand is synthesized in short Okazaki fragments (100-200 nucleotides in eukaryotes, 1000-2000 in prokaryotes).
+
+After synthesis, RNA primers are removed by DNA polymerase I and replaced with DNA. DNA ligase then seals the remaining nicks, creating a continuous sugar-phosphate backbone. The entire process in E. coli occurs at approximately 1000 nucleotides per second.
+
+Answer the following questions based on DNA replication:`,
     paragraphOrder: 2,
     questionText: "Why is the lagging strand synthesized in fragments?",
     options: [
@@ -2173,7 +2245,15 @@ print(func(3))`,
     difficulty: "medium",
     language: "english",
     paragraphId: "para-bio-001",
-    paragraphText: "DNA replication is a complex process involving multiple enzymes. The process begins at specific sites called origins of replication. DNA helicase unwinds the double helix, and primase synthesizes RNA primers. DNA polymerase III synthesizes the new strand in the 5' to 3' direction. Answer the following questions based on DNA replication.",
+    paragraphText: `DNA replication is one of the most fundamental processes in molecular biology, ensuring the accurate transmission of genetic information from one generation to the next. This semiconservative process was elegantly demonstrated by Meselson and Stahl in 1958 using E. coli and nitrogen isotopes (¹⁵N and ¹⁴N).
+
+The replication machinery is remarkably complex, involving over a dozen different proteins working in concert. DNA helicase unwinds the double helix at the replication fork, creating single-stranded templates. Single-strand binding proteins (SSBs) stabilize the separated strands and prevent them from re-annealing. Topoisomerase relieves the tension created ahead of the replication fork by introducing temporary breaks in the DNA backbone.
+
+Primase, a specialized RNA polymerase, synthesizes short RNA primers that provide the 3'-OH groups necessary for DNA polymerase to begin synthesis. DNA polymerase III, the main replicative enzyme in prokaryotes, adds nucleotides in the 5' to 3' direction with remarkable fidelity (one error per 10⁹-10¹⁰ nucleotides incorporated). The leading strand is synthesized continuously, while the lagging strand is synthesized in short Okazaki fragments (100-200 nucleotides in eukaryotes, 1000-2000 in prokaryotes).
+
+After synthesis, RNA primers are removed by DNA polymerase I and replaced with DNA. DNA ligase then seals the remaining nicks, creating a continuous sugar-phosphate backbone. The entire process in E. coli occurs at approximately 1000 nucleotides per second.
+
+Answer the following questions based on DNA replication:`,
     paragraphOrder: 3,
     questionText: "Which enzyme joins the Okazaki fragments?",
     options: [
@@ -2209,7 +2289,15 @@ print(func(3))`,
     difficulty: "medium",
     language: "english",
     paragraphId: "para-bio-001",
-    paragraphText: "DNA replication is a complex process involving multiple enzymes. The process begins at specific sites called origins of replication. DNA helicase unwinds the double helix, and primase synthesizes RNA primers. DNA polymerase III synthesizes the new strand in the 5' to 3' direction. Answer the following questions based on DNA replication.",
+    paragraphText: `DNA replication is one of the most fundamental processes in molecular biology, ensuring the accurate transmission of genetic information from one generation to the next. This semiconservative process was elegantly demonstrated by Meselson and Stahl in 1958 using E. coli and nitrogen isotopes (¹⁵N and ¹⁴N).
+
+The replication machinery is remarkably complex, involving over a dozen different proteins working in concert. DNA helicase unwinds the double helix at the replication fork, creating single-stranded templates. Single-strand binding proteins (SSBs) stabilize the separated strands and prevent them from re-annealing. Topoisomerase relieves the tension created ahead of the replication fork by introducing temporary breaks in the DNA backbone.
+
+Primase, a specialized RNA polymerase, synthesizes short RNA primers that provide the 3'-OH groups necessary for DNA polymerase to begin synthesis. DNA polymerase III, the main replicative enzyme in prokaryotes, adds nucleotides in the 5' to 3' direction with remarkable fidelity (one error per 10⁹-10¹⁰ nucleotides incorporated). The leading strand is synthesized continuously, while the lagging strand is synthesized in short Okazaki fragments (100-200 nucleotides in eukaryotes, 1000-2000 in prokaryotes).
+
+After synthesis, RNA primers are removed by DNA polymerase I and replaced with DNA. DNA ligase then seals the remaining nicks, creating a continuous sugar-phosphate backbone. The entire process in E. coli occurs at approximately 1000 nucleotides per second.
+
+Answer the following questions based on DNA replication:`,
     paragraphOrder: 4,
     questionText: "What is the function of primase in DNA replication?",
     options: [
