@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { instituteExams, batches } from "@/data/instituteData";
+import ScheduleExamDialog from "@/components/institute/exams/ScheduleExamDialog";
 
 const examTypeLabels: Record<string, string> = {
   unit_test: "Unit Test",
@@ -29,6 +30,13 @@ const Exams = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<{ id: string; name: string } | null>(null);
+
+  const handleOpenScheduleDialog = (exam: { id: string; name: string }) => {
+    setSelectedExam(exam);
+    setScheduleDialogOpen(true);
+  };
 
   const filteredExams = instituteExams.filter((exam) => {
     const matchesSearch = exam.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -210,7 +218,12 @@ const Exams = () => {
                   </Button>
                 )}
                 {exam.status === "draft" && (
-                  <Button variant="default" size="sm" className="flex-1">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleOpenScheduleDialog({ id: exam.id, name: exam.name })}
+                  >
                     <Calendar className="w-4 h-4 mr-1" />
                     Schedule
                   </Button>
@@ -233,6 +246,18 @@ const Exams = () => {
           </div>
         )}
       </div>
+
+      {/* Schedule Dialog */}
+      {selectedExam && (
+        <ScheduleExamDialog
+          open={scheduleDialogOpen}
+          onOpenChange={setScheduleDialogOpen}
+          exam={selectedExam}
+          onScheduleSaved={(date, time) => {
+            console.log("Scheduled:", selectedExam.id, date, time);
+          }}
+        />
+      )}
     </div>
   );
 };
