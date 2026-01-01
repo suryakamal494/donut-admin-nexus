@@ -30,6 +30,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { sampleExamForReview, samplePYPForReview, ExamQuestion } from "@/data/examQuestionsData";
 import { RankPercentileConfig } from "@/components/exams/RankPercentileConfig";
+import { GrandTestScheduleConfig } from "@/components/exams/GrandTestScheduleConfig";
 import { cn } from "@/lib/utils";
 
 type QuestionStatus = "pending" | "reviewed" | "edited" | "deleted";
@@ -231,6 +232,11 @@ const ReviewExam = () => {
       {/* Rank & Percentile Configuration - Only for Previous Year Papers */}
       {examType === "previous_year" && (
         <RankPercentileConfig examName={examData.name} />
+      )}
+
+      {/* Schedule & Audience Configuration - Only for Grand Tests */}
+      {examType === "grand_test" && (
+        <GrandTestScheduleConfig testName={examData.name} />
       )}
 
       {/* Subject Tabs */}
