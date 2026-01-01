@@ -316,15 +316,21 @@ const CreatePreviousYearPaper = () => {
               <h3 className="text-xl font-semibold mb-1">Paper Uploaded Successfully!</h3>
               <p className="text-muted-foreground">
                 We're creating your test now.<br />
-                You'll be notified when it's ready for review.
+                You can review and configure rank/percentile mapping.
               </p>
             </div>
-            <div className="pt-4">
+            <div className="pt-4 flex justify-center gap-3">
               <Button 
-                className="gradient-button"
+                variant="outline"
                 onClick={() => navigate("/superadmin/exams")}
               >
                 Go to Previous Year Papers
+              </Button>
+              <Button 
+                className="gradient-button"
+                onClick={() => navigate(`/superadmin/exams/review/new-pyp?type=previous_year&method=pdf`)}
+              >
+                Review & Configure
               </Button>
             </div>
           </div>

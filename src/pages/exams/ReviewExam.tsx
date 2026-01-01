@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { sampleExamForReview, samplePYPForReview, ExamQuestion } from "@/data/examQuestionsData";
+import { RankPercentileConfig } from "@/components/exams/RankPercentileConfig";
 import { cn } from "@/lib/utils";
 
 type QuestionStatus = "pending" | "reviewed" | "edited" | "deleted";
@@ -226,6 +227,11 @@ const ReviewExam = () => {
           </div>
         }
       />
+
+      {/* Rank & Percentile Configuration - Only for Previous Year Papers */}
+      {examType === "previous_year" && (
+        <RankPercentileConfig examName={examData.name} />
+      )}
 
       {/* Subject Tabs */}
       <Tabs value={activeSubject} onValueChange={handleSubjectChange}>

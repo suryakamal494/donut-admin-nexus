@@ -21,6 +21,7 @@ import ReviewQuestions from "./pages/questions/ReviewQuestions";
 import Exams from "./pages/exams/Exams";
 import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
 import CreateGrandTest from "./pages/exams/CreateGrandTest";
+import ReviewExam from "./pages/exams/ReviewExam";
 import Content from "./pages/content/Content";
 import UploadContent from "./pages/content/UploadContent";
 import NotFound from "./pages/NotFound";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="exams" element={<Exams />} />
             <Route path="exams/previous-year/create" element={<CreatePreviousYearPaper />} />
             <Route path="exams/grand-test/create" element={<CreateGrandTest />} />
+            <Route path="exams/review/:examId" element={<ReviewExam />} />
             <Route path="content" element={<Content />} />
             <Route path="content/upload" element={<UploadContent />} />
           </Route>
