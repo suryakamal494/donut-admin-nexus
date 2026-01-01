@@ -29,6 +29,14 @@ import NotFound from "./pages/NotFound";
 
 // Institute Panel Pages
 import InstituteDashboard from "./pages/institute/Dashboard";
+import InstituteBatches from "./pages/institute/batches/Batches";
+import CreateBatch from "./pages/institute/batches/CreateBatch";
+import BatchDashboard from "./pages/institute/batches/BatchDashboard";
+import InstituteTeachers from "./pages/institute/teachers/Teachers";
+import CreateTeacher from "./pages/institute/teachers/CreateTeacher";
+import BulkUploadTeachers from "./pages/institute/teachers/BulkUploadTeachers";
+import InstituteStudents from "./pages/institute/students/Students";
+import AddStudent from "./pages/institute/students/AddStudent";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +78,14 @@ const App = () => (
           <Route path="/institute" element={<InstituteLayout />}>
             <Route index element={<Navigate to="/institute/dashboard" replace />} />
             <Route path="dashboard" element={<InstituteDashboard />} />
+            <Route path="batches" element={<InstituteBatches />} />
+            <Route path="batches/create" element={<CreateBatch />} />
+            <Route path="batches/:batchId" element={<BatchDashboard />} />
+            <Route path="teachers" element={<InstituteTeachers />} />
+            <Route path="teachers/create" element={<CreateTeacher />} />
+            <Route path="teachers/bulk-upload" element={<BulkUploadTeachers />} />
+            <Route path="students" element={<InstituteStudents />} />
+            <Route path="students/add" element={<AddStudent />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
