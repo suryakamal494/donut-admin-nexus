@@ -37,6 +37,7 @@ import CreateTeacher from "./pages/institute/teachers/CreateTeacher";
 import BulkUploadTeachers from "./pages/institute/teachers/BulkUploadTeachers";
 import InstituteStudents from "./pages/institute/students/Students";
 import AddStudent from "./pages/institute/students/AddStudent";
+import InstituteTimetable from "./pages/institute/timetable/Timetable";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,7 @@ const App = () => (
             <Route path="teachers/bulk-upload" element={<BulkUploadTeachers />} />
             <Route path="students" element={<InstituteStudents />} />
             <Route path="students/add" element={<AddStudent />} />
+            <Route path="timetable" element={<InstituteTimetable />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
