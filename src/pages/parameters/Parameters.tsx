@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { classes, courses, subjects, chapters, topics } from "@/data/mockData";
+import { SubjectBadge, subjectCategoryConfig, type SubjectCategory } from "@/components/subject";
 import { cn } from "@/lib/utils";
 
 type Tab = "classes" | "courses" | "curriculum" | "subjects" | "chapters" | "topics";
@@ -414,8 +415,17 @@ const Parameters = () => {
               <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-muted/20 transition-colors">
                 <GripVertical className="w-5 h-5 text-muted-foreground cursor-grab" />
                 <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">{item.code || item.description || `Order: ${item.order}`}</p>
+                  {activeTab === "subjects" ? (
+                    <div className="flex items-center gap-3">
+                      <SubjectBadge subject={item.name} size="md" />
+                      <span className="text-sm text-muted-foreground">({item.code})</span>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-muted-foreground">{item.code || item.description || `Order: ${item.order}`}</p>
+                    </>
+                  )}
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon"><Edit className="w-4 h-4" /></Button>

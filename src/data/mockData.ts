@@ -127,12 +127,39 @@ export const courses = [
   { id: "6", name: "State Board", code: "STATE", description: "Various State Board Examinations" },
 ];
 
+// Enhanced subjects with icons, categories (from SubjectBadge component)
+// Reference: src/components/subject/SubjectBadge.tsx for full subject master list
 export const subjects = [
-  { id: "1", name: "Physics", code: "PHY", courseIds: ["1", "2", "3"] },
-  { id: "2", name: "Chemistry", code: "CHE", courseIds: ["1", "2", "3"] },
-  { id: "3", name: "Mathematics", code: "MAT", courseIds: ["1", "2", "4", "5"] },
-  { id: "4", name: "Biology", code: "BIO", courseIds: ["3"] },
-  { id: "5", name: "English", code: "ENG", courseIds: ["4", "5", "6"] },
+  // Sciences
+  { id: "1", name: "Physics", code: "PHY", subjectId: "phy", courseIds: ["1", "2", "3"] },
+  { id: "2", name: "Chemistry", code: "CHE", subjectId: "che", courseIds: ["1", "2", "3"] },
+  { id: "3", name: "Mathematics", code: "MAT", subjectId: "mat", courseIds: ["1", "2", "4", "5"] },
+  { id: "4", name: "Biology", code: "BIO", subjectId: "bio", courseIds: ["3"] },
+  { id: "5", name: "English", code: "ENG", subjectId: "eng", courseIds: ["4", "5", "6"] },
+  { id: "6", name: "Science", code: "SCI", subjectId: "sci", courseIds: ["4", "5", "6"] },
+  { id: "7", name: "Social Science", code: "SST", subjectId: "sst", courseIds: ["4", "5", "6"] },
+  { id: "8", name: "Hindi", code: "HIN", subjectId: "hin", courseIds: ["4", "5", "6"] },
+  { id: "9", name: "Sanskrit", code: "SAN", subjectId: "san", courseIds: ["4", "5", "6"] },
+  { id: "10", name: "Computer Science", code: "CS", subjectId: "cs", courseIds: ["1", "2", "4", "5"] },
+  { id: "11", name: "Informatics Practices", code: "IP", subjectId: "ip", courseIds: ["4", "5"] },
+  { id: "12", name: "History", code: "HIS", subjectId: "his", courseIds: ["4", "5", "6"] },
+  { id: "13", name: "Geography", code: "GEO", subjectId: "geo", courseIds: ["4", "5", "6"] },
+  { id: "14", name: "Political Science", code: "POL", subjectId: "pol", courseIds: ["4", "5"] },
+  { id: "15", name: "Economics", code: "ECO", subjectId: "eco", courseIds: ["4", "5"] },
+  { id: "16", name: "Accountancy", code: "ACC", subjectId: "acc", courseIds: ["4", "5"] },
+  { id: "17", name: "Business Studies", code: "BST", subjectId: "bst", courseIds: ["4", "5"] },
+  { id: "18", name: "Physical Education", code: "PED", subjectId: "ped", courseIds: ["4", "5", "6"] },
+  { id: "19", name: "Fine Arts", code: "ART", subjectId: "art", courseIds: ["4", "5", "6"] },
+  { id: "20", name: "Music", code: "MUS", subjectId: "mus", courseIds: ["4", "5", "6"] },
+  { id: "21", name: "Environmental Studies", code: "EVS", subjectId: "evs", courseIds: ["4", "5", "6"] },
+  { id: "22", name: "Psychology", code: "PSY", subjectId: "psy", courseIds: ["4", "5"] },
+  { id: "23", name: "Sociology", code: "SOC", subjectId: "soc", courseIds: ["4", "5"] },
+  { id: "24", name: "Home Science", code: "HEC", subjectId: "hec", courseIds: ["4", "5"] },
+  { id: "25", name: "Artificial Intelligence", code: "AI", subjectId: "ai", courseIds: ["4", "5"] },
+  { id: "26", name: "Applied Mathematics", code: "APM", subjectId: "apm", courseIds: ["4", "5"] },
+  { id: "27", name: "Entrepreneurship", code: "ENT", subjectId: "ent", courseIds: ["4", "5"] },
+  { id: "28", name: "French", code: "FRE", subjectId: "fre", courseIds: ["4", "5", "6"] },
+  { id: "29", name: "German", code: "GER", subjectId: "ger", courseIds: ["4", "5", "6"] },
 ];
 
 // Chapters (Dependent on Class + Subject)
