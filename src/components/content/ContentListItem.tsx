@@ -4,6 +4,7 @@ import { ContentTypeIcon, getContentTypeLabel } from "./ContentTypeIcon";
 import { ContentStatusBadge } from "./ContentStatusBadge";
 import { ContentItem } from "./ContentCard";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SubjectBadge } from "@/components/subject";
 import { cn } from "@/lib/utils";
 
 interface ContentListItemProps {
@@ -35,9 +36,10 @@ export const ContentListItem = ({ content, onPreview, onEdit, onDelete, classNam
           <h3 className="font-semibold text-sm truncate">{content.title}</h3>
           <ContentStatusBadge status={content.status} />
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-          {content.subject} • {content.chapter} • {content.className}
-        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <SubjectBadge subject={content.subject} size="xs" />
+          <span className="text-xs text-muted-foreground">• {content.chapter} • {content.className}</span>
+        </div>
       </div>
       
       {/* Type */}

@@ -4,8 +4,8 @@ import { ContentThumbnail } from "./ContentThumbnail";
 import { ContentStatusBadge } from "./ContentStatusBadge";
 import { getContentTypeLabel, ContentType } from "./ContentTypeIcon";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SubjectBadge } from "@/components/subject";
 import { cn } from "@/lib/utils";
-
 export interface ContentItem {
   id: string;
   title: string;
@@ -65,12 +65,11 @@ export const ContentCard = ({ content, onPreview, onEdit, onDelete, className }:
         
         <p className="text-xs text-muted-foreground line-clamp-2">{content.description}</p>
         
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{content.subject}</span>
-          <span>•</span>
-          <span>{content.className}</span>
-          <span>•</span>
-          <span>{meta}</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <SubjectBadge subject={content.subject} size="xs" />
+          <span className="text-xs text-muted-foreground">{content.className}</span>
+          <span className="text-xs text-muted-foreground">•</span>
+          <span className="text-xs text-muted-foreground">{meta}</span>
         </div>
         
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
