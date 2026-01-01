@@ -1,4 +1,4 @@
-import { Eye, Edit, BarChart3, Users, Play, Award, Trash2, Clock, HelpCircle, FileText, Building2, Calendar, Sparkles, FileUp } from "lucide-react";
+import { Eye, Edit, BarChart3, Users, Award, Trash2, Clock, HelpCircle, FileText, Building2, Calendar, Sparkles, FileUp, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GrandTest, examPatternConfig } from "@/data/examsData";
@@ -10,7 +10,8 @@ interface GrandTestCardProps {
   onView?: (test: GrandTest) => void;
   onEdit?: (test: GrandTest) => void;
   onStats?: (test: GrandTest) => void;
-  onConduct?: (test: GrandTest) => void;
+  onSchedule?: (test: GrandTest) => void;
+  onAudience?: (test: GrandTest) => void;
   onPublishRanks?: (test: GrandTest) => void;
   onDelete?: (test: GrandTest) => void;
 }
@@ -33,7 +34,8 @@ export const GrandTestCard = ({
   onView, 
   onEdit, 
   onStats, 
-  onConduct, 
+  onSchedule, 
+  onAudience,
   onPublishRanks,
   onDelete 
 }: GrandTestCardProps) => {
@@ -135,7 +137,7 @@ export const GrandTestCard = ({
       </div>
       
       {/* Actions */}
-      <div className="flex items-center gap-1 pt-3 border-t border-border/50">
+      <div className="flex flex-wrap items-center gap-1 pt-3 border-t border-border/50">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -146,7 +148,7 @@ export const GrandTestCard = ({
           View
         </Button>
         
-        {test.status === "draft" && (
+        {test.status !== "completed" && test.status !== "live" && (
           <>
             <Button 
               variant="ghost" 
@@ -160,23 +162,32 @@ export const GrandTestCard = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 text-xs px-2 text-destructive hover:text-destructive"
-              onClick={() => onDelete?.(test)}
+              className="h-8 text-xs px-2"
+              onClick={() => onSchedule?.(test)}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <CalendarClock className="w-3.5 h-3.5 mr-1" />
+              Schedule
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 text-xs px-2"
+              onClick={() => onAudience?.(test)}
+            >
+              <Users className="w-3.5 h-3.5 mr-1" />
+              Audience
             </Button>
           </>
         )}
         
-        {test.status === "scheduled" && (
+        {test.status === "draft" && (
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 text-xs px-2"
-            onClick={() => onEdit?.(test)}
+            className="h-8 text-xs px-2 text-destructive hover:text-destructive"
+            onClick={() => onDelete?.(test)}
           >
-            <Edit className="w-3.5 h-3.5 mr-1" />
-            Edit
+            <Trash2 className="w-3.5 h-3.5" />
           </Button>
         )}
         
