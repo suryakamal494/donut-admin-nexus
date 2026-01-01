@@ -140,7 +140,7 @@ Mr. Amit Patel,amit@school.edu,9876543212,"Biology, Science"`;
       <PageHeader
         title="Bulk Upload Teachers"
         description="Add multiple teachers at once by pasting data or uploading a file. No complex formatting required!"
-        action={
+        actions={
           <Button variant="outline" onClick={() => navigate("/institute/teachers")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Teachers

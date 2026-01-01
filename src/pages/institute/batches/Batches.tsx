@@ -31,7 +31,7 @@ const Batches = () => {
       <PageHeader
         title="Batches"
         description="Organize your classes into batches. Each batch is a group of students with assigned teachers and timetable."
-        action={
+        actions={
           <Button
             onClick={() => navigate("/institute/batches/create")}
             className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"

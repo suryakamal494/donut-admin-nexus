@@ -128,7 +128,7 @@ const CreateTeacher = () => {
       <PageHeader
         title="Add New Teacher"
         description="Add a teacher to your institute. You can assign subjects and map them to specific batches."
-        action={
+        actions={
           <Button variant="outline" onClick={() => navigate("/institute/teachers")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Teachers

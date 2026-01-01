@@ -72,7 +72,7 @@ const Teachers = () => {
       <PageHeader
         title="Teachers"
         description="Manage teachers and their batch assignments. Each teacher can be assigned to multiple batches and subjects."
-        action={
+        actions={
           <Button
             onClick={() => navigate("/institute/teachers/create")}
             className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
