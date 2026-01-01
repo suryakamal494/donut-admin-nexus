@@ -1,46 +1,200 @@
-import { useState } from "react";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Sparkles } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, Sparkles, Upload, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { mockQuestions } from "@/data/mockData";
-import { cn } from "@/lib/utils";
-
-const difficultyColors = {
-  easy: "bg-success/10 text-success border-success/20",
-  medium: "bg-warning/10 text-warning border-warning/20",
-  hard: "bg-destructive/10 text-destructive border-destructive/20",
-};
-
-const typeLabels = {
-  mcq: "MCQ",
-  multiple: "Multiple Choice",
-  assertion: "Assertion-Reasoning",
-  paragraph: "Paragraph",
-  numerical: "Numerical",
-  fill: "Fill in Blanks",
-  short: "Short Answer",
-  long: "Long Answer",
-};
+import { 
+  QuestionCard, 
+  QuestionFilters, 
+  QuestionPagination,
+  ParagraphQuestionGroup 
+} from "@/components/questions";
+import { 
+  mockQuestions, 
+  Question,
+  QuestionType,
+  QuestionDifficulty,
+  QuestionLanguage,
+  QuestionStatus 
+} from "@/data/questionsData";
 
 const Questions = () => {
+  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("all");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedClass, setSelectedClass] = useState("all");
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
+
+  // Calculate active filter count
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (selectedSubject !== "all") count++;
+    if (selectedType !== "all") count++;
+    if (selectedDifficulty !== "all") count++;
+    if (selectedLanguage !== "all") count++;
+    if (selectedStatus !== "all") count++;
+    if (selectedClass !== "all") count++;
+    if (searchQuery) count++;
+    return count;
+  }, [selectedSubject, selectedType, selectedDifficulty, selectedLanguage, selectedStatus, selectedClass, searchQuery]);
+
+  // Filter questions
+  const filteredQuestions = useMemo(() => {
+    return mockQuestions.filter((q) => {
+      // Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          q.questionText.toLowerCase().includes(query) ||
+          q.questionId.toLowerCase().includes(query) ||
+          q.topic.toLowerCase().includes(query) ||
+          q.chapter.toLowerCase().includes(query) ||
+          q.subject.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
+      }
+
+      // Subject filter
+      if (selectedSubject !== "all" && q.subjectId !== selectedSubject) return false;
+      
+      // Type filter
+      if (selectedType !== "all" && q.type !== selectedType) return false;
+      
+      // Difficulty filter
+      if (selectedDifficulty !== "all" && q.difficulty !== selectedDifficulty) return false;
+      
+      // Language filter
+      if (selectedLanguage !== "all" && q.language !== selectedLanguage) return false;
+      
+      // Status filter
+      if (selectedStatus !== "all" && q.status !== selectedStatus) return false;
+      
+      // Class filter
+      if (selectedClass !== "all" && q.classId !== selectedClass) return false;
+      
+      return true;
+    });
+  }, [searchQuery, selectedSubject, selectedType, selectedDifficulty, selectedLanguage, selectedStatus, selectedClass]);
+
+  // Group paragraph questions
+  const { standaloneQuestions, paragraphGroups } = useMemo(() => {
+    const paragraphs = new Map<string, Question[]>();
+    const standalone: Question[] = [];
+
+    filteredQuestions.forEach((q) => {
+      if (q.paragraphId && q.paragraphText) {
+        const existing = paragraphs.get(q.paragraphId) || [];
+        existing.push(q);
+        paragraphs.set(q.paragraphId, existing);
+      } else {
+        standalone.push(q);
+      }
+    });
+
+    // Sort paragraph questions by order
+    paragraphs.forEach((questions) => {
+      questions.sort((a, b) => (a.paragraphOrder || 0) - (b.paragraphOrder || 0));
+    });
+
+    return { standaloneQuestions: standalone, paragraphGroups: paragraphs };
+  }, [filteredQuestions]);
+
+  // Create combined list for pagination
+  const allDisplayItems = useMemo(() => {
+    const items: Array<{ type: "question" | "paragraph"; data: Question | { id: string; text: string; questions: Question[] } }> = [];
+    
+    // Add paragraph groups
+    paragraphGroups.forEach((questions, paragraphId) => {
+      items.push({
+        type: "paragraph",
+        data: {
+          id: paragraphId,
+          text: questions[0]?.paragraphText || "",
+          questions,
+        },
+      });
+    });
+
+    // Add standalone questions
+    standaloneQuestions.forEach((q) => {
+      items.push({ type: "question", data: q });
+    });
+
+    return items;
+  }, [standaloneQuestions, paragraphGroups]);
+
+  // Paginate items
+  const paginatedItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return allDisplayItems.slice(startIndex, startIndex + itemsPerPage);
+  }, [allDisplayItems, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(allDisplayItems.length / itemsPerPage);
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setSelectedSubject("all");
+    setSelectedType("all");
+    setSelectedDifficulty("all");
+    setSelectedLanguage("all");
+    setSelectedStatus("all");
+    setSelectedClass("all");
+    setCurrentPage(1);
+  };
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Handle items per page change
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
+  // Question actions
+  const handleViewQuestion = (question: Question) => {
+    console.log("View question:", question.id);
+  };
+
+  const handleEditQuestion = (question: Question) => {
+    console.log("Edit question:", question.id);
+  };
+
+  const handleDeleteQuestion = (question: Question) => {
+    console.log("Delete question:", question.id);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
         title="Question Bank"
-        description="Manage all questions across subjects and chapters"
-        breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Questions" }]}
+        description="Review, edit, and manage questions before adding them to the master question bank."
+        breadcrumbs={[
+          { label: "Dashboard", href: "/superadmin/dashboard" },
+          { label: "Question Bank" },
+        ]}
         actions={
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            <Link to="/superadmin/questions/upload-pdf">
+              <Button variant="outline" className="gap-2">
+                <Upload className="w-4 h-4" />
+                Upload PDF
+              </Button>
+            </Link>
             <Link to="/superadmin/questions/ai">
               <Button variant="outline" className="gap-2">
                 <Sparkles className="w-4 h-4" />
-                AI Generator
+                Generate with AI
               </Button>
             </Link>
             <Link to="/superadmin/questions/create">
@@ -54,84 +208,96 @@ const Questions = () => {
       />
 
       {/* Filters */}
-      <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search questions..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+      <QuestionFilters
+        searchQuery={searchQuery}
+        onSearchChange={(value) => { setSearchQuery(value); setCurrentPage(1); }}
+        selectedSubject={selectedSubject}
+        onSubjectChange={(value) => { setSelectedSubject(value); setCurrentPage(1); }}
+        selectedType={selectedType}
+        onTypeChange={(value) => { setSelectedType(value); setCurrentPage(1); }}
+        selectedDifficulty={selectedDifficulty}
+        onDifficultyChange={(value) => { setSelectedDifficulty(value); setCurrentPage(1); }}
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={(value) => { setSelectedLanguage(value); setCurrentPage(1); }}
+        selectedStatus={selectedStatus}
+        onStatusChange={(value) => { setSelectedStatus(value); setCurrentPage(1); }}
+        selectedClass={selectedClass}
+        onClassChange={(value) => { setSelectedClass(value); setCurrentPage(1); }}
+        onClearFilters={handleClearFilters}
+        activeFilterCount={activeFilterCount}
+      />
+
+      {/* Results Summary */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{allDisplayItems.length}</span> questions found
+          {activeFilterCount > 0 && <span> (filtered)</span>}
+        </p>
+        {paragraphGroups.size > 0 && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <FileText className="w-4 h-4" />
+            <span>{paragraphGroups.size} paragraph groups</span>
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <Select>
-              <SelectTrigger className="w-36"><Filter className="w-4 h-4 mr-2" /><SelectValue placeholder="Subject" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                <SelectItem value="physics">Physics</SelectItem>
-                <SelectItem value="chemistry">Chemistry</SelectItem>
-                <SelectItem value="maths">Mathematics</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger className="w-36"><SelectValue placeholder="Type" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="mcq">MCQ</SelectItem>
-                <SelectItem value="numerical">Numerical</SelectItem>
-                <SelectItem value="multiple">Multiple Choice</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger className="w-36"><SelectValue placeholder="Difficulty" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="easy">Easy</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="hard">Hard</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Questions List */}
       <div className="space-y-4">
-        {mockQuestions.map((question) => (
-          <div key={question.id} className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <Badge variant="outline" className="bg-muted">{typeLabels[question.type]}</Badge>
-                  <Badge variant="outline" className={cn(difficultyColors[question.difficulty], "capitalize")}>{question.difficulty}</Badge>
-                  <Badge variant="outline">{question.subject}</Badge>
-                  <Badge variant="outline">{question.chapter}</Badge>
-                </div>
-                <p className="text-foreground font-medium">{question.question}</p>
-                {question.options && (
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    {question.options.map((opt, i) => (
-                      <div key={i} className={cn(
-                        "p-2 rounded-lg text-sm border",
-                        opt === question.correctAnswer ? "bg-success/10 border-success/30 text-success" : "bg-muted/30 border-border/50"
-                      )}>
-                        {String.fromCharCode(65 + i)}. {opt}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-1">
-                <Button variant="ghost" size="icon"><Eye className="w-4 h-4" /></Button>
-                <Button variant="ghost" size="icon"><Edit className="w-4 h-4" /></Button>
-                <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
-              </div>
+        {paginatedItems.length === 0 ? (
+          <div className="bg-card rounded-2xl p-12 text-center shadow-soft border border-border/50">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-8 h-8 text-muted-foreground" />
             </div>
-            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/50 text-sm text-muted-foreground">
-              <span>Marks: {question.marks}</span>
-              <span>Negative: -{question.negativeMarks}</span>
-              <span>Added: {question.createdAt}</span>
-            </div>
+            <h3 className="text-lg font-semibold mb-2">No questions found</h3>
+            <p className="text-muted-foreground mb-4">
+              Try adjusting your filters or search query
+            </p>
+            <Button variant="outline" onClick={handleClearFilters}>
+              Clear all filters
+            </Button>
           </div>
-        ))}
+        ) : (
+          paginatedItems.map((item, index) => {
+            if (item.type === "paragraph") {
+              const paragraphData = item.data as { id: string; text: string; questions: Question[] };
+              return (
+                <ParagraphQuestionGroup
+                  key={paragraphData.id}
+                  paragraphId={paragraphData.id}
+                  paragraphText={paragraphData.text}
+                  questions={paragraphData.questions}
+                  onViewQuestion={handleViewQuestion}
+                  onEditQuestion={handleEditQuestion}
+                  onDeleteQuestion={handleDeleteQuestion}
+                />
+              );
+            } else {
+              const question = item.data as Question;
+              return (
+                <QuestionCard
+                  key={question.id}
+                  question={question}
+                  onView={handleViewQuestion}
+                  onEdit={handleEditQuestion}
+                  onDelete={handleDeleteQuestion}
+                />
+              );
+            }
+          })
+        )}
       </div>
+
+      {/* Pagination */}
+      {allDisplayItems.length > 0 && (
+        <QuestionPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={allDisplayItems.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
+      )}
     </div>
   );
 };
