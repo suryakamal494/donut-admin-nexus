@@ -8,7 +8,7 @@ interface BreadcrumbItem {
 
 interface PageHeaderProps {
   title: string;
-  description?: string;
+  description?: string | React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
   actions?: React.ReactNode;
 }
@@ -35,7 +35,7 @@ const PageHeader = ({ title, description, breadcrumbs, actions }: PageHeaderProp
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-          {description && <p className="text-muted-foreground mt-1">{description}</p>}
+          {description && <div className="text-muted-foreground mt-1">{description}</div>}
         </div>
         {actions && <div className="flex items-center gap-3">{actions}</div>}
       </div>

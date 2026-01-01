@@ -478,7 +478,10 @@ const CreateGrandTest = () => {
               <Button variant="outline" onClick={() => navigate("/superadmin/exams")}>
                 Go to Grand Tests
               </Button>
-              <Button className="gradient-button">
+              <Button 
+                className="gradient-button"
+                onClick={() => navigate(`/superadmin/exams/review/new-grand-test?type=grand_test&method=${creationMethod}`)}
+              >
                 Review Questions
               </Button>
             </div>
