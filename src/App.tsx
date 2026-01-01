@@ -16,6 +16,8 @@ import Roles from "./pages/roles/Roles";
 import Questions from "./pages/questions/Questions";
 import CreateQuestion from "./pages/questions/CreateQuestion";
 import AIQuestions from "./pages/questions/AIQuestions";
+import UploadPDF from "./pages/questions/UploadPDF";
+import ReviewQuestions from "./pages/questions/ReviewQuestions";
 import Exams from "./pages/exams/Exams";
 import CreateExam from "./pages/exams/CreateExam";
 import Content from "./pages/content/Content";
@@ -45,6 +47,8 @@ const App = () => (
             <Route path="questions" element={<Questions />} />
             <Route path="questions/create" element={<CreateQuestion />} />
             <Route path="questions/ai" element={<AIQuestions />} />
+            <Route path="questions/upload-pdf" element={<UploadPDF />} />
+            <Route path="questions/review" element={<ReviewQuestions />} />
             <Route path="exams" element={<Exams />} />
             <Route path="exams/create" element={<CreateExam />} />
             <Route path="content" element={<Content />} />
