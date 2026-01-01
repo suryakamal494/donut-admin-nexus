@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, FileText, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { YearAccordion, GrandTestCard } from "@/components/exams";
+import { ScheduleDialog, AudienceDialog } from "@/components/exams/ScheduleDialog";
 import { 
   mockPreviousYearPapers, 
   mockGrandTests, 
@@ -18,11 +19,17 @@ import {
 import { toast } from "sonner";
 
 const Exams = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("previous-year");
   const [pypSearchQuery, setPypSearchQuery] = useState("");
   const [pypExamFilter, setPypExamFilter] = useState("all");
   const [gtSearchQuery, setGtSearchQuery] = useState("");
   const [gtStatusFilter, setGtStatusFilter] = useState("all");
+  
+  // Schedule/Audience dialog state
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [audienceDialogOpen, setAudienceDialogOpen] = useState(false);
+  const [selectedTest, setSelectedTest] = useState<GrandTest | null>(null);
 
   // Group PYPs by exam type and year
   const groupedPapers = groupPapersByExamAndYear(mockPreviousYearPapers);
@@ -39,29 +46,40 @@ const Exams = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Handlers
+  // Handlers for Previous Year Papers
   const handleViewPaper = (paper: PreviousYearPaper) => {
-    toast.info(`Viewing ${paper.name}`);
+    navigate(`/superadmin/exams/review/${paper.id}?type=previous_year&method=pdf`);
   };
 
   const handleEditPaper = (paper: PreviousYearPaper) => {
-    toast.info(`Editing ${paper.name}`);
+    navigate(`/superadmin/exams/review/${paper.id}?type=previous_year&method=pdf`);
   };
 
   const handleStatsPaper = (paper: PreviousYearPaper) => {
     toast.info(`Viewing stats for ${paper.name}`);
   };
 
+  // Handlers for Grand Tests
   const handleViewTest = (test: GrandTest) => {
-    toast.info(`Viewing ${test.name}`);
+    navigate(`/superadmin/exams/review/${test.id}?type=grand_test&method=${test.creationMethod}`);
   };
 
   const handleEditTest = (test: GrandTest) => {
-    toast.info(`Editing ${test.name}`);
+    navigate(`/superadmin/exams/review/${test.id}?type=grand_test&method=${test.creationMethod}`);
   };
 
   const handleStatsTest = (test: GrandTest) => {
     toast.info(`Viewing stats for ${test.name}`);
+  };
+  
+  const handleScheduleTest = (test: GrandTest) => {
+    setSelectedTest(test);
+    setScheduleDialogOpen(true);
+  };
+  
+  const handleAudienceTest = (test: GrandTest) => {
+    setSelectedTest(test);
+    setAudienceDialogOpen(true);
   };
 
   const handlePublishRanks = (test: GrandTest) => {
@@ -209,6 +227,8 @@ const Exams = () => {
                 onView={handleViewTest}
                 onEdit={handleEditTest}
                 onStats={handleStatsTest}
+                onSchedule={handleScheduleTest}
+                onAudience={handleAudienceTest}
                 onPublishRanks={handlePublishRanks}
                 onDelete={handleDeleteTest}
               />
@@ -228,6 +248,24 @@ const Exams = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Schedule Dialog */}
+      {selectedTest && (
+        <>
+          <ScheduleDialog
+            open={scheduleDialogOpen}
+            onOpenChange={setScheduleDialogOpen}
+            test={selectedTest}
+            onScheduleSaved={() => toast.success("Schedule saved")}
+          />
+          <AudienceDialog
+            open={audienceDialogOpen}
+            onOpenChange={setAudienceDialogOpen}
+            test={selectedTest}
+            onAudienceSaved={() => toast.success("Audience saved")}
+          />
+        </>
+      )}
     </div>
   );
 };
