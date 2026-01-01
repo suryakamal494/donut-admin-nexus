@@ -52,6 +52,63 @@ export const subjectCategoryConfig: Record<SubjectCategory, { label: string; col
   vocational: { label: "Vocational", color: "text-slate-600", bgColor: "bg-slate-50" },
 };
 
+// Unique vibrant colors per subject - saturated with white text for excellent contrast
+export const subjectColorMap: Record<string, { bg: string; text: string }> = {
+  // Sciences - Rich, vibrant colors
+  phy: { bg: "bg-indigo-600", text: "text-white" },
+  che: { bg: "bg-teal-600", text: "text-white" },
+  bio: { bg: "bg-emerald-600", text: "text-white" },
+  sci: { bg: "bg-cyan-600", text: "text-white" },
+  evs: { bg: "bg-green-600", text: "text-white" },
+  
+  // Mathematics - Blues
+  mat: { bg: "bg-blue-600", text: "text-white" },
+  mab: { bg: "bg-sky-600", text: "text-white" },
+  mas: { bg: "bg-blue-700", text: "text-white" },
+  apm: { bg: "bg-blue-500", text: "text-white" },
+  
+  // Languages - Warm & Cool mix
+  eng: { bg: "bg-violet-600", text: "text-white" },
+  hin: { bg: "bg-orange-600", text: "text-white" },
+  san: { bg: "bg-amber-600", text: "text-white" },
+  urd: { bg: "bg-rose-600", text: "text-white" },
+  fre: { bg: "bg-pink-600", text: "text-white" },
+  ger: { bg: "bg-slate-600", text: "text-white" },
+  spa: { bg: "bg-red-600", text: "text-white" },
+  
+  // Social Sciences - Earthy & Distinguished
+  his: { bg: "bg-amber-700", text: "text-white" },
+  geo: { bg: "bg-sky-700", text: "text-white" },
+  pol: { bg: "bg-purple-600", text: "text-white" },
+  eco: { bg: "bg-green-700", text: "text-white" },
+  soc: { bg: "bg-fuchsia-600", text: "text-white" },
+  psy: { bg: "bg-purple-500", text: "text-white" },
+  sst: { bg: "bg-cyan-700", text: "text-white" },
+  
+  // Commerce - Professional
+  acc: { bg: "bg-slate-700", text: "text-white" },
+  bst: { bg: "bg-blue-800", text: "text-white" },
+  ent: { bg: "bg-orange-700", text: "text-white" },
+  
+  // Computer & IT - Tech colors
+  cs: { bg: "bg-slate-800", text: "text-white" },
+  ip: { bg: "bg-indigo-700", text: "text-white" },
+  ai: { bg: "bg-violet-700", text: "text-white" },
+  
+  // Arts - Creative & Vibrant
+  art: { bg: "bg-pink-500", text: "text-white" },
+  mus: { bg: "bg-red-500", text: "text-white" },
+  hec: { bg: "bg-rose-500", text: "text-white" },
+  
+  // Physical Education - Energetic
+  ped: { bg: "bg-orange-500", text: "text-white" },
+  hpe: { bg: "bg-red-600", text: "text-white" },
+  
+  // Vocational - Neutral & Professional
+  gen: { bg: "bg-gray-600", text: "text-white" },
+  mor: { bg: "bg-rose-700", text: "text-white" },
+};
+
 // Complete CBSE Subject List (Class 6-12)
 export interface SubjectInfo {
   id: string;
@@ -135,20 +192,23 @@ export const findSubject = (identifier: string): SubjectInfo | undefined => {
 // Badge sizes
 type BadgeSize = "xs" | "sm" | "md" | "lg";
 
+// Badge variants - added "filled" as new default vibrant style
+type BadgeVariant = "filled" | "soft" | "outline" | "ghost";
+
 interface SubjectBadgeProps {
   subject: string | SubjectInfo;
   size?: BadgeSize;
   showIcon?: boolean;
   showCategory?: boolean;
   className?: string;
-  variant?: "default" | "outline" | "ghost";
+  variant?: BadgeVariant;
 }
 
 const sizeConfig: Record<BadgeSize, { text: string; icon: string; padding: string; gap: string }> = {
-  xs: { text: "text-xs", icon: "w-3 h-3", padding: "px-1.5 py-0.5", gap: "gap-1" },
-  sm: { text: "text-sm", icon: "w-3.5 h-3.5", padding: "px-2 py-1", gap: "gap-1.5" },
-  md: { text: "text-sm", icon: "w-4 h-4", padding: "px-2.5 py-1.5", gap: "gap-2" },
-  lg: { text: "text-base", icon: "w-5 h-5", padding: "px-3 py-2", gap: "gap-2" },
+  xs: { text: "text-xs", icon: "w-3 h-3", padding: "px-2 py-0.5", gap: "gap-1" },
+  sm: { text: "text-sm", icon: "w-3.5 h-3.5", padding: "px-2.5 py-1", gap: "gap-1.5" },
+  md: { text: "text-sm", icon: "w-4 h-4", padding: "px-3 py-1.5", gap: "gap-2" },
+  lg: { text: "text-base", icon: "w-5 h-5", padding: "px-4 py-2", gap: "gap-2" },
 };
 
 export const SubjectBadge = ({ 
@@ -157,7 +217,7 @@ export const SubjectBadge = ({
   showIcon = true, 
   showCategory = false,
   className,
-  variant = "default"
+  variant = "filled"
 }: SubjectBadgeProps) => {
   // Resolve subject info
   const subjectInfo: SubjectInfo | undefined = 
@@ -167,7 +227,7 @@ export const SubjectBadge = ({
   if (!subjectInfo) {
     return (
       <span className={cn(
-        "inline-flex items-center rounded-md font-medium bg-muted text-muted-foreground",
+        "inline-flex items-center rounded-full font-medium bg-gray-500 text-white",
         sizeConfig[size].padding,
         sizeConfig[size].text,
         sizeConfig[size].gap,
@@ -181,16 +241,19 @@ export const SubjectBadge = ({
 
   const Icon = subjectInfo.icon;
   const categoryConfig = subjectCategoryConfig[subjectInfo.category];
+  const subjectColor = subjectColorMap[subjectInfo.id] || { bg: "bg-gray-600", text: "text-white" };
   
+  // Variant styles
   const variantStyles = {
-    default: cn(categoryConfig.bgColor, categoryConfig.color),
-    outline: cn("bg-transparent border", categoryConfig.color, `border-current`),
+    filled: cn(subjectColor.bg, subjectColor.text),
+    soft: cn(categoryConfig.bgColor, categoryConfig.color),
+    outline: cn("bg-transparent border-2", categoryConfig.color, "border-current"),
     ghost: cn("bg-transparent", categoryConfig.color),
   };
 
   return (
     <span className={cn(
-      "inline-flex items-center rounded-md font-medium transition-colors",
+      "inline-flex items-center rounded-full font-semibold transition-all shadow-sm",
       sizeConfig[size].padding,
       sizeConfig[size].text,
       sizeConfig[size].gap,
@@ -200,7 +263,7 @@ export const SubjectBadge = ({
       {showIcon && <Icon className={cn(sizeConfig[size].icon, "flex-shrink-0")} />}
       <span>{subjectInfo.name}</span>
       {showCategory && (
-        <span className="opacity-60 text-xs">({categoryConfig.label})</span>
+        <span className="opacity-70 text-xs">({categoryConfig.label})</span>
       )}
     </span>
   );
@@ -216,6 +279,15 @@ export const getSubjectIcon = (subject: string): LucideIcon => {
 export const getSubjectCategory = (subject: string): SubjectCategory | undefined => {
   const info = findSubject(subject);
   return info?.category;
+};
+
+// Export helper to get subject color
+export const getSubjectColor = (subject: string): { bg: string; text: string } => {
+  const info = findSubject(subject);
+  if (info && subjectColorMap[info.id]) {
+    return subjectColorMap[info.id];
+  }
+  return { bg: "bg-gray-600", text: "text-white" };
 };
 
 export default SubjectBadge;

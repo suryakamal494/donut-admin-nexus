@@ -56,7 +56,7 @@ const navItems: NavItem[] = [
     href: "/superadmin/users",
   },
   {
-    title: "Parameters",
+    title: "Master Data",
     icon: Settings,
     href: "/superadmin/parameters",
   },

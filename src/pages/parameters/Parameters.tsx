@@ -361,9 +361,9 @@ const Parameters = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
-        title="Global Parameters"
-        description="Manage classes, courses, subjects, and content hierarchy"
-        breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Parameters" }]}
+        title="Master Data"
+        description="Manage academic structure - classes, courses, subjects, chapters, and topics"
+        breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Master Data" }]}
       />
 
       {/* Tabs */}
