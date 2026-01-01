@@ -3,8 +3,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
+import Landing from "./pages/Landing";
 import AdminLayout from "./components/layout/AdminLayout";
+import InstituteLayout from "./components/layout/InstituteLayout";
 import Dashboard from "./pages/Dashboard";
 import Institutes from "./pages/institutes/Institutes";
 import CreateInstitute from "./pages/institutes/CreateInstitute";
@@ -26,6 +27,9 @@ import Content from "./pages/content/Content";
 import UploadContent from "./pages/content/UploadContent";
 import NotFound from "./pages/NotFound";
 
+// Institute Panel Pages
+import InstituteDashboard from "./pages/institute/Dashboard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,7 +39,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          {/* Landing Page - Portal Selection */}
+          <Route path="/" element={<Landing />} />
+          
+          {/* Super Admin Routes */}
           <Route path="/superadmin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/superadmin/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
@@ -58,6 +65,13 @@ const App = () => (
             <Route path="content" element={<Content />} />
             <Route path="content/upload" element={<UploadContent />} />
           </Route>
+          
+          {/* Institute Panel Routes */}
+          <Route path="/institute" element={<InstituteLayout />}>
+            <Route index element={<Navigate to="/institute/dashboard" replace />} />
+            <Route path="dashboard" element={<InstituteDashboard />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
