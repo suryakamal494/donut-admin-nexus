@@ -15,7 +15,7 @@ import {
   difficultyConfig,
   statusConfig 
 } from "@/data/questionsData";
-import { subjectsList } from "@/components/subject/SubjectBadge";
+import { subjectMasterList } from "@/components/subject/SubjectBadge";
 
 interface QuestionFiltersProps {
   searchQuery: string;
@@ -98,7 +98,7 @@ export const QuestionFilters = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Subjects</SelectItem>
-            {subjectsList.map((subject) => (
+            {subjectMasterList.map((subject) => (
               <SelectItem key={subject.id} value={subject.id}>
                 {subject.name}
               </SelectItem>
@@ -205,7 +205,7 @@ export const QuestionFilters = ({
         <div className="flex flex-wrap gap-2">
           {selectedSubject !== "all" && (
             <Badge variant="secondary" className="gap-1 pr-1">
-              Subject: {subjectsList.find(s => s.id === selectedSubject)?.name || selectedSubject}
+              Subject: {subjectMasterList.find(s => s.id === selectedSubject)?.name || selectedSubject}
               <Button 
                 variant="ghost" 
                 size="icon" 

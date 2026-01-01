@@ -171,7 +171,7 @@ export const QuestionCard = ({
 
       {/* Subject & Classification */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <SubjectBadge subjectId={question.subjectId} size="sm" />
+        <SubjectBadge subject={question.subjectId} size="sm" />
         <span className="text-muted-foreground text-sm">›</span>
         <span className="text-sm text-muted-foreground">{question.chapter}</span>
         <span className="text-muted-foreground text-sm">›</span>
