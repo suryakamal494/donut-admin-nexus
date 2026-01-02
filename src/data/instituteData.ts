@@ -51,7 +51,6 @@ export interface TimetableSlot {
 export interface InstituteExam {
   id: string;
   name: string;
-  type: "unit_test" | "mid_term" | "final" | "practice";
   status: "draft" | "scheduled" | "live" | "completed";
   subjects: string[];
   totalQuestions: number;
@@ -300,12 +299,11 @@ export const timetableSlots: TimetableSlot[] = [
   { id: "slot-11", day: "Friday", startTime: "08:00", endTime: "08:45", subject: "Physics", subjectId: "phy", teacher: "Dr. Rajesh Kumar", teacherId: "teacher-1", batchId: "batch-1" },
 ];
 
-// Sample Exams
+// Sample Exams (removed type field)
 export const instituteExams: InstituteExam[] = [
   {
     id: "exam-1",
     name: "Mid-Term Physics",
-    type: "mid_term",
     status: "completed",
     subjects: ["phy"],
     totalQuestions: 30,
@@ -319,7 +317,6 @@ export const instituteExams: InstituteExam[] = [
   {
     id: "exam-2",
     name: "Unit Test - Chemistry",
-    type: "unit_test",
     status: "scheduled",
     subjects: ["che"],
     totalQuestions: 20,
@@ -333,7 +330,6 @@ export const instituteExams: InstituteExam[] = [
   {
     id: "exam-3",
     name: "Practice Test - Mathematics",
-    type: "practice",
     status: "live",
     subjects: ["mat"],
     totalQuestions: 25,
@@ -346,7 +342,6 @@ export const instituteExams: InstituteExam[] = [
   {
     id: "exam-4",
     name: "Final Exam - All Subjects",
-    type: "final",
     status: "draft",
     subjects: ["phy", "che", "mat", "bio", "eng"],
     totalQuestions: 100,
@@ -356,6 +351,18 @@ export const instituteExams: InstituteExam[] = [
     uiType: "real_exam",
     pattern: "JEE",
     createdAt: "2024-12-30",
+  },
+  {
+    id: "exam-5",
+    name: "Biology Weekly Test",
+    status: "draft",
+    subjects: ["bio"],
+    totalQuestions: 15,
+    totalMarks: 30,
+    duration: 30,
+    batches: [],
+    uiType: "platform",
+    createdAt: "2025-01-01",
   },
 ];
 
@@ -376,7 +383,7 @@ export const dashboardStats = {
     totalBatches: 5,
     totalTeachers: 10,
     totalStudents: 231,
-    totalExams: 4,
+    totalExams: 5,
   },
 };
 
