@@ -60,6 +60,12 @@ export const AssignmentDialog = ({
   const [selectedTeacherId, setSelectedTeacherId] = useState(existingEntry?.teacherId || '');
   const [selectedSubjectId, setSelectedSubjectId] = useState(existingEntry?.subjectId || '');
 
+  // Reset state when dialog opens with different context
+  const dialogKey = `${day}-${period}-${existingEntry?.id || 'new'}`;
+  
+  // Check if we're in view/edit mode for existing entry
+  const isEditMode = !!existingEntry;
+
   // Get available teachers for batch view
   const getAvailableTeachers = () => {
     return teachers.filter(t => {
@@ -146,11 +152,11 @@ export const AssignmentDialog = ({
     : !!selectedTeacherId && !!selectedSubjectId;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose} key={dialogKey}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>
-            {existingEntry ? 'Edit Assignment' : 'Assign Period'}
+            {isEditMode ? 'Edit Assignment' : 'Assign Period'}
           </DialogTitle>
           <DialogDescription>
             {day} • Period {period}
@@ -168,7 +174,23 @@ export const AssignmentDialog = ({
         </DialogHeader>
 
         <div className="py-4 space-y-4">
-          {viewMode === 'teacher' && selectedTeacher && (
+          {/* Show existing entry details in edit mode */}
+          {isEditMode && existingEntry && (
+            <div className="p-4 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-lg">{existingEntry.subjectName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {existingEntry.teacherName} • {existingEntry.batchName}
+                  </p>
+                </div>
+                <Badge variant="secondary">Current</Badge>
+              </div>
+            </div>
+          )}
+
+          {/* Show form for new assignment (non-edit mode) */}
+          {!isEditMode && viewMode === 'teacher' && selectedTeacher && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -223,7 +245,7 @@ export const AssignmentDialog = ({
             </div>
           )}
 
-          {viewMode === 'batch' && selectedBatch && (
+          {!isEditMode && viewMode === 'batch' && selectedBatch && (
             <>
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -300,18 +322,20 @@ export const AssignmentDialog = ({
         </div>
 
         <DialogFooter className="gap-2">
-          {existingEntry && onRemove && (
-            <Button variant="destructive" onClick={onRemove}>
-              Remove
+          {isEditMode && onRemove && (
+            <Button variant="destructive" onClick={onRemove} className="mr-auto">
+              Remove Entry
             </Button>
           )}
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {isEditMode ? 'Close' : 'Cancel'}
           </Button>
-          <Button onClick={handleAssign} disabled={!canAssign}>
-            <Check className="w-4 h-4 mr-2" />
-            {existingEntry ? 'Update' : 'Assign'}
-          </Button>
+          {!isEditMode && (
+            <Button onClick={handleAssign} disabled={!canAssign}>
+              <Check className="w-4 h-4 mr-2" />
+              Assign
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
