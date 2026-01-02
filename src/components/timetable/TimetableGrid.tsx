@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { TimetableEntry, PeriodStructure, subjectColors, TeacherLoad } from "@/data/timetableData";
 import { InfoTooltip } from "./InfoTooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus, AlertTriangle, Clock, GripVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DragEvent, useState } from "react";
@@ -142,146 +143,160 @@ export const TimetableGrid = ({
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[800px] border-collapse">
-        <thead>
-          <tr className="bg-muted/40">
-            <th className="p-3 text-left text-sm font-medium text-muted-foreground border-b border-r border-border w-[100px]">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                Period
-              </div>
-            </th>
-            {workingDays.map(day => (
-              <th 
-                key={day} 
-                className={cn(
-                  "p-3 text-center text-sm font-medium border-b border-border",
-                  !isTeacherAvailable(day) && "bg-muted/60 text-muted-foreground/50"
-                )}
-              >
-                {day}
-                {!isTeacherAvailable(day) && selectedTeacher && (
-                  <span className="block text-xs font-normal text-muted-foreground/70">Off Day</span>
-                )}
+    <TooltipProvider>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[800px] border-collapse">
+          <thead>
+            <tr className="bg-muted/40">
+              <th className="p-3 text-left text-sm font-medium text-muted-foreground border-b border-r border-border w-[100px]">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Period
+                </div>
               </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {periods.map(period => (
-            <>
-              {period === breakAfterPeriod + 1 && (
-                <tr key={`break-${period}`} className="bg-amber-50 dark:bg-amber-950/20">
-                  <td 
-                    colSpan={workingDays.length + 1} 
-                    className="p-2 text-center text-sm font-medium text-amber-700 dark:text-amber-400 border-b border-border"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      ☕ Break
-                      <InfoTooltip content="Students and teachers take a break after this period" />
-                    </div>
-                  </td>
-                </tr>
-              )}
-              <tr 
-                key={period} 
-                className={cn(
-                  "border-b border-border",
-                  shouldAvoidPeriod(period) && "bg-orange-50/50 dark:bg-orange-950/10"
-                )}
-              >
-                <td className="p-3 text-sm font-medium text-muted-foreground border-r border-border">
-                  <div className="flex flex-col">
-                    <span>P{period}</span>
-                    <span className="text-xs text-muted-foreground/70">
-                      {getTimeForPeriod(period)}
-                    </span>
-                  </div>
-                  {shouldAvoidPeriod(period) && (
-                    <Badge variant="outline" className="text-xs mt-1 bg-orange-100 text-orange-700 border-orange-200">
-                      Avoid
-                    </Badge>
+              {workingDays.map(day => (
+                <th 
+                  key={day} 
+                  className={cn(
+                    "p-3 text-center text-sm font-medium border-b border-border",
+                    !isTeacherAvailable(day) && "bg-muted/60 text-muted-foreground/50"
                   )}
-                </td>
-                {workingDays.map(day => {
-                  const entry = getEntry(day, period);
-                  const isTeacherOff = !isTeacherAvailable(day);
-                  const hasTeacherConflict = getTeacherConflict?.(day, period);
-                  const hasBatchConflict = getBatchConflict?.(day, period);
-                  const colors = entry ? subjectColors[entry.subjectId] : null;
-                  const isOver = dragOverCell?.day === day && dragOverCell?.period === period;
-                  const isBeingDragged = draggedEntry?.id === entry?.id;
-                  const isValidDrop = isValidDropTarget(day, period);
-
-                  return (
-                    <td
-                      key={`${day}-${period}`}
-                      className={cn(
-                        "p-2 text-center border-r border-border last:border-r-0 transition-all duration-200",
-                        isTeacherOff && "bg-muted/40 cursor-not-allowed",
-                        !isTeacherOff && !entry && "hover:bg-primary/5 cursor-pointer",
-                        hasTeacherConflict && "bg-red-50 dark:bg-red-950/20",
-                        hasBatchConflict && "bg-amber-50 dark:bg-amber-950/20",
-                        // Drag-over styling
-                        isOver && isValidDrop && "ring-2 ring-primary ring-inset bg-primary/10",
-                        isOver && !isValidDrop && "ring-2 ring-destructive ring-inset bg-destructive/10",
-                        isDragging && !isTeacherOff && !entry && isValidDrop && "bg-primary/5 border-dashed"
-                      )}
-                      onClick={() => !isTeacherOff && onCellClick?.(day, period, entry)}
-                      onDragOver={(e) => handleDragOver(e, day, period)}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, day, period)}
+                >
+                  {day}
+                  {!isTeacherAvailable(day) && selectedTeacher && (
+                    <span className="block text-xs font-normal text-muted-foreground/70">Off Day</span>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {periods.map(period => (
+              <>
+                {period === breakAfterPeriod + 1 && (
+                  <tr key={`break-${period}`} className="bg-amber-50 dark:bg-amber-950/20">
+                    <td 
+                      colSpan={workingDays.length + 1} 
+                      className="p-2 text-center text-sm font-medium text-amber-700 dark:text-amber-400 border-b border-border"
                     >
-                      {entry ? (
-                        <div
-                          draggable
-                          onDragStart={(e) => handleEntryDragStart(e, entry)}
-                          onDragEnd={handleEntryDragEnd}
-                          className={cn(
-                            "p-2 rounded-lg border transition-all cursor-grab active:cursor-grabbing group",
-                            colors?.bg,
-                            colors?.text,
-                            colors?.border,
-                            isBeingDragged && "opacity-50 scale-95",
-                            !isBeingDragged && "hover:shadow-md hover:scale-[1.02]"
-                          )}
-                        >
-                          <div className="flex items-center justify-between">
-                            <p className="font-medium text-sm flex-1">{entry.subjectName}</p>
-                            <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
-                          </div>
-                          <p className="text-xs opacity-80 mt-0.5 truncate">
-                            {viewMode === 'teacher' ? entry.batchName : entry.teacherName.split(' ').pop()}
-                          </p>
-                        </div>
-                      ) : isTeacherOff ? (
-                        <div className="p-2 text-xs text-muted-foreground/50">—</div>
-                      ) : (
-                        <div className={cn(
-                          "p-3 rounded-lg border border-dashed border-border/50 hover:border-primary/50 group transition-all",
-                          isOver && isValidDrop && "border-primary bg-primary/5"
-                        )}>
-                          <Plus className={cn(
-                            "w-4 h-4 mx-auto text-muted-foreground/50 group-hover:text-primary transition-colors",
-                            isOver && isValidDrop && "text-primary"
-                          )} />
-                        </div>
-                      )}
-                      
-                      {(hasTeacherConflict || hasBatchConflict) && (
-                        <div className="flex items-center justify-center mt-1">
-                          <AlertTriangle className="w-3 h-3 text-destructive" />
-                        </div>
-                      )}
+                      <div className="flex items-center justify-center gap-2">
+                        ☕ Break
+                        <InfoTooltip content="Students and teachers take a break after this period" />
+                      </div>
                     </td>
-                  );
-                })}
-              </tr>
-            </>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                  </tr>
+                )}
+                <tr 
+                  key={period} 
+                  className={cn(
+                    "border-b border-border",
+                    shouldAvoidPeriod(period) && "bg-orange-50/50 dark:bg-orange-950/10"
+                  )}
+                >
+                  <td className="p-3 text-sm font-medium text-muted-foreground border-r border-border">
+                    <div className="flex flex-col">
+                      <span>P{period}</span>
+                      <span className="text-xs text-muted-foreground/70">
+                        {getTimeForPeriod(period)}
+                      </span>
+                    </div>
+                    {shouldAvoidPeriod(period) && (
+                      <Badge variant="outline" className="text-xs mt-1 bg-orange-100 text-orange-700 border-orange-200">
+                        Avoid
+                      </Badge>
+                    )}
+                  </td>
+                  {workingDays.map(day => {
+                    const entry = getEntry(day, period);
+                    const isTeacherOff = !isTeacherAvailable(day);
+                    const hasTeacherConflict = getTeacherConflict?.(day, period);
+                    const hasBatchConflict = getBatchConflict?.(day, period);
+                    const hasConflict = hasTeacherConflict || hasBatchConflict;
+                    const colors = entry ? subjectColors[entry.subjectId] : null;
+                    const isOver = dragOverCell?.day === day && dragOverCell?.period === period;
+                    const isBeingDragged = draggedEntry?.id === entry?.id;
+                    const isValidDrop = isValidDropTarget(day, period);
+
+                    return (
+                      <td
+                        key={`${day}-${period}`}
+                        className={cn(
+                          "p-2 text-center border-r border-border last:border-r-0 transition-all duration-200",
+                          isTeacherOff && "bg-muted/40 cursor-not-allowed",
+                          !isTeacherOff && !entry && "hover:bg-primary/5 cursor-pointer",
+                          hasTeacherConflict && "bg-red-50 dark:bg-red-950/20",
+                          hasBatchConflict && "bg-amber-50 dark:bg-amber-950/20",
+                          // Drag-over styling
+                          isOver && isValidDrop && "ring-2 ring-primary ring-inset bg-primary/10",
+                          isOver && !isValidDrop && "ring-2 ring-destructive ring-inset bg-destructive/10",
+                          isDragging && !isTeacherOff && !entry && isValidDrop && "bg-primary/5 border-dashed"
+                        )}
+                        onClick={() => !isTeacherOff && onCellClick?.(day, period, entry)}
+                        onDragOver={(e) => handleDragOver(e, day, period)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, day, period)}
+                      >
+                        {entry ? (
+                          <div
+                            draggable
+                            onDragStart={(e) => handleEntryDragStart(e, entry)}
+                            onDragEnd={handleEntryDragEnd}
+                            className={cn(
+                              "p-2 rounded-lg border transition-all cursor-grab active:cursor-grabbing group",
+                              colors?.bg,
+                              colors?.text,
+                              colors?.border,
+                              isBeingDragged && "opacity-50 scale-95",
+                              !isBeingDragged && "hover:shadow-md hover:scale-[1.02]"
+                            )}
+                          >
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-sm flex-1">{entry.subjectName}</p>
+                              <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                            </div>
+                            <p className="text-xs opacity-80 mt-0.5 truncate">
+                              {viewMode === 'teacher' ? entry.batchName : entry.teacherName.split(' ').pop()}
+                            </p>
+                          </div>
+                        ) : isTeacherOff ? (
+                          <div className="p-2 text-xs text-muted-foreground/50">—</div>
+                        ) : (
+                          <div className={cn(
+                            "p-3 rounded-lg border border-dashed border-border/50 hover:border-primary/50 group transition-all",
+                            isOver && isValidDrop && "border-primary bg-primary/5"
+                          )}>
+                            <Plus className={cn(
+                              "w-4 h-4 mx-auto text-muted-foreground/50 group-hover:text-primary transition-colors",
+                              isOver && isValidDrop && "text-primary"
+                            )} />
+                          </div>
+                        )}
+                        
+                        {hasConflict && (
+                          <div className="flex items-center justify-center mt-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertTriangle className="w-3 h-3 text-destructive cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[200px]">
+                                <p className="text-xs">
+                                  {hasTeacherConflict && "Teacher is already assigned to another class at this time."}
+                                  {hasBatchConflict && "This batch already has a class at this time."}
+                                  {" "}Check the Conflict Summary Panel above.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </TooltipProvider>
   );
 };

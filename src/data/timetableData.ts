@@ -61,7 +61,7 @@ export const defaultPeriodStructure: PeriodStructure = {
   isConfigured: true,
 };
 
-// Teacher loads with availability
+// Teacher loads with availability - 10 teachers with proper batch/subject assignments
 export const teacherLoads: TeacherLoad[] = [
   {
     teacherId: 'teacher-1',
@@ -138,10 +138,82 @@ export const teacherLoads: TeacherLoad[] = [
       { batchId: 'batch-5', batchName: 'Class 8 - Section A', subject: 'English' },
     ],
   },
+  // 5 NEW TEACHERS
+  {
+    teacherId: 'teacher-6',
+    teacherName: 'Mrs. Kavita Nair',
+    subjects: ['hin'],
+    periodsPerWeek: 24,
+    assignedPeriods: 10,
+    avoidFirstPeriod: false,
+    avoidLastPeriod: false,
+    workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    allowedBatches: [
+      { batchId: 'batch-3', batchName: 'Class 9 - Section A', subject: 'Hindi' },
+      { batchId: 'batch-4', batchName: 'Class 9 - Section B', subject: 'Hindi' },
+      { batchId: 'batch-5', batchName: 'Class 8 - Section A', subject: 'Hindi' },
+    ],
+  },
+  {
+    teacherId: 'teacher-7',
+    teacherName: 'Mr. Arun Mehta',
+    subjects: ['sst'],
+    periodsPerWeek: 22,
+    assignedPeriods: 12,
+    avoidFirstPeriod: true,
+    avoidLastPeriod: false,
+    workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    allowedBatches: [
+      { batchId: 'batch-5', batchName: 'Class 8 - Section A', subject: 'Social Studies' },
+      { batchId: 'batch-3', batchName: 'Class 9 - Section A', subject: 'Social Studies' },
+    ],
+  },
+  {
+    teacherId: 'teacher-8',
+    teacherName: 'Dr. Sneha Reddy',
+    subjects: ['cs'],
+    periodsPerWeek: 18,
+    assignedPeriods: 6,
+    avoidFirstPeriod: false,
+    avoidLastPeriod: true,
+    workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    allowedBatches: [
+      { batchId: 'batch-1', batchName: 'Class 10 - Section A', subject: 'Computer Science' },
+      { batchId: 'batch-2', batchName: 'Class 10 - Section B', subject: 'Computer Science' },
+    ],
+  },
+  {
+    teacherId: 'teacher-9',
+    teacherName: 'Mr. Rahul Saxena',
+    subjects: ['eco'],
+    periodsPerWeek: 16,
+    assignedPeriods: 4,
+    avoidFirstPeriod: false,
+    avoidLastPeriod: false,
+    workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    allowedBatches: [
+      { batchId: 'batch-1', batchName: 'Class 10 - Section A', subject: 'Economics' },
+      { batchId: 'batch-2', batchName: 'Class 10 - Section B', subject: 'Economics' },
+    ],
+  },
+  {
+    teacherId: 'teacher-10',
+    teacherName: 'Mrs. Geeta Iyer',
+    subjects: ['sci'],
+    periodsPerWeek: 26,
+    assignedPeriods: 14,
+    avoidFirstPeriod: false,
+    avoidLastPeriod: false,
+    workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    allowedBatches: [
+      { batchId: 'batch-5', batchName: 'Class 8 - Section A', subject: 'Science' },
+    ],
+  },
 ];
 
 // Existing timetable entries (sample data)
 export const timetableEntries: TimetableEntry[] = [
+  // Batch 1 (Class 10 - Section A) entries
   { id: 'entry-1', day: 'Monday', periodNumber: 1, subjectId: 'mat', subjectName: 'Mathematics', teacherId: 'teacher-2', teacherName: 'Mrs. Priya Sharma', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
   { id: 'entry-2', day: 'Monday', periodNumber: 2, subjectId: 'phy', subjectName: 'Physics', teacherId: 'teacher-1', teacherName: 'Dr. Rajesh Kumar', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
   { id: 'entry-3', day: 'Monday', periodNumber: 3, subjectId: 'che', subjectName: 'Chemistry', teacherId: 'teacher-3', teacherName: 'Mr. Suresh Verma', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
@@ -153,9 +225,32 @@ export const timetableEntries: TimetableEntry[] = [
   { id: 'entry-9', day: 'Wednesday', periodNumber: 2, subjectId: 'eng', subjectName: 'English', teacherId: 'teacher-5', teacherName: 'Mr. Vikram Singh', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
   { id: 'entry-10', day: 'Thursday', periodNumber: 1, subjectId: 'mat', subjectName: 'Mathematics', teacherId: 'teacher-2', teacherName: 'Mrs. Priya Sharma', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
   { id: 'entry-11', day: 'Friday', periodNumber: 1, subjectId: 'phy', subjectName: 'Physics', teacherId: 'teacher-1', teacherName: 'Dr. Rajesh Kumar', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
-  // Batch 2 entries
+  { id: 'entry-20', day: 'Wednesday', periodNumber: 3, subjectId: 'cs', subjectName: 'Computer Science', teacherId: 'teacher-8', teacherName: 'Dr. Sneha Reddy', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
+  { id: 'entry-21', day: 'Thursday', periodNumber: 2, subjectId: 'eco', subjectName: 'Economics', teacherId: 'teacher-9', teacherName: 'Mr. Rahul Saxena', batchId: 'batch-1', batchName: 'Class 10 - Section A' },
+  
+  // Batch 2 (Class 10 - Section B) entries
   { id: 'entry-12', day: 'Monday', periodNumber: 1, subjectId: 'phy', subjectName: 'Physics', teacherId: 'teacher-1', teacherName: 'Dr. Rajesh Kumar', batchId: 'batch-2', batchName: 'Class 10 - Section B' },
   { id: 'entry-13', day: 'Monday', periodNumber: 2, subjectId: 'mat', subjectName: 'Mathematics', teacherId: 'teacher-2', teacherName: 'Mrs. Priya Sharma', batchId: 'batch-2', batchName: 'Class 10 - Section B' },
+  { id: 'entry-22', day: 'Tuesday', periodNumber: 1, subjectId: 'che', subjectName: 'Chemistry', teacherId: 'teacher-3', teacherName: 'Mr. Suresh Verma', batchId: 'batch-2', batchName: 'Class 10 - Section B' },
+  { id: 'entry-23', day: 'Tuesday', periodNumber: 2, subjectId: 'eng', subjectName: 'English', teacherId: 'teacher-5', teacherName: 'Mr. Vikram Singh', batchId: 'batch-2', batchName: 'Class 10 - Section B' },
+  { id: 'entry-24', day: 'Wednesday', periodNumber: 1, subjectId: 'cs', subjectName: 'Computer Science', teacherId: 'teacher-8', teacherName: 'Dr. Sneha Reddy', batchId: 'batch-2', batchName: 'Class 10 - Section B' },
+  
+  // Batch 3 (Class 9 - Section A) entries
+  { id: 'entry-14', day: 'Monday', periodNumber: 3, subjectId: 'phy', subjectName: 'Physics', teacherId: 'teacher-1', teacherName: 'Dr. Rajesh Kumar', batchId: 'batch-3', batchName: 'Class 9 - Section A' },
+  { id: 'entry-15', day: 'Monday', periodNumber: 4, subjectId: 'mat', subjectName: 'Mathematics', teacherId: 'teacher-2', teacherName: 'Mrs. Priya Sharma', batchId: 'batch-3', batchName: 'Class 9 - Section A' },
+  { id: 'entry-25', day: 'Tuesday', periodNumber: 4, subjectId: 'hin', subjectName: 'Hindi', teacherId: 'teacher-6', teacherName: 'Mrs. Kavita Nair', batchId: 'batch-3', batchName: 'Class 9 - Section A' },
+  { id: 'entry-26', day: 'Wednesday', periodNumber: 4, subjectId: 'bio', subjectName: 'Biology', teacherId: 'teacher-4', teacherName: 'Ms. Anjali Gupta', batchId: 'batch-3', batchName: 'Class 9 - Section A' },
+  
+  // Batch 4 (Class 9 - Section B) entries
+  { id: 'entry-16', day: 'Monday', periodNumber: 5, subjectId: 'mat', subjectName: 'Mathematics', teacherId: 'teacher-2', teacherName: 'Mrs. Priya Sharma', batchId: 'batch-4', batchName: 'Class 9 - Section B' },
+  { id: 'entry-27', day: 'Tuesday', periodNumber: 5, subjectId: 'bio', subjectName: 'Biology', teacherId: 'teacher-4', teacherName: 'Ms. Anjali Gupta', batchId: 'batch-4', batchName: 'Class 9 - Section B' },
+  { id: 'entry-28', day: 'Wednesday', periodNumber: 5, subjectId: 'hin', subjectName: 'Hindi', teacherId: 'teacher-6', teacherName: 'Mrs. Kavita Nair', batchId: 'batch-4', batchName: 'Class 9 - Section B' },
+  
+  // Batch 5 (Class 8 - Section A) entries
+  { id: 'entry-17', day: 'Monday', periodNumber: 6, subjectId: 'eng', subjectName: 'English', teacherId: 'teacher-5', teacherName: 'Mr. Vikram Singh', batchId: 'batch-5', batchName: 'Class 8 - Section A' },
+  { id: 'entry-29', day: 'Tuesday', periodNumber: 6, subjectId: 'sci', subjectName: 'Science', teacherId: 'teacher-10', teacherName: 'Mrs. Geeta Iyer', batchId: 'batch-5', batchName: 'Class 8 - Section A' },
+  { id: 'entry-30', day: 'Wednesday', periodNumber: 6, subjectId: 'hin', subjectName: 'Hindi', teacherId: 'teacher-6', teacherName: 'Mrs. Kavita Nair', batchId: 'batch-5', batchName: 'Class 8 - Section A' },
+  { id: 'entry-31', day: 'Thursday', periodNumber: 6, subjectId: 'sst', subjectName: 'Social Studies', teacherId: 'teacher-7', teacherName: 'Mr. Arun Mehta', batchId: 'batch-5', batchName: 'Class 8 - Section A' },
 ];
 
 // Subject colors for visual display
