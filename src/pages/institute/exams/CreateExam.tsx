@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp, Monitor, MonitorPlay, Users, Calendar } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp, Monitor, MonitorPlay, Users, Calendar, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,16 +17,25 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 
-type ExamType = "unit_test" | "mid_term" | "final" | "practice";
 type PatternType = "custom" | "jee_main" | "jee_advanced" | "neet";
 type UIType = "platform" | "real_exam";
 type CreationMethod = "ai" | "pdf";
 
-const examTypeOptions = [
-  { value: "unit_test", label: "Unit Test", description: "Short assessment on specific chapters" },
-  { value: "mid_term", label: "Mid-Term", description: "Half-yearly examination" },
-  { value: "final", label: "Final Exam", description: "End of term comprehensive test" },
-  { value: "practice", label: "Practice Test", description: "No-pressure practice session" },
+// Cognitive Types
+const cognitiveTypes = [
+  { id: "logical", label: "Logical Reasoning", description: "Deductive and inductive reasoning" },
+  { id: "analytical", label: "Analytical Thinking", description: "Breaking down complex problems" },
+  { id: "conceptual", label: "Conceptual Understanding", description: "Grasping core concepts" },
+  { id: "numerical", label: "Numerical Ability", description: "Mathematical calculations" },
+  { id: "application", label: "Application-Based", description: "Real-world problem solving" },
+  { id: "memory", label: "Memory/Recall", description: "Facts and information recall" },
+];
+
+// Difficulty presets
+const difficultyPresets = [
+  { label: "Balanced", easy: 33, medium: 34, hard: 33 },
+  { label: "Easy Focus", easy: 50, medium: 35, hard: 15 },
+  { label: "Hard Focus", easy: 15, medium: 35, hard: 50 },
 ];
 
 const CreateExam = () => {
@@ -35,9 +44,8 @@ const CreateExam = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processComplete, setProcessComplete] = useState(false);
   
-  // Step 1: Basic Config
+  // Step 1: Basic Config (no exam type anymore)
   const [examName, setExamName] = useState("");
-  const [examType, setExamType] = useState<ExamType>("unit_test");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   
   // Step 2: Pattern & UI
@@ -55,10 +63,11 @@ const CreateExam = () => {
   const [creationMethod, setCreationMethod] = useState<CreationMethod>("ai");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   
-  // AI config
-  const [easyPercent, setEasyPercent] = useState(30);
-  const [mediumPercent, setMediumPercent] = useState(50);
-  const [hardPercent, setHardPercent] = useState(20);
+  // AI config - Enhanced difficulty distribution
+  const [easyPercent, setEasyPercent] = useState(33);
+  const [mediumPercent, setMediumPercent] = useState(34);
+  const [hardPercent, setHardPercent] = useState(33);
+  const [selectedCognitiveTypes, setSelectedCognitiveTypes] = useState<string[]>(["conceptual", "application"]);
   
   // Step 5: Batch & Schedule
   const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
@@ -108,13 +117,52 @@ const CreateExam = () => {
     );
   };
 
-  const handleCreate = () => {
+  const toggleCognitiveType = (typeId: string) => {
+    setSelectedCognitiveTypes(prev => 
+      prev.includes(typeId)
+        ? prev.filter(t => t !== typeId)
+        : [...prev, typeId]
+    );
+  };
+
+  const applyDifficultyPreset = (preset: { easy: number; medium: number; hard: number }) => {
+    setEasyPercent(preset.easy);
+    setMediumPercent(preset.medium);
+    setHardPercent(preset.hard);
+  };
+
+  // Adjust difficulty to ensure sum is 100
+  const adjustDifficulty = (type: 'easy' | 'medium' | 'hard', value: number) => {
+    const remaining = 100 - value;
+    if (type === 'easy') {
+      setEasyPercent(value);
+      const ratio = mediumPercent / (mediumPercent + hardPercent || 1);
+      setMediumPercent(Math.round(remaining * ratio));
+      setHardPercent(remaining - Math.round(remaining * ratio));
+    } else if (type === 'medium') {
+      setMediumPercent(value);
+      const ratio = easyPercent / (easyPercent + hardPercent || 1);
+      setEasyPercent(Math.round(remaining * ratio));
+      setHardPercent(remaining - Math.round(remaining * ratio));
+    } else {
+      setHardPercent(value);
+      const ratio = easyPercent / (easyPercent + mediumPercent || 1);
+      setEasyPercent(Math.round(remaining * ratio));
+      setMediumPercent(remaining - Math.round(remaining * ratio));
+    }
+  };
+
+  const handleCreate = (skipBatch: boolean = false) => {
     setIsProcessing(true);
     
     setTimeout(() => {
       setIsProcessing(false);
       setProcessComplete(true);
-      toast.success("Exam created successfully!");
+      if (skipBatch) {
+        toast.success("Exam created! You can assign batches from the Exams page.");
+      } else {
+        toast.success("Exam created successfully!");
+      }
     }, 2000);
   };
 
@@ -128,11 +176,10 @@ const CreateExam = () => {
   ];
 
   const totalSteps = pattern === "custom" ? 6 : 5;
-  const canProceedStep1 = examName && examType && selectedSubjects.length > 0;
+  const canProceedStep1 = examName && selectedSubjects.length > 0;
   const canProceedStep2 = pattern && uiType;
   const canProceedStep3Custom = totalQuestions > 0 && duration > 0;
-  const canProceedCreation = creationMethod === "ai" || uploadedFile;
-  const canProceedBatch = selectedBatches.length > 0;
+  const canProceedCreation = creationMethod === "ai" ? selectedCognitiveTypes.length > 0 : uploadedFile;
 
   const getStepContent = () => {
     if (processComplete) {
@@ -159,7 +206,7 @@ const CreateExam = () => {
       );
     }
 
-    // Step 1: Exam Details
+    // Step 1: Exam Details (without exam type)
     if (currentStep === 1) {
       return (
         <div className="space-y-6">
@@ -177,31 +224,6 @@ const CreateExam = () => {
                 onChange={(e) => setExamName(e.target.value)}
                 placeholder="e.g., Mid-Term Physics Test"
               />
-            </div>
-            
-            <div className="space-y-3">
-              <Label>Exam Type *</Label>
-              <RadioGroup value={examType} onValueChange={(v) => setExamType(v as ExamType)}>
-                <div className="grid grid-cols-2 gap-3">
-                  {examTypeOptions.map((option) => (
-                    <label
-                      key={option.value}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all",
-                        examType === option.value 
-                          ? "border-primary bg-primary/5" 
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <RadioGroupItem value={option.value} />
-                      <div>
-                        <p className="font-medium text-sm">{option.label}</p>
-                        <p className="text-xs text-muted-foreground">{option.description}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </RadioGroup>
             </div>
 
             <div className="space-y-3">
@@ -509,44 +531,102 @@ const CreateExam = () => {
           </div>
 
           {creationMethod === "ai" && (
-            <div className="space-y-4 p-4 rounded-xl bg-muted/30">
-              <Label>Difficulty Distribution</Label>
+            <div className="space-y-6 p-4 rounded-xl bg-muted/30">
+              {/* Difficulty Distribution with Presets */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Difficulty Distribution</Label>
+                  <div className="flex gap-2">
+                    {difficultyPresets.map((preset) => (
+                      <Button
+                        key={preset.label}
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "text-xs",
+                          easyPercent === preset.easy && mediumPercent === preset.medium && hardPercent === preset.hard
+                            ? "border-primary bg-primary/10"
+                            : ""
+                        )}
+                        onClick={() => applyDifficultyPreset(preset)}
+                      >
+                        {preset.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-success">Easy</span>
+                      <span className="text-sm font-bold w-12 text-right">{easyPercent}%</span>
+                    </div>
+                    <Slider
+                      value={[easyPercent]}
+                      onValueChange={([v]) => adjustDifficulty('easy', v)}
+                      max={100}
+                      step={1}
+                      className="[&_[role=slider]]:bg-success"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-warning">Medium</span>
+                      <span className="text-sm font-bold w-12 text-right">{mediumPercent}%</span>
+                    </div>
+                    <Slider
+                      value={[mediumPercent]}
+                      onValueChange={([v]) => adjustDifficulty('medium', v)}
+                      max={100}
+                      step={1}
+                      className="[&_[role=slider]]:bg-warning"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-destructive">Hard</span>
+                      <span className="text-sm font-bold w-12 text-right">{hardPercent}%</span>
+                    </div>
+                    <Slider
+                      value={[hardPercent]}
+                      onValueChange={([v]) => adjustDifficulty('hard', v)}
+                      max={100}
+                      step={1}
+                      className="[&_[role=slider]]:bg-destructive"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Cognitive Types Selection */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-success">Easy</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-32 bg-success/20 rounded-full h-2">
-                      <div 
-                        className="bg-success h-2 rounded-full transition-all" 
-                        style={{ width: `${easyPercent}%` }}
+                <Label>Cognitive Types *</Label>
+                <p className="text-xs text-muted-foreground">Select at least one type of questions to generate</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {cognitiveTypes.map((type) => (
+                    <label
+                      key={type.id}
+                      className={cn(
+                        "flex items-start gap-2 p-3 rounded-lg border cursor-pointer transition-all",
+                        selectedCognitiveTypes.includes(type.id)
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <Checkbox 
+                        checked={selectedCognitiveTypes.includes(type.id)}
+                        onCheckedChange={() => toggleCognitiveType(type.id)}
+                        className="mt-0.5"
                       />
-                    </div>
-                    <span className="text-sm font-medium w-10">{easyPercent}%</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-warning">Medium</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-32 bg-warning/20 rounded-full h-2">
-                      <div 
-                        className="bg-warning h-2 rounded-full transition-all" 
-                        style={{ width: `${mediumPercent}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium w-10">{mediumPercent}%</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-destructive">Hard</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-32 bg-destructive/20 rounded-full h-2">
-                      <div 
-                        className="bg-destructive h-2 rounded-full transition-all" 
-                        style={{ width: `${hardPercent}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium w-10">{hardPercent}%</span>
-                  </div>
+                      <div>
+                        <p className="text-sm font-medium">{type.label}</p>
+                        <p className="text-xs text-muted-foreground">{type.description}</p>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
@@ -609,14 +689,14 @@ const CreateExam = () => {
       );
     }
 
-    // Batch Assignment Step
+    // Batch Assignment Step (Optional)
     const batchStep = pattern === "custom" ? 5 : 4;
     if (currentStep === batchStep) {
       return (
         <div className="space-y-6">
           <div>
             <h3 className="text-xl font-semibold mb-1">Assign to Batches</h3>
-            <p className="text-muted-foreground text-sm">Select which batches will take this exam</p>
+            <p className="text-muted-foreground text-sm">Select batches or skip to assign later</p>
           </div>
           
           <div className="space-y-4">
@@ -649,66 +729,82 @@ const CreateExam = () => {
             ))}
           </div>
 
-          <div className="space-y-4 p-4 rounded-xl bg-muted/30">
-            <Label>Schedule (Optional)</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "justify-start text-left font-normal",
-                      !scheduleDate && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {scheduleDate ? format(scheduleDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={scheduleDate}
-                    onSelect={setScheduleDate}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-              <Input 
-                type="time"
-                value={scheduleTime}
-                onChange={(e) => setScheduleTime(e.target.value)}
-                placeholder="Select time"
-              />
+          {selectedBatches.length > 0 && (
+            <div className="space-y-4 p-4 rounded-xl bg-muted/30">
+              <Label>Schedule (Optional)</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "justify-start text-left font-normal",
+                        !scheduleDate && "text-muted-foreground"
+                      )}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {scheduleDate ? format(scheduleDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={scheduleDate}
+                      onSelect={setScheduleDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Input 
+                  type="time"
+                  value={scheduleTime}
+                  onChange={(e) => setScheduleTime(e.target.value)}
+                  placeholder="Select time"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Leave empty to save as draft and schedule later
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Leave empty to save as draft and schedule later
-            </p>
-          </div>
+          )}
           
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => setCurrentStep(pattern === "custom" ? 4 : 3)}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <Button 
-              className="gradient-button gap-2"
-              disabled={!canProceedBatch || isProcessing}
-              onClick={handleCreate}
-            >
-              {isProcessing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  Create Exam
-                  <Sparkles className="w-4 h-4" />
-                </>
-              )}
-            </Button>
+          <div className="flex flex-col gap-3 pt-4">
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={() => setCurrentStep(pattern === "custom" ? 4 : 3)}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button 
+                className="gradient-button gap-2"
+                disabled={isProcessing}
+                onClick={() => handleCreate(false)}
+              >
+                {isProcessing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    Create Exam
+                    <Sparkles className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {selectedBatches.length === 0 && (
+              <Button 
+                variant="ghost" 
+                className="w-full text-muted-foreground hover:text-foreground"
+                onClick={() => handleCreate(true)}
+                disabled={isProcessing}
+              >
+                <SkipForward className="w-4 h-4 mr-2" />
+                Skip - Assign Batches Later
+              </Button>
+            )}
           </div>
         </div>
       );

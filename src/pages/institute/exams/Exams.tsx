@@ -1,22 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay } from "lucide-react";
+import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { instituteExams, batches } from "@/data/instituteData";
 import ScheduleExamDialog from "@/components/institute/exams/ScheduleExamDialog";
-
-const examTypeLabels: Record<string, string> = {
-  unit_test: "Unit Test",
-  mid_term: "Mid-Term",
-  final: "Final Exam",
-  practice: "Practice Test",
-};
+import AssignBatchesDialog from "@/components/institute/exams/AssignBatchesDialog";
+import { SubjectBadge } from "@/components/subject/SubjectBadge";
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -29,23 +23,28 @@ const Exams = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
-  const [selectedExam, setSelectedExam] = useState<{ id: string; name: string } | null>(null);
+  const [assignBatchesDialogOpen, setAssignBatchesDialogOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<{ id: string; name: string; batches: string[] } | null>(null);
 
-  const handleOpenScheduleDialog = (exam: { id: string; name: string }) => {
+  const handleOpenScheduleDialog = (exam: { id: string; name: string; batches: string[] }) => {
     setSelectedExam(exam);
     setScheduleDialogOpen(true);
+  };
+
+  const handleOpenAssignBatchesDialog = (exam: { id: string; name: string; batches: string[] }) => {
+    setSelectedExam(exam);
+    setAssignBatchesDialogOpen(true);
   };
 
   const filteredExams = instituteExams.filter((exam) => {
     const matchesSearch = exam.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || exam.status === statusFilter;
-    const matchesType = typeFilter === "all" || exam.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesStatus;
   });
 
   const getBatchNames = (batchIds: string[]) => {
+    if (batchIds.length === 0) return "No batches assigned";
     return batchIds.map(id => {
       const batch = batches.find(b => b.id === id);
       return batch ? `${batch.className} - ${batch.name}` : id;
@@ -134,18 +133,6 @@ const Exams = () => {
             <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="unit_test">Unit Test</SelectItem>
-            <SelectItem value="mid_term">Mid-Term</SelectItem>
-            <SelectItem value="final">Final Exam</SelectItem>
-            <SelectItem value="practice">Practice Test</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Exams Grid */}
@@ -156,17 +143,30 @@ const Exams = () => {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-semibold text-foreground">{exam.name}</h3>
-                  <p className="text-sm text-muted-foreground">{examTypeLabels[exam.type]}</p>
                 </div>
                 <Badge className={statusColors[exam.status]}>
                   {exam.status.charAt(0).toUpperCase() + exam.status.slice(1)}
                 </Badge>
               </div>
 
+              {/* Subject Badges with Color Coding */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {exam.subjects.slice(0, 3).map((subject) => (
+                  <SubjectBadge key={subject} subject={subject} size="xs" />
+                ))}
+                {exam.subjects.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{exam.subjects.length - 3} more
+                  </Badge>
+                )}
+              </div>
+
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="w-4 h-4" />
-                  <span>{getBatchNames(exam.batches)}</span>
+                  <span className={exam.batches.length === 0 ? "text-amber-600" : ""}>
+                    {getBatchNames(exam.batches)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
@@ -196,33 +196,36 @@ const Exams = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="flex-1"
                   onClick={() => navigate(`/institute/exams/review/${exam.id}`)}
                 >
                   <Eye className="w-4 h-4 mr-1" />
                   View
                 </Button>
-                {exam.status === "draft" && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => navigate(`/institute/exams/review/${exam.id}`)}
-                  >
-                    <Edit2 className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                )}
-                {exam.status === "draft" && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate(`/institute/exams/review/${exam.id}`)}
+                >
+                  <Edit2 className="w-4 h-4 mr-1" />
+                  Edit
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleOpenAssignBatchesDialog({ id: exam.id, name: exam.name, batches: exam.batches })}
+                >
+                  <UserPlus className="w-4 h-4 mr-1" />
+                  Assign
+                </Button>
+                {(exam.status === "draft" || exam.batches.length > 0) && (
                   <Button 
                     variant="default" 
                     size="sm" 
-                    className="flex-1"
-                    onClick={() => handleOpenScheduleDialog({ id: exam.id, name: exam.name })}
+                    onClick={() => handleOpenScheduleDialog({ id: exam.id, name: exam.name, batches: exam.batches })}
                   >
                     <Calendar className="w-4 h-4 mr-1" />
                     Schedule
@@ -255,6 +258,18 @@ const Exams = () => {
           exam={selectedExam}
           onScheduleSaved={(date, time) => {
             console.log("Scheduled:", selectedExam.id, date, time);
+          }}
+        />
+      )}
+
+      {/* Assign Batches Dialog */}
+      {selectedExam && (
+        <AssignBatchesDialog
+          open={assignBatchesDialogOpen}
+          onOpenChange={setAssignBatchesDialogOpen}
+          exam={selectedExam}
+          onBatchesSaved={(batches) => {
+            console.log("Batches assigned:", selectedExam.id, batches);
           }}
         />
       )}
