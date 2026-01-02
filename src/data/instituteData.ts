@@ -1,4 +1,34 @@
 // Mock data for Institute Panel
+import { ContentType } from "@/components/content/ContentTypeIcon";
+
+export interface InstituteContentItem {
+  id: string;
+  title: string;
+  type: ContentType;
+  subject: string;
+  subjectId: string;
+  chapter: string;
+  chapterId: string;
+  topic: string;
+  topicId?: string;
+  classId: string;
+  className: string;
+  description: string;
+  duration?: number;
+  size?: string;
+  url: string;
+  thumbnailUrl?: string;
+  embedUrl?: string;
+  visibility: "public" | "private" | "restricted";
+  status: "published" | "draft" | "archived";
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  viewCount: number;
+  downloadCount: number;
+  source: "global" | "institute";
+  instituteId?: string;
+}
 
 export interface Batch {
   id: string;
