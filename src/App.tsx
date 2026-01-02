@@ -48,6 +48,9 @@ import InstituteExams from "./pages/institute/exams/Exams";
 import InstituteCreateExam from "./pages/institute/exams/CreateExam";
 import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
 import InstituteMasterData from "./pages/institute/masterdata/MasterData";
+import InstituteContent from "./pages/institute/content/Content";
+import InstituteCreateContent from "./pages/institute/content/CreateContent";
+import InstituteAIContentGenerator from "./pages/institute/content/AIContentGenerator";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +108,9 @@ const App = () => (
             <Route path="timetable/view" element={<InstituteViewTimetable />} />
             <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
+            <Route path="content" element={<InstituteContent />} />
+            <Route path="content/create" element={<InstituteCreateContent />} />
+            <Route path="content/ai-generate" element={<InstituteAIContentGenerator />} />
             <Route path="exams" element={<InstituteExams />} />
             <Route path="exams/create" element={<InstituteCreateExam />} />
             <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
