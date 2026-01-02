@@ -94,7 +94,7 @@ const Timetable = () => {
   const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(teacherLoads[0]?.teacherId || null);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogContext, setDialogContext] = useState<{ day: string; period: number } | null>(null);
+  const [dialogContext, setDialogContext] = useState<{ day: string; period: number; existingEntry?: TimetableEntry } | null>(null);
   
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
@@ -146,9 +146,19 @@ const Timetable = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [canUndo, canRedo, undo, redo, lastAction, nextAction]);
 
-  const handleCellClick = (day: string, period: number) => {
-    setDialogContext({ day, period });
+  const handleCellClick = (day: string, period: number, existingEntry?: TimetableEntry) => {
+    setDialogContext({ day, period, existingEntry });
     setDialogOpen(true);
+  };
+
+  const handleRemoveEntry = (entryId: string) => {
+    const entry = entries.find(e => e.id === entryId);
+    if (entry) {
+      removeEntry(entryId);
+      toast.success("Entry removed", { description: `${entry.subjectName} removed from ${entry.day} P${entry.periodNumber}` });
+    }
+    setDialogOpen(false);
+    setDialogContext(null);
   };
 
   const handleAssign = (entry: Omit<TimetableEntry, 'id'>) => {
@@ -509,7 +519,9 @@ const Timetable = () => {
           selectedBatch={selectedBatch}
           teachers={teacherLoads}
           batches={batches}
+          existingEntry={dialogContext.existingEntry}
           onAssign={handleAssign}
+          onRemove={dialogContext.existingEntry ? () => handleRemoveEntry(dialogContext.existingEntry!.id) : undefined}
           getTeacherConflict={(tid, d, p) => entries.some(e => e.teacherId === tid && e.day === d && e.periodNumber === p)}
           getBatchConflict={(bid, d, p) => entries.some(e => e.batchId === bid && e.day === d && e.periodNumber === p)}
         />

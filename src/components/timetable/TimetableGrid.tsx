@@ -17,7 +17,7 @@ interface TimetableGridProps {
   selectedTeacher?: TeacherLoad | null;
   selectedBatchId?: string | null;
   viewMode: 'teacher' | 'batch';
-  onCellClick?: (day: string, period: number) => void;
+  onCellClick?: (day: string, period: number, existingEntry?: TimetableEntry) => void;
   getTeacherConflict?: (day: string, period: number) => boolean;
   getBatchConflict?: (day: string, period: number) => boolean;
   onDrop?: (day: string, period: number, data: DragData) => void;
@@ -228,7 +228,7 @@ export const TimetableGrid = ({
                         isOver && !isValidDrop && "ring-2 ring-destructive ring-inset bg-destructive/10",
                         isDragging && !isTeacherOff && !entry && isValidDrop && "bg-primary/5 border-dashed"
                       )}
-                      onClick={() => !isTeacherOff && onCellClick?.(day, period)}
+                      onClick={() => !isTeacherOff && onCellClick?.(day, period, entry)}
                       onDragOver={(e) => handleDragOver(e, day, period)}
                       onDragLeave={handleDragLeave}
                       onDrop={(e) => handleDrop(e, day, period)}
