@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip } from "@/components/timetable";
-import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry } from "@/data/timetableData";
+import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls } from "@/components/timetable";
+import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict } from "@/data/timetableData";
+import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { Settings, Upload, User, BookOpen, AlertTriangle } from "lucide-react";
+import { Settings, Upload, User, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 const Timetable = () => {
@@ -18,12 +18,48 @@ const Timetable = () => {
   const [viewMode, setViewMode] = useState<'teacher' | 'batch'>('teacher');
   const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(teacherLoads[0]?.teacherId || null);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
-  const [entries, setEntries] = useState<TimetableEntry[]>(timetableEntries);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContext, setDialogContext] = useState<{ day: string; period: number } | null>(null);
 
+  // Use undo/redo history hook
+  const {
+    entries,
+    addEntry,
+    removeEntry,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    lastAction,
+    nextAction,
+  } = useTimetableHistory(timetableEntries);
+
   const selectedTeacher = teacherLoads.find(t => t.teacherId === selectedTeacherId);
   const selectedBatch = batches.find(b => b.id === selectedBatchId);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          if (canRedo) {
+            redo();
+            toast.info("Redo", { description: nextAction?.description });
+          }
+        } else {
+          e.preventDefault();
+          if (canUndo) {
+            undo();
+            toast.info("Undo", { description: lastAction?.description });
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canUndo, canRedo, undo, redo, lastAction, nextAction]);
 
   const handleCellClick = (day: string, period: number) => {
     setDialogContext({ day, period });
@@ -32,8 +68,43 @@ const Timetable = () => {
 
   const handleAssign = (entry: Omit<TimetableEntry, 'id'>) => {
     const newEntry: TimetableEntry = { ...entry, id: `entry-${Date.now()}` };
-    setEntries(prev => [...prev, newEntry]);
+    addEntry(newEntry);
     toast.success("Period assigned!", { description: `${entry.subjectName} added to ${entry.day} P${entry.periodNumber}` });
+  };
+
+  const handleConflictClick = (conflict: TimetableConflict) => {
+    if (conflict.type === 'overload') return;
+
+    // Navigate to the conflict location
+    if (conflict.teacherId) {
+      setViewMode('teacher');
+      setSelectedTeacherId(conflict.teacherId);
+    } else if (conflict.batchId) {
+      setViewMode('batch');
+      setSelectedBatchId(conflict.batchId);
+    }
+
+    // Open dialog at the conflict location
+    if (conflict.day && conflict.periodNumber) {
+      setDialogContext({ day: conflict.day, period: conflict.periodNumber });
+      setDialogOpen(true);
+    }
+
+    toast.info("Navigated to conflict", { description: conflict.message });
+  };
+
+  const handleUndoClick = () => {
+    if (canUndo) {
+      undo();
+      toast.info("Undo", { description: lastAction?.description });
+    }
+  };
+
+  const handleRedoClick = () => {
+    if (canRedo) {
+      redo();
+      toast.info("Redo", { description: nextAction?.description });
+    }
   };
 
   const getTeacherConflict = (day: string, period: number) => {
@@ -43,7 +114,7 @@ const Timetable = () => {
 
   const getBatchConflict = (day: string, period: number) => {
     if (viewMode === 'teacher' && selectedTeacher) {
-      return false; // Check per batch in dialog
+      return false;
     }
     if (!selectedBatchId) return false;
     return entries.some(e => e.batchId === selectedBatchId && e.day === day && e.periodNumber === period);
@@ -56,6 +127,14 @@ const Timetable = () => {
         description="Create and manage your school timetable. Switch between teacher and batch views."
         actions={
           <div className="flex items-center gap-2">
+            <UndoRedoControls
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={handleUndoClick}
+              onRedo={handleRedoClick}
+              lastAction={lastAction}
+              nextAction={nextAction}
+            />
             <Button variant="outline" onClick={() => navigate("/institute/timetable/upload")}>
               <Upload className="w-4 h-4 mr-2" />
               Upload Image
@@ -66,6 +145,13 @@ const Timetable = () => {
             </Button>
           </div>
         }
+      />
+
+      {/* Conflict Summary Panel */}
+      <ConflictSummaryPanel
+        entries={entries}
+        teachers={teacherLoads}
+        onConflictClick={handleConflictClick}
       />
 
       {/* View Mode Toggle */}
