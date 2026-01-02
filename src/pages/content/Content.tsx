@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { mockContent } from "@/data/mockData";
@@ -76,9 +76,18 @@ const Content = () => {
         description="Manage all learning content - videos, documents, presentations, and interactive simulations"
         breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Content" }]}
         actions={
-          <Link to="/superadmin/content/upload">
-            <Button className="gradient-button gap-2"><Plus className="w-4 h-4" />Upload Content</Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link to="/superadmin/content/create">
+              <Button variant="outline" className="gap-2">
+                <Plus className="w-4 h-4" />Create Content
+              </Button>
+            </Link>
+            <Link to="/superadmin/content/ai-generate">
+              <Button className="gradient-button gap-2">
+                <Sparkles className="w-4 h-4" />AI Content Generator
+              </Button>
+            </Link>
+          </div>
         }
       />
 

@@ -7,3 +7,6 @@ export { ContentPagination } from "./ContentPagination";
 export { ContentTypeIcon, getContentTypeLabel, getContentTypeColor, type ContentType } from "./ContentTypeIcon";
 export { ContentStatusBadge, ContentVisibilityBadge } from "./ContentStatusBadge";
 export { ContentThumbnail } from "./ContentThumbnail";
+export { AIContentPreviewEditor, type Slide } from "./AIContentPreviewEditor";
+export { SlideCard } from "./SlideCard";
+export { SlideEditor } from "./SlideEditor";

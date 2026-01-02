@@ -24,7 +24,8 @@ import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
 import CreateGrandTest from "./pages/exams/CreateGrandTest";
 import ReviewExam from "./pages/exams/ReviewExam";
 import Content from "./pages/content/Content";
-import UploadContent from "./pages/content/UploadContent";
+import CreateContent from "./pages/content/CreateContent";
+import AIContentGenerator from "./pages/content/AIContentGenerator";
 import NotFound from "./pages/NotFound";
 
 // Institute Panel Pages
@@ -81,7 +82,9 @@ const App = () => (
             <Route path="exams/grand-test/create" element={<CreateGrandTest />} />
             <Route path="exams/review/:examId" element={<ReviewExam />} />
             <Route path="content" element={<Content />} />
-            <Route path="content/upload" element={<UploadContent />} />
+            <Route path="content/upload" element={<CreateContent />} />
+            <Route path="content/create" element={<CreateContent />} />
+            <Route path="content/ai-generate" element={<AIContentGenerator />} />
           </Route>
           
           {/* Institute Panel Routes */}
