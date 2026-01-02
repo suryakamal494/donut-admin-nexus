@@ -17,6 +17,7 @@ import {
   Database,
   Wrench,
   Eye,
+  Library,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -49,6 +50,7 @@ const navItems: NavItem[] = [
     ]
   },
   { title: "Question Bank", icon: FileQuestion, href: "/institute/questions" },
+  { title: "Content Library", icon: Library, href: "/institute/content" },
   { title: "Exams", icon: ClipboardList, href: "/institute/exams" },
   { title: "Master Data", icon: Database, href: "/institute/master-data" },
   { title: "Settings", icon: Settings, href: "/institute/settings" },
