@@ -12,10 +12,14 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   Database,
+  Wrench,
+  Eye,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface InstituteSidebarProps {
   collapsed: boolean;
@@ -27,6 +31,7 @@ interface NavItem {
   icon: React.ElementType;
   href: string;
   badge?: string;
+  subItems?: { title: string; icon: React.ElementType; href: string }[];
 }
 
 const navItems: NavItem[] = [
@@ -34,7 +39,15 @@ const navItems: NavItem[] = [
   { title: "Batches", icon: BookOpen, href: "/institute/batches" },
   { title: "Teachers", icon: Users, href: "/institute/teachers" },
   { title: "Students", icon: GraduationCap, href: "/institute/students" },
-  { title: "Timetable", icon: Calendar, href: "/institute/timetable" },
+  { 
+    title: "Timetable", 
+    icon: Calendar, 
+    href: "/institute/timetable",
+    subItems: [
+      { title: "Workspace", icon: Wrench, href: "/institute/timetable" },
+      { title: "View Timetable", icon: Eye, href: "/institute/timetable/view" },
+    ]
+  },
   { title: "Question Bank", icon: FileQuestion, href: "/institute/questions" },
   { title: "Exams", icon: ClipboardList, href: "/institute/exams" },
   { title: "Master Data", icon: Database, href: "/institute/master-data" },
@@ -45,12 +58,192 @@ const InstituteSidebar = ({ collapsed, onToggle }: InstituteSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  
+  // Track which submenus are open
+  const [openSubmenus, setOpenSubmenus] = useState<string[]>(() => {
+    // Auto-open timetable submenu if on a timetable route
+    if (currentPath.startsWith('/institute/timetable')) {
+      return ['Timetable'];
+    }
+    return [];
+  });
 
   const isActive = (href: string) => {
     if (href === "/institute/dashboard") {
       return currentPath === href;
     }
+    // For submenu items, exact match
+    if (href === "/institute/timetable") {
+      return currentPath === href || currentPath === "/institute/timetable/setup" || currentPath === "/institute/timetable/upload";
+    }
+    if (href === "/institute/timetable/view") {
+      return currentPath === href;
+    }
     return currentPath.startsWith(href);
+  };
+
+  const isParentActive = (item: NavItem) => {
+    if (item.subItems) {
+      return item.subItems.some(sub => isActive(sub.href));
+    }
+    return isActive(item.href);
+  };
+
+  const toggleSubmenu = (title: string) => {
+    setOpenSubmenus(prev => 
+      prev.includes(title) 
+        ? prev.filter(t => t !== title)
+        : [...prev, title]
+    );
+  };
+
+  const renderNavItem = (item: NavItem) => {
+    const Icon = item.icon;
+    const hasSubItems = item.subItems && item.subItems.length > 0;
+    const isOpen = openSubmenus.includes(item.title);
+    const parentActive = isParentActive(item);
+
+    if (hasSubItems) {
+      // Render collapsible menu
+      if (collapsed) {
+        // When collapsed, show tooltip with submenu
+        return (
+          <Tooltip key={item.href} delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => navigate(item.subItems![0].href)}
+                className={cn(
+                  "w-full flex items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-200",
+                  parentActive
+                    ? "gradient-button shadow-md"
+                    : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("w-5 h-5", parentActive ? "text-white" : "")} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="font-medium">
+              <div className="space-y-1">
+                <p className="font-semibold">{item.title}</p>
+                {item.subItems!.map(sub => (
+                  <button
+                    key={sub.href}
+                    onClick={() => navigate(sub.href)}
+                    className={cn(
+                      "block w-full text-left px-2 py-1 rounded text-sm",
+                      isActive(sub.href) ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                    )}
+                  >
+                    {sub.title}
+                  </button>
+                ))}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        );
+      }
+
+      return (
+        <Collapsible
+          key={item.href}
+          open={isOpen}
+          onOpenChange={() => toggleSubmenu(item.title)}
+        >
+          <CollapsibleTrigger asChild>
+            <button
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                parentActive && !isOpen
+                  ? "gradient-button shadow-md"
+                  : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className={cn("w-5 h-5 flex-shrink-0", parentActive && !isOpen ? "text-white" : "")} />
+              <span className={cn(
+                "font-medium text-sm whitespace-nowrap flex-1 text-left",
+                parentActive && !isOpen ? "text-white" : ""
+              )}>
+                {item.title}
+              </span>
+              <ChevronDown className={cn(
+                "w-4 h-4 transition-transform",
+                isOpen && "rotate-180",
+                parentActive && !isOpen ? "text-white" : ""
+              )} />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pl-4 mt-1 space-y-1">
+            {item.subItems!.map(sub => {
+              const SubIcon = sub.icon;
+              const subActive = isActive(sub.href);
+              return (
+                <button
+                  key={sub.href}
+                  onClick={() => navigate(sub.href)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                    subActive
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <SubIcon className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm">{sub.title}</span>
+                </button>
+              );
+            })}
+          </CollapsibleContent>
+        </Collapsible>
+      );
+    }
+
+    // Regular nav item without submenu
+    const active = isActive(item.href);
+
+    const linkContent = (
+      <button
+        onClick={() => navigate(item.href)}
+        className={cn(
+          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+          active
+            ? "gradient-button shadow-md"
+            : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+        )}
+      >
+        <Icon className={cn("w-5 h-5 flex-shrink-0", active ? "text-white" : "")} />
+        {!collapsed && (
+          <span className={cn(
+            "font-medium text-sm whitespace-nowrap",
+            active ? "text-white" : ""
+          )}>
+            {item.title}
+          </span>
+        )}
+        {!collapsed && item.badge && (
+          <span className={cn(
+            "ml-auto text-xs font-semibold px-2 py-0.5 rounded-full",
+            active 
+              ? "bg-white/20 text-white" 
+              : "bg-primary/10 text-primary"
+          )}>
+            {item.badge}
+          </span>
+        )}
+      </button>
+    );
+
+    if (collapsed) {
+      return (
+        <Tooltip key={item.href} delayDuration={0}>
+          <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+          <TooltipContent side="right" className="font-medium">
+            {item.title}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return <div key={item.href}>{linkContent}</div>;
   };
 
   return (
@@ -94,55 +287,7 @@ const InstituteSidebar = ({ collapsed, onToggle }: InstituteSidebarProps) => {
       {/* Navigation */}
       <nav className="flex-1 py-4 px-3 overflow-y-auto">
         <div className="space-y-1">
-          {navItems.map((item) => {
-            const active = isActive(item.href);
-            const Icon = item.icon;
-
-            const linkContent = (
-              <button
-                onClick={() => navigate(item.href)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-                  active
-                    ? "gradient-button shadow-md"
-                    : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Icon className={cn("w-5 h-5 flex-shrink-0", active ? "text-white" : "")} />
-                {!collapsed && (
-                  <span className={cn(
-                    "font-medium text-sm whitespace-nowrap",
-                    active ? "text-white" : ""
-                  )}>
-                    {item.title}
-                  </span>
-                )}
-                {!collapsed && item.badge && (
-                  <span className={cn(
-                    "ml-auto text-xs font-semibold px-2 py-0.5 rounded-full",
-                    active 
-                      ? "bg-white/20 text-white" 
-                      : "bg-primary/10 text-primary"
-                  )}>
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-
-            if (collapsed) {
-              return (
-                <Tooltip key={item.href} delayDuration={0}>
-                  <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-                  <TooltipContent side="right" className="font-medium">
-                    {item.title}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return <div key={item.href}>{linkContent}</div>;
-          })}
+          {navItems.map(item => renderNavItem(item))}
         </div>
       </nav>
 
