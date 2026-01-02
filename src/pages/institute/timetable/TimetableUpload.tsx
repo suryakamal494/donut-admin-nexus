@@ -4,10 +4,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { InfoTooltip } from "@/components/timetable";
+import { InfoTooltip, ParsedGridPreview } from "@/components/timetable";
+import type { ParsedEntry } from "@/components/timetable";
 import { cn } from "@/lib/utils";
 import { 
   Upload, 
@@ -15,11 +14,12 @@ import {
   Wand2, 
   Check, 
   X, 
-  Edit2,
   ArrowRight,
   AlertTriangle,
   Loader2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ZoomIn,
+  ZoomOut
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,14 +39,7 @@ const mockParsedData = {
   ]
 };
 
-interface ParsedEntry {
-  day: string;
-  period: number;
-  subject: string;
-  teacher: string;
-  confidence: number;
-  isEditing?: boolean;
-}
+// ParsedEntry type is imported from @/components/timetable
 
 const TimetableUpload = () => {
   const navigate = useNavigate();
@@ -56,7 +49,7 @@ const TimetableUpload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isParsed, setIsParsed] = useState(false);
   const [parsedEntries, setParsedEntries] = useState<ParsedEntry[]>([]);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [imageZoom, setImageZoom] = useState(100);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -99,25 +92,20 @@ const TimetableUpload = () => {
     });
   };
 
-  const handleEditEntry = (index: number) => {
-    setEditingIndex(index);
-    setParsedEntries(prev => prev.map((e, i) => ({ ...e, isEditing: i === index })));
-  };
-
-  const handleSaveEntry = (index: number, field: keyof ParsedEntry, value: string) => {
+  const handleUpdateEntry = (index: number, field: keyof ParsedEntry, value: string) => {
     setParsedEntries(prev => prev.map((e, i) => 
       i === index ? { ...e, [field]: value, confidence: 1.0 } : e
     ));
   };
 
-  const handleDoneEditing = () => {
-    setEditingIndex(null);
-    setParsedEntries(prev => prev.map(e => ({ ...e, isEditing: false })));
-  };
-
   const handleRemoveEntry = (index: number) => {
     setParsedEntries(prev => prev.filter((_, i) => i !== index));
     toast.info("Entry removed");
+  };
+
+  const handleAddEntry = (day: string, period: number) => {
+    setParsedEntries(prev => [...prev, { day, period, subject: "New Subject", teacher: "New Teacher", confidence: 1.0 }]);
+    toast.success("Entry added - click to edit");
   };
 
   const handleEmbed = () => {
@@ -270,7 +258,7 @@ const TimetableUpload = () => {
         </div>
       )}
 
-      {/* Parsed Results */}
+      {/* Parsed Results - Side by Side View */}
       {isParsed && (
         <div className="space-y-6">
           {/* Summary */}
@@ -298,108 +286,47 @@ const TimetableUpload = () => {
             </CardContent>
           </Card>
 
-          {/* Low Confidence Alert */}
-          {lowConfidenceCount > 0 && (
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {lowConfidenceCount} entries have low confidence scores. Please review the highlighted entries below and correct any mistakes.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Editable Preview Table */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Review Parsed Entries</CardTitle>
-                  <CardDescription>Click on any row to edit. Yellow rows need your attention.</CardDescription>
+          {/* Side by Side: Original Image + Parsed Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Original Image with Zoom */}
+            <Card>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5" />
+                    Original Image
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setImageZoom(z => Math.max(50, z - 25))}>
+                      <ZoomOut className="w-4 h-4" />
+                    </Button>
+                    <span className="text-sm text-muted-foreground w-12 text-center">{imageZoom}%</span>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setImageZoom(z => Math.min(200, z + 25))}>
+                      <ZoomIn className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Badge variant="secondary">{parsedEntries.length} entries</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-muted/30">
-                      <th className="p-3 text-left text-sm font-medium text-muted-foreground">Day</th>
-                      <th className="p-3 text-left text-sm font-medium text-muted-foreground">Period</th>
-                      <th className="p-3 text-left text-sm font-medium text-muted-foreground">Subject</th>
-                      <th className="p-3 text-left text-sm font-medium text-muted-foreground">Teacher</th>
-                      <th className="p-3 text-center text-sm font-medium text-muted-foreground">Confidence</th>
-                      <th className="p-3 text-center text-sm font-medium text-muted-foreground">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parsedEntries.map((entry, index) => {
-                      const isLowConfidence = entry.confidence < 0.8;
-                      const isEditing = editingIndex === index;
-                      
-                      return (
-                        <tr 
-                          key={index}
-                          className={cn(
-                            "border-b transition-colors",
-                            isLowConfidence && "bg-amber-50 dark:bg-amber-950/20",
-                            isEditing && "bg-primary/5"
-                          )}
-                        >
-                          <td className="p-3 text-sm">{entry.day}</td>
-                          <td className="p-3 text-sm">P{entry.period}</td>
-                          <td className="p-3 text-sm">
-                            {isEditing ? (
-                              <Input 
-                                value={entry.subject}
-                                onChange={(e) => handleSaveEntry(index, 'subject', e.target.value)}
-                                className="h-8 w-32"
-                              />
-                            ) : entry.subject}
-                          </td>
-                          <td className="p-3 text-sm">
-                            {isEditing ? (
-                              <Input 
-                                value={entry.teacher}
-                                onChange={(e) => handleSaveEntry(index, 'teacher', e.target.value)}
-                                className="h-8 w-40"
-                              />
-                            ) : entry.teacher}
-                          </td>
-                          <td className="p-3 text-center">
-                            <Badge 
-                              variant={entry.confidence >= 0.8 ? "secondary" : "outline"}
-                              className={cn(
-                                entry.confidence < 0.8 && "bg-amber-100 text-amber-700 border-amber-200"
-                              )}
-                            >
-                              {Math.round(entry.confidence * 100)}%
-                            </Badge>
-                          </td>
-                          <td className="p-3 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              {isEditing ? (
-                                <Button size="sm" variant="ghost" onClick={handleDoneEditing}>
-                                  <Check className="w-4 h-4" />
-                                </Button>
-                              ) : (
-                                <Button size="sm" variant="ghost" onClick={() => handleEditEntry(index)}>
-                                  <Edit2 className="w-4 h-4" />
-                                </Button>
-                              )}
-                              <Button size="sm" variant="ghost" onClick={() => handleRemoveEntry(index)}>
-                                <X className="w-4 h-4 text-destructive" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-auto max-h-[500px] border rounded-lg bg-muted/20">
+                  <img 
+                    src={preview!} 
+                    alt="Original timetable" 
+                    style={{ width: `${imageZoom}%` }}
+                    className="object-contain"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Parsed Grid Preview */}
+            <ParsedGridPreview
+              entries={parsedEntries}
+              onUpdateEntry={handleUpdateEntry}
+              onRemoveEntry={handleRemoveEntry}
+              onAddEntry={handleAddEntry}
+            />
+          </div>
 
           {/* Embed Actions */}
           <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border">

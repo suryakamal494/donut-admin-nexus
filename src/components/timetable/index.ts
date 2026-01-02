@@ -6,4 +6,6 @@ export { AssignmentDialog } from './AssignmentDialog';
 export { ConflictSummaryPanel } from './ConflictSummaryPanel';
 export { UndoRedoControls } from './UndoRedoControls';
 export { HolidayCalendarDialog } from './HolidayCalendarDialog';
+export { ParsedGridPreview } from './ParsedGridPreview';
 export type { Holiday } from './HolidayCalendarDialog';
+export type { ParsedEntry } from './ParsedGridPreview';

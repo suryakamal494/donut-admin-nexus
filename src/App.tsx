@@ -40,6 +40,7 @@ import AddStudent from "./pages/institute/students/AddStudent";
 import InstituteTimetable from "./pages/institute/timetable/Timetable";
 import InstituteTimetableSetup from "./pages/institute/timetable/TimetableSetup";
 import InstituteTimetableUpload from "./pages/institute/timetable/TimetableUpload";
+import InstituteViewTimetable from "./pages/institute/timetable/ViewTimetable";
 import InstituteQuestions from "./pages/institute/questions/Questions";
 import InstituteAIQuestions from "./pages/institute/questions/AIQuestions";
 import InstituteExams from "./pages/institute/exams/Exams";
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="timetable" element={<InstituteTimetable />} />
             <Route path="timetable/setup" element={<InstituteTimetableSetup />} />
             <Route path="timetable/upload" element={<InstituteTimetableUpload />} />
+            <Route path="timetable/view" element={<InstituteViewTimetable />} />
             <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
             <Route path="exams" element={<InstituteExams />} />
