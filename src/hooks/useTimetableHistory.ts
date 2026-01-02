@@ -2,9 +2,9 @@ import { useState, useCallback } from "react";
 import { TimetableEntry } from "@/data/timetableData";
 
 export interface TimetableAction {
-  type: 'add' | 'remove' | 'update';
+  type: 'add' | 'remove' | 'update' | 'move';
   entry: TimetableEntry;
-  previousEntry?: TimetableEntry; // For updates
+  previousEntry?: TimetableEntry; // For updates and moves
   timestamp: number;
   description: string;
 }
@@ -79,6 +79,28 @@ export const useTimetableHistory = (initialEntries: TimetableEntry[]) => {
     });
   }, []);
 
+  const moveEntry = useCallback((entryId: string, newDay: string, newPeriod: number) => {
+    setState(prev => {
+      const previousEntry = prev.entries.find(e => e.id === entryId);
+      if (!previousEntry) return prev;
+
+      const updatedEntry = { ...previousEntry, day: newDay, periodNumber: newPeriod };
+      const action: TimetableAction = {
+        type: 'move',
+        entry: updatedEntry,
+        previousEntry,
+        timestamp: Date.now(),
+        description: `Moved ${previousEntry.subjectName} from ${previousEntry.day} P${previousEntry.periodNumber} to ${newDay} P${newPeriod}`,
+      };
+
+      return {
+        entries: prev.entries.map(e => e.id === entryId ? updatedEntry : e),
+        past: [...prev.past, action],
+        future: [],
+      };
+    });
+  }, []);
+
   const undo = useCallback(() => {
     setState(prev => {
       if (prev.past.length === 0) return prev;
@@ -96,7 +118,8 @@ export const useTimetableHistory = (initialEntries: TimetableEntry[]) => {
           newEntries = [...newEntries, lastAction.entry];
           break;
         case 'update':
-          // Undo update = restore previous entry
+        case 'move':
+          // Undo update/move = restore previous entry
           if (lastAction.previousEntry) {
             newEntries = newEntries.map(e => 
               e.id === lastAction.entry.id ? lastAction.previousEntry! : e
@@ -130,7 +153,8 @@ export const useTimetableHistory = (initialEntries: TimetableEntry[]) => {
           newEntries = newEntries.filter(e => e.id !== nextAction.entry.id);
           break;
         case 'update':
-          // Redo update = apply the update again
+        case 'move':
+          // Redo update/move = apply the change again
           newEntries = newEntries.map(e => 
             e.id === nextAction.entry.id ? nextAction.entry : e
           );
@@ -155,6 +179,7 @@ export const useTimetableHistory = (initialEntries: TimetableEntry[]) => {
     addEntry,
     removeEntry,
     updateEntry,
+    moveEntry,
     undo,
     redo,
     canUndo,
