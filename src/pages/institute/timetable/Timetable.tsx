@@ -466,19 +466,45 @@ const Timetable = () => {
           {(viewMode === 'teacher' && selectedTeacher) || (viewMode === 'batch' && selectedBatch) ? (
             <Card>
               <CardContent className="p-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold">
-                      {viewMode === 'teacher' ? selectedTeacher?.teacherName : `${selectedBatch?.className} - ${selectedBatch?.name}`}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {viewMode === 'teacher' 
-                        ? `${selectedTeacher?.periodsPerWeek - selectedTeacher?.assignedPeriods} periods remaining • Drag entries to move`
-                        : `${selectedBatch?.subjects.length} subjects`
-                      }
-                    </p>
+                {/* View-specific guidance card */}
+                {viewMode === 'teacher' && selectedTeacher && (
+                  <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm">{selectedTeacher.teacherName}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Teaches {selectedTeacher.allowedBatches.map(b => b.subject).filter((v, i, a) => a.indexOf(v) === i).join(', ')} to {selectedTeacher.allowedBatches.length} batch{selectedTeacher.allowedBatches.length > 1 ? 'es' : ''}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          <span className="font-medium text-foreground">{selectedTeacher.periodsPerWeek - selectedTeacher.assignedPeriods} periods</span> remaining this week. Click cells or drag entries.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {viewMode === 'batch' && selectedBatch && (
+                  <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm">{selectedBatch.className} - {selectedBatch.name}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {selectedBatch.subjects.length} subjects • {selectedBatch.studentCount} students
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Click cells to assign teachers. Only batch-assigned teachers shown; subject is auto-determined.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <TimetableGrid
                   entries={entries}
                   periodStructure={defaultPeriodStructure}

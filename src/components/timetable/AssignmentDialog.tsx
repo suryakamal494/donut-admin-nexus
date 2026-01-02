@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -58,7 +58,6 @@ export const AssignmentDialog = ({
 }: AssignmentDialogProps) => {
   const [selectedBatchId, setSelectedBatchId] = useState(existingEntry?.batchId || '');
   const [selectedTeacherId, setSelectedTeacherId] = useState(existingEntry?.teacherId || '');
-  const [selectedSubjectId, setSelectedSubjectId] = useState(existingEntry?.subjectId || '');
 
   // Reset state when dialog opens with different context
   const dialogKey = `${day}-${period}-${existingEntry?.id || 'new'}`;
@@ -66,16 +65,26 @@ export const AssignmentDialog = ({
   // Check if we're in view/edit mode for existing entry
   const isEditMode = !!existingEntry;
 
-  // Get available teachers for batch view
+  // Reset selections when dialog opens
+  useEffect(() => {
+    if (open && !isEditMode) {
+      setSelectedBatchId('');
+      setSelectedTeacherId('');
+    } else if (open && isEditMode && existingEntry) {
+      setSelectedBatchId(existingEntry.batchId);
+      setSelectedTeacherId(existingEntry.teacherId);
+    }
+  }, [open, isEditMode, existingEntry]);
+
+  // Get available teachers for batch view - ONLY teachers assigned to this batch
   const getAvailableTeachers = () => {
+    if (!selectedBatch) return [];
+    
     return teachers.filter(t => {
       // Check if teacher works on this day
       if (!t.workingDays.includes(day)) return false;
-      // Check if teacher is assigned to this batch
-      if (selectedBatch) {
-        return t.allowedBatches.some(b => b.batchId === selectedBatch.id);
-      }
-      return true;
+      // Check if teacher is assigned to this specific batch
+      return t.allowedBatches.some(b => b.batchId === selectedBatch.id);
     });
   };
 
@@ -95,13 +104,24 @@ export const AssignmentDialog = ({
     return getBatchConflict?.(batchId, day, period) || false;
   };
 
-  // Get subject for teacher-batch combination
+  // Get subject for teacher-batch combination (fixed mapping)
   const getSubjectForTeacherBatch = (teacherId: string, batchId: string): string | undefined => {
     const teacher = teachers.find(t => t.teacherId === teacherId);
     if (!teacher) return undefined;
     const assignment = teacher.allowedBatches.find(b => b.batchId === batchId);
     return assignment?.subject;
   };
+
+  // Get the auto-determined subject when teacher is selected (for batch view)
+  const getAutoSubject = () => {
+    if (!selectedTeacherId || !selectedBatch) return null;
+    const subject = getSubjectForTeacherBatch(selectedTeacherId, selectedBatch.id);
+    if (!subject) return null;
+    const subjectData = availableSubjects.find(s => s.name === subject);
+    return { id: subjectData?.id || subject.toLowerCase().slice(0, 3), name: subject };
+  };
+
+  const autoSubject = getAutoSubject();
 
   const handleAssign = () => {
     let entry: Omit<TimetableEntry, 'id'>;
@@ -123,17 +143,17 @@ export const AssignmentDialog = ({
         batchId: batch.id,
         batchName: `${batch.className} - ${batch.name}`,
       };
-    } else if (selectedBatch) {
+    } else if (selectedBatch && autoSubject) {
+      // Batch view: use auto-determined subject from teacher-batch mapping
       const teacher = teachers.find(t => t.teacherId === selectedTeacherId);
-      const subjectData = availableSubjects.find(s => s.id === selectedSubjectId);
       
-      if (!teacher || !subjectData) return;
+      if (!teacher) return;
 
       entry = {
         day,
         periodNumber: period,
-        subjectId: subjectData.id,
-        subjectName: subjectData.name,
+        subjectId: autoSubject.id,
+        subjectName: autoSubject.name,
         teacherId: teacher.teacherId,
         teacherName: teacher.teacherName,
         batchId: selectedBatch.id,
@@ -147,9 +167,10 @@ export const AssignmentDialog = ({
     onClose();
   };
 
+  // For batch view, only need to select teacher (subject is auto-determined)
   const canAssign = viewMode === 'teacher' 
     ? !!selectedBatchId 
-    : !!selectedTeacherId && !!selectedSubjectId;
+    : !!selectedTeacherId && !!autoSubject;
 
   return (
     <Dialog open={open} onOpenChange={onClose} key={dialogKey}>
@@ -189,14 +210,14 @@ export const AssignmentDialog = ({
             </div>
           )}
 
-          {/* Show form for new assignment (non-edit mode) */}
+          {/* Teacher View: Select Batch */}
           {!isEditMode && viewMode === 'teacher' && selectedTeacher && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   Select Batch
-                  <InfoTooltip content="Choose which batch this teacher will teach during this period" />
+                  <InfoTooltip content="Choose which batch this teacher will teach during this period. Subject is automatically determined." />
                 </label>
                 <Badge variant="secondary">
                   {selectedTeacher.periodsPerWeek - selectedTeacher.assignedPeriods} periods left
@@ -245,13 +266,14 @@ export const AssignmentDialog = ({
             </div>
           )}
 
+          {/* Batch View: Select Teacher ONLY (subject is auto-determined) */}
           {!isEditMode && viewMode === 'batch' && selectedBatch && (
-            <>
+            <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <User className="w-4 h-4" />
                   Select Teacher
-                  <InfoTooltip content="Choose which teacher will teach this batch during this period" />
+                  <InfoTooltip content="Choose the teacher for this period. Subject is automatically determined based on teacher's assignment to this batch." />
                 </label>
                 <Select value={selectedTeacherId} onValueChange={setSelectedTeacherId}>
                   <SelectTrigger>
@@ -261,6 +283,7 @@ export const AssignmentDialog = ({
                     {getAvailableTeachers().map(teacher => {
                       const hasConflict = hasTeacherConflict(teacher.teacherId);
                       const remaining = teacher.periodsPerWeek - teacher.assignedPeriods;
+                      const subject = getSubjectForTeacherBatch(teacher.teacherId, selectedBatch.id);
                       
                       return (
                         <SelectItem 
@@ -270,6 +293,11 @@ export const AssignmentDialog = ({
                         >
                           <div className="flex items-center gap-2">
                             <span>{teacher.teacherName}</span>
+                            {subject && (
+                              <Badge variant="outline" className="text-xs">
+                                {subject}
+                              </Badge>
+                            )}
                             <Badge 
                               variant={remaining <= 0 ? "destructive" : "secondary"} 
                               className="text-xs"
@@ -285,39 +313,32 @@ export const AssignmentDialog = ({
                     })}
                   </SelectContent>
                 </Select>
+
+                {getAvailableTeachers().length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No teachers assigned to this batch are available on {day}
+                  </p>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  Select Subject
-                  <InfoTooltip content="Choose the subject to be taught during this period" />
-                </label>
-                <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a subject..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {selectedBatch.subjects.map(subjectId => {
-                      const subject = availableSubjects.find(s => s.id === subjectId);
-                      const colors = subjectColors[subjectId];
-                      
-                      return (
-                        <SelectItem key={subjectId} value={subjectId}>
-                          <div className="flex items-center gap-2">
-                            <div className={cn(
-                              "w-3 h-3 rounded-full",
-                              colors?.bg
-                            )} />
-                            <span>{subject?.name || subjectId.toUpperCase()}</span>
-                          </div>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
+              {/* Show auto-determined subject when teacher is selected */}
+              {autoSubject && (
+                <div className="p-3 rounded-lg border bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Subject:</span>
+                    <Badge className={cn(
+                      subjectColors[autoSubject.id]?.bg,
+                      subjectColors[autoSubject.id]?.text,
+                      subjectColors[autoSubject.id]?.border
+                    )}>
+                      {autoSubject.name}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground ml-auto">(auto-determined)</span>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
 

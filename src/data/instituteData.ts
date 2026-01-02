@@ -72,9 +72,9 @@ export const batches: Batch[] = [
     classId: "class-10",
     className: "Class 10",
     academicYear: "2024-25",
-    subjects: ["mat", "phy", "che", "bio", "eng"],
+    subjects: ["mat", "phy", "che", "bio", "eng", "cs", "eco"],
     studentCount: 45,
-    teacherCount: 5,
+    teacherCount: 7,
     createdAt: "2024-04-01",
   },
   {
@@ -83,9 +83,9 @@ export const batches: Batch[] = [
     classId: "class-10",
     className: "Class 10",
     academicYear: "2024-25",
-    subjects: ["mat", "phy", "che", "bio", "eng"],
+    subjects: ["mat", "phy", "che", "bio", "eng", "cs", "eco"],
     studentCount: 42,
-    teacherCount: 5,
+    teacherCount: 7,
     createdAt: "2024-04-01",
   },
   {
@@ -94,9 +94,9 @@ export const batches: Batch[] = [
     classId: "class-9",
     className: "Class 9",
     academicYear: "2024-25",
-    subjects: ["mat", "phy", "che", "bio", "eng", "hin"],
+    subjects: ["mat", "phy", "che", "bio", "eng", "hin", "sst"],
     studentCount: 48,
-    teacherCount: 6,
+    teacherCount: 7,
     createdAt: "2024-04-01",
   },
   {
@@ -123,7 +123,7 @@ export const batches: Batch[] = [
   },
 ];
 
-// Sample Teachers
+// Sample Teachers - 10 teachers with consistent batch/subject assignments
 export const teachers: Teacher[] = [
   {
     id: "teacher-1",
@@ -135,6 +135,7 @@ export const teachers: Teacher[] = [
     batches: [
       { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "Physics" },
       { batchId: "batch-2", batchName: "Class 10 - Section B", subject: "Physics" },
+      { batchId: "batch-3", batchName: "Class 9 - Section A", subject: "Physics" },
     ],
     status: "active",
     createdAt: "2024-03-15",
@@ -148,7 +149,9 @@ export const teachers: Teacher[] = [
     subjects: ["mat"],
     batches: [
       { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "Mathematics" },
+      { batchId: "batch-2", batchName: "Class 10 - Section B", subject: "Mathematics" },
       { batchId: "batch-3", batchName: "Class 9 - Section A", subject: "Mathematics" },
+      { batchId: "batch-4", batchName: "Class 9 - Section B", subject: "Mathematics" },
     ],
     status: "active",
     createdAt: "2024-03-15",
@@ -175,6 +178,7 @@ export const teachers: Teacher[] = [
     username: "anjali.gupta",
     subjects: ["bio"],
     batches: [
+      { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "Biology" },
       { batchId: "batch-3", batchName: "Class 9 - Section A", subject: "Biology" },
       { batchId: "batch-4", batchName: "Class 9 - Section B", subject: "Biology" },
     ],
@@ -190,7 +194,79 @@ export const teachers: Teacher[] = [
     subjects: ["eng"],
     batches: [
       { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "English" },
+      { batchId: "batch-2", batchName: "Class 10 - Section B", subject: "English" },
       { batchId: "batch-5", batchName: "Class 8 - Section A", subject: "English" },
+    ],
+    status: "active",
+    createdAt: "2024-03-15",
+  },
+  // 5 NEW TEACHERS
+  {
+    id: "teacher-6",
+    name: "Mrs. Kavita Nair",
+    email: "kavita.nair@dps.edu",
+    mobile: "9876543215",
+    username: "kavita.nair",
+    subjects: ["hin"],
+    batches: [
+      { batchId: "batch-3", batchName: "Class 9 - Section A", subject: "Hindi" },
+      { batchId: "batch-4", batchName: "Class 9 - Section B", subject: "Hindi" },
+      { batchId: "batch-5", batchName: "Class 8 - Section A", subject: "Hindi" },
+    ],
+    status: "active",
+    createdAt: "2024-03-15",
+  },
+  {
+    id: "teacher-7",
+    name: "Mr. Arun Mehta",
+    email: "arun.mehta@dps.edu",
+    mobile: "9876543216",
+    username: "arun.mehta",
+    subjects: ["sst"],
+    batches: [
+      { batchId: "batch-5", batchName: "Class 8 - Section A", subject: "Social Studies" },
+      { batchId: "batch-3", batchName: "Class 9 - Section A", subject: "Social Studies" },
+    ],
+    status: "active",
+    createdAt: "2024-03-15",
+  },
+  {
+    id: "teacher-8",
+    name: "Dr. Sneha Reddy",
+    email: "sneha.reddy@dps.edu",
+    mobile: "9876543217",
+    username: "sneha.reddy",
+    subjects: ["cs"],
+    batches: [
+      { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "Computer Science" },
+      { batchId: "batch-2", batchName: "Class 10 - Section B", subject: "Computer Science" },
+    ],
+    status: "active",
+    createdAt: "2024-03-15",
+  },
+  {
+    id: "teacher-9",
+    name: "Mr. Rahul Saxena",
+    email: "rahul.saxena@dps.edu",
+    mobile: "9876543218",
+    username: "rahul.saxena",
+    subjects: ["eco"],
+    batches: [
+      { batchId: "batch-1", batchName: "Class 10 - Section A", subject: "Economics" },
+      { batchId: "batch-2", batchName: "Class 10 - Section B", subject: "Economics" },
+    ],
+    status: "active",
+    createdAt: "2024-03-15",
+  },
+  {
+    id: "teacher-10",
+    name: "Mrs. Geeta Iyer",
+    email: "geeta.iyer@dps.edu",
+    mobile: "9876543219",
+    username: "geeta.iyer",
+    subjects: ["sci"],
+    batches: [
+      { batchId: "batch-5", batchName: "Class 8 - Section A", subject: "Science" },
     ],
     status: "active",
     createdAt: "2024-03-15",
@@ -298,7 +374,7 @@ export const dashboardStats = {
   },
   counts: {
     totalBatches: 5,
-    totalTeachers: 12,
+    totalTeachers: 10,
     totalStudents: 231,
     totalExams: 4,
   },
