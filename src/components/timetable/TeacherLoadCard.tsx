@@ -2,20 +2,27 @@ import { cn } from "@/lib/utils";
 import { TeacherLoad } from "@/data/timetableData";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { User, Clock, AlertTriangle } from "lucide-react";
+import { User, Clock, AlertTriangle, GripVertical } from "lucide-react";
+import { DragEvent } from "react";
 
 interface TeacherLoadCardProps {
   teacher: TeacherLoad;
   isSelected?: boolean;
   onClick?: () => void;
   compact?: boolean;
+  draggable?: boolean;
+  onDragStart?: (e: DragEvent<HTMLDivElement>, teacher: TeacherLoad) => void;
+  onDragEnd?: (e: DragEvent<HTMLDivElement>) => void;
 }
 
 export const TeacherLoadCard = ({ 
   teacher, 
   isSelected, 
   onClick, 
-  compact = false 
+  compact = false,
+  draggable = false,
+  onDragStart,
+  onDragEnd,
 }: TeacherLoadCardProps) => {
   const percentage = Math.round((teacher.assignedPeriods / teacher.periodsPerWeek) * 100);
   const remaining = teacher.periodsPerWeek - teacher.assignedPeriods;
@@ -28,17 +35,39 @@ export const TeacherLoadCard = ({
     return 'bg-primary';
   };
 
+  const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
+    if (!draggable) return;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      type: 'teacher',
+      teacher: teacher,
+    }));
+    onDragStart?.(e, teacher);
+  };
+
+  const handleDragEnd = (e: DragEvent<HTMLDivElement>) => {
+    onDragEnd?.(e);
+  };
+
   if (compact) {
     return (
-      <button
+      <div
+        draggable={draggable}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         onClick={onClick}
         className={cn(
           "w-full flex items-center gap-3 p-3 rounded-xl border transition-all duration-200",
           isSelected 
             ? "border-primary bg-primary/5 shadow-sm" 
-            : "border-border hover:border-primary/50 hover:bg-muted/30"
+            : "border-border hover:border-primary/50 hover:bg-muted/30",
+          draggable && "cursor-grab active:cursor-grabbing",
+          draggable && "hover:shadow-md"
         )}
       >
+        {draggable && (
+          <GripVertical className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+        )}
         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
           <User className="w-4 h-4 text-primary" />
         </div>
@@ -53,18 +82,22 @@ export const TeacherLoadCard = ({
         {isOverloaded && (
           <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0" />
         )}
-      </button>
+      </div>
     );
   }
 
   return (
-    <button
+    <div
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={onClick}
       className={cn(
         "w-full p-4 rounded-xl border transition-all duration-200 text-left",
         isSelected 
           ? "border-primary bg-primary/5 shadow-md" 
-          : "border-border hover:border-primary/50 hover:bg-muted/30"
+          : "border-border hover:border-primary/50 hover:bg-muted/30",
+        draggable && "cursor-grab active:cursor-grabbing"
       )}
     >
       <div className="flex items-start justify-between mb-3">
@@ -120,6 +153,6 @@ export const TeacherLoadCard = ({
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 };

@@ -1,8 +1,15 @@
 import { cn } from "@/lib/utils";
 import { TimetableEntry, PeriodStructure, subjectColors, TeacherLoad } from "@/data/timetableData";
 import { InfoTooltip } from "./InfoTooltip";
-import { Plus, AlertTriangle, Clock } from "lucide-react";
+import { Plus, AlertTriangle, Clock, GripVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { DragEvent, useState } from "react";
+
+export interface DragData {
+  type: 'teacher' | 'entry';
+  teacher?: TeacherLoad;
+  entry?: TimetableEntry;
+}
 
 interface TimetableGridProps {
   entries: TimetableEntry[];
@@ -13,6 +20,11 @@ interface TimetableGridProps {
   onCellClick?: (day: string, period: number) => void;
   getTeacherConflict?: (day: string, period: number) => boolean;
   getBatchConflict?: (day: string, period: number) => boolean;
+  onDrop?: (day: string, period: number, data: DragData) => void;
+  onEntryDragStart?: (entry: TimetableEntry) => void;
+  onEntryDragEnd?: () => void;
+  isDragging?: boolean;
+  draggedEntry?: TimetableEntry | null;
 }
 
 export const TimetableGrid = ({
@@ -24,8 +36,14 @@ export const TimetableGrid = ({
   onCellClick,
   getTeacherConflict,
   getBatchConflict,
+  onDrop,
+  onEntryDragStart,
+  onEntryDragEnd,
+  isDragging = false,
+  draggedEntry,
 }: TimetableGridProps) => {
   const { workingDays, periodsPerDay, breakAfterPeriod, timeMapping } = periodStructure;
+  const [dragOverCell, setDragOverCell] = useState<{ day: string; period: number } | null>(null);
   
   // Generate period numbers array
   const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1);
@@ -66,6 +84,61 @@ export const TimetableGrid = ({
       return `${mapping.startTime} - ${mapping.endTime}`;
     }
     return `Period ${period}`;
+  };
+
+  // Check if drop is valid for this cell
+  const isValidDropTarget = (day: string, period: number): boolean => {
+    if (!isTeacherAvailable(day)) return false;
+    const existingEntry = getEntry(day, period);
+    if (existingEntry && draggedEntry?.id !== existingEntry.id) return false;
+    return true;
+  };
+
+  // Handle drag over
+  const handleDragOver = (e: DragEvent<HTMLTableCellElement>, day: string, period: number) => {
+    if (!isTeacherAvailable(day)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverCell({ day, period });
+  };
+
+  // Handle drag leave
+  const handleDragLeave = () => {
+    setDragOverCell(null);
+  };
+
+  // Handle drop
+  const handleDrop = (e: DragEvent<HTMLTableCellElement>, day: string, period: number) => {
+    e.preventDefault();
+    setDragOverCell(null);
+    
+    if (!isTeacherAvailable(day)) return;
+    
+    try {
+      const rawData = e.dataTransfer.getData('application/json');
+      if (rawData) {
+        const data: DragData = JSON.parse(rawData);
+        onDrop?.(day, period, data);
+      }
+    } catch (err) {
+      console.error('Error parsing drop data:', err);
+    }
+  };
+
+  // Handle entry drag start
+  const handleEntryDragStart = (e: DragEvent<HTMLDivElement>, entry: TimetableEntry) => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      type: 'entry',
+      entry: entry,
+    }));
+    onEntryDragStart?.(entry);
+  };
+
+  // Handle entry drag end
+  const handleEntryDragEnd = () => {
+    setDragOverCell(null);
+    onEntryDragEnd?.();
   };
 
   return (
@@ -137,6 +210,9 @@ export const TimetableGrid = ({
                   const hasTeacherConflict = getTeacherConflict?.(day, period);
                   const hasBatchConflict = getBatchConflict?.(day, period);
                   const colors = entry ? subjectColors[entry.subjectId] : null;
+                  const isOver = dragOverCell?.day === day && dragOverCell?.period === period;
+                  const isBeingDragged = draggedEntry?.id === entry?.id;
+                  const isValidDrop = isValidDropTarget(day, period);
 
                   return (
                     <td
@@ -146,20 +222,35 @@ export const TimetableGrid = ({
                         isTeacherOff && "bg-muted/40 cursor-not-allowed",
                         !isTeacherOff && !entry && "hover:bg-primary/5 cursor-pointer",
                         hasTeacherConflict && "bg-red-50 dark:bg-red-950/20",
-                        hasBatchConflict && "bg-amber-50 dark:bg-amber-950/20"
+                        hasBatchConflict && "bg-amber-50 dark:bg-amber-950/20",
+                        // Drag-over styling
+                        isOver && isValidDrop && "ring-2 ring-primary ring-inset bg-primary/10",
+                        isOver && !isValidDrop && "ring-2 ring-destructive ring-inset bg-destructive/10",
+                        isDragging && !isTeacherOff && !entry && isValidDrop && "bg-primary/5 border-dashed"
                       )}
                       onClick={() => !isTeacherOff && onCellClick?.(day, period)}
+                      onDragOver={(e) => handleDragOver(e, day, period)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, day, period)}
                     >
                       {entry ? (
                         <div
+                          draggable
+                          onDragStart={(e) => handleEntryDragStart(e, entry)}
+                          onDragEnd={handleEntryDragEnd}
                           className={cn(
-                            "p-2 rounded-lg border transition-all hover:shadow-md",
+                            "p-2 rounded-lg border transition-all cursor-grab active:cursor-grabbing group",
                             colors?.bg,
                             colors?.text,
-                            colors?.border
+                            colors?.border,
+                            isBeingDragged && "opacity-50 scale-95",
+                            !isBeingDragged && "hover:shadow-md hover:scale-[1.02]"
                           )}
                         >
-                          <p className="font-medium text-sm">{entry.subjectName}</p>
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium text-sm flex-1">{entry.subjectName}</p>
+                            <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                          </div>
                           <p className="text-xs opacity-80 mt-0.5 truncate">
                             {viewMode === 'teacher' ? entry.batchName : entry.teacherName.split(' ').pop()}
                           </p>
@@ -167,8 +258,14 @@ export const TimetableGrid = ({
                       ) : isTeacherOff ? (
                         <div className="p-2 text-xs text-muted-foreground/50">—</div>
                       ) : (
-                        <div className="p-3 rounded-lg border border-dashed border-border/50 hover:border-primary/50 group">
-                          <Plus className="w-4 h-4 mx-auto text-muted-foreground/50 group-hover:text-primary transition-colors" />
+                        <div className={cn(
+                          "p-3 rounded-lg border border-dashed border-border/50 hover:border-primary/50 group transition-all",
+                          isOver && isValidDrop && "border-primary bg-primary/5"
+                        )}>
+                          <Plus className={cn(
+                            "w-4 h-4 mx-auto text-muted-foreground/50 group-hover:text-primary transition-colors",
+                            isOver && isValidDrop && "text-primary"
+                          )} />
                         </div>
                       )}
                       
