@@ -2,9 +2,11 @@ import { cn } from "@/lib/utils";
 import { TimetableEntry, PeriodStructure, subjectColors, TeacherLoad } from "@/data/timetableData";
 import { InfoTooltip } from "./InfoTooltip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, AlertTriangle, Clock, GripVertical } from "lucide-react";
+import { Plus, AlertTriangle, Clock, GripVertical, CalendarOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DragEvent, useState } from "react";
+import { Holiday } from "./HolidayCalendarDialog";
+import { format, parseISO, getDay, startOfWeek, addDays, isWithinInterval, startOfMonth, endOfMonth } from "date-fns";
 
 export interface DragData {
   type: 'teacher' | 'entry';
@@ -26,7 +28,19 @@ interface TimetableGridProps {
   onEntryDragEnd?: () => void;
   isDragging?: boolean;
   draggedEntry?: TimetableEntry | null;
+  holidays?: Holiday[];
 }
+
+// Map day names to day indices (0 = Sunday)
+const dayNameToIndex: Record<string, number> = {
+  'Sunday': 0,
+  'Monday': 1,
+  'Tuesday': 2,
+  'Wednesday': 3,
+  'Thursday': 4,
+  'Friday': 5,
+  'Saturday': 6,
+};
 
 export const TimetableGrid = ({
   entries,
@@ -42,6 +56,7 @@ export const TimetableGrid = ({
   onEntryDragEnd,
   isDragging = false,
   draggedEntry,
+  holidays = [],
 }: TimetableGridProps) => {
   const { workingDays, periodsPerDay, breakAfterPeriod, timeMapping } = periodStructure;
   const [dragOverCell, setDragOverCell] = useState<{ day: string; period: number } | null>(null);
@@ -68,6 +83,31 @@ export const TimetableGrid = ({
   const isTeacherAvailable = (day: string): boolean => {
     if (!selectedTeacher) return true;
     return selectedTeacher.workingDays.includes(day);
+  };
+
+  // Check if day has any holidays (for visual indicator in header)
+  const getHolidaysForDay = (dayName: string): Holiday[] => {
+    const dayIndex = dayNameToIndex[dayName];
+    if (dayIndex === undefined) return [];
+    
+    return holidays.filter(h => {
+      const holidayDate = parseISO(h.date);
+      return getDay(holidayDate) === dayIndex;
+    });
+  };
+
+  // Check if a specific day name has upcoming holidays
+  const hasUpcomingHoliday = (dayName: string): Holiday | null => {
+    const dayHolidays = getHolidaysForDay(dayName);
+    if (dayHolidays.length === 0) return null;
+    
+    // Return the nearest upcoming holiday on this day
+    const today = new Date();
+    const upcoming = dayHolidays
+      .filter(h => parseISO(h.date) >= today)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    
+    return upcoming[0] || null;
   };
 
   // Check if period should be avoided
@@ -154,20 +194,42 @@ export const TimetableGrid = ({
                   Period
                 </div>
               </th>
-              {workingDays.map(day => (
-                <th 
-                  key={day} 
-                  className={cn(
-                    "p-3 text-center text-sm font-medium border-b border-border",
-                    !isTeacherAvailable(day) && "bg-muted/60 text-muted-foreground/50"
-                  )}
-                >
-                  {day}
-                  {!isTeacherAvailable(day) && selectedTeacher && (
-                    <span className="block text-xs font-normal text-muted-foreground/70">Off Day</span>
-                  )}
-                </th>
-              ))}
+              {workingDays.map(day => {
+                const upcomingHoliday = hasUpcomingHoliday(day);
+                const isOff = !isTeacherAvailable(day);
+                
+                return (
+                  <th 
+                    key={day} 
+                    className={cn(
+                      "p-3 text-center text-sm font-medium border-b border-border relative",
+                      isOff && "bg-muted/60 text-muted-foreground/50",
+                      upcomingHoliday && "bg-destructive/5"
+                    )}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      {day}
+                      {upcomingHoliday && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CalendarOff className="w-3.5 h-3.5 text-destructive" />
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <p className="text-xs font-medium">{upcomingHoliday.name}</p>
+                            <p className="text-xs text-muted-foreground">{format(parseISO(upcomingHoliday.date), "MMM d, yyyy")}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                    {isOff && selectedTeacher && (
+                      <span className="block text-xs font-normal text-muted-foreground/70">Off Day</span>
+                    )}
+                    {upcomingHoliday && !isOff && (
+                      <span className="block text-xs font-normal text-destructive/70">Holiday</span>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>

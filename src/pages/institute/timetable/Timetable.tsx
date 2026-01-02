@@ -5,13 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls } from "@/components/timetable";
+import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls, HolidayCalendarDialog, Holiday } from "@/components/timetable";
 import { DragData } from "@/components/timetable/TimetableGrid";
-import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad } from "@/data/timetableData";
+import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad, academicHolidays } from "@/data/timetableData";
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { Settings, Upload, User, BookOpen, GripVertical } from "lucide-react";
+import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 
 // Quick Batch Picker Dialog Component
@@ -104,6 +104,10 @@ const Timetable = () => {
   // Batch picker dialog state
   const [batchPickerOpen, setBatchPickerOpen] = useState(false);
   const [pendingDrop, setPendingDrop] = useState<{ day: string; period: number; teacher: TeacherLoad } | null>(null);
+
+  // Holiday calendar state
+  const [holidayDialogOpen, setHolidayDialogOpen] = useState(false);
+  const [holidays, setHolidays] = useState<Holiday[]>(academicHolidays);
 
   // Use undo/redo history hook
   const {
@@ -383,6 +387,15 @@ const Timetable = () => {
               <Upload className="w-4 h-4 mr-2" />
               Upload Image
             </Button>
+            <Button variant="outline" onClick={() => setHolidayDialogOpen(true)}>
+              <CalendarDays className="w-4 h-4 mr-2" />
+              Holidays
+              {holidays.length > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5">
+                  {holidays.length}
+                </Badge>
+              )}
+            </Button>
             <Button variant="outline" onClick={() => navigate("/institute/timetable/setup")}>
               <Settings className="w-4 h-4 mr-2" />
               Setup
@@ -519,6 +532,7 @@ const Timetable = () => {
                   onEntryDragEnd={handleEntryDragEnd}
                   isDragging={isDragging}
                   draggedEntry={draggedEntry}
+                  holidays={holidays}
                 />
               </CardContent>
             </Card>
@@ -562,6 +576,17 @@ const Timetable = () => {
         period={pendingDrop?.period || 0}
         onSelectBatch={handleBatchSelect}
         getBatchConflict={(batchId) => pendingDrop ? checkBatchConflictAtSlot(batchId, pendingDrop.day, pendingDrop.period) : false}
+      />
+
+      {/* Holiday Calendar Dialog */}
+      <HolidayCalendarDialog
+        open={holidayDialogOpen}
+        onClose={() => setHolidayDialogOpen(false)}
+        holidays={holidays}
+        onSave={(newHolidays) => {
+          setHolidays(newHolidays);
+          toast.success("Holidays saved", { description: `${newHolidays.length} holidays configured` });
+        }}
       />
     </div>
   );
