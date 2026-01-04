@@ -49,6 +49,7 @@ import InstituteExams from "./pages/institute/exams/Exams";
 import InstituteCreateExam from "./pages/institute/exams/CreateExam";
 import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
 import InstitutePreviousYearPapers from "./pages/institute/exams/PreviousYearPapers";
+import InstitutePYPView from "./pages/institute/exams/PYPView";
 import InstituteMasterData from "./pages/institute/masterdata/MasterData";
 import InstituteContent from "./pages/institute/content/Content";
 import InstituteCreateContent from "./pages/institute/content/CreateContent";
@@ -118,6 +119,7 @@ const App = () => (
             <Route path="exams/create" element={<InstituteCreateExam />} />
             <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
             <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
+            <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
             <Route path="master-data" element={<InstituteMasterData />} />
           </Route>
           
