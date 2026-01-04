@@ -15,12 +15,12 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, description, breadcrumbs, actions }: PageHeaderProps) => {
   return (
-    <div className="mb-6 space-y-2">
+    <div className="mb-4 md:mb-6 space-y-2">
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+        <nav className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground overflow-x-auto">
           {breadcrumbs.map((crumb, index) => (
-            <div key={index} className="flex items-center gap-1">
-              {index > 0 && <ChevronRight className="w-4 h-4" />}
+            <div key={index} className="flex items-center gap-1 whitespace-nowrap">
+              {index > 0 && <ChevronRight className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />}
               {crumb.href ? (
                 <Link to={crumb.href} className="hover:text-foreground transition-colors">
                   {crumb.label}
@@ -32,12 +32,12 @@ const PageHeader = ({ title, description, breadcrumbs, actions }: PageHeaderProp
           ))}
         </nav>
       )}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-          {description && <div className="text-muted-foreground mt-1">{description}</div>}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground truncate">{title}</h1>
+          {description && <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{description}</div>}
         </div>
-        {actions && <div className="flex items-center gap-3">{actions}</div>}
+        {actions && <div className="flex items-center gap-2 flex-wrap shrink-0">{actions}</div>}
       </div>
     </div>
   );

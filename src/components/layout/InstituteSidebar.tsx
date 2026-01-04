@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +26,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 interface InstituteSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  isMobile?: boolean;
+  onMobileClose?: () => void;
 }
 
 interface NavItem {
@@ -56,7 +59,7 @@ const navItems: NavItem[] = [
   { title: "Settings", icon: Settings, href: "/institute/settings" },
 ];
 
-const InstituteSidebar = ({ collapsed, onToggle }: InstituteSidebarProps) => {
+const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: InstituteSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -256,7 +259,7 @@ const InstituteSidebar = ({ collapsed, onToggle }: InstituteSidebarProps) => {
       )}
     >
       {/* Logo Section */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
+      <div className="h-14 md:h-16 flex items-center justify-between px-4 border-b border-border/50">
         <button 
           onClick={() => navigate("/")}
           className={cn(
@@ -264,26 +267,36 @@ const InstituteSidebar = ({ collapsed, onToggle }: InstituteSidebarProps) => {
             collapsed && "justify-center"
           )}
         >
-          <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center shadow-lg flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl gradient-button flex items-center justify-center shadow-lg flex-shrink-0">
+            <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           {!collapsed && (
             <div className="overflow-hidden">
-              <h1 className="text-xl font-bold gradient-text whitespace-nowrap">DonutAI</h1>
+              <h1 className="text-lg md:text-xl font-bold gradient-text whitespace-nowrap">DonutAI</h1>
               <p className="text-[10px] text-muted-foreground -mt-0.5">Institute Panel</p>
             </div>
           )}
         </button>
         
-        <button
-          onClick={onToggle}
-          className={cn(
-            "w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground",
-            collapsed && "absolute -right-4 top-6 bg-card border border-border shadow-md"
-          )}
-        >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+        {/* Mobile close button or desktop toggle */}
+        {isMobile ? (
+          <button
+            onClick={onMobileClose}
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={onToggle}
+            className={cn(
+              "w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground",
+              collapsed && "absolute -right-4 top-6 bg-card border border-border shadow-md"
+            )}
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}

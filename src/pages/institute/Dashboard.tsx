@@ -77,72 +77,72 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 md:space-y-8 animate-fade-in">
       {/* Welcome Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Welcome back!</h1>
-          <p className="text-muted-foreground mt-1">Here's what's happening at your institute today</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Welcome back!</h1>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Here's what's happening at your institute today</p>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20">
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
           <Sparkles className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium text-primary">Academic Year 2024-25</span>
         </div>
       </div>
 
       {/* Quick Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <Card className="hover-lift cursor-pointer" onClick={() => navigate("/institute/batches")}>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-blue-600" />
+          <CardContent className="p-4 md:p-5">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{counts.totalBatches}</p>
-                <p className="text-sm text-muted-foreground">Batches</p>
+              <div className="min-w-0">
+                <p className="text-xl md:text-2xl font-bold text-foreground">{counts.totalBatches}</p>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Batches</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover-lift cursor-pointer" onClick={() => navigate("/institute/teachers")}>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <Users className="w-6 h-6 text-emerald-600" />
+          <CardContent className="p-4 md:p-5">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <Users className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{counts.totalTeachers}</p>
-                <p className="text-sm text-muted-foreground">Teachers</p>
+              <div className="min-w-0">
+                <p className="text-xl md:text-2xl font-bold text-foreground">{counts.totalTeachers}</p>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Teachers</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover-lift cursor-pointer" onClick={() => navigate("/institute/students")}>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-violet-600" />
+          <CardContent className="p-4 md:p-5">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                <GraduationCap className="w-5 h-5 md:w-6 md:h-6 text-violet-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{counts.totalStudents}</p>
-                <p className="text-sm text-muted-foreground">Students</p>
+              <div className="min-w-0">
+                <p className="text-xl md:text-2xl font-bold text-foreground">{counts.totalStudents}</p>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Students</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover-lift cursor-pointer" onClick={() => navigate("/institute/exams")}>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                <ClipboardList className="w-6 h-6 text-amber-600" />
+          <CardContent className="p-4 md:p-5">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <ClipboardList className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{counts.totalExams}</p>
-                <p className="text-sm text-muted-foreground">Exams</p>
+              <div className="min-w-0">
+                <p className="text-xl md:text-2xl font-bold text-foreground">{counts.totalExams}</p>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Exams</p>
               </div>
             </div>
           </CardContent>
@@ -150,11 +150,11 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
         {/* Setup Status - Left Column */}
         <Card className="lg:col-span-1">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-base md:text-lg flex items-center gap-2">
               <span>Setup Status</span>
               <Tooltip>
                 <TooltipTrigger>
@@ -166,53 +166,53 @@ const Dashboard = () => {
               </Tooltip>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 md:space-y-3">
             {setupItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => navigate(item.href)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors text-left group"
+                className="w-full flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl hover:bg-muted/50 transition-colors text-left group"
               >
                 {item.done ? (
-                  <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5 text-success" />
+                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-success" />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                    <XCircle className="w-5 h-5 text-destructive" />
+                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+                    <XCircle className="w-4 h-4 md:w-5 md:h-5 text-destructive" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-foreground">{item.label}</p>
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-xs md:text-sm text-foreground truncate">{item.label}</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground truncate">{item.description}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </button>
             ))}
           </CardContent>
         </Card>
 
         {/* Right Side - Quick Actions & Snapshot */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           {/* Quick Actions */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            <CardHeader className="pb-2 md:pb-3">
+              <CardTitle className="text-base md:text-lg">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                 {quickActions.map((action) => (
                   <Tooltip key={action.label}>
                     <TooltipTrigger asChild>
                       <Button
                         variant="outline"
                         onClick={() => navigate(action.href)}
-                        className="h-auto flex-col gap-2 p-4 hover:bg-primary/5 hover:border-primary/30 transition-all group"
+                        className="h-auto flex-col gap-1.5 md:gap-2 p-3 md:p-4 hover:bg-primary/5 hover:border-primary/30 transition-all group"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <action.icon className="w-5 h-5 text-primary" />
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <action.icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         </div>
-                        <span className="text-sm font-medium">{action.label}</span>
+                        <span className="text-xs md:text-sm font-medium text-center">{action.label}</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>{action.description}</TooltipContent>
@@ -224,46 +224,46 @@ const Dashboard = () => {
 
           {/* Today / This Week Snapshot */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
+            <CardHeader className="pb-2 md:pb-3">
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Calendar className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 This Week
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-blue-600" />
+              <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
+                <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-muted/30">
+                  <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{todaySnapshot.classesScheduled}</p>
-                    <p className="text-sm text-muted-foreground">Classes Today</p>
+                  <div className="min-w-0">
+                    <p className="text-xl md:text-2xl font-bold text-foreground">{todaySnapshot.classesScheduled}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">Classes Today</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30">
-                  <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <ClipboardList className="w-5 h-5 text-amber-600" />
+                <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-muted/30">
+                  <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                    <ClipboardList className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{todaySnapshot.testsScheduledThisWeek}</p>
-                    <p className="text-sm text-muted-foreground">Tests This Week</p>
+                  <div className="min-w-0">
+                    <p className="text-xl md:text-2xl font-bold text-foreground">{todaySnapshot.testsScheduledThisWeek}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">Tests This Week</p>
                   </div>
                 </div>
 
                 <button 
                   onClick={() => navigate("/institute/exams")}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-destructive/5 hover:bg-destructive/10 transition-colors group"
+                  className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-destructive/5 hover:bg-destructive/10 transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-destructive/20 flex items-center justify-center">
-                    <AlertCircle className="w-5 h-5 text-destructive" />
+                  <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-destructive/20 flex items-center justify-center shrink-0">
+                    <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-destructive" />
                   </div>
-                  <div className="text-left">
-                    <p className="text-2xl font-bold text-foreground">{todaySnapshot.pendingTestReviews}</p>
-                    <p className="text-sm text-muted-foreground">Pending Reviews</p>
+                  <div className="text-left min-w-0 flex-1">
+                    <p className="text-xl md:text-2xl font-bold text-foreground">{todaySnapshot.pendingTestReviews}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">Pending Reviews</p>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </div>
             </CardContent>

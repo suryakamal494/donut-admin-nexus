@@ -369,12 +369,12 @@ const Timetable = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <PageHeader
         title="Timetable Workspace"
-        description="Create and manage your school timetable. Drag teachers to assign periods."
+        description="Create and manage your school timetable."
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <UndoRedoControls
               canUndo={canUndo}
               canRedo={canRedo}
@@ -383,22 +383,22 @@ const Timetable = () => {
               lastAction={lastAction}
               nextAction={nextAction}
             />
-            <Button variant="outline" onClick={() => navigate("/institute/timetable/upload")}>
+            <Button variant="outline" size="sm" onClick={() => navigate("/institute/timetable/upload")} className="hidden sm:flex">
               <Upload className="w-4 h-4 mr-2" />
-              Upload Image
+              <span className="hidden md:inline">Upload</span>
             </Button>
-            <Button variant="outline" onClick={() => setHolidayDialogOpen(true)}>
-              <CalendarDays className="w-4 h-4 mr-2" />
-              Holidays
+            <Button variant="outline" size="sm" onClick={() => setHolidayDialogOpen(true)}>
+              <CalendarDays className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Holidays</span>
               {holidays.length > 0 && (
-                <Badge variant="secondary" className="ml-2 h-5 px-1.5">
+                <Badge variant="secondary" className="ml-1 sm:ml-2 h-5 px-1.5 text-xs">
                   {holidays.length}
                 </Badge>
               )}
             </Button>
-            <Button variant="outline" onClick={() => navigate("/institute/timetable/setup")}>
-              <Settings className="w-4 h-4 mr-2" />
-              Setup
+            <Button variant="outline" size="sm" onClick={() => navigate("/institute/timetable/setup")}>
+              <Settings className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Setup</span>
             </Button>
           </div>
         }
@@ -412,17 +412,23 @@ const Timetable = () => {
       />
 
       {/* View Mode Toggle */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
+      <Card className="p-3 md:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as 'teacher' | 'batch'); setSelectedBatchId(null); }}>
-            <TabsList>
-              <TabsTrigger value="teacher" className="gap-2"><User className="w-4 h-4" />Teacher View</TabsTrigger>
-              <TabsTrigger value="batch" className="gap-2"><BookOpen className="w-4 h-4" />Batch View</TabsTrigger>
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="teacher" className="gap-1.5 flex-1 sm:flex-initial text-xs sm:text-sm">
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Teacher</span>
+              </TabsTrigger>
+              <TabsTrigger value="batch" className="gap-1.5 flex-1 sm:flex-initial text-xs sm:text-sm">
+                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Batch</span>
+              </TabsTrigger>
             </TabsList>
           </Tabs>
           <div className="flex items-center gap-2">
             {viewMode === 'teacher' && (
-              <Badge variant="secondary" className="gap-1">
+              <Badge variant="secondary" className="gap-1 text-xs hidden md:flex">
                 <GripVertical className="w-3 h-3" />
                 Drag teachers to grid
               </Badge>
@@ -432,19 +438,19 @@ const Timetable = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Sidebar */}
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4 order-2 lg:order-1">
           {viewMode === 'teacher' ? (
             <>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Select Teacher</h3>
-                <Badge variant="secondary">{teacherLoads.length}</Badge>
+                <h3 className="font-semibold text-sm md:text-base">Select Teacher</h3>
+                <Badge variant="secondary" className="text-xs">{teacherLoads.length}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground hidden md:block">
                 Drag a teacher to the grid or click to select
               </p>
-              <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 max-h-[300px] lg:max-h-[500px] overflow-y-auto pr-1">
                 {teacherLoads.map(teacher => (
                   <TeacherLoadCard
                     key={teacher.teacherId}
@@ -462,8 +468,8 @@ const Timetable = () => {
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Select Batch</h3>
-                <Badge variant="secondary">{batches.length}</Badge>
+                <h3 className="font-semibold text-sm md:text-base">Select Batch</h3>
+                <Badge variant="secondary" className="text-xs">{batches.length}</Badge>
               </div>
               <BatchSelector
                 batches={batches}
@@ -475,7 +481,7 @@ const Timetable = () => {
         </div>
 
         {/* Main Grid */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 order-1 lg:order-2">
           {(viewMode === 'teacher' && selectedTeacher) || (viewMode === 'batch' && selectedBatch) ? (
             <Card>
               <CardContent className="p-4">
