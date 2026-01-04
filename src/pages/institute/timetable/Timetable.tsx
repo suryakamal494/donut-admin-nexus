@@ -11,8 +11,9 @@ import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry,
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays } from "lucide-react";
+import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays, ChevronLeft, ChevronRight, Save, Send, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { format, startOfWeek, addWeeks, subWeeks, addDays } from "date-fns";
 
 // Quick Batch Picker Dialog Component
 import {
@@ -108,6 +109,10 @@ const Timetable = () => {
   // Holiday calendar state
   const [holidayDialogOpen, setHolidayDialogOpen] = useState(false);
   const [holidays, setHolidays] = useState<Holiday[]>(academicHolidays);
+
+  // Week navigation state
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [saveStatus, setSaveStatus] = useState<'unsaved' | 'draft' | 'published'>('unsaved');
 
   // Use undo/redo history hook
   const {
@@ -368,6 +373,24 @@ const Timetable = () => {
     setPendingDrop(null);
   };
 
+  // Week navigation handlers
+  const goToPreviousWeek = () => setCurrentWeekStart(prev => subWeeks(prev, 1));
+  const goToNextWeek = () => setCurrentWeekStart(prev => addWeeks(prev, 1));
+  const goToCurrentWeek = () => setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
+
+  // Save/Publish handlers
+  const handleSaveDraft = () => {
+    setSaveStatus('draft');
+    toast.success("Draft saved", { description: `Timetable for week of ${format(currentWeekStart, 'MMM d')} saved as draft` });
+  };
+
+  const handlePublish = () => {
+    setSaveStatus('published');
+    toast.success("Timetable published!", { description: `Week of ${format(currentWeekStart, 'MMM d')} is now visible in View Timetable` });
+  };
+
+  const weekEndDate = addDays(currentWeekStart, 5); // Saturday
+
   return (
     <div className="space-y-4 md:space-y-6">
       <PageHeader
@@ -403,6 +426,57 @@ const Timetable = () => {
           </div>
         }
       />
+
+      {/* Week Selector & Save Actions */}
+      <Card className="p-3 md:p-4 bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 bg-background rounded-lg border p-1">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToPreviousWeek}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <div className="px-3 py-1 min-w-[180px] text-center">
+                <p className="text-sm font-semibold">
+                  {format(currentWeekStart, 'MMM d')} – {format(weekEndDate, 'MMM d, yyyy')}
+                </p>
+                <p className="text-xs text-muted-foreground">Creating timetable for this week</p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToNextWeek}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+            <Button variant="outline" size="sm" onClick={goToCurrentWeek} className="hidden sm:flex">
+              Today
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {saveStatus !== 'unsaved' && (
+              <Badge 
+                variant={saveStatus === 'published' ? 'default' : 'secondary'} 
+                className={cn(
+                  "text-xs",
+                  saveStatus === 'published' && "bg-green-100 text-green-700 hover:bg-green-100"
+                )}
+              >
+                {saveStatus === 'draft' ? 'Draft' : 'Published'}
+              </Badge>
+            )}
+            <Button variant="outline" size="sm" onClick={handleSaveDraft}>
+              <Save className="w-4 h-4 mr-2" />
+              Save Draft
+            </Button>
+            <Button size="sm" onClick={handlePublish}>
+              <Send className="w-4 h-4 mr-2" />
+              Publish
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/institute/timetable/view")}>
+              <Eye className="w-4 h-4 mr-2" />
+              View
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Conflict Summary Panel */}
       <ConflictSummaryPanel
@@ -539,6 +613,7 @@ const Timetable = () => {
                   isDragging={isDragging}
                   draggedEntry={draggedEntry}
                   holidays={holidays}
+                  weekStartDate={currentWeekStart}
                 />
               </CardContent>
             </Card>

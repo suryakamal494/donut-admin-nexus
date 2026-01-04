@@ -147,7 +147,7 @@ const BatchDashboard = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => navigate(`/institute/timetable?batchId=${batchId}`)}
+              onClick={() => navigate(`/institute/batches/${batchId}/timetable`)}
             >
               <Calendar className="h-4 w-4 mr-2" />
               View Timetable
