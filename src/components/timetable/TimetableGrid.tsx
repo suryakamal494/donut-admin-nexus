@@ -66,6 +66,22 @@ export const TimetableGrid = ({
   // Generate period numbers array
   const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1);
 
+  // Check if a specific date is a holiday
+  const isDateHoliday = (dayIndex: number): boolean => {
+    if (!weekStartDate || holidays.length === 0) return false;
+    const dateForDay = addDays(weekStartDate, dayIndex);
+    const dateStr = format(dateForDay, 'yyyy-MM-dd');
+    return holidays.some(h => h.date === dateStr);
+  };
+
+  // Get holiday info for a specific date
+  const getHolidayForDate = (dayIndex: number): Holiday | null => {
+    if (!weekStartDate || holidays.length === 0) return null;
+    const dateForDay = addDays(weekStartDate, dayIndex);
+    const dateStr = format(dateForDay, 'yyyy-MM-dd');
+    return holidays.find(h => h.date === dateStr) || null;
+  };
+
   // Get entry for specific cell
   const getEntry = (day: string, period: number): TimetableEntry | undefined => {
     if (viewMode === 'teacher' && selectedTeacher) {
@@ -130,16 +146,17 @@ export const TimetableGrid = ({
   };
 
   // Check if drop is valid for this cell
-  const isValidDropTarget = (day: string, period: number): boolean => {
+  const isValidDropTarget = (day: string, period: number, dayIndex: number): boolean => {
     if (!isTeacherAvailable(day)) return false;
+    if (isDateHoliday(dayIndex)) return false;
     const existingEntry = getEntry(day, period);
     if (existingEntry && draggedEntry?.id !== existingEntry.id) return false;
     return true;
   };
 
   // Handle drag over
-  const handleDragOver = (e: DragEvent<HTMLTableCellElement>, day: string, period: number) => {
-    if (!isTeacherAvailable(day)) return;
+  const handleDragOver = (e: DragEvent<HTMLTableCellElement>, day: string, period: number, dayIndex: number) => {
+    if (!isTeacherAvailable(day) || isDateHoliday(dayIndex)) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     setDragOverCell({ day, period });
@@ -151,11 +168,11 @@ export const TimetableGrid = ({
   };
 
   // Handle drop
-  const handleDrop = (e: DragEvent<HTMLTableCellElement>, day: string, period: number) => {
+  const handleDrop = (e: DragEvent<HTMLTableCellElement>, day: string, period: number, dayIndex: number) => {
     e.preventDefault();
     setDragOverCell(null);
     
-    if (!isTeacherAvailable(day)) return;
+    if (!isTeacherAvailable(day) || isDateHoliday(dayIndex)) return;
     
     try {
       const rawData = e.dataTransfer.getData('application/json');
@@ -280,16 +297,34 @@ export const TimetableGrid = ({
                       </Badge>
                     )}
                   </td>
-                  {workingDays.map(day => {
+                  {workingDays.map((day, dayIndex) => {
                     const entry = getEntry(day, period);
                     const isTeacherOff = !isTeacherAvailable(day);
+                    const isDayHoliday = isDateHoliday(dayIndex);
+                    const holidayInfo = getHolidayForDate(dayIndex);
                     const hasTeacherConflict = getTeacherConflict?.(day, period);
                     const hasBatchConflict = getBatchConflict?.(day, period);
                     const hasConflict = hasTeacherConflict || hasBatchConflict;
                     const colors = entry ? subjectColors[entry.subjectId] : null;
                     const isOver = dragOverCell?.day === day && dragOverCell?.period === period;
                     const isBeingDragged = draggedEntry?.id === entry?.id;
-                    const isValidDrop = isValidDropTarget(day, period);
+                    const isValidDrop = isValidDropTarget(day, period, dayIndex);
+                    const isBlocked = isTeacherOff || isDayHoliday;
+
+                    // Render holiday-blocked cell
+                    if (isDayHoliday) {
+                      return (
+                        <td
+                          key={`${day}-${period}`}
+                          className="p-2 text-center border-r border-border last:border-r-0 bg-muted/50"
+                        >
+                          <div className="p-2 flex flex-col items-center justify-center text-muted-foreground/50">
+                            <CalendarOff className="w-4 h-4 mb-1" />
+                            <span className="text-xs">Holiday</span>
+                          </div>
+                        </td>
+                      );
+                    }
 
                     return (
                       <td
@@ -297,18 +332,18 @@ export const TimetableGrid = ({
                         className={cn(
                           "p-2 text-center border-r border-border last:border-r-0 transition-all duration-200",
                           isTeacherOff && "bg-muted/40 cursor-not-allowed",
-                          !isTeacherOff && !entry && "hover:bg-primary/5 cursor-pointer",
+                          !isBlocked && !entry && "hover:bg-primary/5 cursor-pointer",
                           hasTeacherConflict && "bg-red-50 dark:bg-red-950/20",
                           hasBatchConflict && "bg-amber-50 dark:bg-amber-950/20",
                           // Drag-over styling
                           isOver && isValidDrop && "ring-2 ring-primary ring-inset bg-primary/10",
                           isOver && !isValidDrop && "ring-2 ring-destructive ring-inset bg-destructive/10",
-                          isDragging && !isTeacherOff && !entry && isValidDrop && "bg-primary/5 border-dashed"
+                          isDragging && !isBlocked && !entry && isValidDrop && "bg-primary/5 border-dashed"
                         )}
-                        onClick={() => !isTeacherOff && onCellClick?.(day, period, entry)}
-                        onDragOver={(e) => handleDragOver(e, day, period)}
+                        onClick={() => !isBlocked && onCellClick?.(day, period, entry)}
+                        onDragOver={(e) => handleDragOver(e, day, period, dayIndex)}
                         onDragLeave={handleDragLeave}
-                        onDrop={(e) => handleDrop(e, day, period)}
+                        onDrop={(e) => handleDrop(e, day, period, dayIndex)}
                       >
                         {entry ? (
                           <div
