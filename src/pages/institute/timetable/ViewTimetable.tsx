@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,12 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Calendar as CalendarIcon, 
-  Download,
   Printer,
-  CalendarOff
+  CalendarOff,
+  Pencil,
+  Lock
 } from "lucide-react";
-import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addMonths, subMonths, eachDayOfInterval, startOfMonth, endOfMonth, isSameMonth, isToday, getDay } from "date-fns";
+import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addMonths, subMonths, eachDayOfInterval, startOfMonth, endOfMonth, isToday, getDay, isBefore, isAfter, startOfDay } from "date-fns";
 import { timetableEntries, defaultPeriodStructure, subjectColors } from "@/data/timetableData";
 import { batches } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
@@ -30,6 +32,7 @@ const defaultHolidays: Holiday[] = academicHolidays.map(h => ({
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const ViewTimetable = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedBatch, setSelectedBatch] = useState<string>('all');
@@ -37,9 +40,17 @@ const ViewTimetable = () => {
   const printRef = useRef<HTMLDivElement>(null);
   const [holidays] = useState<Holiday[]>(defaultHolidays);
 
+  // Determine if viewing past or future week
+  const today = startOfDay(new Date());
+
   // Get week boundaries
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
+
+  // Check if this is a past week (week end is before today)
+  const isPastWeek = isBefore(weekEnd, today);
+  const isFutureWeek = isAfter(weekStart, today);
+  const isCurrentWeek = !isPastWeek && !isFutureWeek;
 
   // Get month boundaries
   const monthStart = startOfMonth(currentDate);
@@ -102,8 +113,11 @@ const ViewTimetable = () => {
   };
 
   // Print handler
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = () => window.print();
+
+  // Navigate to workspace with this week pre-selected
+  const handleEditWeek = () => {
+    navigate(`/institute/timetable?week=${format(weekStart, 'yyyy-MM-dd')}`);
   };
 
   // Get working days
@@ -197,8 +211,36 @@ const ViewTimetable = () => {
                 <Printer className="w-4 h-4 mr-2" />
                 Export PDF
               </Button>
+
+              {/* Edit button - only for future weeks */}
+              {!isPastWeek && viewMode === 'weekly' && (
+                <Button onClick={handleEditWeek} className="print:hidden">
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Edit Week
+                </Button>
+              )}
             </div>
           </div>
+
+          {/* Past/Future Week Indicator */}
+          {viewMode === 'weekly' && (isPastWeek || isFutureWeek) && (
+            <div className={cn(
+              "mt-3 pt-3 border-t flex items-center gap-2",
+              isPastWeek ? "text-muted-foreground" : "text-primary"
+            )}>
+              {isPastWeek ? (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span className="text-sm">This is a past week. Timetable is read-only.</span>
+                </>
+              ) : (
+                <>
+                  <Pencil className="w-4 h-4" />
+                  <span className="text-sm">This is a future week. You can edit this timetable.</span>
+                </>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 

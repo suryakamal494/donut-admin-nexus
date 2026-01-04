@@ -29,6 +29,7 @@ interface TimetableGridProps {
   isDragging?: boolean;
   draggedEntry?: TimetableEntry | null;
   holidays?: Holiday[];
+  weekStartDate?: Date;
 }
 
 // Map day names to day indices (0 = Sunday)
@@ -57,6 +58,7 @@ export const TimetableGrid = ({
   isDragging = false,
   draggedEntry,
   holidays = [],
+  weekStartDate,
 }: TimetableGridProps) => {
   const { workingDays, periodsPerDay, breakAfterPeriod, timeMapping } = periodStructure;
   const [dragOverCell, setDragOverCell] = useState<{ day: string; period: number } | null>(null);
@@ -194,9 +196,12 @@ export const TimetableGrid = ({
                   Period
                 </div>
               </th>
-              {workingDays.map(day => {
+              {workingDays.map((day, dayIndex) => {
                 const upcomingHoliday = hasUpcomingHoliday(day);
                 const isOff = !isTeacherAvailable(day);
+                
+                // Calculate the actual date for this day
+                const dayDate = weekStartDate ? addDays(weekStartDate, dayIndex) : null;
                 
                 return (
                   <th 
@@ -207,18 +212,25 @@ export const TimetableGrid = ({
                       upcomingHoliday && "bg-destructive/5"
                     )}
                   >
-                    <div className="flex items-center justify-center gap-1">
-                      {day}
-                      {upcomingHoliday && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <CalendarOff className="w-3.5 h-3.5 text-destructive" />
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">
-                            <p className="text-xs font-medium">{upcomingHoliday.name}</p>
-                            <p className="text-xs text-muted-foreground">{format(parseISO(upcomingHoliday.date), "MMM d, yyyy")}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex items-center justify-center gap-1">
+                        {day}
+                        {upcomingHoliday && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <CalendarOff className="w-3.5 h-3.5 text-destructive" />
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              <p className="text-xs font-medium">{upcomingHoliday.name}</p>
+                              <p className="text-xs text-muted-foreground">{format(parseISO(upcomingHoliday.date), "MMM d, yyyy")}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                      {dayDate && (
+                        <span className="text-xs font-normal text-muted-foreground">
+                          {format(dayDate, 'MMM d')}
+                        </span>
                       )}
                     </div>
                     {isOff && selectedTeacher && (

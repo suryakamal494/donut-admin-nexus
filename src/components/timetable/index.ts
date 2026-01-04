@@ -1,6 +1,7 @@
 export { InfoTooltip } from './InfoTooltip';
 export { TeacherLoadCard } from './TeacherLoadCard';
 export { TimetableGrid } from './TimetableGrid';
+export { ParsedTimetableValidator } from './ParsedTimetableValidator';
 export { BatchSelector } from './BatchSelector';
 export { AssignmentDialog } from './AssignmentDialog';
 export { ConflictSummaryPanel } from './ConflictSummaryPanel';

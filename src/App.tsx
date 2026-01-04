@@ -33,6 +33,7 @@ import InstituteDashboard from "./pages/institute/Dashboard";
 import InstituteBatches from "./pages/institute/batches/Batches";
 import CreateBatch from "./pages/institute/batches/CreateBatch";
 import BatchDashboard from "./pages/institute/batches/BatchDashboard";
+import BatchTimetable from "./pages/institute/batches/BatchTimetable";
 import InstituteTeachers from "./pages/institute/teachers/Teachers";
 import CreateTeacher from "./pages/institute/teachers/CreateTeacher";
 import BulkUploadTeachers from "./pages/institute/teachers/BulkUploadTeachers";
@@ -97,6 +98,7 @@ const App = () => (
             <Route path="batches" element={<InstituteBatches />} />
             <Route path="batches/create" element={<CreateBatch />} />
             <Route path="batches/:batchId" element={<BatchDashboard />} />
+            <Route path="batches/:batchId/timetable" element={<BatchTimetable />} />
             <Route path="teachers" element={<InstituteTeachers />} />
             <Route path="teachers/create" element={<CreateTeacher />} />
             <Route path="teachers/bulk-upload" element={<BulkUploadTeachers />} />
