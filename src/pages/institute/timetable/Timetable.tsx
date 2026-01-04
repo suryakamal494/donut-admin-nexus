@@ -573,6 +573,17 @@ const Timetable = () => {
             </CollapsibleTrigger>
           </Collapsible>
 
+          {/* Upload Image - Prominent Action */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-7 text-xs gap-1 border-primary/30 hover:border-primary hover:bg-primary/5" 
+            onClick={() => navigate("/institute/timetable/upload")}
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Upload</span>
+          </Button>
+
           {/* Spacer */}
           <div className="flex-1" />
 
@@ -599,25 +610,21 @@ const Timetable = () => {
             <span className="hidden sm:inline">Publish</span>
           </Button>
 
-          {/* More Actions Dropdown */}
+          {/* Settings Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontal className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="h-7 w-7" title="Timetable settings">
+                <Settings className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate("/institute/timetable/upload")}>
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Image
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setHolidayDialogOpen(true)}>
                 <CalendarDays className="w-4 h-4 mr-2" />
                 Holidays {holidays.length > 0 && `(${holidays.length})`}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/institute/timetable/setup")}>
                 <Settings className="w-4 h-4 mr-2" />
-                Setup
+                Period Setup
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/institute/timetable/view")}>
                 <Eye className="w-4 h-4 mr-2" />
@@ -649,7 +656,7 @@ const Timetable = () => {
                 <h3 className="font-semibold text-sm">Select Teacher</h3>
                 <Badge variant="secondary" className="text-xs">{teacherLoads.length}</Badge>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-1.5 max-h-[250px] lg:max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+              <div className="grid grid-cols-1 gap-1.5 max-h-[250px] lg:max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
                 {teacherLoads.map(teacher => (
                   <TeacherLoadCard
                     key={teacher.teacherId}

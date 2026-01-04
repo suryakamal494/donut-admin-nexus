@@ -57,7 +57,7 @@ export const TeacherLoadCard = ({
         onDragEnd={handleDragEnd}
         onClick={onClick}
         className={cn(
-          "w-full flex items-center gap-3 p-3 rounded-xl border transition-all duration-200",
+          "w-full flex items-center gap-2 p-2.5 rounded-xl border transition-all duration-200 min-w-0 overflow-hidden",
           isSelected 
             ? "border-primary bg-primary/5 shadow-sm" 
             : "border-border hover:border-primary/50 hover:bg-muted/30",
@@ -66,21 +66,21 @@ export const TeacherLoadCard = ({
         )}
       >
         {draggable && (
-          <GripVertical className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+          <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
         )}
-        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <User className="w-4 h-4 text-primary" />
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <User className="w-3.5 h-3.5 text-primary" />
         </div>
-        <div className="flex-1 text-left min-w-0">
+        <div className="flex-1 text-left min-w-0 overflow-hidden">
           <p className="font-medium text-sm truncate">{teacher.teacherName}</p>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{remaining} left</span>
-            <span>•</span>
-            <span>{percentage}%</span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="truncate">{remaining} left</span>
+            <span className="flex-shrink-0">•</span>
+            <span className="flex-shrink-0">{percentage}%</span>
           </div>
         </div>
         {isOverloaded && (
-          <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0" />
+          <AlertTriangle className="w-3.5 h-3.5 text-destructive flex-shrink-0" />
         )}
       </div>
     );
