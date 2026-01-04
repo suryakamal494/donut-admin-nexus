@@ -1,4 +1,4 @@
-export * from "./QuestionCard";
+export { QuestionCard, type QuestionCardMode, type QuestionWithSource } from "./QuestionCard";
 export * from "./QuestionFilters";
 export * from "./QuestionPagination";
 export * from "./QuestionTypeIcon";

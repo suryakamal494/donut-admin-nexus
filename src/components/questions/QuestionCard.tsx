@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Eye, Edit, Trash2, ChevronDown, ChevronUp, Clock, Award, Calendar, ExternalLink } from "lucide-react";
+import { Lock, Building2, Eye, Edit, Trash2, ChevronDown, ChevronUp, Clock, Award, Calendar, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SubjectBadge } from "@/components/subject/SubjectBadge";
 import { QuestionTypeIcon } from "./QuestionTypeIcon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Question, 
   questionTypeLabels, 
@@ -14,16 +15,24 @@ import {
 } from "@/data/questionsData";
 import { cn } from "@/lib/utils";
 
+export type QuestionCardMode = "superadmin" | "institute";
+
+export interface QuestionWithSource extends Question {
+  sourceType?: "global" | "institute";
+}
+
 interface QuestionCardProps {
-  question: Question;
-  onView?: (question: Question) => void;
-  onEdit?: (question: Question) => void;
-  onDelete?: (question: Question) => void;
+  question: QuestionWithSource;
+  mode?: QuestionCardMode;
+  onView?: (question: QuestionWithSource) => void;
+  onEdit?: (question: QuestionWithSource) => void;
+  onDelete?: (question: QuestionWithSource) => void;
   showParagraphBadge?: boolean;
 }
 
 export const QuestionCard = ({ 
   question, 
+  mode = "superadmin",
   onView, 
   onEdit, 
   onDelete,
@@ -34,6 +43,12 @@ export const QuestionCard = ({
   const difficultyStyle = difficultyConfig[question.difficulty];
   const languageLabel = languageConfig[question.language];
   const statusStyle = statusConfig[question.status];
+  
+  // Institute mode specific
+  const isInstituteMode = mode === "institute";
+  const isGlobal = isInstituteMode && question.sourceType === "global";
+  const canEdit = isInstituteMode ? !isGlobal : true;
+  const canDelete = isInstituteMode ? !isGlobal : true;
 
   const renderOptions = () => {
     if (!question.options) return null;
@@ -135,7 +150,47 @@ export const QuestionCard = ({
   };
 
   return (
-    <div className="bg-card rounded-2xl p-5 shadow-soft border border-border/50 hover:shadow-lg transition-shadow">
+    <div className={cn(
+      "bg-card rounded-2xl p-5 shadow-soft border hover:shadow-lg transition-shadow",
+      isInstituteMode 
+        ? isGlobal 
+          ? "border-blue-200/50" 
+          : "border-amber-200/50"
+        : "border-border/50"
+    )}>
+      {/* Source Badge - Only in Institute Mode */}
+      {isInstituteMode && (
+        <div className="flex items-center justify-between mb-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "gap-1.5 cursor-help",
+                  isGlobal 
+                    ? "bg-blue-50 text-blue-700 border-blue-200" 
+                    : "bg-amber-50 text-amber-700 border-amber-200"
+                )}
+              >
+                {isGlobal ? <Lock className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
+                {isGlobal ? "Global" : "Institute"}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              {isGlobal 
+                ? "Shared by platform. View only - cannot edit or delete." 
+                : "Created by your institute. You can edit or delete this question."}
+            </TooltipContent>
+          </Tooltip>
+
+          {question.status !== "approved" && (
+            <Badge variant="outline" className={cn("text-xs", statusStyle.className)}>
+              {statusStyle.label}
+            </Badge>
+          )}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -160,13 +215,16 @@ export const QuestionCard = ({
             </Badge>
           )}
         </div>
-        <div className="flex gap-1">
-          {question.status !== "approved" && (
-            <Badge variant="outline" className={cn("text-xs", statusStyle.className)}>
-              {statusStyle.label}
-            </Badge>
-          )}
-        </div>
+        {/* Status badge for SuperAdmin mode */}
+        {!isInstituteMode && (
+          <div className="flex gap-1">
+            {question.status !== "approved" && (
+              <Badge variant="outline" className={cn("text-xs", statusStyle.className)}>
+                {statusStyle.label}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Subject & Classification */}
@@ -237,10 +295,12 @@ export const QuestionCard = ({
               {question.source}
             </span>
           )}
-          <span className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4" />
-            {question.createdAt}
-          </span>
+          {!isInstituteMode && (
+            <span className="flex items-center gap-1.5">
+              <Calendar className="w-4 h-4" />
+              {question.createdAt}
+            </span>
+          )}
         </div>
         <div className="flex gap-1">
           {onView && (
@@ -249,14 +309,46 @@ export const QuestionCard = ({
             </Button>
           )}
           {onEdit && (
-            <Button variant="ghost" size="icon" onClick={() => onEdit(question)}>
-              <Edit className="w-4 h-4" />
-            </Button>
+            isInstituteMode && !canEdit ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    disabled
+                    className="opacity-50 cursor-not-allowed"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Global questions cannot be edited</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Button variant="ghost" size="icon" onClick={() => onEdit(question)}>
+                <Edit className="w-4 h-4" />
+              </Button>
+            )
           )}
           {onDelete && (
-            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(question)}>
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            isInstituteMode && !canDelete ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-destructive opacity-50 cursor-not-allowed"
+                    disabled
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Global questions cannot be deleted</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(question)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )
           )}
         </div>
       </div>
