@@ -9,6 +9,36 @@ export interface PeriodStructure {
   isConfigured: boolean;
 }
 
+// NEW: Period Types (Library, Lab, Sports, etc.)
+export interface PeriodType {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  requiresTeacher: boolean;
+  isDouble: boolean;
+  isDefault: boolean;
+}
+
+// NEW: Academic Term
+export interface AcademicTerm {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+// NEW: Batch Exam Schedule
+export interface BatchExamSchedule {
+  id: string;
+  batchId: string;
+  batchName: string;
+  termId: string;
+  examType: 'weekly' | 'monthly' | 'terminal' | 'annual';
+  dates: string[];
+  recurringDay?: string;
+}
+
 export interface TeacherLoad {
   teacherId: string;
   teacherName: string;
@@ -31,6 +61,7 @@ export interface TimetableEntry {
   teacherName: string;
   batchId: string;
   batchName: string;
+  periodType?: string; // NEW: 'regular' | 'library' | 'lab' | etc.
 }
 
 export interface TimetableConflict {
@@ -276,4 +307,29 @@ export const academicHolidays = [
   { date: '2025-10-02', name: 'Gandhi Jayanti' },
   { date: '2025-10-24', name: 'Diwali' },
   { date: '2025-12-25', name: 'Christmas' },
+];
+
+// NEW: Default Period Types
+export const defaultPeriodTypes: PeriodType[] = [
+  { id: 'regular', name: 'Regular Class', icon: 'BookOpen', color: 'bg-blue-100 text-blue-700', requiresTeacher: true, isDouble: false, isDefault: true },
+  { id: 'library', name: 'Library', icon: 'Library', color: 'bg-amber-100 text-amber-700', requiresTeacher: false, isDouble: false, isDefault: true },
+  { id: 'lab', name: 'Lab', icon: 'FlaskConical', color: 'bg-purple-100 text-purple-700', requiresTeacher: true, isDouble: true, isDefault: true },
+  { id: 'sports', name: 'Sports', icon: 'Dumbbell', color: 'bg-green-100 text-green-700', requiresTeacher: true, isDouble: false, isDefault: true },
+  { id: 'activity', name: 'Activity', icon: 'Palette', color: 'bg-pink-100 text-pink-700', requiresTeacher: true, isDouble: false, isDefault: true },
+  { id: 'assembly', name: 'Assembly', icon: 'Users', color: 'bg-slate-100 text-slate-700', requiresTeacher: false, isDouble: false, isDefault: true },
+  { id: 'free', name: 'Free Period', icon: 'Coffee', color: 'bg-gray-100 text-gray-700', requiresTeacher: false, isDouble: false, isDefault: true },
+  { id: 'exam', name: 'Exam', icon: 'FileEdit', color: 'bg-red-100 text-red-700', requiresTeacher: true, isDouble: true, isDefault: true },
+];
+
+// NEW: Academic Terms
+export const academicTerms: AcademicTerm[] = [
+  { id: 'term-1', name: 'Term 1', startDate: '2025-04-01', endDate: '2025-09-30' },
+  { id: 'term-2', name: 'Term 2', startDate: '2025-10-01', endDate: '2026-03-31' },
+];
+
+// NEW: Batch Exam Schedules (sample)
+export const batchExamSchedules: BatchExamSchedule[] = [
+  { id: 'sch-1', batchId: 'batch-1', batchName: 'Class 10 - Section A', termId: 'term-1', examType: 'weekly', dates: [], recurringDay: 'Saturday' },
+  { id: 'sch-2', batchId: 'batch-1', batchName: 'Class 10 - Section A', termId: 'term-1', examType: 'monthly', dates: ['2025-04-28', '2025-05-26', '2025-06-30'] },
+  { id: 'sch-3', batchId: 'batch-1', batchName: 'Class 10 - Section A', termId: 'term-1', examType: 'terminal', dates: ['2025-09-15', '2025-09-16', '2025-09-17'] },
 ];

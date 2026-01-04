@@ -5,13 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls, HolidayCalendarDialog, Holiday } from "@/components/timetable";
+import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls, HolidayCalendarDialog, Holiday, CopyWeekDialog, CopyOptions } from "@/components/timetable";
 import { DragData } from "@/components/timetable/TimetableGrid";
 import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad, academicHolidays } from "@/data/timetableData";
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays, ChevronLeft, ChevronRight, Save, Send, Eye, MoreHorizontal, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays, ChevronLeft, ChevronRight, Save, Send, Eye, MoreHorizontal, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { format, startOfWeek, addWeeks, subWeeks, addDays, parseISO } from "date-fns";
 import {
@@ -128,6 +128,9 @@ const Timetable = () => {
   // Holiday calendar state
   const [holidayDialogOpen, setHolidayDialogOpen] = useState(false);
   const [holidays, setHolidays] = useState<Holiday[]>(academicHolidays);
+
+  // Copy week dialog state
+  const [copyWeekDialogOpen, setCopyWeekDialogOpen] = useState(false);
 
   // Week navigation state
   const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -488,6 +491,42 @@ const Timetable = () => {
     toast.success("Timetable published!", { description: `Week of ${format(currentWeekStart, 'MMM d')} is now visible in View Timetable` });
   };
 
+  // Handle copy week
+  const handleCopyWeek = (targetWeeks: Date[], options: CopyOptions) => {
+    // Filter entries for current week context
+    const currentEntries = viewMode === 'teacher' && selectedTeacher
+      ? entries.filter(e => e.teacherId === selectedTeacher.teacherId)
+      : viewMode === 'batch' && selectedBatchId
+        ? entries.filter(e => e.batchId === selectedBatchId)
+        : entries;
+
+    let copiedCount = 0;
+    
+    targetWeeks.forEach(weekStart => {
+      currentEntries.forEach(entry => {
+        // Check if should skip holidays
+        if (options.skipHolidays) {
+          const entryDate = addDays(weekStart, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(entry.day));
+          const dateStr = format(entryDate, 'yyyy-MM-dd');
+          if (holidays.some(h => h.date === dateStr)) {
+            return;
+          }
+        }
+
+        const newEntry: TimetableEntry = {
+          ...entry,
+          id: `entry-copy-${Date.now()}-${Math.random()}`,
+        };
+        addEntry(newEntry);
+        copiedCount++;
+      });
+    });
+
+    toast.success("Week copied!", { 
+      description: `${copiedCount} entries copied to ${targetWeeks.length} week${targetWeeks.length > 1 ? 's' : ''}` 
+    });
+  };
+
   const weekEndDate = addDays(currentWeekStart, 5); // Saturday
 
   return (
@@ -584,6 +623,18 @@ const Timetable = () => {
             <span className="hidden sm:inline">Upload</span>
           </Button>
 
+          {/* Copy Week */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-7 text-xs gap-1" 
+            onClick={() => setCopyWeekDialogOpen(true)}
+            disabled={entries.length === 0}
+          >
+            <Copy className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Copy Week</span>
+          </Button>
+
           {/* Spacer */}
           <div className="flex-1" />
 
@@ -618,13 +669,9 @@ const Timetable = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setHolidayDialogOpen(true)}>
-                <CalendarDays className="w-4 h-4 mr-2" />
-                Holidays {holidays.length > 0 && `(${holidays.length})`}
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/institute/timetable/setup")}>
                 <Settings className="w-4 h-4 mr-2" />
-                Period Setup
+                Setup & Configuration
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/institute/timetable/view")}>
                 <Eye className="w-4 h-4 mr-2" />
@@ -794,6 +841,22 @@ const Timetable = () => {
           setHolidays(newHolidays);
           toast.success("Holidays saved", { description: `${newHolidays.length} holidays configured` });
         }}
+      />
+
+      {/* Copy Week Dialog */}
+      <CopyWeekDialog
+        open={copyWeekDialogOpen}
+        onClose={() => setCopyWeekDialogOpen(false)}
+        sourceWeekStart={currentWeekStart}
+        entries={
+          viewMode === 'teacher' && selectedTeacher
+            ? entries.filter(e => e.teacherId === selectedTeacher.teacherId)
+            : viewMode === 'batch' && selectedBatchId
+              ? entries.filter(e => e.batchId === selectedBatchId)
+              : entries
+        }
+        holidays={holidays}
+        onCopy={handleCopyWeek}
       />
     </div>
   );

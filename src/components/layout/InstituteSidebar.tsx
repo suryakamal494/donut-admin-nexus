@@ -48,6 +48,7 @@ const navItems: NavItem[] = [
     icon: Calendar, 
     href: "/institute/timetable",
     subItems: [
+      { title: "Setup", icon: Settings, href: "/institute/timetable/setup" },
       { title: "Workspace", icon: Wrench, href: "/institute/timetable" },
       { title: "View Timetable", icon: Eye, href: "/institute/timetable/view" },
     ]
