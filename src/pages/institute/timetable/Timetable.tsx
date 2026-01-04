@@ -1,5 +1,5 @@
 import { useState, useEffect, DragEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,20 @@ import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry,
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays, ChevronLeft, ChevronRight, Save, Send, Eye } from "lucide-react";
+import { Settings, Upload, User, BookOpen, GripVertical, CalendarDays, ChevronLeft, ChevronRight, Save, Send, Eye, MoreHorizontal, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { format, startOfWeek, addWeeks, subWeeks, addDays } from "date-fns";
+import { format, startOfWeek, addWeeks, subWeeks, addDays, parseISO } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 // Quick Batch Picker Dialog Component
 import {
@@ -89,8 +100,16 @@ const BatchPickerDialog = ({
   );
 };
 
+// Types for embed data from upload page
+interface EmbedData {
+  batchId: string;
+  entries: Array<{ day: string; period: number; subject: string; teacher: string }>;
+  weekStart: string;
+}
+
 const Timetable = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [viewMode, setViewMode] = useState<'teacher' | 'batch'>('teacher');
   const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(teacherLoads[0]?.teacherId || null);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
@@ -114,6 +133,9 @@ const Timetable = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [saveStatus, setSaveStatus] = useState<'unsaved' | 'draft' | 'published'>('unsaved');
 
+  // Conflict panel collapsed state
+  const [conflictPanelOpen, setConflictPanelOpen] = useState(false);
+
   // Use undo/redo history hook
   const {
     entries,
@@ -130,6 +152,83 @@ const Timetable = () => {
 
   const selectedTeacher = teacherLoads.find(t => t.teacherId === selectedTeacherId);
   const selectedBatch = batches.find(b => b.id === selectedBatchId);
+
+  // Calculate conflicts count for compact display
+  const conflictCount = (() => {
+    const conflicts: string[] = [];
+    // Teacher clashes
+    entries.forEach((entry, i) => {
+      entries.slice(i + 1).forEach(other => {
+        if (entry.teacherId === other.teacherId && entry.day === other.day && entry.periodNumber === other.periodNumber) {
+          conflicts.push(`teacher-${entry.teacherId}-${entry.day}-${entry.periodNumber}`);
+        }
+      });
+    });
+    // Batch clashes
+    entries.forEach((entry, i) => {
+      entries.slice(i + 1).forEach(other => {
+        if (entry.batchId === other.batchId && entry.day === other.day && entry.periodNumber === other.periodNumber) {
+          conflicts.push(`batch-${entry.batchId}-${entry.day}-${entry.periodNumber}`);
+        }
+      });
+    });
+    return new Set(conflicts).size;
+  })();
+
+  // Handle embed data from upload page
+  useEffect(() => {
+    const embedData = location.state?.embedData as EmbedData | undefined;
+    if (embedData) {
+      // Switch to batch view
+      setViewMode('batch');
+      setSelectedBatchId(embedData.batchId);
+      
+      // Set the week if provided
+      if (embedData.weekStart) {
+        try {
+          setCurrentWeekStart(parseISO(embedData.weekStart));
+        } catch (e) {
+          // Keep current week if parsing fails
+        }
+      }
+      
+      // Add entries to grid
+      const batch = batches.find(b => b.id === embedData.batchId);
+      let addedCount = 0;
+      
+      embedData.entries.forEach(entry => {
+        // Find teacher by name
+        const teacher = teacherLoads.find(t => 
+          t.teacherName.toLowerCase().includes(entry.teacher.toLowerCase()) ||
+          entry.teacher.toLowerCase().includes(t.teacherName.split(' ').pop()?.toLowerCase() || '')
+        );
+        
+        if (teacher) {
+          const subjectData = availableSubjects.find(s => s.name === entry.subject);
+          const newEntry: TimetableEntry = {
+            id: `entry-embed-${Date.now()}-${Math.random()}`,
+            day: entry.day,
+            periodNumber: entry.period,
+            subjectId: subjectData?.id || entry.subject.toLowerCase().slice(0, 3),
+            subjectName: entry.subject,
+            teacherId: teacher.teacherId,
+            teacherName: teacher.teacherName,
+            batchId: embedData.batchId,
+            batchName: batch ? `${batch.className} - ${batch.name}` : 'Unknown Batch',
+          };
+          addEntry(newEntry);
+          addedCount++;
+        }
+      });
+      
+      // Clear navigation state
+      window.history.replaceState({}, document.title);
+      
+      toast.success("Timetable embedded!", { 
+        description: `${addedCount} entries added to ${batch?.className} - ${batch?.name}` 
+      });
+    }
+  }, [location.state]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
@@ -392,12 +491,12 @@ const Timetable = () => {
   const weekEndDate = addDays(currentWeekStart, 5); // Saturday
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-3">
+      {/* Compact Header */}
       <PageHeader
         title="Timetable Workspace"
-        description="Create and manage your school timetable."
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <UndoRedoControls
               canUndo={canUndo}
               canRedo={canRedo}
@@ -406,125 +505,151 @@ const Timetable = () => {
               lastAction={lastAction}
               nextAction={nextAction}
             />
-            <Button variant="outline" size="sm" onClick={() => navigate("/institute/timetable/upload")} className="hidden sm:flex">
-              <Upload className="w-4 h-4 mr-2" />
-              <span className="hidden md:inline">Upload</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setHolidayDialogOpen(true)}>
-              <CalendarDays className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Holidays</span>
-              {holidays.length > 0 && (
-                <Badge variant="secondary" className="ml-1 sm:ml-2 h-5 px-1.5 text-xs">
-                  {holidays.length}
-                </Badge>
-              )}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/institute/timetable/setup")}>
-              <Settings className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Setup</span>
-            </Button>
           </div>
         }
       />
 
-      {/* Week Selector & Save Actions */}
-      <Card className="p-3 md:p-4 bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 bg-background rounded-lg border p-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToPreviousWeek}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <div className="px-3 py-1 min-w-[180px] text-center">
-                <p className="text-sm font-semibold">
-                  {format(currentWeekStart, 'MMM d')} – {format(weekEndDate, 'MMM d, yyyy')}
-                </p>
-                <p className="text-xs text-muted-foreground">Creating timetable for this week</p>
-              </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToNextWeek}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+      {/* Compact All-in-One Toolbar */}
+      <Card className="p-2.5 bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Week Selector */}
+          <div className="flex items-center gap-1 bg-background rounded-lg border p-0.5">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToPreviousWeek}>
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <div className="px-2 py-1 min-w-[140px] text-center">
+              <p className="text-xs font-semibold">
+                {format(currentWeekStart, 'MMM d')} – {format(weekEndDate, 'MMM d')}
+              </p>
             </div>
-            <Button variant="outline" size="sm" onClick={goToCurrentWeek} className="hidden sm:flex">
-              Today
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToNextWeek}>
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
+          <Button variant="outline" size="sm" className="h-7 text-xs hidden sm:flex" onClick={goToCurrentWeek}>
+            Today
+          </Button>
 
-          <div className="flex items-center gap-2">
-            {saveStatus !== 'unsaved' && (
-              <Badge 
-                variant={saveStatus === 'published' ? 'default' : 'secondary'} 
-                className={cn(
-                  "text-xs",
-                  saveStatus === 'published' && "bg-green-100 text-green-700 hover:bg-green-100"
-                )}
-              >
-                {saveStatus === 'draft' ? 'Draft' : 'Published'}
-              </Badge>
-            )}
-            <Button variant="outline" size="sm" onClick={handleSaveDraft}>
-              <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </Button>
-            <Button size="sm" onClick={handlePublish}>
-              <Send className="w-4 h-4 mr-2" />
-              Publish
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/institute/timetable/view")}>
-              <Eye className="w-4 h-4 mr-2" />
-              View
-            </Button>
-          </div>
-        </div>
-      </Card>
+          {/* Divider */}
+          <div className="h-5 w-px bg-border hidden sm:block" />
 
-      {/* Conflict Summary Panel */}
-      <ConflictSummaryPanel
-        entries={entries}
-        teachers={teacherLoads}
-        onConflictClick={handleConflictClick}
-      />
-
-      {/* View Mode Toggle */}
-      <Card className="p-3 md:p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as 'teacher' | 'batch'); setSelectedBatchId(null); }}>
-            <TabsList className="w-full sm:w-auto">
-              <TabsTrigger value="teacher" className="gap-1.5 flex-1 sm:flex-initial text-xs sm:text-sm">
-                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Teacher</span>
+          {/* View Mode Toggle */}
+          <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as 'teacher' | 'batch'); setSelectedBatchId(null); }} className="h-7">
+            <TabsList className="h-7 p-0.5">
+              <TabsTrigger value="teacher" className="h-6 px-2 text-xs gap-1">
+                <User className="w-3 h-3" />
+                <span className="hidden sm:inline">Teacher</span>
               </TabsTrigger>
-              <TabsTrigger value="batch" className="gap-1.5 flex-1 sm:flex-initial text-xs sm:text-sm">
-                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Batch</span>
+              <TabsTrigger value="batch" className="h-6 px-2 text-xs gap-1">
+                <BookOpen className="w-3 h-3" />
+                <span className="hidden sm:inline">Batch</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="flex items-center gap-2">
-            {viewMode === 'teacher' && (
-              <Badge variant="secondary" className="gap-1 text-xs hidden md:flex">
-                <GripVertical className="w-3 h-3" />
-                Drag teachers to grid
-              </Badge>
-            )}
-            <InfoTooltip content="Teacher View: Drag teachers from sidebar to grid, or click cells to assign. Batch View: Fill a batch's timetable with teachers." />
-          </div>
+
+          {/* Conflict Badge - Click to expand */}
+          <Collapsible open={conflictPanelOpen} onOpenChange={setConflictPanelOpen}>
+            <CollapsibleTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={cn(
+                  "h-7 text-xs gap-1",
+                  conflictCount > 0 ? "text-destructive hover:text-destructive" : "text-green-600 hover:text-green-600"
+                )}
+              >
+                {conflictCount > 0 ? (
+                  <>
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {conflictCount} Conflict{conflictCount !== 1 ? 's' : ''}
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">No Conflicts</span>
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Save Status */}
+          {saveStatus !== 'unsaved' && (
+            <Badge 
+              variant={saveStatus === 'published' ? 'default' : 'secondary'} 
+              className={cn(
+                "text-xs h-6",
+                saveStatus === 'published' && "bg-green-100 text-green-700 hover:bg-green-100"
+              )}
+            >
+              {saveStatus === 'draft' ? 'Draft' : 'Published'}
+            </Badge>
+          )}
+
+          {/* Save/Publish Buttons */}
+          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={handleSaveDraft}>
+            <Save className="w-3 h-3 mr-1" />
+            <span className="hidden sm:inline">Save</span>
+          </Button>
+          <Button size="sm" className="h-7 text-xs" onClick={handlePublish}>
+            <Send className="w-3 h-3 mr-1" />
+            <span className="hidden sm:inline">Publish</span>
+          </Button>
+
+          {/* More Actions Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate("/institute/timetable/upload")}>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Image
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setHolidayDialogOpen(true)}>
+                <CalendarDays className="w-4 h-4 mr-2" />
+                Holidays {holidays.length > 0 && `(${holidays.length})`}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/institute/timetable/setup")}>
+                <Settings className="w-4 h-4 mr-2" />
+                Setup
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/institute/timetable/view")}>
+                <Eye className="w-4 h-4 mr-2" />
+                View Timetable
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Collapsible Conflict Panel */}
+      <Collapsible open={conflictPanelOpen} onOpenChange={setConflictPanelOpen}>
+        <CollapsibleContent>
+          <ConflictSummaryPanel
+            entries={entries}
+            teachers={teacherLoads}
+            onConflictClick={handleConflictClick}
+          />
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Main Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
         {/* Sidebar */}
-        <div className="space-y-3 md:space-y-4 order-2 lg:order-1">
+        <div className="space-y-2 order-2 lg:order-1">
           {viewMode === 'teacher' ? (
             <>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm md:text-base">Select Teacher</h3>
+                <h3 className="font-semibold text-sm">Select Teacher</h3>
                 <Badge variant="secondary" className="text-xs">{teacherLoads.length}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground hidden md:block">
-                Drag a teacher to the grid or click to select
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 max-h-[300px] lg:max-h-[500px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-1.5 max-h-[250px] lg:max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
                 {teacherLoads.map(teacher => (
                   <TeacherLoadCard
                     key={teacher.teacherId}
@@ -542,7 +667,7 @@ const Timetable = () => {
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm md:text-base">Select Batch</h3>
+                <h3 className="font-semibold text-sm">Select Batch</h3>
                 <Badge variant="secondary" className="text-xs">{batches.length}</Badge>
               </div>
               <BatchSelector
@@ -558,42 +683,36 @@ const Timetable = () => {
         <div className="lg:col-span-3 order-1 lg:order-2">
           {(viewMode === 'teacher' && selectedTeacher) || (viewMode === 'batch' && selectedBatch) ? (
             <Card>
-              <CardContent className="p-4">
-                {/* View-specific guidance card */}
+              <CardContent className="p-3">
+                {/* Compact Guidance */}
                 {viewMode === 'teacher' && selectedTeacher && (
-                  <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm">{selectedTeacher.teacherName}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Teaches {selectedTeacher.allowedBatches.map(b => b.subject).filter((v, i, a) => a.indexOf(v) === i).join(', ')} to {selectedTeacher.allowedBatches.length} batch{selectedTeacher.allowedBatches.length > 1 ? 'es' : ''}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          <span className="font-medium text-foreground">{selectedTeacher.periodsPerWeek - selectedTeacher.assignedPeriods} periods</span> remaining this week. Click cells or drag entries.
-                        </p>
-                      </div>
+                  <div className="mb-3 p-2 rounded-lg bg-primary/5 border border-primary/20 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <User className="w-3.5 h-3.5 text-primary" />
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-sm">{selectedTeacher.teacherName}</span>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        {selectedTeacher.periodsPerWeek - selectedTeacher.assignedPeriods} periods left
+                      </span>
+                    </div>
+                    <Badge variant="secondary" className="gap-1 text-xs hidden md:flex">
+                      <GripVertical className="w-3 h-3" />
+                      Drag to assign
+                    </Badge>
                   </div>
                 )}
 
                 {viewMode === 'batch' && selectedBatch && (
-                  <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm">{selectedBatch.className} - {selectedBatch.name}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {selectedBatch.subjects.length} subjects • {selectedBatch.studentCount} students
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Click cells to assign teachers. Only batch-assigned teachers shown; subject is auto-determined.
-                        </p>
-                      </div>
+                  <div className="mb-3 p-2 rounded-lg bg-primary/5 border border-primary/20 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-sm">{selectedBatch.className} - {selectedBatch.name}</span>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        {selectedBatch.subjects.length} subjects • {selectedBatch.studentCount} students
+                      </span>
                     </div>
                   </div>
                 )}
@@ -618,12 +737,12 @@ const Timetable = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card className="p-12 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                {viewMode === 'teacher' ? <User className="w-8 h-8 text-muted-foreground" /> : <BookOpen className="w-8 h-8 text-muted-foreground" />}
+            <Card className="p-8 text-center">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
+                {viewMode === 'teacher' ? <User className="w-6 h-6 text-muted-foreground" /> : <BookOpen className="w-6 h-6 text-muted-foreground" />}
               </div>
-              <h3 className="font-semibold mb-2">Select a {viewMode === 'teacher' ? 'Teacher' : 'Batch'}</h3>
-              <p className="text-muted-foreground">Choose from the sidebar to start building the timetable</p>
+              <h3 className="font-semibold text-sm mb-1">Select a {viewMode === 'teacher' ? 'Teacher' : 'Batch'}</h3>
+              <p className="text-xs text-muted-foreground">Choose from the sidebar to start</p>
             </Card>
           )}
         </div>
