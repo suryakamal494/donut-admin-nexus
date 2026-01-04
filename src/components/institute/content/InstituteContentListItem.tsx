@@ -2,17 +2,17 @@ import { Eye, Edit, MoreVertical, Download, Trash2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContentStatusBadge } from "@/components/content/ContentStatusBadge";
 import { ContentTypeIcon, getContentTypeLabel } from "@/components/content/ContentTypeIcon";
+import { ContentItem } from "@/components/content/ContentCard";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SubjectBadge } from "@/components/subject";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SourceBadge } from "./SourceBadge";
-import { InstituteContentItem } from "@/data/instituteData";
 
 interface InstituteContentListItemProps {
-  content: InstituteContentItem;
-  onPreview: (content: InstituteContentItem) => void;
-  onEdit?: (content: InstituteContentItem) => void;
-  onDelete?: (content: InstituteContentItem) => void;
+  content: ContentItem;
+  onPreview: (content: ContentItem) => void;
+  onEdit?: (content: ContentItem) => void;
+  onDelete?: (content: ContentItem) => void;
 }
 
 export const InstituteContentListItem = ({ 

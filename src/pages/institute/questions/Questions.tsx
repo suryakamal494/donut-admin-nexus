@@ -6,18 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { QuestionFilters } from "@/components/questions/QuestionFilters";
 import { QuestionPagination } from "@/components/questions/QuestionPagination";
-import { InstituteQuestionCard } from "@/components/institute/questions/InstituteQuestionCard";
-import { mockQuestions, Question } from "@/data/questionsData";
+import { QuestionCard, QuestionWithSource } from "@/components/questions/QuestionCard";
+import { mockQuestions } from "@/data/questionsData";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
-// Extend questions with source type
-interface InstituteQuestion extends Question {
-  sourceType: "global" | "institute";
-}
-
 // Add source type to mock questions
-const instituteQuestions: InstituteQuestion[] = mockQuestions.map((q, index) => ({
+const instituteQuestions: QuestionWithSource[] = mockQuestions.map((q, index) => ({
   ...q,
   sourceType: index % 3 === 0 ? "institute" : "global", // Every 3rd is institute-created
 }));
@@ -81,11 +76,11 @@ const Questions = () => {
     setSelectedClass("all");
   };
 
-  const handleView = (question: InstituteQuestion) => {
+  const handleView = (question: QuestionWithSource) => {
     toast.info(`Viewing: ${question.questionId}`);
   };
 
-  const handleEdit = (question: InstituteQuestion) => {
+  const handleEdit = (question: QuestionWithSource) => {
     if (question.sourceType === "global") {
       toast.error("Global questions cannot be edited. You can only view them.");
       return;
@@ -93,7 +88,7 @@ const Questions = () => {
     navigate(`/institute/questions/edit/${question.id}`);
   };
 
-  const handleDelete = (question: InstituteQuestion) => {
+  const handleDelete = (question: QuestionWithSource) => {
     if (question.sourceType === "global") {
       toast.error("Global questions cannot be deleted.");
       return;
@@ -188,12 +183,13 @@ const Questions = () => {
       {/* Questions List */}
       <div className="space-y-4">
         {paginatedQuestions.map((question) => (
-          <InstituteQuestionCard
+          <QuestionCard
             key={question.id}
             question={question}
-            onView={() => handleView(question)}
-            onEdit={() => handleEdit(question)}
-            onDelete={() => handleDelete(question)}
+            mode="institute"
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         ))}
 

@@ -1,4 +1,4 @@
-export { ContentCard, type ContentItem } from "./ContentCard";
+export { ContentCard, type ContentItem, type ContentCardMode } from "./ContentCard";
 export { ContentListItem } from "./ContentListItem";
 export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export { ContentEditDialog } from "./ContentEditDialog";

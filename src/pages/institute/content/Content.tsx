@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { instituteContent, InstituteContentItem } from "@/data/instituteData";
 import {
+  ContentCard,
+  ContentItem,
   ContentPreviewDialog,
   ContentEditDialog,
   ContentPagination,
   ContentType,
 } from "@/components/content";
 import {
-  InstituteContentCard,
   InstituteContentFilters,
   InstituteContentListItem,
   SourceFilter,
@@ -64,16 +65,18 @@ const InstituteContent = () => {
     setCurrentPage(1);
   };
 
-  const handlePreview = (content: InstituteContentItem) => setPreviewContent(content);
+  const handlePreview = (content: ContentItem) => setPreviewContent(content as InstituteContentItem);
   
-  const handleEdit = (content: InstituteContentItem) => {
-    if (content.source === "institute") {
-      setEditContent(content);
+  const handleEdit = (content: ContentItem) => {
+    const instituteItem = content as InstituteContentItem;
+    if (instituteItem.source === "institute") {
+      setEditContent(instituteItem);
     }
   };
   
-  const handleDelete = (content: InstituteContentItem) => {
-    if (content.source === "institute") {
+  const handleDelete = (content: ContentItem) => {
+    const instituteItem = content as InstituteContentItem;
+    if (instituteItem.source === "institute") {
       setContentList(prev => prev.filter(c => c.id !== content.id));
     }
   };
@@ -148,9 +151,10 @@ const InstituteContent = () => {
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedContent.map((content) => (
-            <InstituteContentCard
+            <ContentCard
               key={content.id}
-              content={content}
+              content={content as ContentItem}
+              mode="institute"
               onPreview={handlePreview}
               onEdit={content.source === "institute" ? handleEdit : undefined}
               onDelete={content.source === "institute" ? handleDelete : undefined}
@@ -162,7 +166,7 @@ const InstituteContent = () => {
           {paginatedContent.map((content) => (
             <InstituteContentListItem
               key={content.id}
-              content={content}
+              content={content as ContentItem}
               onPreview={handlePreview}
               onEdit={content.source === "institute" ? handleEdit : undefined}
               onDelete={content.source === "institute" ? handleDelete : undefined}

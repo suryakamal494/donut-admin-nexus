@@ -1,11 +1,16 @@
-import { Eye, Edit, MoreVertical, Download, Trash2 } from "lucide-react";
+import { Eye, Edit, MoreVertical, Download, Trash2, Lock, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContentThumbnail } from "./ContentThumbnail";
 import { ContentStatusBadge } from "./ContentStatusBadge";
 import { getContentTypeLabel, ContentType } from "./ContentTypeIcon";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SubjectBadge } from "@/components/subject";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
+export type ContentCardMode = "superadmin" | "institute";
+
 export interface ContentItem {
   id: string;
   title: string;
@@ -31,31 +36,84 @@ export interface ContentItem {
   createdBy: string;
   viewCount: number;
   downloadCount: number;
+  source?: "global" | "institute";
+  instituteId?: string;
 }
 
 interface ContentCardProps {
   content: ContentItem;
+  mode?: ContentCardMode;
   onPreview: (content: ContentItem) => void;
-  onEdit: (content: ContentItem) => void;
-  onDelete: (content: ContentItem) => void;
+  onEdit?: (content: ContentItem) => void;
+  onDelete?: (content: ContentItem) => void;
   className?: string;
 }
 
-export const ContentCard = ({ content, onPreview, onEdit, onDelete, className }: ContentCardProps) => {
+export const ContentCard = ({ 
+  content, 
+  mode = "superadmin",
+  onPreview, 
+  onEdit, 
+  onDelete, 
+  className 
+}: ContentCardProps) => {
   const meta = content.duration 
     ? `${content.duration} min` 
     : content.size || getContentTypeLabel(content.type);
 
+  // Institute mode specific
+  const isInstituteMode = mode === "institute";
+  const isGlobal = isInstituteMode && content.source === "global";
+  const canEdit = isInstituteMode ? !isGlobal && onEdit : !!onEdit;
+  const canDelete = isInstituteMode ? !isGlobal && onDelete : !!onDelete;
+
   return (
     <div className={cn(
-      "bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden hover-lift transition-all duration-300",
+      "bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden hover-lift transition-all duration-300 relative group",
       className
     )}>
-      <ContentThumbnail 
-        type={content.type} 
-        thumbnailUrl={content.thumbnailUrl}
-        title={content.title}
-      />
+      {/* Thumbnail with source badge overlay for institute mode */}
+      <div className="relative">
+        <ContentThumbnail 
+          type={content.type} 
+          thumbnailUrl={content.thumbnailUrl}
+          title={content.title}
+        />
+        
+        {/* Source Badge - Only in Institute Mode */}
+        {isInstituteMode && (
+          <div className="absolute top-2 right-2">
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "gap-1 text-xs font-medium backdrop-blur-sm",
+                isGlobal 
+                  ? "bg-blue-500/90 text-white border-blue-400" 
+                  : "bg-amber-500/90 text-white border-amber-400"
+              )}
+            >
+              {isGlobal ? <Lock className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
+              {isGlobal ? "Global" : "Ours"}
+            </Badge>
+          </div>
+        )}
+        
+        {/* Lock overlay for global content on hover - Institute Mode */}
+        {isInstituteMode && isGlobal && (
+          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="bg-white/90 rounded-full p-3">
+                  <Lock className="w-5 h-5 text-slate-600" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">This content is from the global library and cannot be edited</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+      </div>
       
       <div className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-2">
@@ -94,15 +152,19 @@ export const ContentCard = ({ content, onPreview, onEdit, onDelete, className }:
             <Eye className="w-3.5 h-3.5 mr-1.5" />
             Preview
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 text-xs"
-            onClick={() => onEdit(content)}
-          >
-            <Edit className="w-3.5 h-3.5 mr-1.5" />
-            Edit
-          </Button>
+          
+          {canEdit && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => onEdit?.(content)}
+            >
+              <Edit className="w-3.5 h-3.5 mr-1.5" />
+              Edit
+            </Button>
+          )}
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -114,22 +176,28 @@ export const ContentCard = ({ content, onPreview, onEdit, onDelete, className }:
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit(content)}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
+              {canEdit && (
+                <DropdownMenuItem onClick={() => onEdit?.(content)}>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>
                 <Download className="w-4 h-4 mr-2" />
                 Download
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="text-destructive focus:text-destructive"
-                onClick={() => onDelete(content)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
+              {canDelete && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive focus:text-destructive"
+                    onClick={() => onDelete?.(content)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
