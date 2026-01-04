@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus } from "lucide-react";
+import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus, FolderOpen, ChevronRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { instituteExams, batches } from "@/data/instituteData";
+import { mockPreviousYearPapers } from "@/data/examsData";
 import ScheduleExamDialog from "@/components/institute/exams/ScheduleExamDialog";
 import AssignBatchesDialog from "@/components/institute/exams/AssignBatchesDialog";
 import { SubjectBadge } from "@/components/subject/SubjectBadge";
@@ -59,6 +60,9 @@ const Exams = () => {
     completed: instituteExams.filter(e => e.status === "completed").length,
   };
 
+  // Count of published PYPs from Super Admin
+  const publishedPYPCount = mockPreviousYearPapers.filter(p => p.status === "published").length;
+
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
@@ -75,6 +79,33 @@ const Exams = () => {
           </Button>
         }
       />
+
+      {/* Previous Year Papers Access Card */}
+      <Card 
+        className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent hover:border-primary/40 cursor-pointer transition-all group"
+        onClick={() => navigate("/institute/exams/previous-year-papers")}
+      >
+        <CardContent className="p-5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <FolderOpen className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                Previous Year Papers
+                <Badge variant="secondary" className="text-xs">
+                  <FileText className="w-3 h-3 mr-1" />
+                  {publishedPYPCount} Papers
+                </Badge>
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Access JEE Main, JEE Advanced & NEET papers • Shared by Super Admin
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+        </CardContent>
+      </Card>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

@@ -48,6 +48,7 @@ import InstituteAIQuestions from "./pages/institute/questions/AIQuestions";
 import InstituteExams from "./pages/institute/exams/Exams";
 import InstituteCreateExam from "./pages/institute/exams/CreateExam";
 import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
+import InstitutePreviousYearPapers from "./pages/institute/exams/PreviousYearPapers";
 import InstituteMasterData from "./pages/institute/masterdata/MasterData";
 import InstituteContent from "./pages/institute/content/Content";
 import InstituteCreateContent from "./pages/institute/content/CreateContent";
@@ -116,6 +117,7 @@ const App = () => (
             <Route path="exams" element={<InstituteExams />} />
             <Route path="exams/create" element={<InstituteCreateExam />} />
             <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
+            <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
             <Route path="master-data" element={<InstituteMasterData />} />
           </Route>
           
