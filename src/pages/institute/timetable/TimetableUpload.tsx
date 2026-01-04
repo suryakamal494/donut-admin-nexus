@@ -11,7 +11,7 @@ import { ParsedTimetableValidator } from "@/components/timetable/ParsedTimetable
 import type { ParsedEntry } from "@/components/timetable";
 import { cn } from "@/lib/utils";
 import { batches } from "@/data/instituteData";
-import { teacherLoads } from "@/data/timetableData";
+import { teacherLoads, timetableEntries } from "@/data/timetableData";
 import { 
   Upload, 
   FileImage, 
@@ -24,9 +24,21 @@ import {
   Image as ImageIcon,
   ZoomIn,
   ZoomOut,
-  BookOpen
+  BookOpen,
+  RefreshCcw,
+  SkipForward
 } from "lucide-react";
 import { toast } from "sonner";
+import { format, startOfWeek } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Mock parsed timetable data (simulating OCR result)
 const mockParsedData = {
@@ -43,6 +55,16 @@ const mockParsedData = {
   ]
 };
 
+// Conflict detection types
+interface EmbedConflict {
+  day: string;
+  period: number;
+  existingSubject: string;
+  existingTeacher: string;
+  newSubject: string;
+  newTeacher: string;
+}
+
 const TimetableUpload = () => {
   const navigate = useNavigate();
   
@@ -53,6 +75,10 @@ const TimetableUpload = () => {
   const [isParsed, setIsParsed] = useState(false);
   const [parsedEntries, setParsedEntries] = useState<ParsedEntry[]>([]);
   const [imageZoom, setImageZoom] = useState(100);
+  
+  // Conflict dialog state
+  const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
+  const [embedConflicts, setEmbedConflicts] = useState<EmbedConflict[]>([]);
 
   const selectedBatch = batches.find(b => b.id === selectedBatchId);
 
@@ -135,16 +161,94 @@ const TimetableUpload = () => {
     return false;
   });
 
+  // Detect overlapping entries with existing timetable
+  const detectOverlaps = (): EmbedConflict[] => {
+    if (!selectedBatchId) return [];
+    
+    const conflicts: EmbedConflict[] = [];
+    
+    parsedEntries.forEach(parsed => {
+      // Find existing entry at same slot for this batch
+      const existingEntry = timetableEntries.find(
+        e => e.batchId === selectedBatchId && e.day === parsed.day && e.periodNumber === parsed.period
+      );
+      
+      if (existingEntry) {
+        conflicts.push({
+          day: parsed.day,
+          period: parsed.period,
+          existingSubject: existingEntry.subjectName,
+          existingTeacher: existingEntry.teacherName,
+          newSubject: parsed.subject,
+          newTeacher: parsed.teacher,
+        });
+      }
+    });
+    
+    return conflicts;
+  };
+
   const handleEmbed = () => {
     if (hasBlockingErrors) {
       toast.error("Please fix all errors before embedding");
       return;
     }
     
+    // Check for conflicts
+    const conflicts = detectOverlaps();
+    
+    if (conflicts.length > 0) {
+      setEmbedConflicts(conflicts);
+      setConflictDialogOpen(true);
+      return;
+    }
+    
+    // No conflicts, proceed directly
+    proceedWithEmbed(parsedEntries);
+  };
+
+  const proceedWithEmbed = (entriesToEmbed: ParsedEntry[]) => {
+    if (!selectedBatchId) return;
+    
+    const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    
     toast.success("Timetable embedded successfully!", {
-      description: `${parsedEntries.length} entries added to ${selectedBatch?.className} - ${selectedBatch?.name} timetable.`
+      description: `${entriesToEmbed.length} entries added to ${selectedBatch?.className} - ${selectedBatch?.name} timetable.`
     });
-    navigate("/institute/timetable");
+    
+    // Navigate to workspace with embed data
+    navigate("/institute/timetable", {
+      state: {
+        embedData: {
+          batchId: selectedBatchId,
+          entries: entriesToEmbed,
+          weekStart,
+        }
+      }
+    });
+  };
+
+  const handleReplaceAll = () => {
+    setConflictDialogOpen(false);
+    proceedWithEmbed(parsedEntries);
+  };
+
+  const handleSkipConflicts = () => {
+    // Filter out entries that have conflicts
+    const nonConflictingEntries = parsedEntries.filter(parsed => {
+      return !embedConflicts.some(
+        c => c.day === parsed.day && c.period === parsed.period
+      );
+    });
+    
+    setConflictDialogOpen(false);
+    
+    if (nonConflictingEntries.length === 0) {
+      toast.info("No entries to embed", { description: "All entries conflict with existing schedule" });
+      return;
+    }
+    
+    proceedWithEmbed(nonConflictingEntries);
   };
 
   const lowConfidenceCount = parsedEntries.filter(e => e.confidence < 0.8).length;
@@ -476,6 +580,50 @@ const TimetableUpload = () => {
           </div>
         </div>
       )}
+
+      {/* Conflict Resolution Dialog */}
+      <Dialog open={conflictDialogOpen} onOpenChange={setConflictDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              {embedConflicts.length} Slot{embedConflicts.length !== 1 ? 's' : ''} Already Occupied
+            </DialogTitle>
+            <DialogDescription>
+              Some slots in the workspace already have entries. How would you like to proceed?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[250px] pr-4">
+            <div className="space-y-2">
+              {embedConflicts.map((conflict, i) => (
+                <div key={i} className="p-3 rounded-lg bg-muted/50 border text-sm">
+                  <div className="font-medium">{conflict.day} P{conflict.period}</div>
+                  <div className="flex items-center gap-2 mt-1 text-muted-foreground">
+                    <span className="line-through">{conflict.existingSubject} ({conflict.existingTeacher})</span>
+                    <ArrowRight className="w-3 h-3" />
+                    <span className="text-foreground">{conflict.newSubject} ({conflict.newTeacher})</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setConflictDialogOpen(false)} className="sm:mr-auto">
+              Cancel
+            </Button>
+            <Button variant="outline" onClick={handleSkipConflicts}>
+              <SkipForward className="w-4 h-4 mr-2" />
+              Skip Conflicts ({parsedEntries.length - embedConflicts.length} entries)
+            </Button>
+            <Button onClick={handleReplaceAll}>
+              <RefreshCcw className="w-4 h-4 mr-2" />
+              Replace All
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
