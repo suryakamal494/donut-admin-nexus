@@ -67,7 +67,7 @@ export const AssignmentDialog = ({
 }: AssignmentDialogProps) => {
   const [selectedBatchId, setSelectedBatchId] = useState(existingEntry?.batchId || '');
   const [selectedTeacherId, setSelectedTeacherId] = useState(existingEntry?.teacherId || '');
-  const [selectedFacilityId, setSelectedFacilityId] = useState(existingEntry?.facilityId || '');
+  const [selectedFacilityId, setSelectedFacilityId] = useState(existingEntry?.facilityId || 'none');
 
   // Reset state when dialog opens with different context
   const dialogKey = `${day}-${period}-${existingEntry?.id || 'new'}`;
@@ -80,11 +80,11 @@ export const AssignmentDialog = ({
     if (open && !isEditMode) {
       setSelectedBatchId('');
       setSelectedTeacherId('');
-      setSelectedFacilityId('');
+      setSelectedFacilityId('none');
     } else if (open && isEditMode && existingEntry) {
       setSelectedBatchId(existingEntry.batchId);
       setSelectedTeacherId(existingEntry.teacherId);
-      setSelectedFacilityId(existingEntry.facilityId || '');
+      setSelectedFacilityId(existingEntry.facilityId || 'none');
     }
   }, [open, isEditMode, existingEntry]);
 
@@ -212,7 +212,7 @@ export const AssignmentDialog = ({
         teacherName: selectedTeacher.teacherName,
         batchId: batch.id,
         batchName: `${batch.className} - ${batch.name}`,
-        facilityId: selectedFacilityId || undefined,
+        facilityId: selectedFacilityId !== 'none' ? selectedFacilityId : undefined,
         facilityName: selectedFacility?.name,
       };
     } else if (selectedBatch && autoSubject) {
@@ -230,8 +230,8 @@ export const AssignmentDialog = ({
         teacherName: teacher.teacherName,
         batchId: selectedBatch.id,
         batchName: `${selectedBatch.className} - ${selectedBatch.name}`,
-        facilityId: selectedFacilityId || undefined,
-        facilityName: selectedFacility?.name,
+        facilityId: selectedFacilityId !== 'none' ? selectedFacilityId : undefined,
+        facilityName: selectedFacilityId !== 'none' ? selectedFacility?.name : undefined,
       };
     } else {
       return;
@@ -456,7 +456,7 @@ export const AssignmentDialog = ({
                       <SelectValue placeholder="No specific facility" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No specific facility</SelectItem>
+                      <SelectItem value="none">No specific facility</SelectItem>
                       {getAvailableFacilities().map(facility => {
                         const hasConflict = hasFacilityConflict(facility.id);
                         return (
