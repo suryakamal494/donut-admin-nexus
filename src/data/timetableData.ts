@@ -1,11 +1,20 @@
 // Timetable Module Data Types and Mock Data
 
+// NEW: Break Configuration for multiple breaks support
+export interface BreakConfig {
+  id: string;
+  name: string;          // "Short Break", "Lunch Break", "Snacks Break"
+  afterPeriod: number;   // After which period this break occurs
+  duration: number;      // Duration in minutes
+}
+
 export interface PeriodStructure {
   id: string;
   periodsPerDay: number;
-  breakAfterPeriod: number;
+  breaks: BreakConfig[];  // Multiple breaks support (replaces breakAfterPeriod)
   workingDays: string[];
   timeMapping: { period: number; startTime: string; endTime: string }[];
+  useTimeMapping: boolean; // Toggle for time-based or period-number display
   isConfigured: boolean;
 }
 
@@ -141,18 +150,23 @@ export interface SubstitutionAssignment {
 export const defaultPeriodStructure: PeriodStructure = {
   id: 'ps-1',
   periodsPerDay: 8,
-  breakAfterPeriod: 4,
+  breaks: [
+    { id: 'break-1', name: 'Short Break', afterPeriod: 2, duration: 15 },
+    { id: 'break-2', name: 'Lunch Break', afterPeriod: 4, duration: 30 },
+    { id: 'break-3', name: 'Snacks Break', afterPeriod: 6, duration: 15 },
+  ],
   workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   timeMapping: [
     { period: 1, startTime: '08:00', endTime: '08:45' },
     { period: 2, startTime: '08:45', endTime: '09:30' },
-    { period: 3, startTime: '09:30', endTime: '10:15' },
-    { period: 4, startTime: '10:15', endTime: '11:00' },
-    { period: 5, startTime: '11:30', endTime: '12:15' },
-    { period: 6, startTime: '12:15', endTime: '13:00' },
-    { period: 7, startTime: '14:00', endTime: '14:45' },
-    { period: 8, startTime: '14:45', endTime: '15:30' },
+    { period: 3, startTime: '09:45', endTime: '10:30' },
+    { period: 4, startTime: '10:30', endTime: '11:15' },
+    { period: 5, startTime: '11:45', endTime: '12:30' },
+    { period: 6, startTime: '12:30', endTime: '13:15' },
+    { period: 7, startTime: '13:30', endTime: '14:15' },
+    { period: 8, startTime: '14:15', endTime: '15:00' },
   ],
+  useTimeMapping: true,
   isConfigured: true,
 };
 

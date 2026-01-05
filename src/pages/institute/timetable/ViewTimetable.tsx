@@ -301,17 +301,25 @@ const ViewTimetable = () => {
                       })}
                     </tr>
                   </thead>
-                  <tbody>
+                    <tbody>
                     {Array.from({ length: defaultPeriodStructure.periodsPerDay }, (_, i) => i + 1).map(period => {
-                      const isBreak = period === defaultPeriodStructure.breakAfterPeriod;
+                      const breakInfo = defaultPeriodStructure.breaks.find(b => b.afterPeriod === period - 1);
                       const timeSlot = defaultPeriodStructure.timeMapping.find(t => t.period === period);
                       
                       return (
                         <>
+                          {/* Show break row before this period if previous period has a break */}
+                          {breakInfo && (
+                            <tr key={`break-before-${period}`}>
+                              <td colSpan={workingDays.length + 1} className="border border-border/50 bg-muted/30 p-2 text-center">
+                                <span className="text-sm font-medium text-muted-foreground">☕ {breakInfo.name} ({breakInfo.duration} min)</span>
+                              </td>
+                            </tr>
+                          )}
                           <tr key={period}>
                             <td className="border border-border/50 bg-muted/20 p-3 text-center">
                               <div className="font-medium text-sm">P{period}</div>
-                              {timeSlot && (
+                              {defaultPeriodStructure.useTimeMapping && timeSlot && (
                                 <div className="text-[10px] text-muted-foreground">
                                   {timeSlot.startTime}
                                 </div>
@@ -388,13 +396,6 @@ const ViewTimetable = () => {
                               );
                             })}
                           </tr>
-                          {isBreak && (
-                            <tr key={`break-${period}`}>
-                              <td colSpan={workingDays.length + 1} className="border border-border/50 bg-muted/30 p-2 text-center">
-                                <span className="text-sm font-medium text-muted-foreground">☕ Break (11:00 - 11:30)</span>
-                              </td>
-                            </tr>
-                          )}
                         </>
                       );
                     })}
