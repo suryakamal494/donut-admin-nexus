@@ -1,12 +1,17 @@
 import { useState, useMemo } from "react";
-import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
+import { format, addDays, subDays, isToday, isFuture, isPast, isSameDay } from "date-fns";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -26,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { 
   ChevronLeft, 
   ChevronRight, 
-  Calendar, 
+  Calendar as CalendarIcon, 
   UserX, 
   UserCheck, 
   AlertTriangle,
@@ -45,15 +50,19 @@ import {
   TeacherLoad, 
   TimetableEntry,
   TeacherAbsence,
-  SubstitutionAssignment 
+  SubstitutionAssignment,
+  sampleTeacherAbsences,
+  sampleSubstitutionAssignments,
+  academicHolidays
 } from "@/data/timetableData";
 
 const Substitution = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [absences, setAbsences] = useState<TeacherAbsence[]>([]);
-  const [substitutions, setSubstitutions] = useState<SubstitutionAssignment[]>([]);
+  const [absences, setAbsences] = useState<TeacherAbsence[]>(sampleTeacherAbsences);
+  const [substitutions, setSubstitutions] = useState<SubstitutionAssignment[]>(sampleSubstitutionAssignments);
   const [markAbsentDialogOpen, setMarkAbsentDialogOpen] = useState(false);
   const [findSubstituteDialogOpen, setFindSubstituteDialogOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     entry: TimetableEntry;
     absence: TeacherAbsence;
@@ -69,6 +78,21 @@ const Substitution = () => {
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
   const dayName = format(selectedDate, 'EEEE');
+
+  // Get dates with absences for calendar highlighting
+  const datesWithAbsences = useMemo(() => {
+    return absences.map(a => new Date(a.date));
+  }, [absences]);
+
+  // Get holiday dates
+  const holidayDates = useMemo(() => {
+    return academicHolidays.map(h => new Date(h.date));
+  }, []);
+
+  // Check if selected date is a holiday
+  const selectedHoliday = useMemo(() => {
+    return academicHolidays.find(h => h.date === dateStr);
+  }, [dateStr]);
 
   // Get affected entries for absentees on the selected date
   const getAffectedEntries = useMemo(() => {
@@ -191,7 +215,7 @@ const Substitution = () => {
         }
       />
 
-      {/* Date Navigator */}
+      {/* Date Navigator with Calendar Picker */}
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center justify-between gap-4">
@@ -203,17 +227,59 @@ const Substitution = () => {
               <ChevronLeft className="w-4 h-4" />
             </Button>
             
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-muted-foreground" />
-              <div className="text-center">
-                <p className="font-semibold text-lg">
-                  {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {isToday(selectedDate) ? "Today" : isFuture(selectedDate) ? "Upcoming" : "Past"}
-                </p>
-              </div>
-            </div>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className="gap-2 hover:bg-muted px-4">
+                  <CalendarIcon className="w-5 h-5 text-muted-foreground" />
+                  <div className="text-center">
+                    <p className="font-semibold text-lg">
+                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {isToday(selectedDate) ? "Today" : isFuture(selectedDate) ? "Upcoming" : "Past"} • Click to select date
+                    </p>
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setCalendarOpen(false);
+                    }
+                  }}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                  modifiers={{
+                    hasAbsence: datesWithAbsences,
+                    holiday: holidayDates,
+                  }}
+                  modifiersStyles={{
+                    hasAbsence: {
+                      backgroundColor: 'hsl(var(--warning) / 0.2)',
+                      borderRadius: '50%',
+                    },
+                    holiday: {
+                      backgroundColor: 'hsl(var(--destructive) / 0.15)',
+                      color: 'hsl(var(--destructive))',
+                    },
+                  }}
+                />
+                <div className="px-3 pb-3 border-t pt-2 text-xs text-muted-foreground flex gap-4">
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded-full bg-warning/30"></span>
+                    Has absences
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded-full bg-destructive/20"></span>
+                    Holiday
+                  </span>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <Button
               variant="outline"
@@ -223,6 +289,18 @@ const Substitution = () => {
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
+
+          {/* Holiday Warning */}
+          {selectedHoliday && (
+            <div className="mt-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
+              <p className="text-sm font-medium text-destructive">
+                🎉 {selectedHoliday.name} - School Holiday
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                No classes scheduled for this day
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -248,13 +326,19 @@ const Substitution = () => {
                     )}
                   </CardTitle>
                   <CardDescription>
-                    Classes that need substitute teachers today
+                    Classes that need substitute teachers for {format(selectedDate, 'MMM d')}
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {getAffectedEntries.length === 0 ? (
+              {selectedHoliday ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-destructive opacity-50" />
+                  <p className="font-medium">Holiday - {selectedHoliday.name}</p>
+                  <p className="text-sm mt-1">No coverage needed for holidays</p>
+                </div>
+              ) : getAffectedEntries.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-emerald-500 opacity-50" />
                   <p className="font-medium">All Clear!</p>
@@ -419,6 +503,18 @@ const Substitution = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Quick Tips */}
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs font-medium mb-2 text-muted-foreground">Quick Tips</p>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Click on the date to open calendar</li>
+                <li>• Orange dates have absences recorded</li>
+                <li>• Navigate to Jan 6-8 for demo data</li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -498,7 +594,7 @@ const Substitution = () => {
                       className={cn(
                         "w-10 h-10 rounded-lg font-medium transition-all border",
                         absenceForm.periods.includes(p)
-                          ? "bg-primary text-white border-primary"
+                          ? "bg-primary text-primary-foreground border-primary"
                           : "bg-muted text-muted-foreground hover:border-primary/50"
                       )}
                     >
@@ -587,7 +683,7 @@ const Substitution = () => {
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-medium">{assignedToday}/{teacher.periodsPerWeek / 6}</p>
+                              <p className="text-sm font-medium">{assignedToday}/{Math.round(teacher.periodsPerWeek / 6)}</p>
                               <p className="text-xs text-muted-foreground">periods today</p>
                             </div>
                           </div>
