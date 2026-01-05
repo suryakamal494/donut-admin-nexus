@@ -17,7 +17,7 @@ import {
   Lock
 } from "lucide-react";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addMonths, subMonths, eachDayOfInterval, startOfMonth, endOfMonth, isToday, getDay, isBefore, isAfter, startOfDay } from "date-fns";
-import { timetableEntries, defaultPeriodStructure, subjectColors } from "@/data/timetableData";
+import { timetableEntries, defaultPeriodStructure, subjectColors, TimetableEntry } from "@/data/timetableData";
 import { batches } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
 import { Holiday } from "@/components/timetable/HolidayCalendarDialog";
@@ -354,7 +354,8 @@ const ViewTimetable = () => {
                                   key={day} 
                                   className={cn(
                                     "border border-border/50 p-2",
-                                    colors.bg
+                                    colors.bg,
+                                    entry.isSubstituted && "bg-amber-50/50 dark:bg-amber-950/10"
                                   )}
                                 >
                                   <div className="text-center">
@@ -362,8 +363,19 @@ const ViewTimetable = () => {
                                       {entry.subjectName}
                                     </div>
                                     <div className="text-xs text-muted-foreground mt-0.5">
-                                      {entry.teacherName.split(' ').slice(-1)[0]}
+                                      {entry.isSubstituted ? (
+                                        <span className="text-amber-600">
+                                          {entry.substituteTeacherName?.split(' ').slice(-1)[0]} (Sub)
+                                        </span>
+                                      ) : (
+                                        entry.teacherName.split(' ').slice(-1)[0]
+                                      )}
                                     </div>
+                                    {entry.facilityName && (
+                                      <div className="text-[10px] text-muted-foreground mt-0.5">
+                                        📍 {entry.facilityName}
+                                      </div>
+                                    )}
                                     {selectedBatch === 'all' && (
                                       <div className="text-[10px] text-muted-foreground mt-0.5">
                                         {entry.batchName.split(' - ')[1]}
