@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { TimetableEntry, PeriodStructure, subjectColors, TeacherLoad } from "@/data/timetableData";
 import { InfoTooltip } from "./InfoTooltip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, AlertTriangle, Clock, GripVertical, CalendarOff } from "lucide-react";
+import { Plus, AlertTriangle, Clock, GripVertical, CalendarOff, Building2, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DragEvent, useState } from "react";
 import { Holiday } from "./HolidayCalendarDialog";
@@ -356,16 +356,38 @@ export const TimetableGrid = ({
                               colors?.text,
                               colors?.border,
                               isBeingDragged && "opacity-50 scale-95",
-                              !isBeingDragged && "hover:shadow-md hover:scale-[1.02]"
+                              !isBeingDragged && "hover:shadow-md hover:scale-[1.02]",
+                              entry.isSubstituted && "border-dashed border-2"
                             )}
                           >
                             <div className="flex items-center justify-between">
                               <p className="font-medium text-sm flex-1">{entry.subjectName}</p>
-                              <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                              <div className="flex items-center gap-1">
+                                {entry.isSubstituted && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <UserCheck className="w-3 h-3 text-amber-600" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top">
+                                      <p className="text-xs">Substitute: {entry.substituteTeacherName}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                                <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                              </div>
                             </div>
                             <p className="text-xs opacity-80 mt-0.5 truncate">
-                              {viewMode === 'teacher' ? entry.batchName : entry.teacherName.split(' ').pop()}
+                              {entry.isSubstituted 
+                                ? <span className="text-amber-600">{entry.substituteTeacherName?.split(' ').pop()} (Sub)</span>
+                                : viewMode === 'teacher' ? entry.batchName : entry.teacherName.split(' ').pop()
+                              }
                             </p>
+                            {entry.facilityName && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <Building2 className="w-2.5 h-2.5 opacity-60" />
+                                <span className="text-[10px] opacity-60">{entry.facilityName}</span>
+                              </div>
+                            )}
                           </div>
                         ) : isTeacherOff ? (
                           <div className="p-2 text-xs text-muted-foreground/50">—</div>

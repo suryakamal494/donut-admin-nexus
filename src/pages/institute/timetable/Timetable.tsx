@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls, HolidayCalendarDialog, Holiday, CopyWeekDialog, CopyOptions } from "@/components/timetable";
 import { DragData } from "@/components/timetable/TimetableGrid";
-import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad, academicHolidays } from "@/data/timetableData";
+import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad, academicHolidays, defaultTeacherConstraints, defaultFacilities, TeacherConstraint, Facility } from "@/data/timetableData";
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
@@ -128,6 +128,10 @@ const Timetable = () => {
   // Holiday calendar state
   const [holidayDialogOpen, setHolidayDialogOpen] = useState(false);
   const [holidays, setHolidays] = useState<Holiday[]>(academicHolidays);
+
+  // Teacher constraints and facilities state
+  const [teacherConstraints] = useState<TeacherConstraint[]>(defaultTeacherConstraints);
+  const [facilities] = useState<Facility[]>(defaultFacilities);
 
   // Copy week dialog state
   const [copyWeekDialogOpen, setCopyWeekDialogOpen] = useState(false);
@@ -714,6 +718,9 @@ const Timetable = () => {
                     draggable
                     onDragStart={handleTeacherDragStart}
                     onDragEnd={handleTeacherDragEnd}
+                    constraint={teacherConstraints.find(c => c.teacherId === teacher.teacherId)}
+                    currentDayPeriods={entries.filter(e => e.teacherId === teacher.teacherId && e.day === defaultPeriodStructure.workingDays[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]).length}
+                    currentDay={defaultPeriodStructure.workingDays[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]}
                   />
                 ))}
               </div>
@@ -818,6 +825,10 @@ const Timetable = () => {
           onRemove={dialogContext.existingEntry ? () => handleRemoveEntry(dialogContext.existingEntry!.id) : undefined}
           getTeacherConflict={(tid, d, p) => entries.some(e => e.teacherId === tid && e.day === d && e.periodNumber === p)}
           getBatchConflict={(bid, d, p) => entries.some(e => e.batchId === bid && e.day === d && e.periodNumber === p)}
+          teacherConstraints={teacherConstraints}
+          facilities={facilities}
+          getTeacherDayPeriods={(tid, d) => entries.filter(e => e.teacherId === tid && e.day === d).length}
+          getFacilityConflict={(fid, d, p) => !!entries.find(e => e.facilityId === fid && e.day === d && e.periodNumber === p)}
         />
       )}
 
