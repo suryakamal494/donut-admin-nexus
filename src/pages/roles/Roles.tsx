@@ -1,78 +1,192 @@
-import { Plus, Shield, Edit, Trash2, Users } from "lucide-react";
+import { useState } from "react";
+import { Plus, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { roleTypes } from "@/data/mockData";
-
-const permissions = [
-  "View Dashboard", "Manage Institutes", "Manage Users", "Manage Content",
-  "Create Questions", "Create Exams", "View Reports", "Manage Settings",
-];
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { 
+  RoleCard, 
+  RoleFormDialog, 
+  TeamMemberTable, 
+  AddMemberDialog,
+  SuperAdminRole,
+  SuperAdminTeamMember,
+} from "@/components/roles";
+import { superAdminRoles, superAdminTeamMembers } from "@/data/rolesData";
 
 const Roles = () => {
+  const [roles, setRoles] = useState<SuperAdminRole[]>(superAdminRoles);
+  const [members, setMembers] = useState<SuperAdminTeamMember[]>(superAdminTeamMembers);
+  const [activeTab, setActiveTab] = useState("roles");
+  
+  // Role dialogs
+  const [roleDialogOpen, setRoleDialogOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<SuperAdminRole | null>(null);
+  
+  // Member dialogs
+  const [memberDialogOpen, setMemberDialogOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<SuperAdminTeamMember | null>(null);
+
+  // Role handlers
+  const handleCreateRole = () => {
+    setEditingRole(null);
+    setRoleDialogOpen(true);
+  };
+
+  const handleEditRole = (role: SuperAdminRole) => {
+    setEditingRole(role);
+    setRoleDialogOpen(true);
+  };
+
+  const handleDeleteRole = (role: SuperAdminRole) => {
+    if (role.isSystem) {
+      toast.error("System roles cannot be deleted");
+      return;
+    }
+    setRoles(prev => prev.filter(r => r.id !== role.id));
+    toast.success(`Role "${role.name}" deleted`);
+  };
+
+  const handleSaveRole = (roleData: Omit<SuperAdminRole, "id" | "memberCount" | "createdAt">) => {
+    if (editingRole) {
+      setRoles(prev => prev.map(r => 
+        r.id === editingRole.id 
+          ? { ...r, ...roleData }
+          : r
+      ));
+      toast.success(`Role "${roleData.name}" updated`);
+    } else {
+      const newRole: SuperAdminRole = {
+        ...roleData,
+        id: Date.now().toString(),
+        memberCount: 0,
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      setRoles(prev => [...prev, newRole]);
+      toast.success(`Role "${roleData.name}" created`);
+    }
+  };
+
+  // Member handlers
+  const handleAddMember = () => {
+    setEditingMember(null);
+    setMemberDialogOpen(true);
+  };
+
+  const handleEditMember = (member: SuperAdminTeamMember) => {
+    setEditingMember(member);
+    setMemberDialogOpen(true);
+  };
+
+  const handleDeleteMember = (member: SuperAdminTeamMember) => {
+    setMembers(prev => prev.filter(m => m.id !== member.id));
+    toast.success(`Member "${member.name}" removed`);
+  };
+
+  const handleSaveMember = (memberData: Omit<SuperAdminTeamMember, "id" | "createdAt">) => {
+    if (editingMember) {
+      setMembers(prev => prev.map(m => 
+        m.id === editingMember.id 
+          ? { ...m, ...memberData }
+          : m
+      ));
+      toast.success(`Member "${memberData.name}" updated`);
+    } else {
+      const newMember: SuperAdminTeamMember = {
+        ...memberData,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      setMembers(prev => [...prev, newMember]);
+      
+      // Update role member count
+      setRoles(prev => prev.map(r => 
+        r.id === memberData.roleTypeId 
+          ? { ...r, memberCount: r.memberCount + 1 }
+          : r
+      ));
+      toast.success(`Member "${memberData.name}" added`);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
         title="Roles & Access"
-        description="Manage role types and permissions"
-        breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Roles" }]}
-        actions={<Button className="gradient-button gap-2"><Plus className="w-4 h-4" />Create Role</Button>}
+        description="Manage role types and team members for the SuperAdmin portal"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/superadmin/dashboard" }, 
+          { label: "Roles & Access" }
+        ]}
       />
 
-      {/* Role Types */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {roleTypes.map((role) => (
-          <div key={role.id} className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <div className="flex gap-1">
-                <Button variant="ghost" size="icon"><Edit className="w-4 h-4" /></Button>
-                <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
-              </div>
-            </div>
-            <h3 className="font-semibold text-lg">{role.name}</h3>
-            <p className="text-sm text-muted-foreground mt-1">{role.description}</p>
-            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="w-4 h-4" />
-              <span>Level {role.level}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Permission Matrix */}
-      <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-        <h3 className="text-lg font-semibold mb-6">Permission Matrix</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-medium">Permission</th>
-                {roleTypes.map((role) => (
-                  <th key={role.id} className="text-center py-3 px-4 font-medium">{role.name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {permissions.map((permission, index) => (
-                <tr key={permission} className="border-b border-border/50">
-                  <td className="py-3 px-4">{permission}</td>
-                  {roleTypes.map((role, roleIndex) => (
-                    <td key={role.id} className="text-center py-3 px-4">
-                      <input
-                        type="checkbox"
-                        defaultChecked={roleIndex <= index % 3}
-                        className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-                      />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <TabsList className="grid w-full sm:w-auto grid-cols-2">
+            <TabsTrigger value="roles" className="gap-2">
+              Role Types
+            </TabsTrigger>
+            <TabsTrigger value="members" className="gap-2">
+              Team Members
+            </TabsTrigger>
+          </TabsList>
+          
+          {activeTab === "roles" ? (
+            <Button className="gradient-button gap-2" onClick={handleCreateRole}>
+              <Plus className="w-4 h-4" />
+              Create Role
+            </Button>
+          ) : (
+            <Button className="gradient-button gap-2" onClick={handleAddMember}>
+              <UserPlus className="w-4 h-4" />
+              Add Member
+            </Button>
+          )}
         </div>
-      </div>
+
+        {/* Role Types Tab */}
+        <TabsContent value="roles" className="mt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {roles.map((role) => (
+              <RoleCard 
+                key={role.id} 
+                role={role} 
+                onEdit={handleEditRole}
+                onDelete={handleDeleteRole}
+              />
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Team Members Tab */}
+        <TabsContent value="members" className="mt-0">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <TeamMemberTable 
+              members={members}
+              roles={roles}
+              onEdit={handleEditMember}
+              onDelete={handleDeleteMember}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Role Form Dialog */}
+      <RoleFormDialog
+        open={roleDialogOpen}
+        onOpenChange={setRoleDialogOpen}
+        role={editingRole}
+        onSave={handleSaveRole}
+      />
+
+      {/* Add Member Dialog */}
+      <AddMemberDialog
+        open={memberDialogOpen}
+        onOpenChange={setMemberDialogOpen}
+        member={editingMember}
+        roles={roles}
+        onSave={handleSaveMember}
+      />
     </div>
   );
 };
