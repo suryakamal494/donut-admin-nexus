@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Sparkles, Info } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { instituteContent, InstituteContentItem } from "@/data/instituteData";
@@ -107,18 +107,6 @@ const InstituteContent = () => {
         }
       />
 
-      {/* Helpful Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex gap-3">
-        <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-medium text-foreground text-sm">Your Unified Content Library</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Access content from the <span className="font-medium text-slate-600 dark:text-slate-400">Global Library</span> (platform-wide resources) 
-            and <span className="font-medium text-emerald-600 dark:text-emerald-400">Your Content</span> (created by your institute). 
-            Use the source filter to switch between them.
-          </p>
-        </div>
-      </div>
 
       <InstituteContentFilters
         searchQuery={searchQuery}
