@@ -71,11 +71,13 @@ const ViewTimetable = () => {
     return entries;
   }, [selectedBatch, selectedTeacher]);
 
-  // Get unique teachers from entries
+  // Get unique teachers from entries (filter out empty IDs for library/sports periods)
   const teachers = useMemo(() => {
     const teacherMap = new Map<string, string>();
     timetableEntries.forEach(e => {
-      teacherMap.set(e.teacherId, e.teacherName);
+      if (e.teacherId && e.teacherId.trim() !== '') {
+        teacherMap.set(e.teacherId, e.teacherName);
+      }
     });
     return Array.from(teacherMap.entries()).map(([id, name]) => ({ id, name }));
   }, []);
