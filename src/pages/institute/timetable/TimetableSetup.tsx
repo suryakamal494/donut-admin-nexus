@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { InfoTooltip, HolidayCalendarDialog, PeriodTypeManager, AcademicTimelineEditor, TeacherConstraintsManager, FacilityManager } from "@/components/timetable";
 import { Holiday } from "@/components/timetable/HolidayCalendarDialog";
+import { BreakConfig } from "@/data/timetableData";
 import { 
   defaultPeriodStructure, 
   teacherLoads, 
@@ -65,8 +66,8 @@ const TimetableSetup = () => {
   // Period structure state
   const [workingDays, setWorkingDays] = useState<string[]>(defaultPeriodStructure.workingDays);
   const [periodsPerDay, setPeriodsPerDay] = useState(defaultPeriodStructure.periodsPerDay);
-  const [breakAfterPeriod, setBreakAfterPeriod] = useState(defaultPeriodStructure.breakAfterPeriod);
-  const [showTimeMapping, setShowTimeMapping] = useState(true);
+  const [breaks, setBreaks] = useState<BreakConfig[]>(defaultPeriodStructure.breaks);
+  const [useTimeMapping, setUseTimeMapping] = useState(defaultPeriodStructure.useTimeMapping);
   const [timeMapping, setTimeMapping] = useState(defaultPeriodStructure.timeMapping);
 
   // Period types state
@@ -139,10 +140,11 @@ const TimetableSetup = () => {
 
   const generateTimeMappings = () => {
     const newMappings = [];
-    let currentTime = 8 * 60;
+    let currentTime = 8 * 60; // Start at 8:00 AM
     const periodDuration = 45;
-    const breakDuration = 30;
-    const shortBreak = 15;
+    
+    // Sort breaks by afterPeriod
+    const sortedBreaks = [...breaks].sort((a, b) => a.afterPeriod - b.afterPeriod);
 
     for (let i = 1; i <= periodsPerDay; i++) {
       const startHour = Math.floor(currentTime / 60);
@@ -157,11 +159,52 @@ const TimetableSetup = () => {
         endTime: `${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}`,
       });
 
-      currentTime = endTime + (i === breakAfterPeriod ? breakDuration : shortBreak);
+      // Add break duration if there's a break after this period
+      const breakAfterThis = sortedBreaks.find(b => b.afterPeriod === i);
+      currentTime = endTime + (breakAfterThis ? breakAfterThis.duration : 0);
     }
 
     setTimeMapping(newMappings);
-    toast.success("Time slots generated!");
+    toast.success("Time slots generated based on your break configuration!");
+  };
+
+  // Add a new break
+  const addBreak = () => {
+    if (breaks.length >= 4) {
+      toast.error("Maximum 4 breaks allowed");
+      return;
+    }
+    
+    // Find the first available period position
+    const usedPositions = breaks.map(b => b.afterPeriod);
+    let newPosition = 2;
+    for (let i = 1; i < periodsPerDay; i++) {
+      if (!usedPositions.includes(i)) {
+        newPosition = i;
+        break;
+      }
+    }
+    
+    const newBreak: BreakConfig = {
+      id: `break-${Date.now()}`,
+      name: breaks.length === 0 ? 'Short Break' : 
+            breaks.length === 1 ? 'Lunch Break' : 
+            breaks.length === 2 ? 'Snacks Break' : 'Break',
+      afterPeriod: newPosition,
+      duration: breaks.length === 1 ? 30 : 15, // Lunch is usually longer
+    };
+    
+    setBreaks([...breaks, newBreak]);
+  };
+
+  // Update a break
+  const updateBreak = (id: string, field: keyof BreakConfig, value: any) => {
+    setBreaks(prev => prev.map(b => b.id === id ? { ...b, [field]: value } : b));
+  };
+
+  // Remove a break
+  const removeBreak = (id: string) => {
+    setBreaks(prev => prev.filter(b => b.id !== id));
   };
 
   const basicTabs = [
@@ -351,46 +394,126 @@ const TimetableSetup = () => {
                 </div>
               </div>
 
-              {/* Break After Period */}
-              <div className="space-y-3">
-                <Label className="flex items-center gap-2">
-                  Main Break After Period
-                  <InfoTooltip content="Select after which period the main break (lunch/recess) occurs." />
-                </Label>
-                <Select value={breakAfterPeriod.toString()} onValueChange={(v) => setBreakAfterPeriod(parseInt(v))}>
-                  <SelectTrigger className="max-w-[200px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(p => (
-                      <SelectItem key={p} value={p.toString()}>
-                        After Period {p}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Coffee className="w-4 h-4" />
-                  Break will appear after Period {breakAfterPeriod}
+              {/* Breaks Configuration (Multiple) */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    Breaks Configuration
+                    <InfoTooltip content="Configure multiple breaks throughout the day. Common breaks include Short Break, Lunch Break, and Snacks Break." />
+                  </Label>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={addBreak}
+                    disabled={breaks.length >= 4}
+                  >
+                    <Coffee className="w-4 h-4 mr-2" />
+                    Add Break
+                  </Button>
                 </div>
+                
+                {breaks.length === 0 ? (
+                  <div className="p-6 rounded-xl border border-dashed text-center">
+                    <Coffee className="w-8 h-8 mx-auto text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">No breaks configured</p>
+                    <p className="text-xs text-muted-foreground mt-1">Add breaks to define rest periods in your timetable</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {breaks.sort((a, b) => a.afterPeriod - b.afterPeriod).map(breakItem => (
+                      <div 
+                        key={breakItem.id}
+                        className="p-4 rounded-xl border bg-amber-50/30 dark:bg-amber-950/10 border-amber-200/50 dark:border-amber-800/50"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Coffee className="w-4 h-4 text-amber-600" />
+                            <Input
+                              value={breakItem.name}
+                              onChange={(e) => updateBreak(breakItem.id, 'name', e.target.value)}
+                              className="h-7 text-sm font-medium w-32 bg-white dark:bg-background"
+                              placeholder="Break name"
+                            />
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            onClick={() => removeBreak(breakItem.id)}
+                          >
+                            ×
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">After Period</Label>
+                            <Select 
+                              value={breakItem.afterPeriod.toString()} 
+                              onValueChange={(v) => updateBreak(breakItem.id, 'afterPeriod', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-8 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(p => (
+                                  <SelectItem key={p} value={p.toString()}>
+                                    Period {p}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Duration (min)</Label>
+                            <Select 
+                              value={breakItem.duration.toString()} 
+                              onValueChange={(v) => updateBreak(breakItem.id, 'duration', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-8 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="10">10 min</SelectItem>
+                                <SelectItem value="15">15 min</SelectItem>
+                                <SelectItem value="20">20 min</SelectItem>
+                                <SelectItem value="30">30 min</SelectItem>
+                                <SelectItem value="45">45 min</SelectItem>
+                                <SelectItem value="60">60 min</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {breaks.length > 0 && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
+                    <Coffee className="w-4 h-4" />
+                    <span>
+                      Breaks after: {breaks.sort((a, b) => a.afterPeriod - b.afterPeriod).map(b => `P${b.afterPeriod}`).join(', ')}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Time Mapping Toggle */}
               <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border">
                 <div className="space-y-1">
                   <Label className="flex items-center gap-2">
-                    Time Mapping (Optional)
-                    <InfoTooltip content="Map each period to specific clock times. This is optional but helps in display." />
+                    Use Time Mapping
+                    <InfoTooltip content="When enabled, periods will show clock times (8:00-8:45). When disabled, only period numbers will be shown (P1, P2, etc.)." />
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    Assign specific times to each period
+                    {useTimeMapping ? "Display clock times for each period" : "Display period numbers only (P1, P2...)"}
                   </p>
                 </div>
-                <Switch checked={showTimeMapping} onCheckedChange={setShowTimeMapping} />
+                <Switch checked={useTimeMapping} onCheckedChange={setUseTimeMapping} />
               </div>
 
               {/* Time Mapping Grid */}
-              {showTimeMapping && (
+              {useTimeMapping && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Label>Period Times</Label>
@@ -402,7 +525,8 @@ const TimetableSetup = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(period => {
                       const mapping = timeMapping.find(t => t.period === period) || { startTime: '', endTime: '' };
-                      const isAfterBreak = period === breakAfterPeriod + 1;
+                      const isAfterBreak = breaks.some(b => b.afterPeriod === period - 1);
+                      const breakBefore = breaks.find(b => b.afterPeriod === period - 1);
                       
                       return (
                         <div 
@@ -414,9 +538,9 @@ const TimetableSetup = () => {
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium">Period {period}</span>
-                            {isAfterBreak && (
+                            {isAfterBreak && breakBefore && (
                               <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
-                                After Break
+                                After {breakBefore.name.split(' ')[0]}
                               </Badge>
                             )}
                           </div>

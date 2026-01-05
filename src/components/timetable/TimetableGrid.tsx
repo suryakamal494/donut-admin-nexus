@@ -60,11 +60,21 @@ export const TimetableGrid = ({
   holidays = [],
   weekStartDate,
 }: TimetableGridProps) => {
-  const { workingDays, periodsPerDay, breakAfterPeriod, timeMapping } = periodStructure;
+  const { workingDays, periodsPerDay, breaks, timeMapping, useTimeMapping } = periodStructure;
   const [dragOverCell, setDragOverCell] = useState<{ day: string; period: number } | null>(null);
   
   // Generate period numbers array
   const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1);
+  
+  // Check if period has a break after it
+  const isBreakAfter = (period: number): boolean => {
+    return breaks.some(b => b.afterPeriod === period);
+  };
+  
+  // Get break info for a period
+  const getBreakAfter = (period: number) => {
+    return breaks.find(b => b.afterPeriod === period);
+  };
 
   // Check if a specific date is a holiday
   const isDateHoliday = (dayIndex: number): boolean => {
@@ -136,8 +146,11 @@ export const TimetableGrid = ({
     return false;
   };
 
-  // Get time for period
+  // Get time for period (or period number if time mapping disabled)
   const getTimeForPeriod = (period: number): string => {
+    if (!useTimeMapping) {
+      return `Period ${period}`;
+    }
     const mapping = timeMapping.find(t => t.period === period);
     if (mapping) {
       return `${mapping.startTime} - ${mapping.endTime}`;
@@ -262,17 +275,23 @@ export const TimetableGrid = ({
             </tr>
           </thead>
           <tbody>
-            {periods.map(period => (
+            {periods.map(period => {
+              const breakAfter = getBreakAfter(period);
+              
+              return (
               <>
-                {period === breakAfterPeriod + 1 && (
-                  <tr key={`break-${period}`} className="bg-amber-50 dark:bg-amber-950/20">
+                {breakAfter && period > 1 && isBreakAfter(period - 1) ? null : null}
+                {/* Show break before this period if the previous period has a break */}
+                {period > 1 && isBreakAfter(period - 1) && (
+                  <tr key={`break-before-${period}`} className="bg-amber-50 dark:bg-amber-950/20">
                     <td 
                       colSpan={workingDays.length + 1} 
                       className="p-2 text-center text-sm font-medium text-amber-700 dark:text-amber-400 border-b border-border"
                     >
                       <div className="flex items-center justify-center gap-2">
-                        ☕ Break
-                        <InfoTooltip content="Students and teachers take a break after this period" />
+                        ☕ {getBreakAfter(period - 1)?.name || 'Break'} 
+                        <span className="text-xs font-normal">({getBreakAfter(period - 1)?.duration} min)</span>
+                        <InfoTooltip content="Students and teachers take a break after the previous period" />
                       </div>
                     </td>
                   </tr>
@@ -287,9 +306,11 @@ export const TimetableGrid = ({
                   <td className="p-3 text-sm font-medium text-muted-foreground border-r border-border">
                     <div className="flex flex-col">
                       <span>P{period}</span>
-                      <span className="text-xs text-muted-foreground/70">
-                        {getTimeForPeriod(period)}
-                      </span>
+                      {useTimeMapping && (
+                        <span className="text-xs text-muted-foreground/70">
+                          {getTimeForPeriod(period)}
+                        </span>
+                      )}
                     </div>
                     {shouldAvoidPeriod(period) && (
                       <Badge variant="outline" className="text-xs mt-1 bg-orange-100 text-orange-700 border-orange-200">
@@ -424,7 +445,8 @@ export const TimetableGrid = ({
                   })}
                 </tr>
               </>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
