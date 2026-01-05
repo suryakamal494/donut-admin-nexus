@@ -285,7 +285,7 @@ const TimetableUpload = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Select value={selectedBatchId || ""} onValueChange={(v) => setSelectedBatchId(v)}>
+            <Select value={selectedBatchId ?? undefined} onValueChange={(v) => setSelectedBatchId(v)}>
               <SelectTrigger className="w-[300px]">
                 <SelectValue placeholder="Choose a batch..." />
               </SelectTrigger>
