@@ -1,290 +1,93 @@
-import { useState } from "react";
-import { ChevronDown, ChevronRight, BookOpen, Layers, FileText, Target, Lock, Search } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ChevronDown, ChevronRight, BookOpen, Layers, FileText, Target, Lock, Search, Globe } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { classes, subjects } from "@/data/mockData";
+import { 
+  allCBSEChapters, 
+  allCBSETopics, 
+  getChaptersByClassAndSubject, 
+  getTopicsByChapter,
+  cbseDataStats,
+  type CBSEChapter,
+  type CBSETopic
+} from "@/data/cbseMasterData";
+import { SubjectBadge, getSubjectColor } from "@/components/subject";
 
-// Mock master data hierarchy
-const masterDataHierarchy = [
-  {
-    id: "class-6",
-    name: "Class 6",
-    subjects: [
-      {
-        id: "math-6",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-6",
-            name: "Knowing Our Numbers",
-            topics: ["Large Numbers", "Estimation", "Roman Numerals", "Use of Brackets"],
-          },
-          {
-            id: "ch2-math-6",
-            name: "Whole Numbers",
-            topics: ["Natural Numbers", "Whole Numbers on Number Line", "Properties of Whole Numbers"],
-          },
-          {
-            id: "ch3-math-6",
-            name: "Playing with Numbers",
-            topics: ["Factors and Multiples", "Prime and Composite Numbers", "LCM and HCF"],
-          },
-        ],
-      },
-      {
-        id: "science-6",
-        name: "Science",
-        color: "bg-green-500",
-        chapters: [
-          {
-            id: "ch1-sci-6",
-            name: "Food: Where Does It Come From?",
-            topics: ["Food Variety", "Food Sources", "Plant Parts as Food", "Animal Products"],
-          },
-          {
-            id: "ch2-sci-6",
-            name: "Components of Food",
-            topics: ["Nutrients", "Carbohydrates", "Proteins", "Fats", "Vitamins"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-7",
-    name: "Class 7",
-    subjects: [
-      {
-        id: "math-7",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-7",
-            name: "Integers",
-            topics: ["Properties of Addition", "Properties of Subtraction", "Multiplication", "Division"],
-          },
-          {
-            id: "ch2-math-7",
-            name: "Fractions and Decimals",
-            topics: ["Multiplication of Fractions", "Division of Fractions", "Decimal Operations"],
-          },
-        ],
-      },
-      {
-        id: "physics-7",
-        name: "Physics",
-        color: "bg-purple-500",
-        chapters: [
-          {
-            id: "ch1-phy-7",
-            name: "Motion and Time",
-            topics: ["Speed", "Distance", "Time Measurement", "Simple Pendulum"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-8",
-    name: "Class 8",
-    subjects: [
-      {
-        id: "math-8",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-8",
-            name: "Rational Numbers",
-            topics: ["Properties", "Representation on Number Line", "Between Two Rational Numbers"],
-          },
-          {
-            id: "ch2-math-8",
-            name: "Linear Equations in One Variable",
-            topics: ["Solving Equations", "Word Problems", "Reducing Equations"],
-          },
-        ],
-      },
-      {
-        id: "chemistry-8",
-        name: "Chemistry",
-        color: "bg-orange-500",
-        chapters: [
-          {
-            id: "ch1-chem-8",
-            name: "Synthetic Fibres and Plastics",
-            topics: ["Types of Fibres", "Plastics", "Characteristics"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-9",
-    name: "Class 9",
-    subjects: [
-      {
-        id: "math-9",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-9",
-            name: "Number Systems",
-            topics: ["Real Numbers", "Irrational Numbers", "Laws of Exponents"],
-          },
-          {
-            id: "ch2-math-9",
-            name: "Polynomials",
-            topics: ["Degree of Polynomial", "Zeroes of Polynomial", "Remainder Theorem"],
-          },
-        ],
-      },
-      {
-        id: "physics-9",
-        name: "Physics",
-        color: "bg-purple-500",
-        chapters: [
-          {
-            id: "ch1-phy-9",
-            name: "Motion",
-            topics: ["Distance and Displacement", "Uniform Motion", "Acceleration", "Equations of Motion"],
-          },
-          {
-            id: "ch2-phy-9",
-            name: "Force and Laws of Motion",
-            topics: ["Newton's Laws", "Inertia", "Momentum", "Conservation of Momentum"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-10",
-    name: "Class 10",
-    subjects: [
-      {
-        id: "math-10",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-10",
-            name: "Real Numbers",
-            topics: ["Euclid's Division Lemma", "Fundamental Theorem of Arithmetic", "Irrational Numbers"],
-          },
-          {
-            id: "ch2-math-10",
-            name: "Quadratic Equations",
-            topics: ["Standard Form", "Factorization Method", "Quadratic Formula", "Nature of Roots"],
-          },
-        ],
-      },
-      {
-        id: "chemistry-10",
-        name: "Chemistry",
-        color: "bg-orange-500",
-        chapters: [
-          {
-            id: "ch1-chem-10",
-            name: "Chemical Reactions and Equations",
-            topics: ["Types of Reactions", "Balancing Equations", "Effects of Oxidation"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-11",
-    name: "Class 11",
-    subjects: [
-      {
-        id: "physics-11",
-        name: "Physics",
-        color: "bg-purple-500",
-        chapters: [
-          {
-            id: "ch1-phy-11",
-            name: "Physical World",
-            topics: ["Scope of Physics", "Physics and Technology", "Fundamental Forces"],
-          },
-          {
-            id: "ch2-phy-11",
-            name: "Units and Measurements",
-            topics: ["SI Units", "Dimensional Analysis", "Significant Figures"],
-          },
-        ],
-      },
-      {
-        id: "chemistry-11",
-        name: "Chemistry",
-        color: "bg-orange-500",
-        chapters: [
-          {
-            id: "ch1-chem-11",
-            name: "Some Basic Concepts of Chemistry",
-            topics: ["Atomic and Molecular Masses", "Mole Concept", "Stoichiometry"],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class-12",
-    name: "Class 12",
-    subjects: [
-      {
-        id: "physics-12",
-        name: "Physics",
-        color: "bg-purple-500",
-        chapters: [
-          {
-            id: "ch1-phy-12",
-            name: "Electric Charges and Fields",
-            topics: ["Coulomb's Law", "Electric Field", "Gauss's Theorem"],
-          },
-          {
-            id: "ch2-phy-12",
-            name: "Current Electricity",
-            topics: ["Ohm's Law", "Kirchhoff's Rules", "Electrical Energy and Power"],
-          },
-        ],
-      },
-      {
-        id: "math-12",
-        name: "Mathematics",
-        color: "bg-blue-500",
-        chapters: [
-          {
-            id: "ch1-math-12",
-            name: "Relations and Functions",
-            topics: ["Types of Relations", "Types of Functions", "Composition of Functions"],
-          },
-          {
-            id: "ch2-math-12",
-            name: "Inverse Trigonometric Functions",
-            topics: ["Basic Concepts", "Properties", "Principal Values"],
-          },
-        ],
-      },
-    ],
-  },
-];
+// Build hierarchical structure from CBSE data
+const buildMasterDataHierarchy = () => {
+  // Filter to only the 5 core subjects we have data for
+  const coreSubjectIds = ["1", "2", "3", "8", "12"]; // Physics, Chemistry, Math, Hindi, History
+  
+  return classes.map(cls => {
+    const classSubjects = subjects
+      .filter(sub => coreSubjectIds.includes(sub.id))
+      .map(sub => {
+        const chapters = getChaptersByClassAndSubject(cls.id, sub.id);
+        if (chapters.length === 0) return null;
+        
+        const subjectColor = getSubjectColor(sub.name);
+        
+        return {
+          id: `${sub.id}-${cls.id}`,
+          name: sub.name,
+          subjectId: sub.id,
+          color: subjectColor.bg,
+          textColor: subjectColor.text,
+          chapters: chapters.map(ch => {
+            const topics = getTopicsByChapter(ch.id);
+            return {
+              id: ch.id,
+              name: ch.name,
+              nameHindi: ch.nameHindi,
+              nameTransliterated: ch.nameTransliterated,
+              topics: topics.map(t => ({
+                id: t.id,
+                name: t.name,
+                nameHindi: t.nameHindi
+              }))
+            };
+          })
+        };
+      })
+      .filter(Boolean);
+    
+    return {
+      id: cls.id,
+      name: cls.name,
+      subjects: classSubjects
+    };
+  }).filter(cls => cls.subjects.length > 0);
+};
 
 interface TreeNodeProps {
   level: "class" | "subject" | "chapter" | "topic";
   name: string;
+  nameHindi?: string;
+  nameTransliterated?: string;
   children?: React.ReactNode;
   color?: string;
+  textColor?: string;
+  subjectName?: string;
   count?: number;
   defaultExpanded?: boolean;
 }
 
-const TreeNode = ({ level, name, children, color, count, defaultExpanded = false }: TreeNodeProps) => {
+const TreeNode = ({ 
+  level, 
+  name, 
+  nameHindi,
+  nameTransliterated,
+  children, 
+  color, 
+  textColor,
+  subjectName,
+  count, 
+  defaultExpanded = false 
+}: TreeNodeProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const hasChildren = !!children;
 
@@ -303,6 +106,9 @@ const TreeNode = ({ level, name, children, color, count, defaultExpanded = false
     chapter: "text-foreground",
     topic: "text-muted-foreground text-sm",
   };
+
+  // Determine if this is a Hindi chapter (has nameHindi)
+  const isHindiContent = !!nameHindi;
 
   return (
     <div className={cn("select-none", level !== "class" && "ml-6")}>
@@ -326,18 +132,29 @@ const TreeNode = ({ level, name, children, color, count, defaultExpanded = false
           <div className="w-5" />
         )}
 
-        {color ? (
+        {level === "subject" && subjectName ? (
+          <SubjectBadge subject={subjectName} size="sm" showIcon />
+        ) : color ? (
           <div className={cn("w-5 h-5 rounded-md flex items-center justify-center", color)}>
-            <Icon className="w-3 h-3 text-white" />
+            <Icon className={cn("w-3 h-3", textColor || "text-white")} />
           </div>
         ) : (
           <Icon className={cn("w-4 h-4", level === "topic" ? "text-muted-foreground" : "text-primary")} />
         )}
 
-        <span className={levelStyles[level]}>{name}</span>
+        <div className="flex flex-col flex-1 min-w-0">
+          {isHindiContent ? (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={cn(levelStyles[level], "font-hindi")}>{nameHindi}</span>
+              <span className="text-xs text-muted-foreground">({name})</span>
+            </div>
+          ) : (
+            <span className={levelStyles[level]}>{name}</span>
+          )}
+        </div>
 
-        {count !== undefined && (
-          <Badge variant="secondary" className="ml-auto text-xs">
+        {count !== undefined && count > 0 && (
+          <Badge variant="secondary" className="ml-auto text-xs shrink-0">
             {count} {level === "class" ? "subjects" : level === "subject" ? "chapters" : "topics"}
           </Badge>
         )}
@@ -350,45 +167,68 @@ const TreeNode = ({ level, name, children, color, count, defaultExpanded = false
 
 const MasterData = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedClasses, setExpandedClasses] = useState<string[]>(["class-11", "class-12"]);
+  const [expandedClasses, setExpandedClasses] = useState<string[]>(["6", "7"]); // Class 11, 12 expanded by default
 
-  const filteredData = masterDataHierarchy.filter((classData) => {
-    if (!searchQuery) return true;
+  // Build hierarchy from real CBSE data
+  const masterDataHierarchy = useMemo(() => buildMasterDataHierarchy(), []);
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery) return masterDataHierarchy;
+    
     const query = searchQuery.toLowerCase();
     
-    // Check class name
-    if (classData.name.toLowerCase().includes(query)) return true;
-    
-    // Check subjects
-    for (const subject of classData.subjects) {
-      if (subject.name.toLowerCase().includes(query)) return true;
-      
-      // Check chapters
-      for (const chapter of subject.chapters) {
-        if (chapter.name.toLowerCase().includes(query)) return true;
-        
-        // Check topics
-        for (const topic of chapter.topics) {
-          if (topic.toLowerCase().includes(query)) return true;
-        }
+    return masterDataHierarchy.map(classData => {
+      // Check if class name matches
+      if (classData.name.toLowerCase().includes(query)) {
+        return classData;
       }
-    }
-    
-    return false;
-  });
+      
+      // Filter subjects
+      const filteredSubjects = classData.subjects
+        .map(subject => {
+          if (!subject) return null;
+          
+          // Check subject name
+          if (subject.name.toLowerCase().includes(query)) {
+            return subject;
+          }
+          
+          // Filter chapters
+          const filteredChapters = subject.chapters.filter(chapter => {
+            // Check chapter name (English)
+            if (chapter.name.toLowerCase().includes(query)) return true;
+            // Check chapter name (Hindi)
+            if (chapter.nameHindi?.includes(query)) return true;
+            // Check chapter name (Transliterated)
+            if (chapter.nameTransliterated?.toLowerCase().includes(query)) return true;
+            // Check topics
+            return chapter.topics.some(topic => 
+              topic.name.toLowerCase().includes(query) ||
+              topic.nameHindi?.includes(query)
+            );
+          });
+          
+          if (filteredChapters.length > 0) {
+            return { ...subject, chapters: filteredChapters };
+          }
+          
+          return null;
+        })
+        .filter(Boolean);
+      
+      if (filteredSubjects.length > 0) {
+        return { ...classData, subjects: filteredSubjects };
+      }
+      
+      return null;
+    }).filter(Boolean);
+  }, [masterDataHierarchy, searchQuery]);
 
-  // Calculate total counts
+  // Calculate total counts from real data
   const totalClasses = masterDataHierarchy.length;
   const totalSubjects = masterDataHierarchy.reduce((acc, c) => acc + c.subjects.length, 0);
-  const totalChapters = masterDataHierarchy.reduce(
-    (acc, c) => acc + c.subjects.reduce((a, s) => a + s.chapters.length, 0),
-    0
-  );
-  const totalTopics = masterDataHierarchy.reduce(
-    (acc, c) =>
-      acc + c.subjects.reduce((a, s) => a + s.chapters.reduce((t, ch) => t + ch.topics.length, 0), 0),
-    0
-  );
+  const totalChapters = cbseDataStats.totalChapters;
+  const totalTopics = cbseDataStats.totalTopics;
 
   return (
     <div className="space-y-6">
@@ -397,7 +237,7 @@ const MasterData = () => {
         description={
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-muted-foreground" />
-            <span>Read-only view of the academic hierarchy shared by Super Admin</span>
+            <span>Read-only view of CBSE academic hierarchy shared by Super Admin</span>
           </div>
         }
         breadcrumbs={[
@@ -434,6 +274,38 @@ const MasterData = () => {
         </Card>
       </div>
 
+      {/* Subject Breakdown */}
+      <Card className="border-border/50">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Globe className="w-4 h-4 text-primary" />
+            <span className="font-medium text-sm">Subject Coverage (CBSE Syllabus)</span>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              <SubjectBadge subject="Mathematics" size="sm" showIcon />
+              <span className="text-xs text-muted-foreground">{cbseDataStats.subjectBreakdown.mathematics} chapters</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <SubjectBadge subject="Physics" size="sm" showIcon />
+              <span className="text-xs text-muted-foreground">{cbseDataStats.subjectBreakdown.physics} chapters</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <SubjectBadge subject="Chemistry" size="sm" showIcon />
+              <span className="text-xs text-muted-foreground">{cbseDataStats.subjectBreakdown.chemistry} chapters</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <SubjectBadge subject="History" size="sm" showIcon />
+              <span className="text-xs text-muted-foreground">{cbseDataStats.subjectBreakdown.history} chapters</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <SubjectBadge subject="Hindi" size="sm" showIcon />
+              <span className="text-xs text-muted-foreground">{cbseDataStats.subjectBreakdown.hindi} chapters (bilingual)</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -450,7 +322,7 @@ const MasterData = () => {
         <CardContent className="p-4">
           <div className="space-y-1">
             {filteredData.length > 0 ? (
-              filteredData.map((classData) => (
+              filteredData.map((classData: any) => (
                 <TreeNode
                   key={classData.id}
                   level="class"
@@ -458,25 +330,34 @@ const MasterData = () => {
                   count={classData.subjects.length}
                   defaultExpanded={expandedClasses.includes(classData.id) || !!searchQuery}
                 >
-                  {classData.subjects.map((subject) => (
+                  {classData.subjects.map((subject: any) => (
                     <TreeNode
                       key={subject.id}
                       level="subject"
                       name={subject.name}
+                      subjectName={subject.name}
                       color={subject.color}
+                      textColor={subject.textColor}
                       count={subject.chapters.length}
                       defaultExpanded={!!searchQuery}
                     >
-                      {subject.chapters.map((chapter) => (
+                      {subject.chapters.map((chapter: any) => (
                         <TreeNode
                           key={chapter.id}
                           level="chapter"
                           name={chapter.name}
+                          nameHindi={chapter.nameHindi}
+                          nameTransliterated={chapter.nameTransliterated}
                           count={chapter.topics.length}
                           defaultExpanded={!!searchQuery}
                         >
-                          {chapter.topics.map((topic, idx) => (
-                            <TreeNode key={`${chapter.id}-topic-${idx}`} level="topic" name={topic} />
+                          {chapter.topics.map((topic: any) => (
+                            <TreeNode 
+                              key={topic.id} 
+                              level="topic" 
+                              name={topic.name}
+                              nameHindi={topic.nameHindi}
+                            />
                           ))}
                         </TreeNode>
                       ))}
@@ -499,9 +380,15 @@ const MasterData = () => {
         <div className="text-sm text-muted-foreground">
           <p className="font-medium text-foreground mb-1">About Master Data</p>
           <p>
-            This academic hierarchy is managed by the Super Admin and shared across all institutes.
-            You can use this structure to create tests, plan timetables, and organize your academic content.
-            Contact Super Admin if you need changes to this structure.
+            This is a read-only view of the CBSE academic curriculum. The master data is centrally managed by the 
+            Super Admin and includes Classes 6-12 with 5 core subjects: Mathematics, Physics, Chemistry, History, and Hindi.
+          </p>
+          <p className="mt-2">
+            <strong className="text-foreground">Multilingual Support:</strong> Hindi chapters are displayed in Devanagari script 
+            with English transliteration. This foundation supports future expansion to regional languages.
+          </p>
+          <p className="mt-2 text-xs">
+            Data source: NCERT CBSE Syllabus • Last updated: January 2025
           </p>
         </div>
       </div>
