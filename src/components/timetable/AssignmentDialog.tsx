@@ -18,10 +18,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoTooltip } from "./InfoTooltip";
-import { TeacherLoad, TimetableEntry, subjectColors } from "@/data/timetableData";
+import { TeacherLoad, TimetableEntry, subjectColors, TeacherConstraint, Facility } from "@/data/timetableData";
 import { Batch, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, User, BookOpen, Check } from "lucide-react";
+import { AlertTriangle, User, BookOpen, Check, Clock, Ban, Building2, Zap } from "lucide-react";
 
 interface AssignmentDialogProps {
   open: boolean;
@@ -38,6 +38,11 @@ interface AssignmentDialogProps {
   onRemove?: () => void;
   getTeacherConflict?: (teacherId: string, day: string, period: number) => boolean;
   getBatchConflict?: (batchId: string, day: string, period: number) => boolean;
+  // New props for constraints and facilities
+  teacherConstraints?: TeacherConstraint[];
+  facilities?: Facility[];
+  getTeacherDayPeriods?: (teacherId: string, day: string) => number;
+  getFacilityConflict?: (facilityId: string, day: string, period: number) => boolean;
 }
 
 export const AssignmentDialog = ({
@@ -55,9 +60,14 @@ export const AssignmentDialog = ({
   onRemove,
   getTeacherConflict,
   getBatchConflict,
+  teacherConstraints = [],
+  facilities = [],
+  getTeacherDayPeriods,
+  getFacilityConflict,
 }: AssignmentDialogProps) => {
   const [selectedBatchId, setSelectedBatchId] = useState(existingEntry?.batchId || '');
   const [selectedTeacherId, setSelectedTeacherId] = useState(existingEntry?.teacherId || '');
+  const [selectedFacilityId, setSelectedFacilityId] = useState(existingEntry?.facilityId || '');
 
   // Reset state when dialog opens with different context
   const dialogKey = `${day}-${period}-${existingEntry?.id || 'new'}`;
@@ -70,11 +80,66 @@ export const AssignmentDialog = ({
     if (open && !isEditMode) {
       setSelectedBatchId('');
       setSelectedTeacherId('');
+      setSelectedFacilityId('');
     } else if (open && isEditMode && existingEntry) {
       setSelectedBatchId(existingEntry.batchId);
       setSelectedTeacherId(existingEntry.teacherId);
+      setSelectedFacilityId(existingEntry.facilityId || '');
     }
   }, [open, isEditMode, existingEntry]);
+
+  // Get constraint for a teacher
+  const getTeacherConstraint = (teacherId: string) => {
+    return teacherConstraints.find(c => c.teacherId === teacherId);
+  };
+
+  // Check constraint violations for a teacher
+  const getConstraintWarnings = (teacherId: string): string[] => {
+    const warnings: string[] = [];
+    const constraint = getTeacherConstraint(teacherId);
+    if (!constraint) return warnings;
+
+    // Check unavailable day
+    if (constraint.unavailableDays.includes(day)) {
+      warnings.push(`Not available on ${day}`);
+    }
+
+    // Check max periods per day
+    const currentPeriods = getTeacherDayPeriods?.(teacherId, day) || 0;
+    if (currentPeriods >= constraint.maxPeriodsPerDay) {
+      warnings.push(`At daily limit (${constraint.maxPeriodsPerDay} periods)`);
+    } else if (currentPeriods >= constraint.maxPeriodsPerDay - 1) {
+      warnings.push(`Near daily limit (${currentPeriods}/${constraint.maxPeriodsPerDay})`);
+    }
+
+    // Check time window
+    if (constraint.timeWindow) {
+      if (period < constraint.timeWindow.startPeriod || period > constraint.timeWindow.endPeriod) {
+        warnings.push(`Outside available periods (P${constraint.timeWindow.startPeriod}-P${constraint.timeWindow.endPeriod})`);
+      }
+    }
+
+    return warnings;
+  };
+
+  // Check if constraint is hard (blocks assignment)
+  const isHardConstraintViolation = (teacherId: string): boolean => {
+    const constraint = getTeacherConstraint(teacherId);
+    if (!constraint || constraint.preferenceLevel !== 'hard') return false;
+    return getConstraintWarnings(teacherId).length > 0;
+  };
+
+  // Get available facilities based on batch class
+  const getAvailableFacilities = () => {
+    if (!selectedBatch) return facilities;
+    
+    return facilities.filter(f => {
+      // If no class restrictions, available for all
+      if (f.allowedClasses.length === 0) return true;
+      // Check if batch's class is in allowed list
+      return f.allowedClasses.some(cls => selectedBatch.className.includes(cls));
+    });
+  };
 
   // Get available teachers for batch view - ONLY teachers assigned to this batch
   const getAvailableTeachers = () => {
@@ -104,6 +169,10 @@ export const AssignmentDialog = ({
     return getBatchConflict?.(batchId, day, period) || false;
   };
 
+  const hasFacilityConflict = (facilityId: string) => {
+    return getFacilityConflict?.(facilityId, day, period) || false;
+  };
+
   // Get subject for teacher-batch combination (fixed mapping)
   const getSubjectForTeacherBatch = (teacherId: string, batchId: string): string | undefined => {
     const teacher = teachers.find(t => t.teacherId === teacherId);
@@ -125,6 +194,7 @@ export const AssignmentDialog = ({
 
   const handleAssign = () => {
     let entry: Omit<TimetableEntry, 'id'>;
+    const selectedFacility = facilities.find(f => f.id === selectedFacilityId);
 
     if (viewMode === 'teacher' && selectedTeacher) {
       const batch = batches.find(b => b.id === selectedBatchId);
@@ -142,6 +212,8 @@ export const AssignmentDialog = ({
         teacherName: selectedTeacher.teacherName,
         batchId: batch.id,
         batchName: `${batch.className} - ${batch.name}`,
+        facilityId: selectedFacilityId || undefined,
+        facilityName: selectedFacility?.name,
       };
     } else if (selectedBatch && autoSubject) {
       // Batch view: use auto-determined subject from teacher-batch mapping
@@ -158,6 +230,8 @@ export const AssignmentDialog = ({
         teacherName: teacher.teacherName,
         batchId: selectedBatch.id,
         batchName: `${selectedBatch.className} - ${selectedBatch.name}`,
+        facilityId: selectedFacilityId || undefined,
+        facilityName: selectedFacility?.name,
       };
     } else {
       return;
@@ -167,10 +241,14 @@ export const AssignmentDialog = ({
     onClose();
   };
 
+  // Check if selected teacher has hard constraint violation
+  const selectedTeacherHardViolation = selectedTeacherId ? isHardConstraintViolation(selectedTeacherId) : false;
+  const selectedTeacherWarnings = selectedTeacherId ? getConstraintWarnings(selectedTeacherId) : [];
+
   // For batch view, only need to select teacher (subject is auto-determined)
   const canAssign = viewMode === 'teacher' 
     ? !!selectedBatchId 
-    : !!selectedTeacherId && !!autoSubject;
+    : !!selectedTeacherId && !!autoSubject && !selectedTeacherHardViolation;
 
   return (
     <Dialog open={open} onOpenChange={onClose} key={dialogKey}>
@@ -284,12 +362,15 @@ export const AssignmentDialog = ({
                       const hasConflict = hasTeacherConflict(teacher.teacherId);
                       const remaining = teacher.periodsPerWeek - teacher.assignedPeriods;
                       const subject = getSubjectForTeacherBatch(teacher.teacherId, selectedBatch.id);
+                      const constraint = getTeacherConstraint(teacher.teacherId);
+                      const warnings = getConstraintWarnings(teacher.teacherId);
+                      const isHardViolation = isHardConstraintViolation(teacher.teacherId);
                       
                       return (
                         <SelectItem 
                           key={teacher.teacherId} 
                           value={teacher.teacherId}
-                          disabled={hasConflict || remaining <= 0}
+                          disabled={hasConflict || remaining <= 0 || isHardViolation}
                         >
                           <div className="flex items-center gap-2">
                             <span>{teacher.teacherName}</span>
@@ -304,6 +385,12 @@ export const AssignmentDialog = ({
                             >
                               {remaining} left
                             </Badge>
+                            {constraint && (
+                              <Zap className="w-3 h-3 text-amber-500" />
+                            )}
+                            {warnings.length > 0 && (
+                              <Clock className="w-3 h-3 text-orange-500" />
+                            )}
                             {hasConflict && (
                               <AlertTriangle className="w-3 h-3 text-destructive" />
                             )}
@@ -336,6 +423,67 @@ export const AssignmentDialog = ({
                     </Badge>
                     <span className="text-xs text-muted-foreground ml-auto">(auto-determined)</span>
                   </div>
+                </div>
+              )}
+
+              {/* Constraint Warnings */}
+              {selectedTeacherWarnings.length > 0 && (
+                <Alert variant={selectedTeacherHardViolation ? "destructive" : "default"} className="py-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-xs">
+                    <div className="flex flex-col gap-1">
+                      {selectedTeacherWarnings.map((warning, i) => (
+                        <span key={i}>{warning}</span>
+                      ))}
+                      {selectedTeacherHardViolation && (
+                        <span className="font-medium mt-1">Cannot assign due to hard constraint</span>
+                      )}
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Facility Selection (optional) */}
+              {facilities.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    Facility (optional)
+                    <InfoTooltip content="Select a facility/room if this period requires a specific location like lab or library." />
+                  </label>
+                  <Select value={selectedFacilityId} onValueChange={setSelectedFacilityId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="No specific facility" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No specific facility</SelectItem>
+                      {getAvailableFacilities().map(facility => {
+                        const hasConflict = hasFacilityConflict(facility.id);
+                        return (
+                          <SelectItem 
+                            key={facility.id} 
+                            value={facility.id}
+                            disabled={hasConflict}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span>{facility.name}</span>
+                              <Badge variant="outline" className="text-xs capitalize">
+                                {facility.type}
+                              </Badge>
+                              {facility.duration > 1 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {facility.duration}p
+                                </Badge>
+                              )}
+                              {hasConflict && (
+                                <AlertTriangle className="w-3 h-3 text-destructive" />
+                              )}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
