@@ -39,6 +39,7 @@ export const ConflictSummaryPanel = ({
         const teacher = teachers.find(t => t.teacherId === teacherId);
         conflicts.push({
           type: 'teacher_clash',
+          severity: 'error',
           message: `${teacher?.teacherName || 'Teacher'} is assigned to ${slotEntries.length} classes at ${day} P${period}`,
           day,
           periodNumber: parseInt(period),
@@ -62,6 +63,7 @@ export const ConflictSummaryPanel = ({
         const [batchId, day, period] = key.split('-');
         conflicts.push({
           type: 'batch_clash',
+          severity: 'error',
           message: `${slotEntries[0].batchName} has ${slotEntries.length} classes at ${day} P${period}`,
           day,
           periodNumber: parseInt(period),
@@ -76,6 +78,7 @@ export const ConflictSummaryPanel = ({
       if (assignedCount > teacher.periodsPerWeek) {
         conflicts.push({
           type: 'overload',
+          severity: 'warning',
           message: `${teacher.teacherName} is overloaded: ${assignedCount}/${teacher.periodsPerWeek} periods`,
           day: '',
           periodNumber: 0,

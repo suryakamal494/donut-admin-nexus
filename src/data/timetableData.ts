@@ -61,16 +61,80 @@ export interface TimetableEntry {
   teacherName: string;
   batchId: string;
   batchName: string;
-  periodType?: string; // NEW: 'regular' | 'library' | 'lab' | etc.
+  periodType?: string;
+  facilityId?: string;
+  facilityName?: string;
+  substituteTeacherId?: string;
+  substituteTeacherName?: string;
+  isSubstituted?: boolean;
 }
 
 export interface TimetableConflict {
-  type: 'teacher_clash' | 'batch_clash' | 'overload';
+  type: 'teacher_clash' | 'batch_clash' | 'overload' | 'constraint_violation' | 'facility_conflict' | 'preference_warning';
+  severity: 'error' | 'warning';
   message: string;
   day: string;
   periodNumber: number;
   teacherId?: string;
   batchId?: string;
+  facilityId?: string;
+}
+
+// NEW: Teacher Availability Constraints
+export interface TeacherConstraint {
+  teacherId: string;
+  maxPeriodsPerDay: number;
+  maxConsecutivePeriods: number;
+  unavailableDays: string[];
+  unavailablePeriods: { day: string; period: number }[];
+  timeWindow?: {
+    startPeriod: number;
+    endPeriod: number;
+  };
+  preferenceLevel: 'hard' | 'soft';
+}
+
+// NEW: Facility/Resource Management
+export interface Facility {
+  id: string;
+  name: string;
+  type: 'lab' | 'sports' | 'special' | 'classroom';
+  capacity?: number;
+  duration: number; // Periods required (1 or 2)
+  allowedClasses: string[];
+  linkedPeriodType?: string;
+  availability?: {
+    days: string[];
+    periods?: { start: number; end: number };
+  };
+}
+
+// NEW: Teacher Absence for Substitution Management
+export interface TeacherAbsence {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  date: string;
+  absenceType: 'full_day' | 'partial';
+  periods?: number[];
+  reason?: string;
+  createdAt: string;
+}
+
+// NEW: Substitution Assignment
+export interface SubstitutionAssignment {
+  id: string;
+  absenceId: string;
+  originalTeacherId: string;
+  substituteTeacherId: string;
+  substituteTeacherName: string;
+  date: string;
+  period: number;
+  batchId: string;
+  batchName: string;
+  subject: string;
+  status: 'pending' | 'assigned' | 'confirmed';
+  isTemporary: boolean;
 }
 
 // Default period structure
@@ -333,3 +397,53 @@ export const batchExamSchedules: BatchExamSchedule[] = [
   { id: 'sch-2', batchId: 'batch-1', batchName: 'Class 10 - Section A', termId: 'term-1', examType: 'monthly', dates: ['2025-04-28', '2025-05-26', '2025-06-30'] },
   { id: 'sch-3', batchId: 'batch-1', batchName: 'Class 10 - Section A', termId: 'term-1', examType: 'terminal', dates: ['2025-09-15', '2025-09-16', '2025-09-17'] },
 ];
+
+// NEW: Default Facilities
+export const defaultFacilities: Facility[] = [
+  // Labs
+  { id: 'lab-physics', name: 'Physics Lab', type: 'lab', capacity: 30, duration: 2, allowedClasses: ['Class 8', 'Class 9', 'Class 10'], linkedPeriodType: 'lab' },
+  { id: 'lab-chemistry', name: 'Chemistry Lab', type: 'lab', capacity: 30, duration: 2, allowedClasses: ['Class 8', 'Class 9', 'Class 10'], linkedPeriodType: 'lab' },
+  { id: 'lab-biology', name: 'Biology Lab', type: 'lab', capacity: 30, duration: 2, allowedClasses: ['Class 8', 'Class 9', 'Class 10'], linkedPeriodType: 'lab' },
+  { id: 'lab-computer', name: 'Computer Lab', type: 'lab', capacity: 40, duration: 1, allowedClasses: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'] },
+  
+  // Sports
+  { id: 'sports-field', name: 'Sports Field', type: 'sports', capacity: 60, duration: 1, allowedClasses: [], linkedPeriodType: 'sports' },
+  { id: 'sports-indoor', name: 'Indoor Court', type: 'sports', capacity: 30, duration: 1, allowedClasses: [] },
+  
+  // Special Rooms
+  { id: 'room-library', name: 'Library', type: 'special', capacity: 40, duration: 1, allowedClasses: [], linkedPeriodType: 'library' },
+  { id: 'room-art', name: 'Art Room', type: 'special', capacity: 30, duration: 1, allowedClasses: [] },
+  { id: 'room-music', name: 'Music Room', type: 'special', capacity: 25, duration: 1, allowedClasses: [] },
+  { id: 'room-auditorium', name: 'Auditorium', type: 'special', capacity: 200, duration: 2, allowedClasses: [] },
+  
+  // Classrooms
+  { id: 'classroom-a1', name: 'Classroom A1', type: 'classroom', capacity: 40, duration: 1, allowedClasses: [] },
+  { id: 'classroom-a2', name: 'Classroom A2', type: 'classroom', capacity: 40, duration: 1, allowedClasses: [] },
+  { id: 'classroom-b1', name: 'Classroom B1', type: 'classroom', capacity: 35, duration: 1, allowedClasses: [] },
+];
+
+// NEW: Default Teacher Constraints
+export const defaultTeacherConstraints: TeacherConstraint[] = [
+  { 
+    teacherId: 'teacher-1', 
+    maxPeriodsPerDay: 5, 
+    maxConsecutivePeriods: 3, 
+    unavailableDays: [], 
+    unavailablePeriods: [], 
+    preferenceLevel: 'soft' 
+  },
+  { 
+    teacherId: 'teacher-2', 
+    maxPeriodsPerDay: 6, 
+    maxConsecutivePeriods: 4, 
+    unavailableDays: ['Saturday'], 
+    unavailablePeriods: [], 
+    preferenceLevel: 'hard' 
+  },
+];
+
+// NEW: Sample Teacher Absences
+export const sampleTeacherAbsences: TeacherAbsence[] = [];
+
+// NEW: Sample Substitution Assignments
+export const sampleSubstitutionAssignments: SubstitutionAssignment[] = [];

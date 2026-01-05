@@ -11,6 +11,8 @@ export { ParsedGridPreview } from './ParsedGridPreview';
 export { CopyWeekDialog } from './CopyWeekDialog';
 export { PeriodTypeManager } from './PeriodTypeManager';
 export { AcademicTimelineEditor } from './AcademicTimelineEditor';
+export { TeacherConstraintsManager } from './TeacherConstraintsManager';
+export { FacilityManager } from './FacilityManager';
 export type { Holiday } from './HolidayCalendarDialog';
 export type { ParsedEntry } from './ParsedGridPreview';
 export type { CopyOptions } from './CopyWeekDialog';
