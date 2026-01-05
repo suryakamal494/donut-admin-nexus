@@ -19,6 +19,7 @@ import {
   Wrench,
   Eye,
   Library,
+  UserCheck,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -51,6 +52,7 @@ const navItems: NavItem[] = [
       { title: "Setup", icon: Settings, href: "/institute/timetable/setup" },
       { title: "Workspace", icon: Wrench, href: "/institute/timetable" },
       { title: "View Timetable", icon: Eye, href: "/institute/timetable/view" },
+      { title: "Substitution", icon: UserCheck, href: "/institute/timetable/substitution" },
     ]
   },
   { title: "Question Bank", icon: FileQuestion, href: "/institute/questions" },

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { InfoTooltip, HolidayCalendarDialog, PeriodTypeManager, AcademicTimelineEditor } from "@/components/timetable";
+import { InfoTooltip, HolidayCalendarDialog, PeriodTypeManager, AcademicTimelineEditor, TeacherConstraintsManager, FacilityManager } from "@/components/timetable";
 import { Holiday } from "@/components/timetable/HolidayCalendarDialog";
 import { 
   defaultPeriodStructure, 
@@ -29,7 +29,11 @@ import {
   BatchExamSchedule,
   academicTerms as defaultTerms,
   batchExamSchedules as defaultSchedules,
-  academicHolidays
+  academicHolidays,
+  TeacherConstraint,
+  Facility,
+  defaultTeacherConstraints,
+  defaultFacilities
 } from "@/data/timetableData";
 import { cn } from "@/lib/utils";
 import { 
@@ -44,7 +48,10 @@ import {
   Layers,
   CalendarDays,
   FileEdit,
-  CheckCircle2
+  CheckCircle2,
+  Zap,
+  Building2,
+  AlertTriangle
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -53,6 +60,7 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const TimetableSetup = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("period-structure");
+  const [isAdvancedMode, setIsAdvancedMode] = useState(false);
   
   // Period structure state
   const [workingDays, setWorkingDays] = useState<string[]>(defaultPeriodStructure.workingDays);
@@ -76,6 +84,10 @@ const TimetableSetup = () => {
   const [teacherLoadData, setTeacherLoadData] = useState<TeacherLoad[]>(teacherLoads);
   const [editingTeacher, setEditingTeacher] = useState<string | null>(null);
 
+  // Advanced mode states
+  const [teacherConstraints, setTeacherConstraints] = useState<TeacherConstraint[]>(defaultTeacherConstraints);
+  const [facilities, setFacilities] = useState<Facility[]>(defaultFacilities);
+
   // Progress tracking
   const getTabProgress = (tab: string): 'complete' | 'partial' | 'empty' => {
     switch (tab) {
@@ -89,6 +101,10 @@ const TimetableSetup = () => {
         return terms.length > 0 ? (examSchedules.length > 0 ? 'complete' : 'partial') : 'empty';
       case 'teacher-load':
         return teacherLoadData.length > 0 ? 'complete' : 'empty';
+      case 'teacher-constraints':
+        return teacherConstraints.length > 0 ? 'complete' : 'empty';
+      case 'facilities':
+        return facilities.length > 0 ? 'complete' : 'empty';
       default:
         return 'empty';
     }
@@ -148,13 +164,20 @@ const TimetableSetup = () => {
     toast.success("Time slots generated!");
   };
 
-  const tabs = [
+  const basicTabs = [
     { id: 'period-structure', label: 'Period Structure', icon: Clock },
     { id: 'period-types', label: 'Period Types', icon: Layers },
     { id: 'holidays', label: 'Holidays', icon: CalendarDays },
     { id: 'academic-timeline', label: 'Academic Timeline', icon: FileEdit },
     { id: 'teacher-load', label: 'Teacher Load', icon: User },
   ];
+
+  const advancedTabs = [
+    { id: 'teacher-constraints', label: 'Teacher Constraints', icon: AlertTriangle },
+    { id: 'facilities', label: 'Facilities', icon: Building2 },
+  ];
+
+  const tabs = isAdvancedMode ? [...basicTabs, ...advancedTabs] : basicTabs;
 
   return (
     <div className="space-y-6">
@@ -173,6 +196,49 @@ const TimetableSetup = () => {
         }
       />
 
+      {/* Advanced Mode Toggle */}
+      <Card className="border-dashed">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                isAdvancedMode ? "bg-amber-100 dark:bg-amber-900" : "bg-muted"
+              )}>
+                <Zap className={cn(
+                  "w-5 h-5",
+                  isAdvancedMode ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
+                )} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">Advanced Setup</p>
+                  {isAdvancedMode && (
+                    <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
+                      Enabled
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {isAdvancedMode 
+                    ? "Configure teacher constraints and facility management" 
+                    : "Enable for teacher constraints, facility scheduling, and more"}
+                </p>
+              </div>
+            </div>
+            <Switch 
+              checked={isAdvancedMode} 
+              onCheckedChange={(checked) => {
+                setIsAdvancedMode(checked);
+                if (!checked && (activeTab === 'teacher-constraints' || activeTab === 'facilities')) {
+                  setActiveTab('period-structure');
+                }
+              }} 
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Progress Overview */}
       <Card className="bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
         <CardContent className="p-4">
@@ -180,6 +246,7 @@ const TimetableSetup = () => {
             {tabs.map((tab, index) => {
               const progress = getTabProgress(tab.id);
               const Icon = tab.icon;
+              const isAdvancedTab = advancedTabs.some(t => t.id === tab.id);
               return (
                 <button
                   key={tab.id}
@@ -188,7 +255,8 @@ const TimetableSetup = () => {
                     "flex items-center gap-2 px-3 py-2 rounded-lg transition-all whitespace-nowrap",
                     activeTab === tab.id
                       ? "bg-primary text-white"
-                      : "hover:bg-muted/50"
+                      : "hover:bg-muted/50",
+                    isAdvancedTab && "ring-1 ring-amber-200 dark:ring-amber-800"
                   )}
                 >
                   <div className={cn(
@@ -201,6 +269,9 @@ const TimetableSetup = () => {
                     {progress === 'complete' ? <Check className="w-3.5 h-3.5" /> : index + 1}
                   </div>
                   <span className="text-sm font-medium">{tab.label}</span>
+                  {isAdvancedTab && activeTab !== tab.id && (
+                    <Zap className="w-3 h-3 text-amber-500" />
+                  )}
                 </button>
               );
             })}
@@ -623,6 +694,71 @@ const TimetableSetup = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Tab 6: Teacher Constraints (Advanced) */}
+        {isAdvancedMode && (
+          <TabsContent value="teacher-constraints">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      Teacher Constraints
+                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                        <Zap className="w-3 h-3 mr-1" />
+                        Advanced
+                      </Badge>
+                      <InfoTooltip content="Set detailed availability rules for each teacher including max periods per day, consecutive limits, and time windows." />
+                    </CardTitle>
+                    <CardDescription>Configure availability rules and limits for teachers</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <TeacherConstraintsManager
+                  teachers={teacherLoadData}
+                  constraints={teacherConstraints}
+                  onUpdate={setTeacherConstraints}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {/* Tab 7: Facilities (Advanced) */}
+        {isAdvancedMode && (
+          <TabsContent value="facilities">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      Facility Management
+                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                        <Zap className="w-3 h-3 mr-1" />
+                        Advanced
+                      </Badge>
+                      <InfoTooltip content="Manage labs, sports facilities, special rooms, and classrooms. Set capacity limits and class restrictions." />
+                    </CardTitle>
+                    <CardDescription>Configure rooms, labs, and resources for scheduling</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <FacilityManager
+                  facilities={facilities}
+                  onUpdate={setFacilities}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Holiday Dialog */}
