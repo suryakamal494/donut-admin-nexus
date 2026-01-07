@@ -1,20 +1,29 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, CreditCard, Shield, Users, GraduationCap } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, CreditCard, Shield, Users, GraduationCap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { PlanBadge } from "@/components/ui/plan-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockInstitutes } from "@/data/mockData";
+import { mockInstitutes, Institute } from "@/data/mockData";
+import { InstituteEditDialog } from "@/components/institutes/InstituteEditDialog";
+import { AssignCurriculumCourseDialog } from "@/components/institutes/AssignCurriculumCourseDialog";
+import { toast } from "sonner";
 
 const Institutes = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [planFilter, setPlanFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  
+  // Dialog states
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedInstitute, setSelectedInstitute] = useState<Institute | null>(null);
 
   const filteredInstitutes = mockInstitutes.filter((institute) => {
     const matchesSearch = institute.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -23,6 +32,24 @@ const Institutes = () => {
     const matchesStatus = statusFilter === "all" || institute.status === statusFilter;
     return matchesSearch && matchesPlan && matchesStatus;
   });
+
+  const handleViewDetails = (institute: Institute) => {
+    navigate(`/superadmin/institutes/${institute.id}`);
+  };
+
+  const handleEdit = (institute: Institute) => {
+    setSelectedInstitute(institute);
+    setEditDialogOpen(true);
+  };
+
+  const handleAssign = (institute: Institute) => {
+    setSelectedInstitute(institute);
+    setAssignDialogOpen(true);
+  };
+
+  const handleBilling = (institute: Institute) => {
+    toast.info(`Billing management for ${institute.name} coming soon`);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -82,71 +109,104 @@ const Institutes = () => {
 
       {/* Table */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead>Institute</TableHead>
-              <TableHead>Admin</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-center">Students</TableHead>
-              <TableHead className="text-center">Teachers</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredInstitutes.map((institute) => (
-              <TableRow key={institute.id} className="hover:bg-muted/20">
-                <TableCell>
-                  <div>
-                    <p className="font-medium text-foreground">{institute.name}</p>
-                    <p className="text-sm text-muted-foreground">{institute.code}</p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <p className="text-sm font-medium">{institute.adminName}</p>
-                    <p className="text-xs text-muted-foreground">{institute.adminEmail}</p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <PlanBadge plan={institute.plan} />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={institute.status} />
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <GraduationCap className="w-4 h-4 text-muted-foreground" />
-                    <span>{institute.students.toLocaleString()}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                    <span>{institute.teachers}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem><Eye className="w-4 h-4 mr-2" />View Details</DropdownMenuItem>
-                      <DropdownMenuItem><Edit className="w-4 h-4 mr-2" />Edit</DropdownMenuItem>
-                      <DropdownMenuItem><Shield className="w-4 h-4 mr-2" />Permissions</DropdownMenuItem>
-                      <DropdownMenuItem><CreditCard className="w-4 h-4 mr-2" />Billing</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/30">
+                <TableHead>Institute</TableHead>
+                <TableHead className="hidden md:table-cell">Admin</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-center hidden sm:table-cell">Students</TableHead>
+                <TableHead className="text-center hidden sm:table-cell">Teachers</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredInstitutes.map((institute) => (
+                <TableRow key={institute.id} className="hover:bg-muted/20">
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-foreground">{institute.name}</p>
+                      <p className="text-sm text-muted-foreground">{institute.code}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <div>
+                      <p className="text-sm font-medium">{institute.adminName}</p>
+                      <p className="text-xs text-muted-foreground">{institute.adminEmail}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <PlanBadge plan={institute.plan} />
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={institute.status} />
+                  </TableCell>
+                  <TableCell className="text-center hidden sm:table-cell">
+                    <div className="flex items-center justify-center gap-1">
+                      <GraduationCap className="w-4 h-4 text-muted-foreground" />
+                      <span>{institute.students.toLocaleString()}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center hidden sm:table-cell">
+                    <div className="flex items-center justify-center gap-1">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span>{institute.teachers}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewDetails(institute)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(institute)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleAssign(institute)}>
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Assign Curriculum/Courses
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleBilling(institute)}>
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Billing
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
+
+      {/* Dialogs */}
+      {selectedInstitute && (
+        <>
+          <InstituteEditDialog 
+            open={editDialogOpen} 
+            onOpenChange={setEditDialogOpen}
+            institute={selectedInstitute}
+          />
+          <AssignCurriculumCourseDialog
+            open={assignDialogOpen}
+            onOpenChange={setAssignDialogOpen}
+            instituteId={selectedInstitute.id}
+            currentCurriculums={[]} // Would come from DB in real app
+            currentCourses={[]}
+          />
+        </>
+      )}
     </div>
   );
 };
