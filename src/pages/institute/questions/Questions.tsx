@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Sparkles, Lock, Building2 } from "lucide-react";
+import { Plus, Sparkles, Lock, Building2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
@@ -102,7 +102,14 @@ const Questions = () => {
         title="Question Bank"
         description="Access global questions shared by the platform and create your own institute-level questions for tests and practice."
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/institute/questions/upload-pdf")}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Upload PDF
+            </Button>
             <Button
               variant="outline"
               onClick={() => navigate("/institute/questions/ai")}

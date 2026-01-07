@@ -1,19 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
   Sparkles,
   Wand2,
-  BookOpen,
   Lightbulb,
   Target,
   RefreshCw,
   Plus,
   Check,
+  Brain,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -27,28 +26,102 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PageHeader } from "@/components/ui/page-header";
-import { SubjectBadge } from "@/components/subject";
-import { availableClasses, availableSubjects } from "@/data/instituteData";
 import { questionTypeLabels, QuestionType } from "@/data/questionsData";
+import { assignedTracks } from "@/data/instituteData";
+import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
+import { getSubjectsForCourse, getChaptersForCourseBySubject, subjects as masterSubjects } from "@/data/masterData";
+import { classes } from "@/data/mockData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const difficultyLevels = ["easy", "medium", "hard"];
+
+const cognitiveTypes = [
+  { id: "logical", label: "Logical" },
+  { id: "analytical", label: "Analytical" },
+  { id: "conceptual", label: "Conceptual" },
+  { id: "numerical", label: "Numerical" },
+  { id: "application", label: "Application" },
+  { id: "memory", label: "Memory" },
+];
 
 const AIQuestions = () => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedQuestions, setGeneratedQuestions] = useState<any[]>([]);
 
+  // Course selection (CBSE or JEE Mains)
+  const [selectedCourse, setSelectedCourse] = useState("");
+  
   // Form state
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [chapter, setChapter] = useState("");
-  const [topic, setTopic] = useState("");
+  const [selectedChapter, setSelectedChapter] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
   const [questionCount, setQuestionCount] = useState(5);
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(["mcq_single"]);
   const [difficultyMix, setDifficultyMix] = useState<string[]>(["medium"]);
+  const [selectedCognitiveTypes, setSelectedCognitiveTypes] = useState<string[]>(["conceptual"]);
   const [additionalContext, setAdditionalContext] = useState("");
+
+  // Get the selected track details
+  const selectedTrack = assignedTracks.find(t => t.id === selectedCourse);
+  const isCBSE = selectedTrack?.hasClasses;
+
+  // Get available subjects based on course type
+  const availableSubjects = useMemo(() => {
+    if (!selectedCourse) return [];
+    if (isCBSE) {
+      // For CBSE, return standard subjects
+      return masterSubjects;
+    } else {
+      // For JEE Mains, get subjects that have chapters in the course
+      return getSubjectsForCourse(selectedCourse);
+    }
+  }, [selectedCourse, isCBSE]);
+
+  // Get chapters based on course type
+  const availableChapters = useMemo(() => {
+    if (!selectedSubject) return [];
+    if (isCBSE && selectedClass) {
+      return getChaptersByClassAndSubject(selectedClass, selectedSubject);
+    } else if (!isCBSE && selectedCourse) {
+      return getChaptersForCourseBySubject(selectedCourse, selectedSubject);
+    }
+    return [];
+  }, [selectedCourse, selectedClass, selectedSubject, isCBSE]);
+
+  // Get topics for selected chapter
+  const availableTopics = useMemo(() => {
+    if (!selectedChapter) return [];
+    return getTopicsByChapter(selectedChapter);
+  }, [selectedChapter]);
+
+  const handleCourseChange = (courseId: string) => {
+    setSelectedCourse(courseId);
+    setSelectedClass("");
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleClassChange = (classId: string) => {
+    setSelectedClass(classId);
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleSubjectChange = (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleChapterChange = (chapterId: string) => {
+    setSelectedChapter(chapterId);
+    setSelectedTopic("");
+  };
 
   const handleTypeToggle = (type: QuestionType) => {
     setSelectedTypes((prev) =>
@@ -62,9 +135,23 @@ const AIQuestions = () => {
     );
   };
 
+  const handleCognitiveToggle = (type: string) => {
+    setSelectedCognitiveTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   const handleGenerate = () => {
-    if (!selectedClass || !selectedSubject) {
-      toast.error("Please select class and subject");
+    if (!selectedCourse) {
+      toast.error("Please select a course");
+      return;
+    }
+    if (isCBSE && !selectedClass) {
+      toast.error("Please select a class");
+      return;
+    }
+    if (!selectedSubject) {
+      toast.error("Please select a subject");
       return;
     }
     if (selectedTypes.length === 0) {
@@ -75,16 +162,24 @@ const AIQuestions = () => {
       toast.error("Please select at least one difficulty level");
       return;
     }
+    if (selectedCognitiveTypes.length === 0) {
+      toast.error("Please select at least one cognitive type");
+      return;
+    }
 
     setIsGenerating(true);
 
     // Simulate AI generation
     setTimeout(() => {
+      const chapterName = availableChapters.find(c => c.id === selectedChapter)?.name || "selected chapter";
+      const topicName = availableTopics.find(t => t.id === selectedTopic)?.name || "";
+      
       const mockGenerated = Array.from({ length: questionCount }, (_, i) => ({
         id: `gen-${i + 1}`,
         type: selectedTypes[i % selectedTypes.length],
         difficulty: difficultyMix[i % difficultyMix.length],
-        questionText: `Generated question ${i + 1} about ${topic || chapter || "the selected topic"}...`,
+        cognitiveType: selectedCognitiveTypes[i % selectedCognitiveTypes.length],
+        questionText: `Generated question ${i + 1} about ${topicName || chapterName}...`,
         options: [
           { id: "a", text: "Option A", isCorrect: i % 4 === 0 },
           { id: "b", text: "Option B", isCorrect: i % 4 === 1 },
@@ -122,7 +217,7 @@ const AIQuestions = () => {
     <div className="space-y-6">
       <PageHeader
         title="AI Question Generator"
-        description="Generate questions instantly using AI. Specify the topic, difficulty, and question types to create custom questions for your tests."
+        description="Generate questions instantly using AI. Specify the course, topic, difficulty, and question types to create custom questions for your tests."
         actions={
           <Button variant="outline" onClick={() => navigate("/institute/questions")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
@@ -145,60 +240,110 @@ const AIQuestions = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              {/* Class & Subject */}
+              {/* Course Selection */}
               <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label>Class *</Label>
-                  <Select value={selectedClass} onValueChange={setSelectedClass}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select class..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableClasses.map((cls) => (
-                        <SelectItem key={cls.id} value={cls.id}>
-                          {cls.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Subject *</Label>
-                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select subject..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableSubjects.map((sub) => (
-                        <SelectItem key={sub.id} value={sub.id}>
-                          {sub.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Label>Select Course *</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {assignedTracks.map((track) => (
+                    <div
+                      key={track.id}
+                      className={cn(
+                        "flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all",
+                        selectedCourse === track.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/30"
+                      )}
+                      onClick={() => handleCourseChange(track.id)}
+                    >
+                      <Checkbox checked={selectedCourse === track.id} />
+                      <span className="font-medium">{track.name}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Chapter & Topic */}
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label>Chapter</Label>
-                  <Input
-                    placeholder="e.g., Newton's Laws of Motion"
-                    value={chapter}
-                    onChange={(e) => setChapter(e.target.value)}
-                  />
+              {/* Cascading Dropdowns */}
+              {selectedCourse && (
+                <div className="space-y-3">
+                  {/* Class - Only for CBSE */}
+                  {isCBSE && (
+                    <div className="space-y-2">
+                      <Label>Class *</Label>
+                      <Select value={selectedClass} onValueChange={handleClassChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select class..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classes.map((cls) => (
+                            <SelectItem key={cls.id} value={cls.id}>
+                              {cls.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Subject */}
+                  <div className="space-y-2">
+                    <Label>Subject *</Label>
+                    <Select 
+                      value={selectedSubject} 
+                      onValueChange={handleSubjectChange}
+                      disabled={isCBSE && !selectedClass}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select subject..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableSubjects.map((sub) => (
+                          <SelectItem key={sub.id} value={sub.id}>
+                            {sub.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Chapter */}
+                  {selectedSubject && (isCBSE ? selectedClass : true) && (
+                    <div className="space-y-2">
+                      <Label>Chapter</Label>
+                      <Select value={selectedChapter} onValueChange={handleChapterChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select chapter..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableChapters.map((ch) => (
+                            <SelectItem key={ch.id} value={ch.id}>
+                              {ch.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Topic */}
+                  {selectedChapter && availableTopics.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Topic (Optional)</Label>
+                      <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select topic..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableTopics.map((topic) => (
+                            <SelectItem key={topic.id} value={topic.id}>
+                              {topic.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label>Topic (optional)</Label>
-                  <Input
-                    placeholder="e.g., Friction"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Question Count */}
               <div className="space-y-3">
@@ -257,6 +402,31 @@ const AIQuestions = () => {
                     >
                       {diff}
                     </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cognitive Types */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-primary" />
+                  <Label>Cognitive Types *</Label>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {cognitiveTypes.map((cog) => (
+                    <div
+                      key={cog.id}
+                      className={cn(
+                        "flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-sm",
+                        selectedCognitiveTypes.includes(cog.id)
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/30"
+                      )}
+                      onClick={() => handleCognitiveToggle(cog.id)}
+                    >
+                      <Checkbox checked={selectedCognitiveTypes.includes(cog.id)} />
+                      <span>{cog.label}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -357,7 +527,7 @@ const AIQuestions = () => {
                           {q.selected && <Check className="h-4 w-4" />}
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <Badge variant="outline" className="text-xs">
                               Q{index + 1}
                             </Badge>
@@ -374,6 +544,9 @@ const AIQuestions = () => {
                               )}
                             >
                               {q.difficulty}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs capitalize text-purple-600 border-purple-300">
+                              {q.cognitiveType}
                             </Badge>
                           </div>
                           <p className="text-sm text-foreground">{q.questionText}</p>
