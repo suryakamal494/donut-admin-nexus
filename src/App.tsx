@@ -56,6 +56,10 @@ import InstituteContent from "./pages/institute/content/Content";
 import InstituteCreateContent from "./pages/institute/content/CreateContent";
 import InstituteAIContentGenerator from "./pages/institute/content/AIContentGenerator";
 
+// Teacher Panel Pages
+import TeacherLayout from "./components/layout/TeacherLayout";
+import TeacherDashboard from "./pages/teacher/Dashboard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -123,6 +127,12 @@ const App = () => (
             <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
             <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
             <Route path="master-data" element={<InstituteMasterData />} />
+          </Route>
+
+          {/* Teacher Panel Routes */}
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route index element={<Navigate to="/teacher/dashboard" replace />} />
+            <Route path="dashboard" element={<TeacherDashboard />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
