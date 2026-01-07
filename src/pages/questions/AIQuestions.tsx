@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Wand2, ArrowLeft, AlertCircle, Info } from "lucide-react";
+import { Sparkles, Wand2, ArrowLeft, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,41 +8,49 @@ import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { subjectMasterList } from "@/components/subject/SubjectBadge";
 import { questionTypeLabels, QuestionType } from "@/data/questionsData";
 import { toast } from "sonner";
+import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
+import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
+import { getActiveCurriculums, getPublishedCourses, getAllCourseChapters } from "@/data/masterData";
+import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
+import { classes, subjects } from "@/data/mockData";
 
 const AIQuestions = () => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   
-  // Form state
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedChapter, setSelectedChapter] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
+  // Source type state
+  const [sourceType, setSourceType] = useState<ContentSourceType>('curriculum');
+  const [selectedCurriculumId, setSelectedCurriculumId] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState("");
+  const [selectedTopicId, setSelectedTopicId] = useState("");
+  
+  // Visibility state
+  const [visibleInCurriculum, setVisibleInCurriculum] = useState(true);
+  const [visibleInCourses, setVisibleInCourses] = useState<string[]>([]);
+  
+  // Question generation state
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(["mcq_single"]);
   const [difficulty, setDifficulty] = useState("mixed");
   const [questionCount, setQuestionCount] = useState("10");
   const [instructions, setInstructions] = useState("");
 
-  // Mock chapters (would come from API based on subject)
-  const chapters = [
-    { id: "mechanics", name: "Mechanics" },
-    { id: "thermodynamics", name: "Thermodynamics" },
-    { id: "electrostatics", name: "Electrostatics" },
-    { id: "optics", name: "Optics" },
-    { id: "waves", name: "Waves" },
-    { id: "modern-physics", name: "Modern Physics" },
-  ];
+  const activeCurriculums = getActiveCurriculums();
+  const publishedCourses = getPublishedCourses();
 
-  // Mock topics
-  const topics = [
-    { id: "newtons-laws", name: "Newton's Laws of Motion" },
-    { id: "work-energy", name: "Work, Energy & Power" },
-    { id: "rotational-motion", name: "Rotational Motion" },
-    { id: "gravitation", name: "Gravitation" },
-  ];
+  // Get chapters based on source type
+  const availableChapters = sourceType === 'curriculum' && selectedClassId && selectedSubjectId
+    ? getChaptersByClassAndSubject(selectedClassId, selectedSubjectId)
+    : sourceType === 'course' && selectedCourseId
+      ? getAllCourseChapters(selectedCourseId)
+      : [];
+
+  // Get topics for selected chapter
+  const availableTopics = selectedChapterId ? getTopicsByChapter(selectedChapterId) : [];
 
   const toggleQuestionType = (type: QuestionType) => {
     setSelectedTypes((prev) => {
@@ -54,9 +62,23 @@ const AIQuestions = () => {
     });
   };
 
+  const handleSourceTypeChange = (type: ContentSourceType) => {
+    setSourceType(type);
+    setSelectedCurriculumId("");
+    setSelectedCourseId("");
+    setSelectedClassId("");
+    setSelectedSubjectId("");
+    setSelectedChapterId("");
+    setSelectedTopicId("");
+  };
+
   const handleGenerate = () => {
-    if (!selectedSubject) {
-      toast.error("Please select a subject");
+    if (sourceType === 'curriculum' && (!selectedClassId || !selectedSubjectId)) {
+      toast.error("Please select class and subject");
+      return;
+    }
+    if (sourceType === 'course' && !selectedCourseId) {
+      toast.error("Please select a course");
       return;
     }
     if (selectedTypes.length === 0) {
@@ -107,179 +129,249 @@ const AIQuestions = () => {
         }
       />
 
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50">
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-2xl gradient-button flex items-center justify-center">
-              <Sparkles className="w-7 h-7 text-white" />
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Form */}
+          <div className="lg:col-span-2 bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl gradient-button flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold">AI Question Generator</h2>
+                <p className="text-sm text-muted-foreground">
+                  Configure parameters and let AI create questions for you
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold">AI Question Generator</h2>
-              <p className="text-muted-foreground">
-                Configure parameters and let AI create questions for you
-              </p>
+
+            {/* Form */}
+            <div className="space-y-5">
+              {/* Question Types */}
+              <div className="space-y-3">
+                <Label>Question Types <span className="text-destructive">*</span></Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {allQuestionTypes.map((type) => (
+                    <div
+                      key={type}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition-all ${
+                        selectedTypes.includes(type)
+                          ? "bg-primary/5 border-primary/30"
+                          : "bg-muted/30 border-border/50 hover:border-primary/20"
+                      }`}
+                      onClick={() => toggleQuestionType(type)}
+                    >
+                      <Checkbox
+                        checked={selectedTypes.includes(type)}
+                        onCheckedChange={() => toggleQuestionType(type)}
+                      />
+                      <span className="text-sm font-medium">
+                        {questionTypeLabels[type]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {selectedTypes.length > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    {selectedTypes.length} type(s) selected
+                  </p>
+                )}
+              </div>
+
+              {/* Difficulty & Count Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Difficulty Level</Label>
+                  <Select value={difficulty} onValueChange={setDifficulty}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">Mostly Easy</SelectItem>
+                      <SelectItem value="mixed">Mixed (Recommended)</SelectItem>
+                      <SelectItem value="hard">Mostly Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Number of Questions</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={questionCount}
+                    onChange={(e) => setQuestionCount(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Additional Instructions */}
+              <div className="space-y-2">
+                <Label>Additional Instructions (Optional)</Label>
+                <Textarea
+                  placeholder="e.g., Focus on numerical problems, include diagram-based questions, avoid repeated concepts..."
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-foreground mb-1">How this works</p>
+                    <p className="text-sm text-muted-foreground">
+                      Questions will be automatically generated with answers and detailed solutions.
+                      You can review and edit them before adding to the Question Bank.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4">
+                <Link to="/superadmin/questions">
+                  <Button variant="outline">Cancel</Button>
+                </Link>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={isGenerating}
+                  className="gradient-button gap-2 min-w-[180px]"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4" />
+                      Generate Questions
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Form */}
+          {/* Sidebar - Classification & Visibility */}
           <div className="space-y-6">
-            {/* Subject & Chapter Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Subject <span className="text-destructive">*</span></Label>
-                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select subject" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjectMasterList.slice(0, 15).map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Chapter</Label>
-                <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select chapter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {chapters.map((chapter) => (
-                      <SelectItem key={chapter.id} value={chapter.id}>
-                        {chapter.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Topic */}
-            <div className="space-y-2">
-              <Label>Topic (Optional)</Label>
-              <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select topic for focused generation" />
-                </SelectTrigger>
-                <SelectContent>
-                  {topics.map((topic) => (
-                    <SelectItem key={topic.id} value={topic.id}>
-                      {topic.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Question Types */}
-            <div className="space-y-3">
-              <Label>Question Types <span className="text-destructive">*</span></Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {allQuestionTypes.map((type) => (
-                  <div
-                    key={type}
-                    className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                      selectedTypes.includes(type)
-                        ? "bg-primary/5 border-primary/30"
-                        : "bg-muted/30 border-border/50 hover:border-primary/20"
-                    }`}
-                    onClick={() => toggleQuestionType(type)}
-                  >
-                    <Checkbox
-                      checked={selectedTypes.includes(type)}
-                      onCheckedChange={() => toggleQuestionType(type)}
-                    />
-                    <span className="text-sm font-medium">
-                      {questionTypeLabels[type]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {selectedTypes.length > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {selectedTypes.length} type(s) selected
-                </p>
-              )}
-            </div>
-
-            {/* Difficulty & Count Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Difficulty Level</Label>
-                <Select value={difficulty} onValueChange={setDifficulty}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="easy">Mostly Easy</SelectItem>
-                    <SelectItem value="mixed">Mixed (Recommended)</SelectItem>
-                    <SelectItem value="hard">Mostly Hard</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Number of Questions</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={questionCount}
-                  onChange={(e) => setQuestionCount(e.target.value)}
+            {/* Classification */}
+            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+              <h3 className="text-lg font-semibold mb-4">Classification</h3>
+              <div className="space-y-4">
+                <SourceTypeSelector 
+                  value={sourceType} 
+                  onChange={handleSourceTypeChange} 
                 />
-              </div>
-            </div>
 
-            {/* Additional Instructions */}
-            <div className="space-y-2">
-              <Label>Additional Instructions (Optional)</Label>
-              <Textarea
-                placeholder="e.g., Focus on numerical problems, include diagram-based questions, avoid repeated concepts..."
-                value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
-                rows={3}
-              />
-            </div>
-
-            {/* Info Box */}
-            <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-foreground mb-1">How this works</p>
-                  <p className="text-sm text-muted-foreground">
-                    Questions will be automatically generated with answers and detailed solutions.
-                    You can review and edit them before adding to the Question Bank.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4">
-              <Link to="/superadmin/questions">
-                <Button variant="outline">Cancel</Button>
-              </Link>
-              <Button
-                onClick={handleGenerate}
-                disabled={isGenerating}
-                className="gradient-button gap-2 min-w-[180px]"
-              >
-                {isGenerating ? (
+                {sourceType === 'curriculum' ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Generating...
+                    <div className="space-y-2">
+                      <Label>Curriculum *</Label>
+                      <Select value={selectedCurriculumId} onValueChange={setSelectedCurriculumId}>
+                        <SelectTrigger><SelectValue placeholder="Select curriculum" /></SelectTrigger>
+                        <SelectContent>
+                          {activeCurriculums.map((curr) => (
+                            <SelectItem key={curr.id} value={curr.id}>{curr.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Class *</Label>
+                      <Select value={selectedClassId} onValueChange={(v) => { setSelectedClassId(v); setSelectedSubjectId(""); setSelectedChapterId(""); setSelectedTopicId(""); }}>
+                        <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                        <SelectContent>
+                          {classes.map((cls) => (
+                            <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Subject *</Label>
+                      <Select value={selectedSubjectId} onValueChange={(v) => { setSelectedSubjectId(v); setSelectedChapterId(""); setSelectedTopicId(""); }}>
+                        <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
+                        <SelectContent>
+                          {subjects.map((sub) => (
+                            <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Chapter</Label>
+                      <Select value={selectedChapterId} onValueChange={(v) => { setSelectedChapterId(v); setSelectedTopicId(""); }}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {availableChapters.map((ch) => (
+                            <SelectItem key={ch.id} value={ch.id}>{ch.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {availableTopics.length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Topic (Optional)</Label>
+                        <Select value={selectedTopicId} onValueChange={setSelectedTopicId}>
+                          <SelectTrigger><SelectValue placeholder="Select topic" /></SelectTrigger>
+                          <SelectContent>
+                            {availableTopics.map((topic) => (
+                              <SelectItem key={topic.id} value={topic.id}>{topic.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
-                    <Wand2 className="w-4 h-4" />
-                    Generate Questions
+                    <div className="space-y-2">
+                      <Label>Course *</Label>
+                      <Select value={selectedCourseId} onValueChange={(v) => { setSelectedCourseId(v); setSelectedChapterId(""); }}>
+                        <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+                        <SelectContent>
+                          {publishedCourses.map((course) => (
+                            <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Chapter</Label>
+                      <Select value={selectedChapterId} onValueChange={setSelectedChapterId}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {availableChapters.map((ch) => (
+                            <SelectItem key={ch.id} value={ch.id}>
+                              {ch.name}
+                              {'sourceLabel' in ch && (
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  ({ch.sourceLabel})
+                                </span>
+                              )}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </>
                 )}
-              </Button>
+              </div>
+            </div>
+
+            {/* Visibility */}
+            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+              <VisibilitySelector
+                visibleInCurriculum={visibleInCurriculum}
+                visibleInCourses={visibleInCourses}
+                onCurriculumChange={setVisibleInCurriculum}
+                onCoursesChange={setVisibleInCourses}
+              />
             </div>
           </div>
         </div>
