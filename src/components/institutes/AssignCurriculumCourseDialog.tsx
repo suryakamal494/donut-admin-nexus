@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Layers, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { BookOpen, Layers, Search, Plus, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +34,7 @@ export const AssignCurriculumCourseDialog = ({
   currentCurriculums,
   currentCourses 
 }: AssignCurriculumCourseDialogProps) => {
+  const navigate = useNavigate();
   const [selectedCurriculums, setSelectedCurriculums] = useState<string[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [curriculumSearch, setCurriculumSearch] = useState("");
@@ -79,6 +82,11 @@ export const AssignCurriculumCourseDialog = ({
     onOpenChange(false);
   };
 
+  const handleCreateCustomCourse = () => {
+    onOpenChange(false);
+    navigate(`/superadmin/institutes/${instituteId}/custom-course`);
+  };
+
   const filteredCurriculums = curriculums.filter(c => 
     c.isActive && c.name.toLowerCase().includes(curriculumSearch.toLowerCase())
   );
@@ -89,11 +97,11 @@ export const AssignCurriculumCourseDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
+      <DialogContent className="sm:max-w-[750px] max-h-[85vh]">
         <DialogHeader>
           <DialogTitle>Assign Curriculums & Courses</DialogTitle>
           <DialogDescription>
-            Select the curriculums and courses this institute should have access to.
+            Select the curriculums and courses this institute should have access to, or create a custom course.
           </DialogDescription>
         </DialogHeader>
 
@@ -116,7 +124,7 @@ export const AssignCurriculumCourseDialog = ({
               />
             </div>
 
-            <ScrollArea className="h-[280px] pr-2">
+            <ScrollArea className="h-[220px] pr-2">
               <div className="space-y-2">
                 {filteredCurriculums.map((curriculum) => (
                   <div
@@ -162,7 +170,7 @@ export const AssignCurriculumCourseDialog = ({
               />
             </div>
 
-            <ScrollArea className="h-[280px] pr-2">
+            <ScrollArea className="h-[220px] pr-2">
               <div className="space-y-2">
                 {filteredCourses.map((course) => (
                   <div
@@ -191,7 +199,21 @@ export const AssignCurriculumCourseDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
+        {/* Custom Course Section */}
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Need a course tailored for this institute?</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleCreateCustomCourse}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Custom Course
+            </Button>
+          </div>
+        </div>
+
+        <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

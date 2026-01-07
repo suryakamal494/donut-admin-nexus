@@ -38,8 +38,7 @@ const Institutes = () => {
   };
 
   const handleEdit = (institute: Institute) => {
-    setSelectedInstitute(institute);
-    setEditDialogOpen(true);
+    navigate(`/superadmin/institutes/${institute.id}/edit`);
   };
 
   const handleAssign = (institute: Institute) => {

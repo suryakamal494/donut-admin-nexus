@@ -11,6 +11,7 @@ import Institutes from "./pages/institutes/Institutes";
 import CreateInstitute from "./pages/institutes/CreateInstitute";
 import InstituteDetails from "./pages/institutes/InstituteDetails";
 import InstituteCustomCourse from "./pages/institutes/InstituteCustomCourse";
+import EditInstitute from "./pages/institutes/EditInstitute";
 import InstituteTiers from "./pages/institutes/InstituteTiers";
 import EditTier from "./pages/institutes/EditTier";
 import Users from "./pages/users/Users";
@@ -92,6 +93,7 @@ const App = () => (
             <Route path="institutes/create" element={<CreateInstitute />} />
             <Route path="institutes/:id" element={<InstituteDetails />} />
             <Route path="institutes/:id/custom-course" element={<InstituteCustomCourse />} />
+            <Route path="institutes/:id/edit" element={<EditInstitute />} />
             <Route path="institutes/tiers" element={<InstituteTiers />} />
             <Route path="institutes/tiers/edit/:tierId" element={<EditTier />} />
             <Route path="users" element={<Users />} />
