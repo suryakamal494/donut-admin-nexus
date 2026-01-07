@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -11,20 +12,29 @@ import {
   ArrowRight,
   UserPlus,
   FileText,
+  BookMarked,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubjectBadge } from "@/components/subject";
-import { batches, teachers, students, availableSubjects, instituteExams } from "@/data/instituteData";
+import { batches, teachers, students, availableSubjects, instituteExams, assignedTracks } from "@/data/instituteData";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AssignCourseDialog } from "@/components/institute/batches/AssignCourseDialog";
 
 const BatchDashboard = () => {
   const { batchId } = useParams();
   const navigate = useNavigate();
+  const [assignCourseOpen, setAssignCourseOpen] = useState(false);
+  const [batchCourses, setBatchCourses] = useState<string[]>([]);
 
   const batch = batches.find((b) => b.id === batchId);
+  
+  // Initialize batch courses from batch data
+  if (batch && batchCourses.length === 0 && batch.assignedCourses.length > 0) {
+    setBatchCourses(batch.assignedCourses);
+  }
 
   if (!batch) {
     return (
@@ -144,6 +154,13 @@ const BatchDashboard = () => {
             >
               <GraduationCap className="h-4 w-4 mr-2" />
               Assign Teacher
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setAssignCourseOpen(true)}
+            >
+              <BookMarked className="h-4 w-4 mr-2" />
+              Assign Course
             </Button>
             <Button
               variant="outline"
@@ -361,6 +378,42 @@ const BatchDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Assigned Courses Display */}
+      {batchCourses.length > 0 && (
+        <Card className="border-dashed">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-medium text-muted-foreground">Assigned Courses:</span>
+              {batchCourses.map((courseId) => {
+                const course = assignedTracks.find((t) => t.id === courseId);
+                return course ? (
+                  <Badge key={courseId} variant="secondary" className="text-sm">
+                    {course.name}
+                  </Badge>
+                ) : null;
+              })}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="ml-auto"
+                onClick={() => setAssignCourseOpen(true)}
+              >
+                Edit
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Assign Course Dialog */}
+      <AssignCourseDialog
+        open={assignCourseOpen}
+        onOpenChange={setAssignCourseOpen}
+        batchName={`${batch.className} - ${batch.name}`}
+        currentCourses={batchCourses}
+        onSave={(courses) => setBatchCourses(courses)}
+      />
     </div>
   );
 };

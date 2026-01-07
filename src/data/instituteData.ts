@@ -37,6 +37,7 @@ export interface Batch {
   className: string;
   academicYear: string;
   subjects: string[];
+  assignedCourses: string[]; // Course IDs (e.g., "cbse", "jee-mains")
   studentCount: number;
   teacherCount: number;
   createdAt: string;
@@ -102,6 +103,7 @@ export const batches: Batch[] = [
     className: "Class 10",
     academicYear: "2024-25",
     subjects: ["mat", "phy", "che", "bio", "eng", "cs", "eco"],
+    assignedCourses: ["cbse", "jee-mains"],
     studentCount: 45,
     teacherCount: 7,
     createdAt: "2024-04-01",
@@ -113,6 +115,7 @@ export const batches: Batch[] = [
     className: "Class 10",
     academicYear: "2024-25",
     subjects: ["mat", "phy", "che", "bio", "eng", "cs", "eco"],
+    assignedCourses: ["cbse"],
     studentCount: 42,
     teacherCount: 7,
     createdAt: "2024-04-01",
@@ -124,6 +127,7 @@ export const batches: Batch[] = [
     className: "Class 9",
     academicYear: "2024-25",
     subjects: ["mat", "phy", "che", "bio", "eng", "hin", "sst"],
+    assignedCourses: ["cbse"],
     studentCount: 48,
     teacherCount: 7,
     createdAt: "2024-04-01",
@@ -135,6 +139,7 @@ export const batches: Batch[] = [
     className: "Class 9",
     academicYear: "2024-25",
     subjects: ["mat", "phy", "che", "bio", "eng", "hin"],
+    assignedCourses: ["cbse"],
     studentCount: 46,
     teacherCount: 6,
     createdAt: "2024-04-01",
@@ -146,6 +151,7 @@ export const batches: Batch[] = [
     className: "Class 8",
     academicYear: "2024-25",
     subjects: ["mat", "sci", "eng", "hin", "sst"],
+    assignedCourses: ["cbse"],
     studentCount: 50,
     teacherCount: 5,
     createdAt: "2024-04-01",
