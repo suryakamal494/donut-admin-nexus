@@ -766,6 +766,68 @@ export const getMappingsForCourse = (courseId: string): CourseChapterMapping[] =
   return courseChapterMappings.filter(m => m.courseId === courseId);
 };
 
+// Import CBSE data for chapter lookups
+import { allCBSEChapters, CBSEChapter } from "./cbseMasterData";
+
+// DisplayChapter for UI (includes source label)
+export interface DisplayChapter {
+  id: string;
+  name: string;
+  sourceLabel: string;
+  subjectId: string;
+  isCourseOwned: boolean;
+}
+
+// Get ALL chapters for a course (both mapped curriculum chapters + course-owned)
+export const getAllCourseChapters = (courseId: string): DisplayChapter[] => {
+  // Get course-owned chapters
+  const ownedChapters: DisplayChapter[] = courseOwnedChapters
+    .filter(c => c.courseId === courseId)
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      sourceLabel: "Course-Owned",
+      subjectId: c.subjectId,
+      isCourseOwned: true,
+    }));
+  
+  // Get mapped curriculum chapters
+  const mappings = courseChapterMappings.filter(m => m.courseId === courseId);
+  const mappedChapters: DisplayChapter[] = mappings
+    .map(mapping => {
+      const chapter = allCBSEChapters.find(ch => ch.id === mapping.chapterId);
+      if (!chapter) return null;
+      
+      // Determine class label
+      const classLabels: Record<string, string> = {
+        "1": "Class 6", "2": "Class 7", "3": "Class 8", "4": "Class 9",
+        "5": "Class 10", "6": "Class 11", "7": "Class 12"
+      };
+      const classLabel = classLabels[chapter.classId] || `Class ${chapter.classId}`;
+      
+      return {
+        id: chapter.id,
+        name: chapter.name,
+        sourceLabel: `CBSE ${classLabel}`,
+        subjectId: chapter.subjectId,
+        isCourseOwned: false,
+      };
+    })
+    .filter((ch): ch is DisplayChapter => ch !== null);
+  
+  return [...ownedChapters, ...mappedChapters];
+};
+
+// Get chapters by curriculum (all chapters for a curriculum)
+export const getChaptersByCurriculum = (curriculumId: string): CBSEChapter[] => {
+  return allCBSEChapters.filter(ch => ch.curriculumId === curriculumId);
+};
+
+// Check if content is visible in a specific course
+export const isVisibleInCourse = (visibleInCourses: string[], courseId: string): boolean => {
+  return visibleInCourses.includes(courseId);
+};
+
 // Stats
 export const masterDataStats = {
   totalCurriculums: curriculums.filter(c => c.isActive).length,

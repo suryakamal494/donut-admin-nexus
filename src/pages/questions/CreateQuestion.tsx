@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
 import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
-import { getActiveCurriculums, getPublishedCourses, getCourseOwnedChapters } from "@/data/masterData";
+import { getActiveCurriculums, getPublishedCourses, getAllCourseChapters } from "@/data/masterData";
 import { classes, subjects } from "@/data/mockData";
 import { getChaptersByClassAndSubject } from "@/data/cbseMasterData";
 
@@ -43,11 +43,11 @@ const CreateQuestion = () => {
   const activeCurriculums = getActiveCurriculums();
   const publishedCourses = getPublishedCourses();
 
-  // Get chapters based on source type
+  // Get chapters based on source type - now includes ALL course chapters (owned + mapped)
   const availableChapters = sourceType === 'curriculum' && selectedClassId && selectedSubjectId
     ? getChaptersByClassAndSubject(selectedClassId, selectedSubjectId)
     : sourceType === 'course' && selectedCourseId
-      ? getCourseOwnedChapters(selectedCourseId)
+      ? getAllCourseChapters(selectedCourseId)
       : [];
 
   const handleSubmit = () => {
