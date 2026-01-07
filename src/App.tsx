@@ -64,6 +64,9 @@ import LessonPlans from "./pages/teacher/LessonPlans";
 import LessonPlanCanvas from "./pages/teacher/LessonPlanCanvas";
 import TeacherAssessments from "./pages/teacher/Assessments";
 import TeacherHomework from "./pages/teacher/Homework";
+import TeacherContent from "./pages/teacher/Content";
+import TeacherReference from "./pages/teacher/Reference";
+import TeacherProfile from "./pages/teacher/Profile";
 
 const queryClient = new QueryClient();
 
@@ -143,6 +146,9 @@ const App = () => (
             <Route path="lesson-plans/:planId" element={<LessonPlanCanvas />} />
             <Route path="assessments" element={<TeacherAssessments />} />
             <Route path="homework" element={<TeacherHomework />} />
+            <Route path="content" element={<TeacherContent />} />
+            <Route path="reference" element={<TeacherReference />} />
+            <Route path="profile" element={<TeacherProfile />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

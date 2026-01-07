@@ -346,3 +346,19 @@ export const teacherWeeklyStats = {
   pendingHomework: 2,
   lessonPlansCreated: 8,
 };
+
+// Teacher profile stats
+export const teacherProfileStats = {
+  totalLessonPlans: 24,
+  completedClasses: 156,
+  assessmentsConducted: 18,
+  homeworkAssigned: 32,
+  averageClassRating: 4.7,
+  yearsExperience: 8,
+};
+
+// Teacher content filters (for filtering content library)
+export const teacherContentFilters = {
+  subjectIds: ["phy"],
+  classIds: ["class-10", "class-11", "class-12"],
+};
