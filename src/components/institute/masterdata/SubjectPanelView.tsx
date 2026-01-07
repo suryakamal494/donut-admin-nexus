@@ -1,14 +1,26 @@
+import { useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { subjects } from "@/data/mockData";
 import { allCBSEChapters } from "@/data/cbseMasterData";
+import { courseChapterMappings, courseOwnedChapters } from "@/data/masterData";
 
 interface SubjectPanelViewProps {
   selectedClassId: string | null;
   selectedSubjectId: string | null;
   onSelectSubject: (subjectId: string) => void;
+  trackId?: string;
+  trackType?: "curriculum" | "course";
 }
 
 const coreSubjectIds = ['mathematics', 'physics', 'chemistry', 'history', 'hindi'];
+
+// Map course subject IDs (1, 2, 3, 4) to display subject IDs
+const courseSubjectIdMap: Record<string, string> = {
+  "1": "physics",
+  "2": "chemistry",
+  "3": "mathematics",
+  "4": "biology",
+};
 
 const subjectDotColors: Record<string, string> = {
   mathematics: '#3b82f6',
@@ -30,57 +42,120 @@ const getSubjectDotColor = (subjectId: string): string => {
 export const SubjectPanelView = ({ 
   selectedClassId, 
   selectedSubjectId, 
-  onSelectSubject 
+  onSelectSubject,
+  trackId,
+  trackType = "curriculum"
 }: SubjectPanelViewProps) => {
   
+  // For curriculum - count chapters by class and subject
   const getChapterCount = (classId: string, subjectId: string) => {
     return allCBSEChapters.filter(
       ch => ch.classId === classId && ch.subjectId === subjectId
     ).length;
   };
 
-  const filteredSubjects = subjects.filter(subject => {
-    if (!selectedClassId) return coreSubjectIds.includes(subject.id);
-    const hasContent = allCBSEChapters.some(
-      ch => ch.classId === selectedClassId && ch.subjectId === subject.id
-    );
-    return hasContent || coreSubjectIds.includes(subject.id);
-  });
+  // For courses - count chapters by subject (mapped + owned)
+  const getCourseChapterCount = (subjectId: string) => {
+    if (!trackId) return 0;
+    
+    // Get the course subject ID (1, 2, 3, 4) from display subject ID
+    const courseSubjectId = Object.entries(courseSubjectIdMap)
+      .find(([_, displayId]) => displayId === subjectId)?.[0];
+    
+    if (!courseSubjectId) return 0;
+    
+    // Count mapped chapters
+    const mappedCount = courseChapterMappings.filter(m => {
+      if (m.courseId !== trackId) return false;
+      // Check if the mapped CBSE chapter belongs to this subject
+      const cbseChapter = allCBSEChapters.find(ch => ch.id === m.chapterId);
+      return cbseChapter?.subjectId === subjectId;
+    }).length;
+    
+    // Count owned chapters
+    const ownedCount = courseOwnedChapters.filter(
+      c => c.courseId === trackId && c.subjectId === courseSubjectId
+    ).length;
+    
+    return mappedCount + ownedCount;
+  };
 
-  const sortedSubjects = [...filteredSubjects].sort((a, b) => {
-    if (!selectedClassId) return 0;
-    const aCount = getChapterCount(selectedClassId, a.id);
-    const bCount = getChapterCount(selectedClassId, b.id);
-    return bCount - aCount;
-  });
+  // Get subjects based on track type
+  const displaySubjects = useMemo(() => {
+    if (trackType === "course" && trackId) {
+      // Get unique subjects from course mappings and owned chapters
+      const subjectIds = new Set<string>();
+      
+      // From mapped chapters
+      courseChapterMappings
+        .filter(m => m.courseId === trackId)
+        .forEach(m => {
+          const cbseChapter = allCBSEChapters.find(ch => ch.id === m.chapterId);
+          if (cbseChapter) subjectIds.add(cbseChapter.subjectId);
+        });
+      
+      // From owned chapters
+      courseOwnedChapters
+        .filter(c => c.courseId === trackId)
+        .forEach(c => {
+          const displaySubjectId = courseSubjectIdMap[c.subjectId];
+          if (displaySubjectId) subjectIds.add(displaySubjectId);
+        });
+      
+      return subjects.filter(s => subjectIds.has(s.id));
+    }
+    
+    // Curriculum mode
+    const filteredSubjects = subjects.filter(subject => {
+      if (!selectedClassId) return coreSubjectIds.includes(subject.id);
+      const hasContent = allCBSEChapters.some(
+        ch => ch.classId === selectedClassId && ch.subjectId === subject.id
+      );
+      return hasContent || coreSubjectIds.includes(subject.id);
+    });
+
+    return [...filteredSubjects].sort((a, b) => {
+      if (!selectedClassId) return 0;
+      const aCount = getChapterCount(selectedClassId, a.id);
+      const bCount = getChapterCount(selectedClassId, b.id);
+      return bCount - aCount;
+    });
+  }, [selectedClassId, trackId, trackType]);
+
+  const isDisabled = trackType === "curriculum" && !selectedClassId;
 
   return (
     <div className="flex flex-col h-full bg-card rounded-lg border">
       <div className="p-3 border-b">
         <h3 className="font-semibold text-sm text-foreground">Subjects</h3>
-        {!selectedClassId && (
+        {isDisabled && (
           <p className="text-xs text-muted-foreground mt-1">Select a class first</p>
+        )}
+        {trackType === "course" && (
+          <p className="text-xs text-muted-foreground mt-1">Select to view chapters</p>
         )}
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1">
-          {sortedSubjects.map((subject) => {
-            const chapterCount = selectedClassId 
-              ? getChapterCount(selectedClassId, subject.id) 
-              : 0;
+          {displaySubjects.map((subject) => {
+            const chapterCount = trackType === "course"
+              ? getCourseChapterCount(subject.id)
+              : selectedClassId 
+                ? getChapterCount(selectedClassId, subject.id) 
+                : 0;
             const isSelected = selectedSubjectId === subject.id;
             
             return (
               <button
                 key={subject.id}
                 onClick={() => onSelectSubject(subject.id)}
-                disabled={!selectedClassId}
+                disabled={isDisabled}
                 className={`w-full text-left px-3 py-2 rounded-md transition-colors flex items-center justify-between gap-2 ${
                   isSelected 
                     ? 'bg-primary/10 text-primary border border-primary/20' 
-                    : selectedClassId 
-                      ? 'hover:bg-muted text-foreground' 
-                      : 'text-muted-foreground/50 cursor-not-allowed'
+                    : isDisabled 
+                      ? 'text-muted-foreground/50 cursor-not-allowed'
+                      : 'hover:bg-muted text-foreground'
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
@@ -95,7 +170,7 @@ export const SubjectPanelView = ({
                     ? isSelected ? 'text-primary' : 'text-muted-foreground'
                     : 'text-muted-foreground/50'
                 }`}>
-                  {selectedClassId ? (chapterCount > 0 ? `${chapterCount} ch` : '—') : ''}
+                  {chapterCount > 0 ? `${chapterCount} ch` : '—'}
                 </span>
               </button>
             );
