@@ -9,7 +9,6 @@ import {
   Copy,
   MoreVertical,
   Loader2,
-  CheckCircle2,
   BookOpen
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,10 +36,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LessonBlockCard } from "@/components/teacher/LessonBlockCard";
+import { SortableBlockList } from "@/components/teacher/SortableBlockList";
 import { AddBlockMenu } from "@/components/teacher/AddBlockMenu";
 import { 
   teacherLessonPlans, 
@@ -99,6 +97,10 @@ const LessonPlanCanvas = () => {
 
   const handleDeleteBlock = useCallback((blockId: string) => {
     setBlocks(prev => prev.filter(b => b.id !== blockId));
+  }, []);
+
+  const handleReorderBlocks = useCallback((newBlocks: LessonPlanBlock[]) => {
+    setBlocks(newBlocks);
   }, []);
 
   const handleAIGenerateBlock = useCallback(async (blockId: string, blockType: string) => {
@@ -186,12 +188,10 @@ const LessonPlanCanvas = () => {
       if (data?.data) {
         const aiPlan = data.data;
         
-        // Update plan title if provided
         if (aiPlan.title) {
           setPlan(prev => ({ ...prev, title: aiPlan.title }));
         }
         
-        // Convert AI blocks to our format
         if (aiPlan.blocks && Array.isArray(aiPlan.blocks)) {
           const newBlocks: LessonPlanBlock[] = aiPlan.blocks.map((b: any, index: number) => ({
             id: `block-ai-${Date.now()}-${index}`,
@@ -232,8 +232,6 @@ const LessonPlanCanvas = () => {
     }
 
     setIsSaving(true);
-    
-    // Simulate save (in real app, this would save to database)
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
@@ -421,20 +419,15 @@ const LessonPlanCanvas = () => {
           </Button>
         </div>
 
-        {/* Blocks List */}
-        <div className="space-y-3">
-          {blocks.map((block, index) => (
-            <LessonBlockCard
-              key={block.id}
-              block={block}
-              index={index}
-              onUpdate={handleUpdateBlock}
-              onDelete={() => handleDeleteBlock(block.id)}
-              onAIGenerate={handleAIGenerateBlock}
-              isGenerating={generatingBlockId === block.id}
-            />
-          ))}
-        </div>
+        {/* Sortable Blocks List */}
+        <SortableBlockList
+          blocks={blocks}
+          onReorder={handleReorderBlocks}
+          onUpdateBlock={handleUpdateBlock}
+          onDeleteBlock={handleDeleteBlock}
+          onAIGenerate={handleAIGenerateBlock}
+          generatingBlockId={generatingBlockId}
+        />
 
         {/* Add Block */}
         <AddBlockMenu 
