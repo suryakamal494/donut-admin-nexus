@@ -828,6 +828,40 @@ export const isVisibleInCourse = (visibleInCourses: string[], courseId: string):
   return visibleInCourses.includes(courseId);
 };
 
+// Get chapter count for a specific course (owned + mapped)
+export const getChapterCountForCourse = (courseId: string): number => {
+  const ownedCount = courseOwnedChapters.filter(c => c.courseId === courseId).length;
+  const mappedCount = courseChapterMappings.filter(m => m.courseId === courseId).length;
+  return ownedCount + mappedCount;
+};
+
+// Get curriculum name by ID
+export const getCurriculumName = (curriculumId: string): string => {
+  const curriculum = curriculums.find(c => c.id === curriculumId);
+  return curriculum?.name || curriculumId;
+};
+
+// Get class name by ID
+export const getClassName = (classId: string): string => {
+  const classMap: Record<string, string> = {
+    "class-6": "Class 6",
+    "class-7": "Class 7",
+    "class-8": "Class 8",
+    "class-9": "Class 9",
+    "class-10": "Class 10",
+    "class-11": "Class 11",
+    "class-12": "Class 12",
+    "1": "Class 6",
+    "2": "Class 7",
+    "3": "Class 8",
+    "4": "Class 9",
+    "5": "Class 10",
+    "6": "Class 11",
+    "7": "Class 12",
+  };
+  return classMap[classId] || classId;
+};
+
 // Stats
 export const masterDataStats = {
   totalCurriculums: curriculums.filter(c => c.isActive).length,
