@@ -2,64 +2,62 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Calendar as CalendarIcon,
-  Clock,
   BookOpen,
   Plus,
-  ChevronLeft,
-  ChevronRight,
   List,
   Grid3X3,
-  MapPin
+  AlertCircle,
+  CheckCircle2,
+  Clock
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
 import { WeekNavigator } from "@/components/teacher/WeekNavigator";
 import { ScheduleClassCard } from "@/components/teacher/ScheduleClassCard";
 import { 
-  currentTeacher, 
+  teacherWeeklySchedule,
   type TeacherTimetableSlot 
 } from "@/data/teacherData";
 
-// Generate mock weekly schedule data
-const generateWeeklySchedule = (weekStart: Date): Record<string, TeacherTimetableSlot[]> => {
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// Generate schedule for any week (returns mock data for non-current weeks)
+const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlot[]> => {
+  const today = new Date();
+  const currentWeekMonday = new Date(today);
+  const day = currentWeekMonday.getDay();
+  const diff = currentWeekMonday.getDate() - day + (day === 0 ? -6 : 1);
+  currentWeekMonday.setDate(diff);
+  currentWeekMonday.setHours(0, 0, 0, 0);
+  
+  // If it's the current week, use actual data
+  if (weekStart.getTime() === currentWeekMonday.getTime()) {
+    return teacherWeeklySchedule;
+  }
+  
+  // For other weeks, generate similar schedule with new dates
   const schedule: Record<string, TeacherTimetableSlot[]> = {};
+  const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   
-  const baseSlots = [
-    { period: 1, start: "08:00", end: "08:45", batch: "10A", room: "Lab 1", hasPlan: true },
-    { period: 3, start: "09:45", end: "10:30", batch: "10B", room: "Room 204", hasPlan: false },
-    { period: 5, start: "11:30", end: "12:15", batch: "11A", room: "Lab 1", hasPlan: true },
-  ];
+  // Get entries from current week as template
+  const templateEntries = Object.values(teacherWeeklySchedule);
   
-  days.forEach((day, dayIndex) => {
-    const currentDate = new Date(weekStart);
-    currentDate.setDate(currentDate.getDate() + dayIndex);
-    const dateStr = currentDate.toISOString().split('T')[0];
+  dayNames.forEach((_, dayIndex) => {
+    const date = new Date(weekStart);
+    date.setDate(date.getDate() + dayIndex);
+    const dateStr = date.toISOString().split('T')[0];
     
-    // Skip Sunday, vary schedule by day
-    if (dayIndex < 6) {
-      const daySlots = baseSlots
-        .filter((_, i) => (dayIndex + i) % 3 !== 2) // Vary which slots appear
-        .map((slot, i) => ({
-          id: `slot-${dateStr}-${slot.period}`,
-          day,
-          periodNumber: slot.period,
-          startTime: slot.start,
-          endTime: slot.end,
-          subject: "Physics",
-          subjectId: "phy",
-          batchId: `batch-${slot.batch.toLowerCase()}`,
-          batchName: slot.batch,
-          className: slot.batch.startsWith("10") ? "Class 10" : "Class 11",
-          room: slot.room,
-          hasLessonPlan: slot.hasPlan && dayIndex % 2 === 0,
-          lessonPlanId: slot.hasPlan ? `lp-${dateStr}-${i}` : undefined,
-        }));
-      schedule[dateStr] = daySlots;
+    if (templateEntries[dayIndex]) {
+      schedule[dateStr] = templateEntries[dayIndex].map((slot, i) => ({
+        ...slot,
+        id: `slot-${dateStr}-${i}`,
+        // Randomly mark some as having plans for variety
+        hasLessonPlan: Math.random() > 0.4,
+        lessonPlanStatus: Math.random() > 0.6 ? 'ready' : (Math.random() > 0.5 ? 'draft' : 'none'),
+      }));
     }
   });
   
@@ -82,7 +80,10 @@ const TeacherSchedule = () => {
   
   const [currentWeekStart, setCurrentWeekStart] = useState(() => getMonday(new Date()));
   
-  const weeklySchedule = useMemo(() => generateWeeklySchedule(currentWeekStart), [currentWeekStart]);
+  const weeklySchedule = useMemo(
+    () => getScheduleForWeek(currentWeekStart), 
+    [currentWeekStart]
+  );
   
   const days = useMemo(() => {
     const result = [];
@@ -93,7 +94,9 @@ const TeacherSchedule = () => {
         date,
         dateStr: date.toISOString().split('T')[0],
         dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        fullDayName: date.toLocaleDateString('en-US', { weekday: 'long' }),
         dayNum: date.getDate(),
+        month: date.toLocaleDateString('en-US', { month: 'short' }),
         isToday: date.toDateString() === new Date().toDateString(),
       });
     }
@@ -119,16 +122,43 @@ const TeacherSchedule = () => {
     return currentTime >= slot.endTime;
   };
 
-  // Stats
+  // Stats calculation
   const stats = useMemo(() => {
     let totalClasses = 0;
-    let withPlans = 0;
+    let ready = 0;
+    let draft = 0;
+    let pending = 0;
+    
     Object.values(weeklySchedule).forEach(slots => {
-      totalClasses += slots.length;
-      withPlans += slots.filter(s => s.hasLessonPlan).length;
+      slots.forEach(slot => {
+        totalClasses++;
+        if (slot.lessonPlanStatus === 'ready') ready++;
+        else if (slot.lessonPlanStatus === 'draft') draft++;
+        else pending++;
+      });
     });
-    return { totalClasses, withPlans, coverage: totalClasses > 0 ? Math.round((withPlans / totalClasses) * 100) : 0 };
+    
+    const coverage = totalClasses > 0 ? Math.round((ready / totalClasses) * 100) : 0;
+    
+    return { totalClasses, ready, draft, pending, coverage };
   }, [weeklySchedule]);
+
+  const handleCreatePlan = (slot: TeacherTimetableSlot, dateStr: string) => {
+    const params = new URLSearchParams({
+      batch: slot.batchId,
+      batchName: slot.batchName,
+      date: dateStr,
+      period: slot.periodNumber.toString(),
+      className: slot.className,
+    });
+    navigate(`/teacher/lesson-plans/create?${params.toString()}`);
+  };
+
+  const handleViewPlan = (slot: TeacherTimetableSlot) => {
+    if (slot.lessonPlanId) {
+      navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -148,22 +178,31 @@ const TeacherSchedule = () => {
           onWeekChange={setCurrentWeekStart}
         />
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           {/* Stats Badges */}
-          <div className="hidden sm:flex items-center gap-2">
-            <Badge variant="secondary" className="gap-1">
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial overflow-x-auto pb-1 sm:pb-0">
+            <Badge variant="secondary" className="gap-1 whitespace-nowrap">
               <CalendarIcon className="w-3 h-3" />
               {stats.totalClasses} classes
             </Badge>
-            <Badge variant="secondary" className={cn(
-              "gap-1",
-              stats.coverage >= 80 ? "bg-green-100 text-green-700" : 
-              stats.coverage >= 50 ? "bg-amber-100 text-amber-700" : 
-              "bg-red-100 text-red-700"
-            )}>
-              <BookOpen className="w-3 h-3" />
-              {stats.coverage}% plans ready
+            <Badge 
+              variant="secondary" 
+              className={cn(
+                "gap-1 whitespace-nowrap",
+                stats.coverage >= 70 ? "bg-green-100 text-green-700" : 
+                stats.coverage >= 40 ? "bg-amber-100 text-amber-700" : 
+                "bg-red-100 text-red-700"
+              )}
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              {stats.ready} ready
             </Badge>
+            {stats.pending > 0 && (
+              <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-700 whitespace-nowrap">
+                <AlertCircle className="w-3 h-3" />
+                {stats.pending} pending
+              </Badge>
+            )}
           </div>
           
           {/* View Toggle */}
@@ -183,93 +222,144 @@ const TeacherSchedule = () => {
       {/* Weekly Grid View */}
       {viewMode === "week" && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {days.map((day) => (
-            <Card 
-              key={day.dateStr} 
-              className={cn(
-                "overflow-hidden",
-                day.isToday && "border-primary/50 ring-1 ring-primary/20"
-              )}
-            >
-              <CardHeader className={cn(
-                "p-3 pb-2",
-                day.isToday && "bg-primary/5"
-              )}>
-                <div className="text-center">
-                  <p className={cn(
-                    "text-xs font-medium",
-                    day.isToday ? "text-primary" : "text-muted-foreground"
-                  )}>
-                    {day.dayName}
-                  </p>
-                  <p className={cn(
-                    "text-lg font-bold",
-                    day.isToday ? "text-primary" : "text-foreground"
-                  )}>
-                    {day.dayNum}
-                  </p>
-                </div>
-              </CardHeader>
-              <CardContent className="p-2 space-y-2">
-                {weeklySchedule[day.dateStr]?.length > 0 ? (
-                  weeklySchedule[day.dateStr].map((slot) => (
-                    <ScheduleClassCard
-                      key={slot.id}
-                      slot={slot}
-                      isLive={isSlotLive(slot, day.dateStr)}
-                      isPast={isSlotPast(slot, day.dateStr)}
-                      compact
-                      onViewPlan={() => navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`)}
-                      onCreatePlan={() => navigate("/teacher/lesson-plans/create")}
-                    />
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <p className="text-xs">No classes</p>
-                  </div>
+          {days.map((day) => {
+            const slots = weeklySchedule[day.dateStr] || [];
+            const hasLiveClass = slots.some(s => isSlotLive(s, day.dateStr));
+            
+            return (
+              <Card 
+                key={day.dateStr} 
+                className={cn(
+                  "overflow-hidden flex flex-col",
+                  day.isToday && "border-primary ring-2 ring-primary/20",
+                  hasLiveClass && "border-primary/70"
                 )}
-              </CardContent>
-            </Card>
-          ))}
+              >
+                {/* Day Header */}
+                <CardHeader className={cn(
+                  "p-3 pb-2 border-b",
+                  day.isToday ? "bg-primary text-primary-foreground" : "bg-muted/50"
+                )}>
+                  <div className="text-center">
+                    <p className={cn(
+                      "text-[10px] font-medium uppercase tracking-wide",
+                      day.isToday ? "text-primary-foreground/80" : "text-muted-foreground"
+                    )}>
+                      {day.dayName}
+                    </p>
+                    <p className={cn(
+                      "text-xl font-bold",
+                      day.isToday ? "text-primary-foreground" : "text-foreground"
+                    )}>
+                      {day.dayNum}
+                    </p>
+                    <p className={cn(
+                      "text-[10px]",
+                      day.isToday ? "text-primary-foreground/70" : "text-muted-foreground"
+                    )}>
+                      {day.month}
+                    </p>
+                  </div>
+                </CardHeader>
+                
+                {/* Slots */}
+                <CardContent className="p-2 flex-1">
+                  <ScrollArea className="h-[280px] pr-1">
+                    <div className="space-y-2">
+                      {slots.length > 0 ? (
+                        slots.map((slot) => (
+                          <ScheduleClassCard
+                            key={slot.id}
+                            slot={slot}
+                            isLive={isSlotLive(slot, day.dateStr)}
+                            isPast={isSlotPast(slot, day.dateStr)}
+                            compact
+                            onViewPlan={() => handleViewPlan(slot)}
+                            onCreatePlan={() => handleCreatePlan(slot, day.dateStr)}
+                          />
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Clock className="w-6 h-6 mx-auto mb-2 opacity-30" />
+                          <p className="text-xs">No classes</p>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
+                  
+                  {/* Quick Add Button */}
+                  {slots.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-2 h-7 text-xs text-muted-foreground hover:text-primary gap-1"
+                      onClick={() => navigate(`/teacher/lesson-plans/create?date=${day.dateStr}`)}
+                    >
+                      <Plus className="w-3 h-3" />
+                      Add Plan
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
       {/* List View */}
       {viewMode === "list" && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {days.map((day) => {
             const slots = weeklySchedule[day.dateStr] || [];
             if (slots.length === 0) return null;
             
             return (
               <div key={day.dateStr}>
+                {/* Day Header */}
                 <div className={cn(
-                  "flex items-center gap-2 mb-3 pb-2 border-b",
+                  "flex items-center gap-3 mb-4 pb-3 border-b",
                   day.isToday && "border-primary/30"
                 )}>
                   <div className={cn(
-                    "w-10 h-10 rounded-lg flex flex-col items-center justify-center",
-                    day.isToday ? "bg-primary text-white" : "bg-muted"
+                    "w-14 h-14 rounded-xl flex flex-col items-center justify-center shadow-sm",
+                    day.isToday 
+                      ? "bg-gradient-to-br from-primary to-primary/80 text-white" 
+                      : "bg-muted"
                   )}>
-                    <span className="text-[10px] font-medium leading-none">{day.dayName}</span>
-                    <span className="text-sm font-bold leading-none">{day.dayNum}</span>
+                    <span className="text-[10px] font-medium uppercase leading-none">
+                      {day.dayName}
+                    </span>
+                    <span className="text-xl font-bold leading-tight">{day.dayNum}</span>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className={cn(
-                      "font-semibold",
+                      "font-semibold text-lg",
                       day.isToday && "text-primary"
                     )}>
-                      {day.date.toLocaleDateString('en-US', { weekday: 'long' })}
+                      {day.fullDayName}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {slots.length} class{slots.length !== 1 ? 'es' : ''}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{slots.length} class{slots.length !== 1 ? 'es' : ''}</span>
+                      <span>•</span>
+                      <span className="text-green-600">
+                        {slots.filter(s => s.lessonPlanStatus === 'ready').length} ready
+                      </span>
+                      {slots.filter(s => s.lessonPlanStatus === 'none').length > 0 && (
+                        <>
+                          <span>•</span>
+                          <span className="text-orange-600">
+                            {slots.filter(s => s.lessonPlanStatus === 'none').length} pending
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                   {day.isToday && (
-                    <Badge className="bg-primary text-white ml-auto">Today</Badge>
+                    <Badge className="gradient-button text-white border-0">Today</Badge>
                   )}
                 </div>
                 
+                {/* Slots Grid */}
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {slots.map((slot) => (
                     <ScheduleClassCard
@@ -277,8 +367,8 @@ const TeacherSchedule = () => {
                       slot={slot}
                       isLive={isSlotLive(slot, day.dateStr)}
                       isPast={isSlotPast(slot, day.dateStr)}
-                      onViewPlan={() => navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`)}
-                      onCreatePlan={() => navigate("/teacher/lesson-plans/create")}
+                      onViewPlan={() => handleViewPlan(slot)}
+                      onCreatePlan={() => handleCreatePlan(slot, day.dateStr)}
                       onStartClass={() => {}}
                     />
                   ))}
@@ -290,7 +380,7 @@ const TeacherSchedule = () => {
       )}
 
       {/* Mobile FAB */}
-      <div className="fixed bottom-20 right-4 md:hidden">
+      <div className="fixed bottom-20 right-4 md:hidden z-10">
         <Button 
           size="lg"
           className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
