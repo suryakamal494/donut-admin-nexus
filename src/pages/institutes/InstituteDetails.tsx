@@ -69,7 +69,7 @@ const InstituteDetails = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)}>
+            <Button variant="outline" size="sm" onClick={() => navigate(`/superadmin/institutes/${id}/edit`)}>
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </Button>
