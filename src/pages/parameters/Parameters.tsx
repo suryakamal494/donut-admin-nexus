@@ -61,10 +61,19 @@ const Parameters = () => {
               variant="outline" 
               size="sm" 
               className="gap-2"
-              onClick={() => setShowCoursesPanel(true)}
+              onClick={() => navigate("/superadmin/parameters/courses")}
             >
               <FileText className="w-4 h-4" />
-              Courses
+              View Courses
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setShowCoursesPanel(true)}
+            >
+              <Settings className="w-4 h-4" />
+              Manage Courses
             </Button>
             <Button 
               variant="outline" 

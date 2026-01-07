@@ -862,6 +862,57 @@ export const getClassName = (classId: string): string => {
   return classMap[classId] || classId;
 };
 
+// Subjects with their IDs and names (used across the platform)
+export const subjects = [
+  { id: "1", name: "Physics" },
+  { id: "2", name: "Chemistry" },
+  { id: "3", name: "Mathematics" },
+  { id: "4", name: "Biology" },
+  { id: "5", name: "History" },
+  { id: "6", name: "Hindi" },
+];
+
+// Get subject by ID
+export const getSubjectById = (subjectId: string): { id: string; name: string } | undefined => {
+  return subjects.find(s => s.id === subjectId);
+};
+
+// Get subjects for a course (only subjects that have chapters in the course)
+export interface CourseSubject {
+  id: string;
+  name: string;
+  chapterCount: number;
+}
+
+export const getSubjectsForCourse = (courseId: string): CourseSubject[] => {
+  const allChapters = getAllCourseChapters(courseId);
+  
+  // Group by subject and count
+  const subjectMap = new Map<string, number>();
+  allChapters.forEach(chapter => {
+    const count = subjectMap.get(chapter.subjectId) || 0;
+    subjectMap.set(chapter.subjectId, count + 1);
+  });
+  
+  // Convert to array with names
+  return Array.from(subjectMap.entries())
+    .map(([subjectId, count]) => {
+      const subject = subjects.find(s => s.id === subjectId);
+      return {
+        id: subjectId,
+        name: subject?.name || `Subject ${subjectId}`,
+        chapterCount: count,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+};
+
+// Get chapters for a course filtered by subject
+export const getChaptersForCourseBySubject = (courseId: string, subjectId: string): DisplayChapter[] => {
+  const allChapters = getAllCourseChapters(courseId);
+  return allChapters.filter(ch => ch.subjectId === subjectId);
+};
+
 // Stats
 export const masterDataStats = {
   totalCurriculums: curriculums.filter(c => c.isActive).length,

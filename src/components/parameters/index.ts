@@ -6,3 +6,6 @@ export { IndependentDataPanel } from "./IndependentDataPanel";
 export { default as CurriculumTabs } from "./CurriculumTabs";
 export { default as SourceTypeSelector } from "./SourceTypeSelector";
 export { default as VisibilitySelector } from "./VisibilitySelector";
+export { CourseListPanel } from "./CourseListPanel";
+export { CourseSubjectPanel } from "./CourseSubjectPanel";
+export { CourseContentPanel } from "./CourseContentPanel";
