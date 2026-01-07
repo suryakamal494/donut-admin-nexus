@@ -14,6 +14,7 @@ import EditTier from "./pages/institutes/EditTier";
 import Users from "./pages/users/Users";
 import Parameters from "./pages/parameters/Parameters";
 import CourseBuilder from "./pages/parameters/CourseBuilder";
+import Courses from "./pages/parameters/Courses";
 import Roles from "./pages/roles/Roles";
 import Questions from "./pages/questions/Questions";
 import CreateQuestion from "./pages/questions/CreateQuestion";
@@ -91,6 +92,7 @@ const App = () => (
             <Route path="institutes/tiers/edit/:tierId" element={<EditTier />} />
             <Route path="users" element={<Users />} />
             <Route path="parameters" element={<Parameters />} />
+            <Route path="parameters/courses" element={<Courses />} />
             <Route path="parameters/course-builder" element={<CourseBuilder />} />
             <Route path="roles" element={<Roles />} />
             <Route path="questions" element={<Questions />} />
