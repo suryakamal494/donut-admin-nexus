@@ -1,102 +1,172 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, ChevronDown, Star, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { questionTypeLabels, type QuestionType, cognitiveTypeLabels, type CognitiveType, type QuestionDifficulty } from "@/data/questionsData";
-import { courses, getAllCourseChapters } from "@/data/masterData";
+import { getPublishedCourses, getSubjectsForCourse, getChaptersForCourseBySubject, courseOwnedChapterTopics } from "@/data/masterData";
+import { getTopicsByChapter } from "@/data/cbseMasterData";
 import { cn } from "@/lib/utils";
 
 const CreateCourseQuestion = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Classification
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
-  const [selectedChapter, setSelectedChapter] = useState<string>("");
-  
-  // Question details
+
+  // Classification state - Course → Subject → Chapter → Topic
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedChapter, setSelectedChapter] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
+
+  // Question state
   const [questionType, setQuestionType] = useState<QuestionType>("mcq_single");
   const [questionText, setQuestionText] = useState("");
-  const [options, setOptions] = useState([
-    { id: "a", text: "", isCorrect: false },
-    { id: "b", text: "", isCorrect: false },
-    { id: "c", text: "", isCorrect: false },
-    { id: "d", text: "", isCorrect: false },
-  ]);
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correctOption, setCorrectOption] = useState<number | null>(null);
   const [solution, setSolution] = useState("");
   const [solutionOpen, setSolutionOpen] = useState(false);
-  
-  // Meta
+
+  // Meta state
   const [difficulty, setDifficulty] = useState<QuestionDifficulty>("medium");
   const [cognitiveType, setCognitiveType] = useState<CognitiveType>("conceptual");
-  const [marks, setMarks] = useState(4);
-  const [negativeMarks, setNegativeMarks] = useState(1);
+  const [marks, setMarks] = useState("4");
+  const [negativeMarks, setNegativeMarks] = useState("1");
 
-  // Data
-  const publishedCourses = courses.filter(c => c.status === 'published');
-  const chapters = selectedCourse ? getAllCourseChapters(selectedCourse) : [];
+  const publishedCourses = getPublishedCourses();
+
+  // Cascading data: Course → Subject → Chapter → Topic
+  const availableSubjects = useMemo(() => {
+    if (!selectedCourse) return [];
+    return getSubjectsForCourse(selectedCourse);
+  }, [selectedCourse]);
+
+  const availableChapters = useMemo(() => {
+    if (!selectedCourse || !selectedSubject) return [];
+    return getChaptersForCourseBySubject(selectedCourse, selectedSubject);
+  }, [selectedCourse, selectedSubject]);
+
+  const availableTopics = useMemo(() => {
+    if (!selectedChapter) return [];
+    // Check if it's a course-owned chapter
+    const courseTopics = courseOwnedChapterTopics.filter(t => t.chapterId === selectedChapter);
+    if (courseTopics.length > 0) return courseTopics;
+    // Otherwise get from CBSE topics
+    return getTopicsByChapter(selectedChapter);
+  }, [selectedChapter]);
+
+  // Reset dependent fields when parent changes
+  const handleCourseChange = (value: string) => {
+    setSelectedCourse(value);
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleSubjectChange = (value: string) => {
+    setSelectedSubject(value);
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleChapterChange = (value: string) => {
+    setSelectedChapter(value);
+    setSelectedTopic("");
+  };
+
+  const isMCQ = questionType === "mcq_single" || questionType === "mcq_multiple" || questionType === "assertion_reasoning";
 
   const handleSubmit = () => {
-    if (!selectedCourse || !selectedChapter) {
-      toast({ title: "Please select course and chapter", variant: "destructive" });
+    if (!selectedCourse || !selectedSubject || !selectedChapter) {
+      toast({ title: "Missing classification", description: "Please select course, subject, and chapter", variant: "destructive" });
       return;
     }
     if (!questionText.trim()) {
-      toast({ title: "Please enter question text", variant: "destructive" });
+      toast({ title: "Missing question", description: "Please enter the question text", variant: "destructive" });
       return;
     }
-    toast({ title: "Question saved successfully!" });
+    toast({ title: "Question saved", description: "Course question has been created successfully" });
     navigate("/superadmin/questions/course");
   };
 
-  const isMCQ = questionType === "mcq_single" || questionType === "mcq_multiple";
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <PageHeader
         title="Create Course Question"
-        description="Add a new question to a competitive course"
         breadcrumbs={[
-          { label: "Question Bank" },
+          { label: "Dashboard", href: "/superadmin/dashboard" },
           { label: "Course Questions", href: "/superadmin/questions/course" },
-          { label: "Create" },
+          { label: "Create Question" },
         ]}
+        actions={
+          <Button variant="outline" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="h-4 w-4" /> Back
+          </Button>
+        }
       />
 
-      {/* Classification Row - Compact horizontal */}
+      {/* Classification - Horizontal Bar: Course → Subject → Chapter → Topic */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Classification</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
+          <Label className="text-sm font-medium text-muted-foreground mb-3 block">Classification</Label>
           <div className="flex flex-wrap gap-3">
-            <Select value={selectedCourse} onValueChange={(v) => { setSelectedCourse(v); setSelectedChapter(""); }}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select Course" />
+            <Select value={selectedCourse} onValueChange={handleCourseChange}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Course" />
               </SelectTrigger>
               <SelectContent>
-                {publishedCourses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {publishedCourses.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
-            <Select value={selectedChapter} onValueChange={setSelectedChapter} disabled={!selectedCourse}>
-              <SelectTrigger className="w-[280px]">
-                <SelectValue placeholder="Select Chapter" />
+            <Select value={selectedSubject} onValueChange={handleSubjectChange} disabled={!selectedCourse}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Subject" />
               </SelectTrigger>
               <SelectContent>
-                {chapters.map(c => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.isCourseOwned ? "★ " : "📘 "}{c.name}
-                    {c.sourceLabel && <span className="text-muted-foreground ml-2 text-xs">({c.sourceLabel})</span>}
+                {availableSubjects.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name} ({s.chapterCount})
                   </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedChapter} onValueChange={handleChapterChange} disabled={!selectedSubject}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Chapter" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableChapters.map(ch => (
+                  <SelectItem key={ch.id} value={ch.id}>
+                    <span className="flex items-center gap-2">
+                      {ch.isCourseOwned ? (
+                        <Star className="h-3 w-3 text-amber-500" />
+                      ) : (
+                        <BookOpen className="h-3 w-3 text-blue-500" />
+                      )}
+                      {ch.name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedTopic} onValueChange={setSelectedTopic} disabled={!selectedChapter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Topic (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTopics.map(t => (
+                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -104,16 +174,15 @@ const CreateCourseQuestion = () => {
         </CardContent>
       </Card>
 
-      {/* Question Type - Toggle chips */}
+      {/* Question Type - Horizontal */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Question Type</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
+          <Label className="text-sm font-medium text-muted-foreground mb-3 block">Question Type</Label>
           <div className="flex flex-wrap gap-2">
             {(Object.entries(questionTypeLabels) as [QuestionType, string][]).map(([key, label]) => (
               <Button
                 key={key}
+                type="button"
                 variant={questionType === key ? "default" : "outline"}
                 size="sm"
                 onClick={() => setQuestionType(key)}
@@ -126,22 +195,18 @@ const CreateCourseQuestion = () => {
         </CardContent>
       </Card>
 
-      {/* Main Content - Two columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Question Details */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Question Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Question Text</Label>
+            <CardContent className="pt-6 space-y-4">
+              <div className="space-y-2">
+                <Label>Question Text *</Label>
                 <Textarea
-                  placeholder="Enter your question..."
                   value={questionText}
                   onChange={(e) => setQuestionText(e.target.value)}
-                  className="min-h-[100px] mt-1.5"
+                  placeholder="Enter the question..."
+                  className="min-h-[120px]"
                 />
               </div>
 
@@ -149,51 +214,45 @@ const CreateCourseQuestion = () => {
                 <div className="space-y-3">
                   <Label>Options</Label>
                   {options.map((opt, idx) => (
-                    <div key={opt.id} className="flex items-center gap-3">
-                      <span className="font-medium text-sm w-6">{opt.id.toUpperCase()}.</span>
+                    <div key={idx} className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant={correctOption === idx ? "default" : "outline"}
+                        size="sm"
+                        className={cn("w-8 h-8 p-0", correctOption === idx && "bg-green-600 hover:bg-green-700")}
+                        onClick={() => setCorrectOption(idx)}
+                      >
+                        {String.fromCharCode(65 + idx)}
+                      </Button>
                       <Input
-                        placeholder={`Option ${opt.id.toUpperCase()}`}
-                        value={opt.text}
+                        value={opt}
                         onChange={(e) => {
-                          const newOpts = [...options];
-                          newOpts[idx].text = e.target.value;
-                          setOptions(newOpts);
+                          const newOptions = [...options];
+                          newOptions[idx] = e.target.value;
+                          setOptions(newOptions);
                         }}
+                        placeholder={`Option ${String.fromCharCode(65 + idx)}`}
                         className="flex-1"
-                      />
-                      <input
-                        type={questionType === "mcq_single" ? "radio" : "checkbox"}
-                        name="correctAnswer"
-                        checked={opt.isCorrect}
-                        onChange={() => {
-                          if (questionType === "mcq_single") {
-                            setOptions(options.map((o, i) => ({ ...o, isCorrect: i === idx })));
-                          } else {
-                            const newOpts = [...options];
-                            newOpts[idx].isCorrect = !newOpts[idx].isCorrect;
-                            setOptions(newOpts);
-                          }
-                        }}
-                        className="h-4 w-4 accent-primary"
                       />
                     </div>
                   ))}
+                  <p className="text-xs text-muted-foreground">Click the letter button to mark as correct answer</p>
                 </div>
               )}
 
               <Collapsible open={solutionOpen} onOpenChange={setSolutionOpen}>
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-between">
-                    Solution & Explanation
-                    {solutionOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <Button variant="ghost" size="sm" className="gap-2 w-full justify-start text-muted-foreground">
+                    <ChevronDown className={cn("h-4 w-4 transition-transform", solutionOpen && "rotate-180")} />
+                    Solution / Explanation
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pt-2">
                   <Textarea
-                    placeholder="Enter solution/explanation..."
                     value={solution}
                     onChange={(e) => setSolution(e.target.value)}
-                    className="min-h-[80px]"
+                    placeholder="Enter the solution or explanation..."
+                    className="min-h-[100px]"
                   />
                 </CollapsibleContent>
               </Collapsible>
@@ -201,30 +260,21 @@ const CreateCourseQuestion = () => {
           </Card>
         </div>
 
-        {/* Meta Sidebar */}
-        <div className="space-y-4">
+        {/* Properties */}
+        <div className="space-y-6">
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Properties</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="mb-2 block">Difficulty</Label>
+            <CardContent className="pt-6 space-y-5">
+              <div className="space-y-2">
+                <Label>Difficulty</Label>
                 <div className="flex gap-2">
                   {(["easy", "medium", "hard"] as QuestionDifficulty[]).map((d) => (
                     <Button
                       key={d}
+                      type="button"
                       variant={difficulty === d ? "default" : "outline"}
                       size="sm"
                       onClick={() => setDifficulty(d)}
-                      className={cn(
-                        "flex-1 capitalize",
-                        difficulty === d && (
-                          d === "easy" ? "bg-green-600 hover:bg-green-700" :
-                          d === "medium" ? "bg-amber-500 hover:bg-amber-600" :
-                          "bg-red-600 hover:bg-red-700"
-                        )
-                      )}
+                      className={cn("flex-1 capitalize", difficulty === d && "gradient-button")}
                     >
                       {d}
                     </Button>
@@ -232,8 +282,8 @@ const CreateCourseQuestion = () => {
                 </div>
               </div>
 
-              <div>
-                <Label className="mb-2 block">Cognitive Type</Label>
+              <div className="space-y-2">
+                <Label>Cognitive Type</Label>
                 <Select value={cognitiveType} onValueChange={(v) => setCognitiveType(v as CognitiveType)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -246,14 +296,14 @@ const CreateCourseQuestion = () => {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
                   <Label>Marks</Label>
-                  <Input type="number" value={marks} onChange={(e) => setMarks(Number(e.target.value))} className="mt-1.5" />
+                  <Input type="number" value={marks} onChange={(e) => setMarks(e.target.value)} min="1" />
                 </div>
-                <div>
-                  <Label>Negative</Label>
-                  <Input type="number" value={negativeMarks} onChange={(e) => setNegativeMarks(Number(e.target.value))} className="mt-1.5" />
+                <div className="space-y-2">
+                  <Label>Negative Marks</Label>
+                  <Input type="number" value={negativeMarks} onChange={(e) => setNegativeMarks(e.target.value)} min="0" />
                 </div>
               </div>
             </CardContent>
@@ -262,13 +312,9 @@ const CreateCourseQuestion = () => {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={() => navigate("/superadmin/questions/course")}>
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} className="gradient-button">
-          Save Question
-        </Button>
+      <div className="flex justify-end gap-3 pt-4 border-t">
+        <Button variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
+        <Button onClick={handleSubmit} className="gradient-button">Save Question</Button>
       </div>
     </div>
   );
