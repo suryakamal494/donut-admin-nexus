@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { instituteContent, InstituteContentItem } from "@/data/instituteData";
+import { instituteContent, InstituteContentItem, assignedTracks } from "@/data/instituteData";
 import {
   ContentCard,
   ContentItem,
@@ -16,6 +16,7 @@ import {
   InstituteContentFilters,
   InstituteContentListItem,
   SourceFilter,
+  CourseFilter,
 } from "@/components/institute/content";
 
 const ITEMS_PER_PAGE = 15;
@@ -24,6 +25,7 @@ const InstituteContent = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const [courseFilter, setCourseFilter] = useState<CourseFilter>("all");
   const [typeFilter, setTypeFilter] = useState<ContentType | "all">("all");
   const [subjectFilter, setSubjectFilter] = useState("all");
   const [classFilter, setClassFilter] = useState("all");
@@ -35,6 +37,10 @@ const InstituteContent = () => {
   const [editContent, setEditContent] = useState<InstituteContentItem | null>(null);
   const [contentList, setContentList] = useState<InstituteContentItem[]>(instituteContent);
 
+  // Check if selected course has classes
+  const selectedTrack = assignedTracks.find(t => t.id === courseFilter);
+  const showClassFilter = courseFilter === "all" || (selectedTrack?.hasClasses ?? true);
+
   // Filter content
   const filteredContent = useMemo(() => {
     return contentList.filter(content => {
@@ -45,12 +51,13 @@ const InstituteContent = () => {
       const matchesSource = sourceFilter === "all" || content.source === sourceFilter;
       const matchesType = typeFilter === "all" || content.type === typeFilter;
       const matchesSubject = subjectFilter === "all" || content.subjectId === subjectFilter;
-      const matchesClass = classFilter === "all" || content.classId === classFilter;
+      // Only filter by class if we're showing classes (curriculum-based)
+      const matchesClass = !showClassFilter || classFilter === "all" || content.classId === classFilter;
       const matchesStatus = statusFilter === "all" || content.status === statusFilter;
       
       return matchesSearch && matchesSource && matchesType && matchesSubject && matchesClass && matchesStatus;
     });
-  }, [contentList, searchQuery, sourceFilter, typeFilter, subjectFilter, classFilter, statusFilter]);
+  }, [contentList, searchQuery, sourceFilter, typeFilter, subjectFilter, classFilter, statusFilter, showClassFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filteredContent.length / ITEMS_PER_PAGE);
@@ -62,6 +69,16 @@ const InstituteContent = () => {
   // Reset to page 1 when filters change
   const handleFilterChange = <T,>(setter: (value: T) => void, value: T) => {
     setter(value);
+    setCurrentPage(1);
+  };
+
+  // Handle course change - reset class filter if course doesn't have classes
+  const handleCourseChange = (value: CourseFilter) => {
+    setCourseFilter(value);
+    const track = assignedTracks.find(t => t.id === value);
+    if (track && !track.hasClasses) {
+      setClassFilter("all");
+    }
     setCurrentPage(1);
   };
 
@@ -113,6 +130,8 @@ const InstituteContent = () => {
         onSearchChange={(v) => handleFilterChange(setSearchQuery, v)}
         sourceFilter={sourceFilter}
         onSourceChange={(v) => handleFilterChange(setSourceFilter, v)}
+        courseFilter={courseFilter}
+        onCourseChange={handleCourseChange}
         typeFilter={typeFilter}
         onTypeChange={(v) => handleFilterChange(setTypeFilter, v)}
         subjectFilter={subjectFilter}

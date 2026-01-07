@@ -3,16 +3,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ContentType } from "@/components/content/ContentTypeIcon";
-import { availableClasses, availableSubjects } from "@/data/instituteData";
+import { availableClasses, availableSubjects, assignedTracks } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
+import { getSubjectsForCourse } from "@/data/masterData";
+import { subjects as masterSubjects } from "@/data/masterData";
 
 export type SourceFilter = "all" | "global" | "institute";
+export type CourseFilter = "all" | string;
 
 interface InstituteContentFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   sourceFilter: SourceFilter;
   onSourceChange: (value: SourceFilter) => void;
+  courseFilter: CourseFilter;
+  onCourseChange: (value: CourseFilter) => void;
   typeFilter: ContentType | "all";
   onTypeChange: (value: ContentType | "all") => void;
   subjectFilter: string;
@@ -50,6 +55,8 @@ export const InstituteContentFilters = ({
   onSearchChange,
   sourceFilter,
   onSourceChange,
+  courseFilter,
+  onCourseChange,
   typeFilter,
   onTypeChange,
   subjectFilter,
@@ -62,6 +69,24 @@ export const InstituteContentFilters = ({
   onViewModeChange,
   totalItems,
 }: InstituteContentFiltersProps) => {
+  // Determine if selected course has classes
+  const selectedTrack = assignedTracks.find(t => t.id === courseFilter);
+  const showClassFilter = courseFilter === "all" || (selectedTrack?.hasClasses ?? true);
+  
+  // Get subjects based on course selection
+  const getAvailableSubjects = () => {
+    if (courseFilter === "all") return availableSubjects;
+    if (selectedTrack?.hasClasses) {
+      // CBSE-like curriculum - use availableSubjects
+      return availableSubjects;
+    } else {
+      // Course-based like JEE - get subjects from course
+      const courseSubjects = getSubjectsForCourse(courseFilter);
+      return courseSubjects.map(cs => ({ id: cs.id, name: cs.name }));
+    }
+  };
+  
+  const filteredSubjects = getAvailableSubjects();
   return (
     <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50 space-y-4">
       {/* Top row: Search + Source Toggle */}
@@ -116,6 +141,39 @@ export const InstituteContentFilters = ({
             </Button>
           </div>
         </div>
+        
+        {/* Course Toggle */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">Course:</span>
+          <div className="flex border border-border rounded-lg bg-muted/30">
+            <Button 
+              variant={courseFilter === "all" ? "secondary" : "ghost"} 
+              size="sm"
+              onClick={() => onCourseChange("all")}
+              className={cn(
+                "rounded-r-none border-r border-border/50 px-3",
+                courseFilter === "all" && "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+            >
+              All
+            </Button>
+            {assignedTracks.map((track, index) => (
+              <Button 
+                key={track.id}
+                variant={courseFilter === track.id ? "secondary" : "ghost"} 
+                size="sm"
+                onClick={() => onCourseChange(track.id)}
+                className={cn(
+                  "px-3",
+                  index < assignedTracks.length - 1 ? "rounded-none border-r border-border/50" : "rounded-l-none",
+                  courseFilter === track.id && "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                {track.name}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
       
       {/* Bottom row: Filters */}
@@ -133,18 +191,20 @@ export const InstituteContentFilters = ({
           </SelectContent>
         </Select>
         
-        {/* Class Filter */}
-        <Select value={classFilter} onValueChange={onClassChange}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="Class" />
-          </SelectTrigger>
-          <SelectContent className="bg-popover">
-            <SelectItem value="all">All Classes</SelectItem>
-            {availableClasses.map(cls => (
-              <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Class Filter - Only show for curriculum-based courses */}
+        {showClassFilter && (
+          <Select value={classFilter} onValueChange={onClassChange}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Class" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              <SelectItem value="all">All Classes</SelectItem>
+              {availableClasses.map(cls => (
+                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         
         {/* Subject Filter */}
         <Select value={subjectFilter} onValueChange={onSubjectChange}>
@@ -153,7 +213,7 @@ export const InstituteContentFilters = ({
           </SelectTrigger>
           <SelectContent className="bg-popover">
             <SelectItem value="all">All Subjects</SelectItem>
-            {availableSubjects.map(subject => (
+            {filteredSubjects.map(subject => (
               <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
             ))}
           </SelectContent>

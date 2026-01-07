@@ -8,8 +8,11 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { availableClasses, availableSubjects } from "@/data/instituteData";
+import { useState, useMemo } from "react";
+import { availableClasses, availableSubjects, assignedTracks } from "@/data/instituteData";
+import { getSubjectsForCourse, getChaptersForCourseBySubject, subjects as masterSubjects } from "@/data/masterData";
+import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const contentTypes = [
   { id: "video", label: "Video", icon: Video, accept: ".mp4,.webm,.mov", description: "MP4, WebM, MOV" },
@@ -22,6 +25,72 @@ const InstituteCreateContent = () => {
   const [selectedType, setSelectedType] = useState("video");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Course-based selection state
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedChapter, setSelectedChapter] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
+
+  // Determine if selected course has classes
+  const selectedTrack = assignedTracks.find(t => t.id === selectedCourse);
+  const isCBSE = selectedTrack?.hasClasses ?? false;
+
+  // Get available subjects based on course
+  const availableSubjectsForCourse = useMemo(() => {
+    if (!selectedCourse) return [];
+    if (isCBSE) {
+      return availableSubjects;
+    } else {
+      const courseSubjects = getSubjectsForCourse(selectedCourse);
+      return courseSubjects.map(cs => ({ id: cs.id, name: cs.name }));
+    }
+  }, [selectedCourse, isCBSE]);
+
+  // Get available chapters based on course/class/subject
+  const availableChapters = useMemo(() => {
+    if (!selectedSubject) return [];
+    if (isCBSE && selectedClass) {
+      return getChaptersByClassAndSubject(selectedClass, selectedSubject);
+    } else if (!isCBSE) {
+      return getChaptersForCourseBySubject(selectedCourse, selectedSubject);
+    }
+    return [];
+  }, [selectedCourse, selectedClass, selectedSubject, isCBSE]);
+
+  // Get available topics based on chapter
+  const availableTopics = useMemo(() => {
+    if (!selectedChapter) return [];
+    return getTopicsByChapter(selectedChapter);
+  }, [selectedChapter]);
+
+  // Reset handlers
+  const handleCourseChange = (courseId: string) => {
+    setSelectedCourse(courseId);
+    setSelectedClass("");
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleClassChange = (classId: string) => {
+    setSelectedClass(classId);
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleSubjectChange = (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleChapterChange = (chapterId: string) => {
+    setSelectedChapter(chapterId);
+    setSelectedTopic("");
+  };
 
   const handleSubmit = () => {
     toast({ title: "Content Created!", description: "Content has been added to your library." });
@@ -116,49 +185,94 @@ const InstituteCreateContent = () => {
           <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
             <h3 className="text-lg font-semibold mb-4">Classification</h3>
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Class *</Label>
-                <Select>
-                  <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
-                  <SelectContent>
-                    {availableClasses.map(cls => (
-                      <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* Course Selection */}
+              <div className="space-y-3">
+                <Label>Select Course *</Label>
+                <div className="grid grid-cols-1 gap-2">
+                  {assignedTracks.map((track) => (
+                    <label
+                      key={track.id}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                        selectedCourse === track.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <Checkbox
+                        checked={selectedCourse === track.id}
+                        onCheckedChange={() => handleCourseChange(track.id)}
+                      />
+                      <div>
+                        <p className="font-medium text-sm">{track.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {track.hasClasses ? "Curriculum-based" : "Competitive exam"}
+                        </p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Subject *</Label>
-                <Select>
-                  <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
-                  <SelectContent>
-                    {availableSubjects.map(subject => (
-                      <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Chapter *</Label>
-                <Select>
-                  <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mechanics">Mechanics</SelectItem>
-                    <SelectItem value="thermo">Thermodynamics</SelectItem>
-                    <SelectItem value="waves">Wave Optics</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Topic</Label>
-                <Select>
-                  <SelectTrigger><SelectValue placeholder="Select topic (optional)" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newton">Newton's Laws</SelectItem>
-                    <SelectItem value="energy">Work & Energy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
+              {/* Class - Only for CBSE */}
+              {selectedCourse && isCBSE && (
+                <div className="space-y-2">
+                  <Label>Class *</Label>
+                  <Select value={selectedClass} onValueChange={handleClassChange}>
+                    <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                    <SelectContent>
+                      {availableClasses.map(cls => (
+                        <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Subject */}
+              {selectedCourse && (!isCBSE || selectedClass) && (
+                <div className="space-y-2">
+                  <Label>Subject *</Label>
+                  <Select value={selectedSubject} onValueChange={handleSubjectChange}>
+                    <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
+                    <SelectContent>
+                      {availableSubjectsForCourse.map(subject => (
+                        <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Chapter */}
+              {selectedSubject && (
+                <div className="space-y-2">
+                  <Label>Chapter *</Label>
+                  <Select value={selectedChapter} onValueChange={handleChapterChange}>
+                    <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                    <SelectContent>
+                      {availableChapters.map(chapter => (
+                        <SelectItem key={chapter.id} value={chapter.id}>{chapter.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Topic */}
+              {selectedChapter && (
+                <div className="space-y-2">
+                  <Label>Topic</Label>
+                  <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                    <SelectTrigger><SelectValue placeholder="Select topic (optional)" /></SelectTrigger>
+                    <SelectContent>
+                      {availableTopics.map(topic => (
+                        <SelectItem key={topic.id} value={topic.id}>{topic.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -169,7 +283,11 @@ const InstituteCreateContent = () => {
             </p>
           </div>
 
-          <Button className="w-full gradient-button" onClick={handleSubmit}>
+          <Button 
+            className="w-full gradient-button" 
+            onClick={handleSubmit}
+            disabled={!selectedCourse || !selectedSubject || !selectedChapter || (isCBSE && !selectedClass)}
+          >
             Save Content
           </Button>
         </div>
