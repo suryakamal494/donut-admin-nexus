@@ -62,6 +62,8 @@ import TeacherDashboard from "./pages/teacher/Dashboard";
 import TeacherSchedule from "./pages/teacher/Schedule";
 import LessonPlans from "./pages/teacher/LessonPlans";
 import LessonPlanCanvas from "./pages/teacher/LessonPlanCanvas";
+import TeacherAssessments from "./pages/teacher/Assessments";
+import TeacherHomework from "./pages/teacher/Homework";
 
 const queryClient = new QueryClient();
 
@@ -139,6 +141,8 @@ const App = () => (
             <Route path="schedule" element={<TeacherSchedule />} />
             <Route path="lesson-plans" element={<LessonPlans />} />
             <Route path="lesson-plans/:planId" element={<LessonPlanCanvas />} />
+            <Route path="assessments" element={<TeacherAssessments />} />
+            <Route path="homework" element={<TeacherHomework />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
