@@ -33,13 +33,100 @@ const CreateGrandTest = () => {
   const activeCurriculums = getActiveCurriculums();
   const publishedCourses = getPublishedCourses();
   
-  // AI config
+  // AI config - Subject distribution
   const [physicsCount, setPhysicsCount] = useState(30);
   const [chemistryCount, setChemistryCount] = useState(30);
   const [mathBioCount, setMathBioCount] = useState(30);
+  
+  // Difficulty distribution (must total 100%)
   const [easyPercent, setEasyPercent] = useState(30);
   const [mediumPercent, setMediumPercent] = useState(50);
   const [hardPercent, setHardPercent] = useState(20);
+  
+  // Cognitive distribution (must total 100%)
+  const [logicalPercent, setLogicalPercent] = useState(20);
+  const [analyticalPercent, setAnalyticalPercent] = useState(20);
+  const [conceptualPercent, setConceptualPercent] = useState(25);
+  const [numericalPercent, setNumericalPercent] = useState(15);
+  const [applicationPercent, setApplicationPercent] = useState(15);
+  const [memoryPercent, setMemoryPercent] = useState(5);
+
+  // Helper to adjust percentages while keeping total at 100%
+  const adjustDifficulty = (setter: (v: number) => void, newValue: number, currentValue: number, others: { value: number; setter: (v: number) => void }[]) => {
+    const diff = newValue - currentValue;
+    if (diff === 0) return;
+    
+    // Distribute the difference among other sliders proportionally
+    const othersTotal = others.reduce((sum, o) => sum + o.value, 0);
+    if (othersTotal === 0) return;
+    
+    let remaining = -diff;
+    others.forEach((other, i) => {
+      const share = i === others.length - 1 
+        ? remaining 
+        : Math.round((other.value / othersTotal) * -diff);
+      const newOtherValue = Math.max(0, Math.min(100, other.value + share));
+      other.setter(newOtherValue);
+      remaining -= (newOtherValue - other.value);
+    });
+    setter(newValue);
+  };
+
+  const handleEasyChange = (value: number) => {
+    adjustDifficulty(setEasyPercent, value, easyPercent, [
+      { value: mediumPercent, setter: setMediumPercent },
+      { value: hardPercent, setter: setHardPercent }
+    ]);
+  };
+
+  const handleMediumChange = (value: number) => {
+    adjustDifficulty(setMediumPercent, value, mediumPercent, [
+      { value: easyPercent, setter: setEasyPercent },
+      { value: hardPercent, setter: setHardPercent }
+    ]);
+  };
+
+  const handleHardChange = (value: number) => {
+    adjustDifficulty(setHardPercent, value, hardPercent, [
+      { value: easyPercent, setter: setEasyPercent },
+      { value: mediumPercent, setter: setMediumPercent }
+    ]);
+  };
+
+  // Cognitive adjustment helpers
+  const adjustCognitive = (
+    setter: (v: number) => void, 
+    newValue: number, 
+    currentValue: number, 
+    allSetters: { value: number; setter: (v: number) => void; isCurrent: boolean }[]
+  ) => {
+    const diff = newValue - currentValue;
+    if (diff === 0) return;
+    
+    const others = allSetters.filter(s => !s.isCurrent);
+    const othersTotal = others.reduce((sum, o) => sum + o.value, 0);
+    if (othersTotal === 0) return;
+    
+    let remaining = -diff;
+    others.forEach((other, i) => {
+      const share = i === others.length - 1 
+        ? remaining 
+        : Math.round((other.value / othersTotal) * -diff);
+      const newOtherValue = Math.max(0, Math.min(100, other.value + share));
+      other.setter(newOtherValue);
+      remaining -= (newOtherValue - other.value);
+    });
+    setter(newValue);
+  };
+
+  const getCognitiveSetters = (currentSetter: (v: number) => void) => [
+    { value: logicalPercent, setter: setLogicalPercent, isCurrent: currentSetter === setLogicalPercent },
+    { value: analyticalPercent, setter: setAnalyticalPercent, isCurrent: currentSetter === setAnalyticalPercent },
+    { value: conceptualPercent, setter: setConceptualPercent, isCurrent: currentSetter === setConceptualPercent },
+    { value: numericalPercent, setter: setNumericalPercent, isCurrent: currentSetter === setNumericalPercent },
+    { value: applicationPercent, setter: setApplicationPercent, isCurrent: currentSetter === setApplicationPercent },
+    { value: memoryPercent, setter: setMemoryPercent, isCurrent: currentSetter === setMemoryPercent },
+  ];
   
   // PDF upload
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -382,43 +469,133 @@ const CreateGrandTest = () => {
               </div>
               
               <div className="space-y-4">
-                <Label>Difficulty Distribution</Label>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-success">Easy</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-32 bg-success/20 rounded-full h-2">
-                        <div 
-                          className="bg-success h-2 rounded-full transition-all" 
-                          style={{ width: `${easyPercent}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium w-10">{easyPercent}%</span>
+                <div className="flex items-center justify-between">
+                  <Label>Difficulty Distribution</Label>
+                  <span className="text-xs text-muted-foreground">Total: {easyPercent + mediumPercent + hardPercent}%</span>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-success font-medium">Easy</span>
+                      <span className="text-sm font-medium w-12 text-right">{easyPercent}%</span>
                     </div>
+                    <Slider 
+                      value={[easyPercent]} 
+                      onValueChange={([v]) => handleEasyChange(v)}
+                      max={100}
+                      min={0}
+                      className="[&_[role=slider]]:bg-success [&_.bg-primary]:bg-success"
+                    />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-warning">Medium</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-32 bg-warning/20 rounded-full h-2">
-                        <div 
-                          className="bg-warning h-2 rounded-full transition-all" 
-                          style={{ width: `${mediumPercent}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium w-10">{mediumPercent}%</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-warning font-medium">Medium</span>
+                      <span className="text-sm font-medium w-12 text-right">{mediumPercent}%</span>
                     </div>
+                    <Slider 
+                      value={[mediumPercent]} 
+                      onValueChange={([v]) => handleMediumChange(v)}
+                      max={100}
+                      min={0}
+                      className="[&_[role=slider]]:bg-warning [&_.bg-primary]:bg-warning"
+                    />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-destructive">Hard</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-32 bg-destructive/20 rounded-full h-2">
-                        <div 
-                          className="bg-destructive h-2 rounded-full transition-all" 
-                          style={{ width: `${hardPercent}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium w-10">{hardPercent}%</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-destructive font-medium">Hard</span>
+                      <span className="text-sm font-medium w-12 text-right">{hardPercent}%</span>
                     </div>
+                    <Slider 
+                      value={[hardPercent]} 
+                      onValueChange={([v]) => handleHardChange(v)}
+                      max={100}
+                      min={0}
+                      className="[&_[role=slider]]:bg-destructive [&_.bg-primary]:bg-destructive"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Cognitive Distribution */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Cognitive Distribution</Label>
+                  <span className="text-xs text-muted-foreground">
+                    Total: {logicalPercent + analyticalPercent + conceptualPercent + numericalPercent + applicationPercent + memoryPercent}%
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Logical Reasoning</span>
+                      <span className="text-sm font-medium w-12 text-right">{logicalPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[logicalPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setLogicalPercent, v, logicalPercent, getCognitiveSetters(setLogicalPercent))}
+                      max={100}
+                      min={0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Analytical Thinking</span>
+                      <span className="text-sm font-medium w-12 text-right">{analyticalPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[analyticalPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setAnalyticalPercent, v, analyticalPercent, getCognitiveSetters(setAnalyticalPercent))}
+                      max={100}
+                      min={0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Conceptual Understanding</span>
+                      <span className="text-sm font-medium w-12 text-right">{conceptualPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[conceptualPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setConceptualPercent, v, conceptualPercent, getCognitiveSetters(setConceptualPercent))}
+                      max={100}
+                      min={0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Numerical Ability</span>
+                      <span className="text-sm font-medium w-12 text-right">{numericalPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[numericalPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setNumericalPercent, v, numericalPercent, getCognitiveSetters(setNumericalPercent))}
+                      max={100}
+                      min={0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Application-Based</span>
+                      <span className="text-sm font-medium w-12 text-right">{applicationPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[applicationPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setApplicationPercent, v, applicationPercent, getCognitiveSetters(setApplicationPercent))}
+                      max={100}
+                      min={0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Memory/Recall</span>
+                      <span className="text-sm font-medium w-12 text-right">{memoryPercent}%</span>
+                    </div>
+                    <Slider 
+                      value={[memoryPercent]} 
+                      onValueChange={([v]) => adjustCognitive(setMemoryPercent, v, memoryPercent, getCognitiveSetters(setMemoryPercent))}
+                      max={100}
+                      min={0}
+                    />
                   </div>
                 </div>
               </div>
