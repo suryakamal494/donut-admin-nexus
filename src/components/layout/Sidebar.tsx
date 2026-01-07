@@ -15,6 +15,8 @@ import {
   Sparkles,
   PanelLeftClose,
   PanelLeft,
+  GraduationCap,
+  FolderTree,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -58,7 +60,10 @@ const navItems: NavItem[] = [
   {
     title: "Master Data",
     icon: Settings,
-    href: "/superadmin/parameters",
+    children: [
+      { title: "Curriculum", href: "/superadmin/parameters", icon: FolderTree },
+      { title: "Courses", href: "/superadmin/parameters/courses", icon: GraduationCap },
+    ],
   },
   {
     title: "Roles & Access",
@@ -84,7 +89,7 @@ const navItems: NavItem[] = [
 
 const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const [openMenus, setOpenMenus] = useState<string[]>(["Institutes", "Parameters"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["Institutes", "Master Data"]);
 
   const toggleMenu = (title: string) => {
     setOpenMenus((prev) =>

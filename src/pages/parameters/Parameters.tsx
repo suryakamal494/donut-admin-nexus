@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Settings, FileText, FolderTree, Layers } from "lucide-react";
+import { FolderTree } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { 
@@ -8,23 +7,21 @@ import {
   SubjectPanel, 
   ContentPanel, 
   QuickAddMenu,
-  IndependentDataPanel,
-  CurriculumTabs 
+  CurriculumTabs,
+  CurriculumManageDialog
 } from "@/components/parameters";
 import { cbseDataStats } from "@/data/cbseMasterData";
 import { masterDataStats } from "@/data/masterData";
 
 const Parameters = () => {
-  const navigate = useNavigate();
   const [selectedCurriculumId, setSelectedCurriculumId] = useState<string>("cbse");
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
-  const [showCoursesPanel, setShowCoursesPanel] = useState(false);
-  const [showCurriculumPanel, setShowCurriculumPanel] = useState(false);
+  const [showCurriculumDialog, setShowCurriculumDialog] = useState(false);
 
   const handleClassSelect = (classId: string) => {
     setSelectedClassId(classId);
-    setSelectedSubjectId(null); // Reset subject when class changes
+    setSelectedSubjectId(null);
   };
 
   const handleSubjectSelect = (subjectId: string) => {
@@ -40,49 +37,23 @@ const Parameters = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
-        title="Master Data"
-        description="Manage curriculum structure and competitive courses"
+        title="Curriculum"
+        description="Manage curriculum structure, classes, subjects and chapters"
         breadcrumbs={[
           { label: "Dashboard", href: "/superadmin/dashboard" }, 
-          { label: "Master Data" }
+          { label: "Master Data" },
+          { label: "Curriculum" }
         ]}
         actions={
           <div className="flex items-center gap-2">
             <Button 
-              variant="default" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => navigate("/superadmin/parameters/course-builder")}
-            >
-              <Layers className="w-4 h-4" />
-              Course Builder
-            </Button>
-            <Button 
               variant="outline" 
               size="sm" 
               className="gap-2"
-              onClick={() => navigate("/superadmin/parameters/courses")}
-            >
-              <FileText className="w-4 h-4" />
-              View Courses
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => setShowCoursesPanel(true)}
-            >
-              <Settings className="w-4 h-4" />
-              Manage Courses
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => setShowCurriculumPanel(true)}
+              onClick={() => setShowCurriculumDialog(true)}
             >
               <FolderTree className="w-4 h-4" />
-              Curriculum
+              Manage Curriculums
             </Button>
             <QuickAddMenu 
               onAddChapter={() => {}}
@@ -100,7 +71,7 @@ const Parameters = () => {
             <CurriculumTabs 
               selectedCurriculumId={selectedCurriculumId}
               onSelectCurriculum={handleCurriculumChange}
-              onAddCurriculum={() => setShowCurriculumPanel(true)}
+              onAddCurriculum={() => setShowCurriculumDialog(true)}
             />
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -133,20 +104,15 @@ const Parameters = () => {
       {/* Three-Panel Layout */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-[160px_200px_1fr] h-auto md:h-[calc(100vh-420px)] md:min-h-[400px]">
-          {/* Panel 1: Classes */}
           <ClassPanel 
             selectedClassId={selectedClassId}
             onSelectClass={handleClassSelect}
           />
-
-          {/* Panel 2: Subjects */}
           <SubjectPanel 
             selectedClassId={selectedClassId}
             selectedSubjectId={selectedSubjectId}
             onSelectSubject={handleSubjectSelect}
           />
-
-          {/* Panel 3: Chapters & Topics */}
           <ContentPanel 
             selectedClassId={selectedClassId}
             selectedSubjectId={selectedSubjectId}
@@ -154,16 +120,10 @@ const Parameters = () => {
         </div>
       </div>
 
-      {/* Side Panels for Independent Data */}
-      <IndependentDataPanel 
-        open={showCoursesPanel}
-        onOpenChange={setShowCoursesPanel}
-        type="courses"
-      />
-      <IndependentDataPanel 
-        open={showCurriculumPanel}
-        onOpenChange={setShowCurriculumPanel}
-        type="curriculum"
+      {/* Curriculum Management Dialog */}
+      <CurriculumManageDialog 
+        open={showCurriculumDialog}
+        onOpenChange={setShowCurriculumDialog}
       />
     </div>
   );
