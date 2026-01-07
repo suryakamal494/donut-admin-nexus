@@ -1,18 +1,30 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { 
   ArrowLeft, 
   Plus, 
   Save, 
   Send, 
-  GripVertical,
-  Trash2,
-  Star,
-  ChevronDown,
-  ChevronRight,
   Search,
   BookOpen,
-  Layers
+  Layers,
+  CheckSquare,
+  XSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +55,6 @@ import { cn } from "@/lib/utils";
 import { 
   courses, 
   curriculums, 
-  courseOwnedChapters,
   courseChapterMappings,
   getActiveCurriculums,
   getCourseOwnedChapters
@@ -54,6 +65,17 @@ import {
 } from "@/data/cbseMasterData";
 import { classes, subjects } from "@/data/mockData";
 import { Course, Chapter } from "@/types/masterData";
+import { SortableChapterItem } from "@/components/parameters/SortableChapterItem";
+
+interface CourseChapterEntry {
+  id: string;
+  chapterId: string;
+  name: string;
+  subjectId: string;
+  sourceLabel: string;
+  isCourseOwned: boolean;
+  order: number;
+}
 
 const CourseBuilder = () => {
   const navigate = useNavigate();
@@ -72,8 +94,9 @@ const CourseBuilder = () => {
   // Selected chapters for adding
   const [selectedChapterIds, setSelectedChapterIds] = useState<Set<string>>(new Set());
   
-  // Course content (chapters added to current course)
-  const [courseChapters, setCourseChapters] = useState<string[]>([]);
+  // Course content state - persisted chapters
+  const [courseContent, setCourseContent] = useState<Record<string, CourseChapterEntry[]>>({});
+  const [isDirty, setIsDirty] = useState(false);
   
   // New course form
   const [newCourse, setNewCourse] = useState({
@@ -81,6 +104,8 @@ const CourseBuilder = () => {
     code: "",
     description: "",
     courseType: "competitive" as Course["courseType"],
+    allowedCurriculums: ["cbse"] as string[],
+    allowedClasses: [] as string[],
   });
   
   // New chapter form
@@ -88,6 +113,13 @@ const CourseBuilder = () => {
     name: "",
     subjectId: "",
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const selectedCourse = courses.find(c => c.id === selectedCourseId);
   
@@ -114,8 +146,8 @@ const CourseBuilder = () => {
     return getCourseOwnedChapters(selectedCourseId);
   }, [selectedCourseId]);
 
-  // Get mapped chapters for display
-  const mappedChaptersForCourse = useMemo(() => {
+  // Get mapped chapters for display (from initial data)
+  const initialMappedChapters = useMemo(() => {
     if (!selectedCourseId) return [];
     
     const mappings = courseChapterMappings.filter(m => m.courseId === selectedCourseId);
@@ -124,37 +156,54 @@ const CourseBuilder = () => {
       const curriculum = curriculums.find(c => c.id === m.sourceCurriculumId);
       const classInfo = classes.find(c => c.id === chapter?.classId);
       return {
-        ...m,
-        chapter,
-        curriculumName: curriculum?.code || "",
-        className: classInfo?.name || "",
+        id: m.id,
+        chapterId: m.chapterId,
+        name: chapter?.name || "",
+        subjectId: chapter?.subjectId || "",
+        sourceLabel: `${curriculum?.code || ""} ${classInfo?.name || ""}`,
+        isCourseOwned: false,
+        order: m.order,
       };
-    }).filter(m => m.chapter);
+    }).filter(m => m.name);
   }, [selectedCourseId]);
 
-  // Group course content by subject
+  // Initialize course content when course changes
+  useMemo(() => {
+    if (selectedCourseId && !courseContent[selectedCourseId]) {
+      const mapped = initialMappedChapters;
+      const owned = ownedChapters.map((ch, idx) => ({
+        id: ch.id,
+        chapterId: ch.id,
+        name: ch.name,
+        subjectId: ch.subjectId,
+        sourceLabel: "Course-Owned",
+        isCourseOwned: true,
+        order: mapped.length + idx + 1,
+      }));
+      setCourseContent(prev => ({
+        ...prev,
+        [selectedCourseId]: [...mapped, ...owned],
+      }));
+    }
+  }, [selectedCourseId, initialMappedChapters, ownedChapters]);
+
+  const currentCourseChapters = courseContent[selectedCourseId] || [];
+
+  // Group by subject
   const courseContentBySubject = useMemo(() => {
-    const grouped: Record<string, { mapped: typeof mappedChaptersForCourse; owned: typeof ownedChapters }> = {};
-    
-    // Add mapped chapters
-    mappedChaptersForCourse.forEach(m => {
-      const subjectId = m.chapter?.subjectId || "unknown";
-      if (!grouped[subjectId]) {
-        grouped[subjectId] = { mapped: [], owned: [] };
-      }
-      grouped[subjectId].mapped.push(m);
-    });
-    
-    // Add owned chapters
-    ownedChapters.forEach(ch => {
+    const grouped: Record<string, CourseChapterEntry[]> = {};
+    currentCourseChapters.forEach(ch => {
       if (!grouped[ch.subjectId]) {
-        grouped[ch.subjectId] = { mapped: [], owned: [] };
+        grouped[ch.subjectId] = [];
       }
-      grouped[ch.subjectId].owned.push(ch);
+      grouped[ch.subjectId].push(ch);
     });
-    
+    // Sort each group by order
+    Object.keys(grouped).forEach(key => {
+      grouped[key].sort((a, b) => a.order - b.order);
+    });
     return grouped;
-  }, [mappedChaptersForCourse, ownedChapters]);
+  }, [currentCourseChapters]);
 
   const handleChapterToggle = (chapterId: string) => {
     const newSet = new Set(selectedChapterIds);
@@ -166,14 +215,97 @@ const CourseBuilder = () => {
     setSelectedChapterIds(newSet);
   };
 
+  const handleSelectAll = () => {
+    const allIds = new Set(availableChapters.map(ch => ch.id));
+    setSelectedChapterIds(allIds);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedChapterIds(new Set());
+  };
+
   const handleAddSelectedChapters = () => {
-    if (selectedChapterIds.size === 0) {
+    if (selectedChapterIds.size === 0 || !selectedCourseId) {
       toast.error("No chapters selected");
       return;
     }
     
-    toast.success(`Added ${selectedChapterIds.size} chapter(s) to course`);
+    const existingIds = new Set(currentCourseChapters.map(ch => ch.chapterId));
+    const chaptersToAdd: CourseChapterEntry[] = [];
+    let duplicateCount = 0;
+    
+    selectedChapterIds.forEach(chapterId => {
+      if (existingIds.has(chapterId)) {
+        duplicateCount++;
+        return;
+      }
+      
+      const chapter = availableChapters.find(ch => ch.id === chapterId);
+      if (chapter) {
+        const classInfo = classes.find(c => c.id === chapter.classId);
+        chaptersToAdd.push({
+          id: `added-${chapterId}-${Date.now()}`,
+          chapterId: chapter.id,
+          name: chapter.name,
+          subjectId: chapter.subjectId,
+          sourceLabel: `CBSE ${classInfo?.name || ""}`,
+          isCourseOwned: false,
+          order: currentCourseChapters.length + chaptersToAdd.length + 1,
+        });
+      }
+    });
+    
+    if (chaptersToAdd.length > 0) {
+      setCourseContent(prev => ({
+        ...prev,
+        [selectedCourseId]: [...(prev[selectedCourseId] || []), ...chaptersToAdd],
+      }));
+      setIsDirty(true);
+      toast.success(`Added ${chaptersToAdd.length} chapter(s) to course`);
+    }
+    
+    if (duplicateCount > 0) {
+      toast.info(`${duplicateCount} chapter(s) already in course`);
+    }
+    
     setSelectedChapterIds(new Set());
+  };
+
+  const handleDeleteChapter = (entryId: string) => {
+    if (!selectedCourseId) return;
+    
+    setCourseContent(prev => ({
+      ...prev,
+      [selectedCourseId]: prev[selectedCourseId].filter(ch => ch.id !== entryId),
+    }));
+    setIsDirty(true);
+    toast.success("Chapter removed from course");
+  };
+
+  const handleDragEnd = (event: DragEndEvent, subjectId: string) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const subjectChapters = courseContentBySubject[subjectId] || [];
+      const oldIndex = subjectChapters.findIndex(ch => ch.id === active.id);
+      const newIndex = subjectChapters.findIndex(ch => ch.id === over.id);
+      
+      const reordered = arrayMove(subjectChapters, oldIndex, newIndex);
+      
+      // Update orders
+      const updatedSubjectChapters = reordered.map((ch, idx) => ({
+        ...ch,
+        order: idx + 1,
+      }));
+      
+      // Merge back into full list
+      const otherChapters = currentCourseChapters.filter(ch => ch.subjectId !== subjectId);
+      setCourseContent(prev => ({
+        ...prev,
+        [selectedCourseId]: [...otherChapters, ...updatedSubjectChapters],
+      }));
+      setIsDirty(true);
+    }
   };
 
   const handleCreateCourse = () => {
@@ -184,14 +316,30 @@ const CourseBuilder = () => {
     
     toast.success(`Course "${newCourse.name}" created`);
     setShowCreateCourseDialog(false);
-    setNewCourse({ name: "", code: "", description: "", courseType: "competitive" });
+    setNewCourse({ name: "", code: "", description: "", courseType: "competitive", allowedCurriculums: ["cbse"], allowedClasses: [] });
   };
 
   const handleCreateChapter = () => {
-    if (!newChapter.name || !newChapter.subjectId) {
+    if (!newChapter.name || !newChapter.subjectId || !selectedCourseId) {
       toast.error("Please fill in required fields");
       return;
     }
+    
+    const newEntry: CourseChapterEntry = {
+      id: `owned-${Date.now()}`,
+      chapterId: `owned-${Date.now()}`,
+      name: newChapter.name,
+      subjectId: newChapter.subjectId,
+      sourceLabel: "Course-Owned",
+      isCourseOwned: true,
+      order: currentCourseChapters.length + 1,
+    };
+    
+    setCourseContent(prev => ({
+      ...prev,
+      [selectedCourseId]: [...(prev[selectedCourseId] || []), newEntry],
+    }));
+    setIsDirty(true);
     
     toast.success(`Course-only chapter "${newChapter.name}" created`);
     setShowCreateChapterDialog(false);
@@ -199,15 +347,35 @@ const CourseBuilder = () => {
   };
 
   const handleSaveDraft = () => {
+    setIsDirty(false);
     toast.success("Course saved as draft");
   };
 
   const handlePublish = () => {
+    setIsDirty(false);
     toast.success("Course published successfully");
   };
 
   const getSubjectName = (subjectId: string) => {
     return subjects.find(s => s.id === subjectId)?.name || "Unknown";
+  };
+
+  const toggleCurriculumSelection = (currId: string) => {
+    setNewCourse(prev => ({
+      ...prev,
+      allowedCurriculums: prev.allowedCurriculums.includes(currId)
+        ? prev.allowedCurriculums.filter(c => c !== currId)
+        : [...prev.allowedCurriculums, currId]
+    }));
+  };
+
+  const toggleClassSelection = (classId: string) => {
+    setNewCourse(prev => ({
+      ...prev,
+      allowedClasses: prev.allowedClasses.includes(classId)
+        ? prev.allowedClasses.filter(c => c !== classId)
+        : [...prev.allowedClasses, classId]
+    }));
   };
 
   return (
@@ -228,7 +396,7 @@ const CourseBuilder = () => {
             </Button>
             {selectedCourseId && (
               <>
-                <Button variant="outline" size="sm" onClick={handleSaveDraft}>
+                <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={!isDirty}>
                   <Save className="w-4 h-4 mr-2" />
                   Save Draft
                 </Button>
@@ -244,7 +412,7 @@ const CourseBuilder = () => {
 
       {/* Course Selector */}
       <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <Label className="text-sm font-medium">Course:</Label>
           <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
             <SelectTrigger className="w-[280px]">
@@ -276,7 +444,8 @@ const CourseBuilder = () => {
           {selectedCourse && (
             <div className="ml-auto flex items-center gap-4 text-sm text-muted-foreground">
               <span>Type: <strong className="text-foreground capitalize">{selectedCourse.courseType}</strong></span>
-              <span>Chapters: <strong className="text-foreground">{mappedChaptersForCourse.length + ownedChapters.length}</strong></span>
+              <span>Chapters: <strong className="text-foreground">{currentCourseChapters.length}</strong></span>
+              {isDirty && <Badge variant="outline" className="text-amber-600 border-amber-300">Unsaved</Badge>}
             </div>
           )}
         </div>
@@ -306,7 +475,7 @@ const CourseBuilder = () => {
                   </SelectContent>
                 </Select>
                 
-                <Select value={sourceClassId} onValueChange={(v) => { setSourceClassId(v); setSourceSubjectId(""); }}>
+                <Select value={sourceClassId} onValueChange={(v) => { setSourceClassId(v); setSourceSubjectId(""); setSelectedChapterIds(new Set()); }}>
                   <SelectTrigger className="h-9">
                     <SelectValue placeholder="Class" />
                   </SelectTrigger>
@@ -317,7 +486,7 @@ const CourseBuilder = () => {
                   </SelectContent>
                 </Select>
                 
-                <Select value={sourceSubjectId} onValueChange={setSourceSubjectId}>
+                <Select value={sourceSubjectId} onValueChange={(v) => { setSourceSubjectId(v); setSelectedChapterIds(new Set()); }}>
                   <SelectTrigger className="h-9">
                     <SelectValue placeholder="Subject" />
                   </SelectTrigger>
@@ -338,6 +507,19 @@ const CourseBuilder = () => {
                   onChange={(e) => setSourceSearchQuery(e.target.value)}
                 />
               </div>
+              
+              {availableChapters.length > 0 && (
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={handleSelectAll} className="h-7 text-xs">
+                    <CheckSquare className="w-3 h-3 mr-1" />
+                    Select All
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleClearSelection} className="h-7 text-xs">
+                    <XSquare className="w-3 h-3 mr-1" />
+                    Clear
+                  </Button>
+                </div>
+              )}
             </div>
             
             <ScrollArea className="flex-1 p-4">
@@ -407,7 +589,7 @@ const CourseBuilder = () => {
                   <h3 className="font-semibold">{selectedCourse?.name}</h3>
                 </div>
                 <Badge variant="outline">
-                  {mappedChaptersForCourse.length + ownedChapters.length} Chapters
+                  {currentCourseChapters.length} Chapters
                 </Badge>
               </div>
             </div>
@@ -421,61 +603,40 @@ const CourseBuilder = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {Object.entries(courseContentBySubject).map(([subjectId, { mapped, owned }]) => (
+                  {Object.entries(courseContentBySubject).map(([subjectId, chapters]) => (
                     <div key={subjectId} className="space-y-2">
                       <div className="flex items-center gap-2 py-2 border-b border-border/30">
                         <span className="text-sm font-semibold text-foreground">
                           {getSubjectName(subjectId)}
                         </span>
                         <Badge variant="secondary" className="text-xs">
-                          {mapped.length + owned.length}
+                          {chapters.length}
                         </Badge>
                       </div>
                       
-                      {/* Mapped chapters */}
-                      {mapped.map((m) => (
-                        <div
-                          key={m.id}
-                          className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border/50 group"
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(e) => handleDragEnd(e, subjectId)}
+                      >
+                        <SortableContext
+                          items={chapters.map(ch => ch.id)}
+                          strategy={verticalListSortingStrategy}
                         >
-                          <GripVertical className="w-4 h-4 text-muted-foreground/50 cursor-grab" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{m.chapter?.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {m.curriculumName} {m.className}
-                            </p>
+                          <div className="space-y-2">
+                            {chapters.map((ch) => (
+                              <SortableChapterItem
+                                key={ch.id}
+                                id={ch.id}
+                                name={ch.name}
+                                sourceLabel={ch.sourceLabel}
+                                isCourseOwned={ch.isCourseOwned}
+                                onDelete={handleDeleteChapter}
+                              />
+                            ))}
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                          </Button>
-                        </div>
-                      ))}
-                      
-                      {/* Course-owned chapters */}
-                      {owned.map((ch) => (
-                        <div
-                          key={ch.id}
-                          className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 group"
-                        >
-                          <GripVertical className="w-4 h-4 text-muted-foreground/50 cursor-grab" />
-                          <Star className="w-4 h-4 text-primary" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{ch.name}</p>
-                            <p className="text-xs text-primary/70">Course-Owned</p>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                          </Button>
-                        </div>
-                      ))}
+                        </SortableContext>
+                      </DndContext>
                     </div>
                   ))}
                 </div>
@@ -499,7 +660,7 @@ const CourseBuilder = () => {
 
       {/* Create Course Dialog */}
       <Dialog open={showCreateCourseDialog} onOpenChange={setShowCreateCourseDialog}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle>Create New Course</DialogTitle>
             <DialogDescription>
@@ -545,6 +706,36 @@ const CourseBuilder = () => {
                   <SelectItem value="olympiad">Olympiad</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Allowed Curriculums *</Label>
+              <div className="flex flex-wrap gap-2">
+                {getActiveCurriculums().map((curr) => (
+                  <label key={curr.id} className="flex items-center gap-2 px-3 py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
+                    <Checkbox
+                      checked={newCourse.allowedCurriculums.includes(curr.id)}
+                      onCheckedChange={() => toggleCurriculumSelection(curr.id)}
+                    />
+                    <span className="text-sm">{curr.code}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Allowed Classes *</Label>
+              <div className="flex flex-wrap gap-2">
+                {classes.map((cls) => (
+                  <label key={cls.id} className="flex items-center gap-2 px-3 py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
+                    <Checkbox
+                      checked={newCourse.allowedClasses.includes(cls.id)}
+                      onCheckedChange={() => toggleClassSelection(cls.id)}
+                    />
+                    <span className="text-sm">{cls.name}</span>
+                  </label>
+                ))}
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -603,11 +794,6 @@ const CourseBuilder = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            
-            <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-              <Star className="w-4 h-4 inline mr-2 text-primary" />
-              This chapter will be marked with a star to indicate it's course-exclusive content.
             </div>
           </div>
           
