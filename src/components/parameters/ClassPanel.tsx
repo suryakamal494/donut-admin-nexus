@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Plus, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { classes } from "@/data/mockData";
 import { allCBSEChapters } from "@/data/cbseMasterData";
+import { ClassFormDialog } from "./ClassFormDialog";
 
 interface ClassPanelProps {
   selectedClassId: string | null;
@@ -11,6 +13,8 @@ interface ClassPanelProps {
 }
 
 export const ClassPanel = ({ selectedClassId, onSelectClass }: ClassPanelProps) => {
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  
   // Get chapter counts per class
   const getChapterCount = (classId: string) => {
     return allCBSEChapters.filter(ch => ch.classId === classId).length;
@@ -60,11 +64,21 @@ export const ClassPanel = ({ selectedClassId, onSelectClass }: ClassPanelProps) 
       </ScrollArea>
 
       <div className="p-2 border-t border-border/50">
-        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+          onClick={() => setShowAddDialog(true)}
+        >
           <Plus className="w-4 h-4" />
           Add Class
         </Button>
       </div>
+
+      <ClassFormDialog 
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+      />
     </div>
   );
 };

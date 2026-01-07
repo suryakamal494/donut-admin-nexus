@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Plus, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { subjects } from "@/data/mockData";
 import { allCBSEChapters } from "@/data/cbseMasterData";
+import { SubjectFormDialog } from "./SubjectFormDialog";
 
 interface SubjectPanelProps {
   selectedClassId: string | null;
@@ -28,6 +30,8 @@ const getSubjectDotColor = (subjectId: string): string => {
 };
 
 export const SubjectPanel = ({ selectedClassId, selectedSubjectId, onSelectSubject }: SubjectPanelProps) => {
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  
   // Get chapter counts per subject for selected class
   const getChapterCount = (subjectId: string) => {
     if (!selectedClassId) return 0;
@@ -118,11 +122,17 @@ export const SubjectPanel = ({ selectedClassId, selectedSubjectId, onSelectSubje
           size="sm" 
           className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
           disabled={!selectedClassId}
+          onClick={() => setShowAddDialog(true)}
         >
           <Plus className="w-4 h-4" />
           Add Subject
         </Button>
       </div>
+
+      <SubjectFormDialog 
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+      />
     </div>
   );
 };

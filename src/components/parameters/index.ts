@@ -10,3 +10,7 @@ export { CourseSubjectPanel } from "./CourseSubjectPanel";
 export { CourseContentPanel } from "./CourseContentPanel";
 export { CurriculumManageDialog } from "./CurriculumManageDialog";
 export { CourseManageDialog } from "./CourseManageDialog";
+export { ClassFormDialog } from "./ClassFormDialog";
+export { SubjectFormDialog } from "./SubjectFormDialog";
+export { ChapterFormDialog } from "./ChapterFormDialog";
+export { TopicFormDialog } from "./TopicFormDialog";
