@@ -51,6 +51,8 @@ import InstituteViewTimetable from "./pages/institute/timetable/ViewTimetable";
 import InstituteSubstitution from "./pages/institute/timetable/Substitution";
 import InstituteQuestions from "./pages/institute/questions/Questions";
 import InstituteAIQuestions from "./pages/institute/questions/AIQuestions";
+import InstituteUploadPDF from "./pages/institute/questions/UploadPDF";
+import InstituteCreateQuestion from "./pages/institute/questions/CreateQuestion";
 import InstituteExams from "./pages/institute/exams/Exams";
 import InstituteCreateExam from "./pages/institute/exams/CreateExam";
 import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
@@ -136,6 +138,8 @@ const App = () => (
             <Route path="timetable/substitution" element={<InstituteSubstitution />} />
             <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
+            <Route path="questions/upload-pdf" element={<InstituteUploadPDF />} />
+            <Route path="questions/create" element={<InstituteCreateQuestion />} />
             <Route path="content" element={<InstituteContent />} />
             <Route path="content/create" element={<InstituteCreateContent />} />
             <Route path="content/ai-generate" element={<InstituteAIContentGenerator />} />
