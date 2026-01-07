@@ -476,6 +476,28 @@ export const getTopicsByChapter = (chapterId: string): CBSETopic[] => {
   return allCBSETopics.filter(t => t.chapterId === chapterId);
 };
 
+// Helper to get subjects available for a specific curriculum and class
+export const getSubjectsForCurriculumAndClass = (curriculumId: string, classId: string): { id: string; name: string }[] => {
+  const chaptersForClass = allCBSEChapters.filter(
+    ch => ch.curriculumId === curriculumId && ch.classId === classId
+  );
+  const uniqueSubjectIds = [...new Set(chaptersForClass.map(ch => ch.subjectId))];
+  
+  const subjectNames: Record<string, string> = {
+    "1": "Physics",
+    "2": "Chemistry", 
+    "3": "Mathematics",
+    "4": "Biology",
+    "5": "History",
+    "6": "Hindi",
+  };
+  
+  return uniqueSubjectIds.map(id => ({
+    id,
+    name: subjectNames[id] || `Subject ${id}`
+  })).sort((a, b) => a.name.localeCompare(b.name));
+};
+
 // Helper to get chapter by ID
 export const getChapterById = (chapterId: string): CBSEChapter | undefined => {
   return allCBSEChapters.find(ch => ch.id === chapterId);

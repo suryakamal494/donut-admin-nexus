@@ -29,6 +29,8 @@ import AIQuestions from "./pages/questions/AIQuestions";
 import AICurriculumQuestions from "./pages/questions/AICurriculumQuestions";
 import AICourseQuestions from "./pages/questions/AICourseQuestions";
 import UploadPDF from "./pages/questions/UploadPDF";
+import UploadCurriculumPDF from "./pages/questions/UploadCurriculumPDF";
+import UploadCoursePDF from "./pages/questions/UploadCoursePDF";
 import ReviewQuestions from "./pages/questions/ReviewQuestions";
 import Exams from "./pages/exams/Exams";
 import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
@@ -111,9 +113,11 @@ const App = () => (
             <Route path="questions/curriculum" element={<CurriculumQuestions />} />
             <Route path="questions/curriculum/create" element={<CreateCurriculumQuestion />} />
             <Route path="questions/curriculum/ai" element={<AICurriculumQuestions />} />
+            <Route path="questions/curriculum/upload" element={<UploadCurriculumPDF />} />
             <Route path="questions/course" element={<CourseQuestions />} />
             <Route path="questions/course/create" element={<CreateCourseQuestion />} />
             <Route path="questions/course/ai" element={<AICourseQuestions />} />
+            <Route path="questions/course/upload" element={<UploadCoursePDF />} />
             <Route path="questions/create" element={<CreateQuestion />} />
             <Route path="questions/ai" element={<AIQuestions />} />
             <Route path="questions/upload-pdf" element={<UploadPDF />} />
