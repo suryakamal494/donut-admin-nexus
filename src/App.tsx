@@ -59,6 +59,8 @@ import InstituteAIContentGenerator from "./pages/institute/content/AIContentGene
 // Teacher Panel Pages
 import TeacherLayout from "./components/layout/TeacherLayout";
 import TeacherDashboard from "./pages/teacher/Dashboard";
+import LessonPlans from "./pages/teacher/LessonPlans";
+import LessonPlanCanvas from "./pages/teacher/LessonPlanCanvas";
 
 const queryClient = new QueryClient();
 
@@ -133,6 +135,8 @@ const App = () => (
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<Navigate to="/teacher/dashboard" replace />} />
             <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="lesson-plans" element={<LessonPlans />} />
+            <Route path="lesson-plans/:planId" element={<LessonPlanCanvas />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
