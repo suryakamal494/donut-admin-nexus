@@ -10,6 +10,7 @@ import {
   Eye,
   EyeOff,
   RefreshCw,
+  GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,14 +20,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubjectBadge } from "@/components/subject";
-import { availableSubjects, batches } from "@/data/instituteData";
+import { availableSubjects, batches, assignedTracks } from "@/data/instituteData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const steps = [
   { id: 1, name: "Basic Info", description: "Teacher details" },
   { id: 2, name: "Subjects", description: "Assign subjects" },
-  { id: 3, name: "Batches", description: "Map to batches" },
+  { id: 3, name: "Courses & Batches", description: "Assign to courses and batches" },
 ];
 
 const generatePassword = () => {
@@ -50,13 +51,18 @@ const CreateTeacher = () => {
   const [password, setPassword] = useState(generatePassword());
   const [showPassword, setShowPassword] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [selectedBatchMappings, setSelectedBatchMappings] = useState<
     { batchId: string; subjectId: string }[]
   >([]);
 
-  // Get batches that have at least one of the selected subjects
-  const relevantBatches = batches.filter((batch) =>
-    batch.subjects.some((s) => selectedSubjects.includes(s))
+  // Get batches that:
+  // 1. Have at least one of the selected subjects
+  // 2. AND are assigned to at least one of the selected courses
+  const relevantBatches = batches.filter(
+    (batch) =>
+      batch.subjects.some((s) => selectedSubjects.includes(s)) &&
+      batch.assignedCourses.some((c) => selectedCourses.includes(c))
   );
 
   const canProceed = () => {
@@ -71,7 +77,7 @@ const CreateTeacher = () => {
       case 2:
         return selectedSubjects.length > 0;
       case 3:
-        return selectedBatchMappings.length > 0;
+        return selectedCourses.length > 0 && selectedBatchMappings.length > 0;
       default:
         return false;
     }
@@ -91,6 +97,26 @@ const CreateTeacher = () => {
       }
 
       return newSubjects;
+    });
+  };
+
+  const handleCourseToggle = (courseId: string) => {
+    setSelectedCourses((prev) => {
+      const newCourses = prev.includes(courseId)
+        ? prev.filter((c) => c !== courseId)
+        : [...prev, courseId];
+
+      // Remove batch mappings for batches no longer in selected courses
+      if (!newCourses.includes(courseId)) {
+        setSelectedBatchMappings((mappings) =>
+          mappings.filter((m) => {
+            const batch = batches.find((b) => b.id === m.batchId);
+            return batch?.assignedCourses.some((c) => newCourses.includes(c));
+          })
+        );
+      }
+
+      return newCourses;
     });
   };
 
@@ -121,6 +147,10 @@ const CreateTeacher = () => {
 
   const getSubjectName = (subjectId: string) => {
     return availableSubjects.find((s) => s.id === subjectId)?.name || subjectId;
+  };
+
+  const getCourseName = (courseId: string) => {
+    return assignedTracks.find((t) => t.id === courseId)?.name || courseId;
   };
 
   return (
@@ -324,80 +354,159 @@ const CreateTeacher = () => {
             </div>
           )}
 
-          {/* Step 3: Map to Batches */}
+          {/* Step 3: Courses & Batches */}
           {currentStep === 3 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-primary" />
+                  <GraduationCap className="h-8 w-8 text-primary" />
                 </div>
-                <h2 className="text-xl font-semibold">Assign to Batches</h2>
+                <h2 className="text-xl font-semibold">Courses & Batches</h2>
                 <p className="text-muted-foreground mt-1">
-                  Select which batches this teacher will teach each subject in
+                  Select courses this teacher teaches, then assign to batches
                 </p>
               </div>
 
-              <div className="max-w-3xl mx-auto space-y-6">
-                {selectedSubjects.map((subjectId) => {
-                  const subjectBatches = relevantBatches.filter((b) =>
-                    b.subjects.includes(subjectId)
-                  );
+              <div className="max-w-3xl mx-auto space-y-8">
+                {/* Step 1: Select Courses */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">Step 1</Badge>
+                    <h3 className="font-medium">Select Courses</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {assignedTracks.map((track) => {
+                      const isSelected = selectedCourses.includes(track.id);
+                      return (
+                        <div
+                          key={track.id}
+                          className={cn(
+                            "flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all",
+                            isSelected
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/30 hover:bg-muted/50"
+                          )}
+                          onClick={() => handleCourseToggle(track.id)}
+                        >
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={() => handleCourseToggle(track.id)}
+                          />
+                          <div>
+                            <p className="font-medium">{track.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {track.type === "curriculum"
+                                ? "Standard curriculum"
+                                : "Competitive exam preparation"}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                  return (
-                    <div key={subjectId} className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <SubjectBadge subject={getSubjectName(subjectId)} />
-                        <span className="text-sm text-muted-foreground">
-                          ({subjectBatches.length} batches available)
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pl-4">
-                        {subjectBatches.map((batch) => {
-                          const isSelected = isBatchSubjectSelected(
-                            batch.id,
-                            subjectId
-                          );
-                          return (
-                            <div
-                              key={`${batch.id}-${subjectId}`}
-                              className={cn(
-                                "flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all text-sm",
-                                isSelected
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border hover:border-primary/30"
-                              )}
-                              onClick={() =>
-                                handleBatchMappingToggle(batch.id, subjectId)
-                              }
-                            >
-                              <Checkbox
-                                checked={isSelected}
-                                onCheckedChange={() =>
-                                  handleBatchMappingToggle(batch.id, subjectId)
-                                }
-                              />
-                              <span>
-                                {batch.className} - {batch.name}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                {/* Step 2: Assign Batches (only if courses selected) */}
+                {selectedCourses.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">Step 2</Badge>
+                      <h3 className="font-medium">Assign Batches</h3>
+                      <span className="text-xs text-muted-foreground">
+                        (Filtered by selected courses)
+                      </span>
                     </div>
-                  );
-                })}
 
-                {selectedSubjects.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    No subjects selected. Go back and select subjects first.
+                    {selectedSubjects.map((subjectId) => {
+                      const subjectBatches = relevantBatches.filter((b) =>
+                        b.subjects.includes(subjectId)
+                      );
+
+                      if (subjectBatches.length === 0) return null;
+
+                      return (
+                        <div key={subjectId} className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <SubjectBadge subject={getSubjectName(subjectId)} />
+                            <span className="text-sm text-muted-foreground">
+                              ({subjectBatches.length} batches available)
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pl-4">
+                            {subjectBatches.map((batch) => {
+                              const isSelected = isBatchSubjectSelected(
+                                batch.id,
+                                subjectId
+                              );
+                              return (
+                                <div
+                                  key={`${batch.id}-${subjectId}`}
+                                  className={cn(
+                                    "flex flex-col gap-1 p-3 rounded-lg border cursor-pointer transition-all text-sm",
+                                    isSelected
+                                      ? "border-primary bg-primary/5"
+                                      : "border-border hover:border-primary/30"
+                                  )}
+                                  onClick={() =>
+                                    handleBatchMappingToggle(batch.id, subjectId)
+                                  }
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={() =>
+                                        handleBatchMappingToggle(batch.id, subjectId)
+                                      }
+                                    />
+                                    <span className="font-medium">
+                                      {batch.className} - {batch.name}
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-1 pl-6">
+                                    {batch.assignedCourses.map((courseId) => (
+                                      <Badge
+                                        key={courseId}
+                                        variant="secondary"
+                                        className="text-[10px] px-1.5 py-0"
+                                      >
+                                        {getCourseName(courseId)}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {relevantBatches.length === 0 && (
+                      <p className="text-center text-muted-foreground py-4 bg-muted/30 rounded-lg">
+                        No batches found matching selected subjects and courses.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {selectedCourses.length === 0 && (
+                  <p className="text-center text-muted-foreground py-8 bg-muted/30 rounded-lg">
+                    Select at least one course above to see available batches.
                   </p>
                 )}
 
-                <div className="p-4 bg-muted/50 rounded-lg mt-6">
+                {/* Summary */}
+                <div className="p-4 bg-muted/50 rounded-lg">
                   <p className="text-sm font-medium text-foreground mb-2">Summary</p>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-medium">Teacher:</span> {name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Courses:</span>{" "}
+                    {selectedCourses.length > 0
+                      ? selectedCourses.map((c) => getCourseName(c)).join(", ")
+                      : "None selected"}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-medium">Subjects:</span>{" "}
