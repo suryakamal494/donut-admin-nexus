@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Building2, Shield, ArrowRight } from "lucide-react";
+import { Sparkles, Building2, Shield, ArrowRight, GraduationCap } from "lucide-react";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -31,11 +31,11 @@ const Landing = () => {
         </div>
 
         {/* Portal Selection Cards */}
-        <div className="grid md:grid-cols-2 gap-6 px-4">
+        <div className="grid md:grid-cols-3 gap-5 px-4">
           {/* Superadmin Card */}
           <button
             onClick={() => navigate("/superadmin/dashboard")}
-            className="group relative overflow-hidden rounded-3xl p-8 text-left transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
+            className="group relative overflow-hidden rounded-3xl p-6 md:p-8 text-left transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
           >
             {/* Card Background */}
             <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl border border-white/30" />
@@ -44,19 +44,19 @@ const Landing = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-indigo-500/0 group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-500" />
             
             <div className="relative z-10">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Shield className="w-8 h-8 text-white" />
+              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-7 h-7 md:w-8 md:h-8 text-white" />
               </div>
               
-              <h2 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                 Superadmin
                 <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
               </h2>
-              <p className="text-muted-foreground">
-                Platform management, institutes, global content & configuration
+              <p className="text-sm md:text-base text-muted-foreground">
+                Platform management, institutes, global content
               </p>
               
-              <div className="mt-6 flex items-center gap-2 text-sm text-purple-600 font-medium">
+              <div className="mt-4 md:mt-6 flex items-center gap-2 text-sm text-purple-600 font-medium">
                 <span>Access Control Panel</span>
               </div>
             </div>
@@ -65,7 +65,7 @@ const Landing = () => {
           {/* Institute Card */}
           <button
             onClick={() => navigate("/institute/dashboard")}
-            className="group relative overflow-hidden rounded-3xl p-8 text-left transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
+            className="group relative overflow-hidden rounded-3xl p-6 md:p-8 text-left transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
           >
             {/* Card Background */}
             <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl border border-white/30" />
@@ -74,20 +74,50 @@ const Landing = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-donut-coral/0 to-donut-pink/0 group-hover:from-donut-coral/10 group-hover:to-donut-pink/10 transition-all duration-500" />
             
             <div className="relative z-10">
-              <div className="w-16 h-16 rounded-2xl gradient-button flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Building2 className="w-8 h-8 text-white" />
+              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl gradient-button flex items-center justify-center mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Building2 className="w-7 h-7 md:w-8 md:h-8 text-white" />
               </div>
               
-              <h2 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                 Institute
                 <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm md:text-base text-muted-foreground">
                 Manage batches, teachers, students, timetables & exams
               </p>
               
-              <div className="mt-6 flex items-center gap-2 text-sm font-medium gradient-text">
+              <div className="mt-4 md:mt-6 flex items-center gap-2 text-sm font-medium gradient-text">
                 <span>Enter Institute Panel</span>
+              </div>
+            </div>
+          </button>
+
+          {/* Teacher Card */}
+          <button
+            onClick={() => navigate("/teacher/dashboard")}
+            className="group relative overflow-hidden rounded-3xl p-6 md:p-8 text-left transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
+          >
+            {/* Card Background */}
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl border border-white/30" />
+            
+            {/* Hover Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-500/0 to-cyan-500/0 group-hover:from-teal-500/10 group-hover:to-cyan-500/10 transition-all duration-500" />
+            
+            <div className="relative z-10">
+              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4 md:mb-6 shadow-lg shadow-teal-500/25 group-hover:scale-110 transition-transform duration-300">
+                <GraduationCap className="w-7 h-7 md:w-8 md:h-8 text-white" />
+              </div>
+              
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                Teacher
+                <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Daily teaching workspace, lesson plans & assessments
+              </p>
+              
+              <div className="mt-4 md:mt-6 flex items-center gap-2 text-sm font-medium text-teal-600">
+                <span>Open Teaching Portal</span>
               </div>
             </div>
           </button>
