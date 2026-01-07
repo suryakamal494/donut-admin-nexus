@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp, BookOpen, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { examPatternConfig } from "@/data/examsData";
+import { getActiveCurriculums, getPublishedCourses } from "@/data/masterData";
+import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
 
 const CreateGrandTest = () => {
   const navigate = useNavigate();
@@ -21,6 +24,14 @@ const CreateGrandTest = () => {
   const [testName, setTestName] = useState("");
   const [pattern, setPattern] = useState<"jee_main" | "jee_advanced" | "neet">("jee_main");
   const [creationMethod, setCreationMethod] = useState<"ai" | "pdf">("ai");
+  
+  // Content Source state
+  const [contentSource, setContentSource] = useState<ContentSourceType>('curriculum');
+  const [selectedCurriculumId, setSelectedCurriculumId] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  
+  const activeCurriculums = getActiveCurriculums();
+  const publishedCourses = getPublishedCourses();
   
   // AI config
   const [physicsCount, setPhysicsCount] = useState(30);
@@ -68,7 +79,10 @@ const CreateGrandTest = () => {
     { number: 4, title: "Complete", icon: CheckCircle2 },
   ];
 
-  const canProceedStep1 = testName && pattern;
+  const canProceedStep1 = testName && pattern && (
+    (contentSource === 'curriculum' && selectedCurriculumId) ||
+    (contentSource === 'course' && selectedCourseId)
+  );
   const canProceedStep2 = creationMethod;
   const canProceedStep3 = creationMethod === "ai" || uploadedFile;
 
@@ -139,6 +153,70 @@ const CreateGrandTest = () => {
                   onChange={(e) => setTestName(e.target.value)}
                   placeholder="e.g., Grand Test #21 - JEE Full Syllabus Mock"
                 />
+              </div>
+
+              {/* Content Source Selection */}
+              <div className="space-y-3">
+                <Label>Content Source *</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setContentSource('curriculum'); setSelectedCourseId(""); }}
+                    className={cn(
+                      "flex items-center gap-3 p-4 rounded-xl border transition-all",
+                      contentSource === 'curriculum' 
+                        ? "border-primary bg-primary/5" 
+                        : "border-border hover:border-primary/50"
+                    )}
+                  >
+                    <BookOpen className={cn("w-5 h-5", contentSource === 'curriculum' ? "text-primary" : "text-muted-foreground")} />
+                    <div className="text-left">
+                      <p className="font-medium">Curriculum</p>
+                      <p className="text-xs text-muted-foreground">Pull from CBSE/ICSE syllabus</p>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setContentSource('course'); setSelectedCurriculumId(""); }}
+                    className={cn(
+                      "flex items-center gap-3 p-4 rounded-xl border transition-all",
+                      contentSource === 'course' 
+                        ? "border-primary bg-primary/5" 
+                        : "border-border hover:border-primary/50"
+                    )}
+                  >
+                    <Layers className={cn("w-5 h-5", contentSource === 'course' ? "text-primary" : "text-muted-foreground")} />
+                    <div className="text-left">
+                      <p className="font-medium">Course</p>
+                      <p className="text-xs text-muted-foreground">Pull from JEE/NEET courses</p>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Secondary Selection */}
+                {contentSource === 'curriculum' ? (
+                  <Select value={selectedCurriculumId} onValueChange={setSelectedCurriculumId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select curriculum" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activeCurriculums.map((curr) => (
+                        <SelectItem key={curr.id} value={curr.id}>{curr.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {publishedCourses.map((course) => (
+                        <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               
               <div className="space-y-3">

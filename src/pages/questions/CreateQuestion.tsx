@@ -8,6 +8,11 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
+import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
+import { getActiveCurriculums, getPublishedCourses, getCourseOwnedChapters } from "@/data/masterData";
+import { classes, subjects } from "@/data/mockData";
+import { getChaptersByClassAndSubject } from "@/data/cbseMasterData";
 
 const questionTypes = [
   { id: "mcq", label: "MCQ (Single Correct)" },
@@ -25,9 +30,39 @@ const CreateQuestion = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Source & Visibility state
+  const [sourceType, setSourceType] = useState<ContentSourceType>('curriculum');
+  const [selectedCurriculumId, setSelectedCurriculumId] = useState("");
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState("");
+  const [visibleInCurriculum, setVisibleInCurriculum] = useState(true);
+  const [visibleInCourses, setVisibleInCourses] = useState<string[]>([]);
+
+  const activeCurriculums = getActiveCurriculums();
+  const publishedCourses = getPublishedCourses();
+
+  // Get chapters based on source type
+  const availableChapters = sourceType === 'curriculum' && selectedClassId && selectedSubjectId
+    ? getChaptersByClassAndSubject(selectedClassId, selectedSubjectId)
+    : sourceType === 'course' && selectedCourseId
+      ? getCourseOwnedChapters(selectedCourseId)
+      : [];
+
   const handleSubmit = () => {
     toast({ title: "Question Created!", description: "Question has been added to the bank." });
     navigate("/superadmin/questions");
+  };
+
+  const handleSourceTypeChange = (type: ContentSourceType) => {
+    setSourceType(type);
+    // Reset selections when switching
+    setSelectedCurriculumId("");
+    setSelectedCourseId("");
+    setSelectedClassId("");
+    setSelectedSubjectId("");
+    setSelectedChapterId("");
   };
 
   return (
@@ -103,37 +138,89 @@ const CreateQuestion = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Source Type & Classification */}
           <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
             <h3 className="text-lg font-semibold mb-4">Classification</h3>
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Subject</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="physics">Physics</SelectItem>
-                    <SelectItem value="chemistry">Chemistry</SelectItem>
-                    <SelectItem value="maths">Mathematics</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Chapter</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mechanics">Mechanics</SelectItem>
-                    <SelectItem value="thermo">Thermodynamics</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Topic</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Select topic" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newton">Newton's Laws</SelectItem>
-                    <SelectItem value="energy">Work & Energy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <SourceTypeSelector 
+                value={sourceType} 
+                onChange={handleSourceTypeChange} 
+              />
+
+              {sourceType === 'curriculum' ? (
+                <>
+                  <div className="space-y-2">
+                    <Label>Curriculum *</Label>
+                    <Select value={selectedCurriculumId} onValueChange={setSelectedCurriculumId}>
+                      <SelectTrigger><SelectValue placeholder="Select curriculum" /></SelectTrigger>
+                      <SelectContent>
+                        {activeCurriculums.map((curr) => (
+                          <SelectItem key={curr.id} value={curr.id}>{curr.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Class *</Label>
+                    <Select value={selectedClassId} onValueChange={(v) => { setSelectedClassId(v); setSelectedSubjectId(""); setSelectedChapterId(""); }}>
+                      <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                      <SelectContent>
+                        {classes.map((cls) => (
+                          <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subject *</Label>
+                    <Select value={selectedSubjectId} onValueChange={(v) => { setSelectedSubjectId(v); setSelectedChapterId(""); }}>
+                      <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
+                      <SelectContent>
+                        {subjects.map((sub) => (
+                          <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Chapter *</Label>
+                    <Select value={selectedChapterId} onValueChange={setSelectedChapterId}>
+                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                      <SelectContent>
+                        {availableChapters.map((ch) => (
+                          <SelectItem key={ch.id} value={ch.id}>{ch.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label>Course *</Label>
+                    <Select value={selectedCourseId} onValueChange={(v) => { setSelectedCourseId(v); setSelectedChapterId(""); }}>
+                      <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+                      <SelectContent>
+                        {publishedCourses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Chapter *</Label>
+                    <Select value={selectedChapterId} onValueChange={setSelectedChapterId}>
+                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                      <SelectContent>
+                        {availableChapters.map((ch) => (
+                          <SelectItem key={ch.id} value={ch.id}>{ch.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label>Difficulty</Label>
                 <Select><SelectTrigger><SelectValue placeholder="Select difficulty" /></SelectTrigger>
@@ -147,6 +234,17 @@ const CreateQuestion = () => {
             </div>
           </div>
 
+          {/* Visibility */}
+          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+            <VisibilitySelector
+              visibleInCurriculum={visibleInCurriculum}
+              visibleInCourses={visibleInCourses}
+              onCurriculumChange={setVisibleInCurriculum}
+              onCoursesChange={setVisibleInCourses}
+            />
+          </div>
+
+          {/* Marking */}
           <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
             <h3 className="text-lg font-semibold mb-4">Marking</h3>
             <div className="space-y-4">
