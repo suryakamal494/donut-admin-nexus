@@ -16,6 +16,33 @@ export type QuestionLanguage = "english" | "hindi" | "sanskrit" | "telugu";
 export type QuestionDifficulty = "easy" | "medium" | "hard";
 export type QuestionStatus = "review" | "approved" | "archived";
 
+// Cognitive Types
+export type CognitiveType = 
+  | "logical" 
+  | "reasoning" 
+  | "conceptual" 
+  | "analytical" 
+  | "application" 
+  | "memory";
+
+export const cognitiveTypeLabels: Record<CognitiveType, string> = {
+  logical: "Logical",
+  reasoning: "Reasoning",
+  conceptual: "Conceptual",
+  analytical: "Analytical",
+  application: "Application",
+  memory: "Memory/Theory",
+};
+
+export const cognitiveTypeConfig: Record<CognitiveType, { label: string; className: string }> = {
+  logical: { label: "Logical", className: "bg-blue-100 text-blue-700 border-blue-200" },
+  reasoning: { label: "Reasoning", className: "bg-purple-100 text-purple-700 border-purple-200" },
+  conceptual: { label: "Conceptual", className: "bg-cyan-100 text-cyan-700 border-cyan-200" },
+  analytical: { label: "Analytical", className: "bg-indigo-100 text-indigo-700 border-indigo-200" },
+  application: { label: "Application", className: "bg-green-100 text-green-700 border-green-200" },
+  memory: { label: "Memory/Theory", className: "bg-amber-100 text-amber-700 border-amber-200" },
+};
+
 export interface QuestionOption {
   id: string;
   text: string;
@@ -79,6 +106,12 @@ export interface Question {
   updatedAt: string;
   createdBy: string;
   status: QuestionStatus;
+  cognitiveType?: CognitiveType;
+  
+  // Source context (curriculum vs course)
+  sourceType?: 'curriculum' | 'course';
+  curriculumId?: string;
+  courseId?: string;
 }
 
 // Question Type Labels
