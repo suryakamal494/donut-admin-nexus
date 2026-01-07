@@ -197,6 +197,24 @@ export const ContentPanelView = ({
     );
   }, [displayChapters]);
 
+  // Group chapters by source for courses - MUST be before any early returns
+  const groupedChapters = useMemo(() => {
+    if (trackType !== "course") return null;
+    
+    const mapped = displayChapters.filter(ch => !ch.isCourseOwned);
+    const owned = displayChapters.filter(ch => ch.isCourseOwned);
+    
+    // Group mapped by source
+    const mappedBySource = mapped.reduce((acc, ch) => {
+      const source = ch.sourceLabel || "Other";
+      if (!acc[source]) acc[source] = [];
+      acc[source].push(ch);
+      return acc;
+    }, {} as Record<string, DisplayChapter[]>);
+    
+    return { mappedBySource, owned };
+  }, [displayChapters, trackType]);
+
   // Check if we should show content
   const shouldShowContent = trackType === "course" 
     ? selectedSubjectId 
@@ -222,24 +240,6 @@ export const ContentPanelView = ({
       </div>
     );
   }
-
-  // Group chapters by source for courses
-  const groupedChapters = useMemo(() => {
-    if (trackType !== "course") return null;
-    
-    const mapped = displayChapters.filter(ch => !ch.isCourseOwned);
-    const owned = displayChapters.filter(ch => ch.isCourseOwned);
-    
-    // Group mapped by source
-    const mappedBySource = mapped.reduce((acc, ch) => {
-      const source = ch.sourceLabel || "Other";
-      if (!acc[source]) acc[source] = [];
-      acc[source].push(ch);
-      return acc;
-    }, {} as Record<string, DisplayChapter[]>);
-    
-    return { mappedBySource, owned };
-  }, [displayChapters, trackType]);
 
   return (
     <div className="flex flex-col h-full bg-card rounded-lg border">
