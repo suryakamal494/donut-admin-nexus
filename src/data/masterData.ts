@@ -421,6 +421,42 @@ export const courseOwnedChapters: Chapter[] = [
 ];
 
 // ============================================
+// TOPICS FOR COURSE-OWNED CHAPTERS
+// ============================================
+export const courseOwnedChapterTopics = [
+  // JEE Advanced - Advanced Mechanics
+  { id: "jee-adv-mech-t1", chapterId: "jee-adv-mech", name: "Energy Methods in Mechanics", order: 1 },
+  { id: "jee-adv-mech-t2", chapterId: "jee-adv-mech", name: "Variable Mass Systems", order: 2 },
+  { id: "jee-adv-mech-t3", chapterId: "jee-adv-mech", name: "Rotating Reference Frames", order: 3 },
+  
+  // JEE Mains - Mole Concept Problem Bank
+  { id: "jee-mole-t1", chapterId: "jee-mole-concept", name: "Introduction to Mole Concept", order: 1 },
+  { id: "jee-mole-t2", chapterId: "jee-mole-concept", name: "Avogadro's Number Applications", order: 2 },
+  { id: "jee-mole-t3", chapterId: "jee-mole-concept", name: "Molar Mass Calculations", order: 3 },
+  { id: "jee-mole-t4", chapterId: "jee-mole-concept", name: "Stoichiometry Practice", order: 4 },
+  
+  // JEE Mains - Dimensional Analysis
+  { id: "jee-dim-t1", chapterId: "jee-dim-analysis", name: "Dimensional Formulas", order: 1 },
+  { id: "jee-dim-t2", chapterId: "jee-dim-analysis", name: "Dimensional Equations", order: 2 },
+  { id: "jee-dim-t3", chapterId: "jee-dim-analysis", name: "Limitations of Dimensional Analysis", order: 3 },
+  
+  // JEE Mains - Mathematical Tools
+  { id: "jee-math-t1", chapterId: "jee-math-tools", name: "Basic Differentiation", order: 1 },
+  { id: "jee-math-t2", chapterId: "jee-math-tools", name: "Integration Techniques", order: 2 },
+  { id: "jee-math-t3", chapterId: "jee-math-tools", name: "Vector Algebra Review", order: 3 },
+  
+  // NEET - Diagram-Based Questions
+  { id: "neet-diag-t1", chapterId: "neet-bio-diagrams", name: "Cell Structure Diagrams", order: 1 },
+  { id: "neet-diag-t2", chapterId: "neet-bio-diagrams", name: "Human Anatomy Labeling", order: 2 },
+  { id: "neet-diag-t3", chapterId: "neet-bio-diagrams", name: "Plant Morphology Diagrams", order: 3 },
+  
+  // Olympiad - Number Theory
+  { id: "oly-num-t1", chapterId: "oly-number-theory", name: "Divisibility and Primes", order: 1 },
+  { id: "oly-num-t2", chapterId: "oly-number-theory", name: "Modular Arithmetic", order: 2 },
+  { id: "oly-num-t3", chapterId: "oly-number-theory", name: "Diophantine Equations", order: 3 },
+];
+
+// ============================================
 // COURSE-CHAPTER MAPPINGS (The 80%)
 // Links curriculum chapters to courses
 // ============================================
