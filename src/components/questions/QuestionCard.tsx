@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils";
 
 export type QuestionCardMode = "superadmin" | "institute";
 
-export interface QuestionWithSource extends Omit<Question, 'sourceType'> {
-  sourceType?: "global" | "institute" | "curriculum" | "course";
+export interface QuestionWithSource extends Question {
+  sourceType?: "global" | "institute";
 }
 
 interface QuestionCardProps {

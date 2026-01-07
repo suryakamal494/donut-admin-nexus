@@ -20,17 +20,9 @@ import CourseBuilder from "./pages/parameters/CourseBuilder";
 import Courses from "./pages/parameters/Courses";
 import Roles from "./pages/roles/Roles";
 import Questions from "./pages/questions/Questions";
-import CurriculumQuestions from "./pages/questions/CurriculumQuestions";
-import CourseQuestions from "./pages/questions/CourseQuestions";
 import CreateQuestion from "./pages/questions/CreateQuestion";
-import CreateCurriculumQuestion from "./pages/questions/CreateCurriculumQuestion";
-import CreateCourseQuestion from "./pages/questions/CreateCourseQuestion";
 import AIQuestions from "./pages/questions/AIQuestions";
-import AICurriculumQuestions from "./pages/questions/AICurriculumQuestions";
-import AICourseQuestions from "./pages/questions/AICourseQuestions";
 import UploadPDF from "./pages/questions/UploadPDF";
-import UploadCurriculumPDF from "./pages/questions/UploadCurriculumPDF";
-import UploadCoursePDF from "./pages/questions/UploadCoursePDF";
 import ReviewQuestions from "./pages/questions/ReviewQuestions";
 import Exams from "./pages/exams/Exams";
 import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
@@ -109,15 +101,7 @@ const App = () => (
             <Route path="parameters/courses" element={<Courses />} />
             <Route path="parameters/course-builder" element={<CourseBuilder />} />
             <Route path="roles" element={<Roles />} />
-            <Route path="questions" element={<Navigate to="/superadmin/questions/curriculum" replace />} />
-            <Route path="questions/curriculum" element={<CurriculumQuestions />} />
-            <Route path="questions/curriculum/create" element={<CreateCurriculumQuestion />} />
-            <Route path="questions/curriculum/ai" element={<AICurriculumQuestions />} />
-            <Route path="questions/curriculum/upload" element={<UploadCurriculumPDF />} />
-            <Route path="questions/course" element={<CourseQuestions />} />
-            <Route path="questions/course/create" element={<CreateCourseQuestion />} />
-            <Route path="questions/course/ai" element={<AICourseQuestions />} />
-            <Route path="questions/course/upload" element={<UploadCoursePDF />} />
+            <Route path="questions" element={<Questions />} />
             <Route path="questions/create" element={<CreateQuestion />} />
             <Route path="questions/ai" element={<AIQuestions />} />
             <Route path="questions/upload-pdf" element={<UploadPDF />} />

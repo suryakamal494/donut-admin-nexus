@@ -73,10 +73,7 @@ const navItems: NavItem[] = [
   {
     title: "Question Bank",
     icon: FileQuestion,
-    children: [
-      { title: "Curriculum Questions", href: "/superadmin/questions/curriculum", icon: FolderTree },
-      { title: "Course Questions", href: "/superadmin/questions/course", icon: GraduationCap },
-    ],
+    href: "/superadmin/questions",
   },
   {
     title: "Exams",
@@ -92,7 +89,7 @@ const navItems: NavItem[] = [
 
 const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const [openMenus, setOpenMenus] = useState<string[]>(["Institutes", "Master Data", "Question Bank"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["Institutes", "Master Data"]);
 
   const toggleMenu = (title: string) => {
     setOpenMenus((prev) =>
