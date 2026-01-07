@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, ChevronRight, ChevronLeft, Loader2, Info, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,32 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { AIContentPreviewEditor, Slide } from "@/components/content/AIContentPreviewEditor";
-import { availableClasses, availableSubjects } from "@/data/instituteData";
+import { availableClasses, availableSubjects, assignedTracks } from "@/data/instituteData";
+import { getSubjectsForCourse, getChaptersForCourseBySubject, subjects as masterSubjects } from "@/data/masterData";
+import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
 
 const stylePresets = [
   { id: "detailed", label: "Detailed", description: "Comprehensive with examples" },
   { id: "concise", label: "Concise", description: "Brief and to the point" },
-];
-
-const chapters = [
-  "Newton's Laws of Motion",
-  "Thermodynamics", 
-  "Wave Optics",
-  "Electromagnetic Induction",
-  "Kinematics",
-  "Quadratic Equations",
-  "Trigonometry",
-  "Organic Chemistry",
-];
-
-const topics = [
-  "First Law of Motion",
-  "Second Law of Motion",
-  "Third Law of Motion",
-  "Applications of Newton's Laws",
 ];
 
 const InstituteAIContentGenerator = () => {
@@ -42,7 +27,8 @@ const InstituteAIContentGenerator = () => {
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
   
-  // Step 1: Classification
+  // Step 1: Classification with course selection
+  const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedChapter, setSelectedChapter] = useState("");
@@ -58,7 +44,67 @@ const InstituteAIContentGenerator = () => {
   const [generatedSlides, setGeneratedSlides] = useState<Slide[]>([]);
   const [presentationTitle, setPresentationTitle] = useState("");
 
-  const canProceedStep1 = selectedClass && selectedSubject && selectedChapter;
+  // Determine if selected course has classes
+  const selectedTrack = assignedTracks.find(t => t.id === selectedCourse);
+  const isCBSE = selectedTrack?.hasClasses ?? false;
+
+  // Get available subjects based on course
+  const availableSubjectsForCourse = useMemo(() => {
+    if (!selectedCourse) return [];
+    if (isCBSE) {
+      return availableSubjects;
+    } else {
+      const courseSubjects = getSubjectsForCourse(selectedCourse);
+      return courseSubjects.map(cs => ({ id: cs.id, name: cs.name }));
+    }
+  }, [selectedCourse, isCBSE]);
+
+  // Get available chapters based on course/class/subject
+  const availableChapters = useMemo(() => {
+    if (!selectedSubject) return [];
+    if (isCBSE && selectedClass) {
+      return getChaptersByClassAndSubject(selectedClass, selectedSubject);
+    } else if (!isCBSE) {
+      return getChaptersForCourseBySubject(selectedCourse, selectedSubject);
+    }
+    return [];
+  }, [selectedCourse, selectedClass, selectedSubject, isCBSE]);
+
+  // Get available topics based on chapter
+  const availableTopics = useMemo(() => {
+    if (!selectedChapter) return [];
+    return getTopicsByChapter(selectedChapter);
+  }, [selectedChapter]);
+
+  // Reset handlers
+  const handleCourseChange = (courseId: string) => {
+    setSelectedCourse(courseId);
+    setSelectedClass("");
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleClassChange = (classId: string) => {
+    setSelectedClass(classId);
+    setSelectedSubject("");
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleSubjectChange = (subjectId: string) => {
+    setSelectedSubject(subjectId);
+    setSelectedChapter("");
+    setSelectedTopic("");
+  };
+
+  const handleChapterChange = (chapterId: string) => {
+    setSelectedChapter(chapterId);
+    setSelectedTopic("");
+  };
+
+  // Validation
+  const canProceedStep1 = selectedCourse && selectedSubject && selectedChapter && (isCBSE ? selectedClass : true);
   const canProceedStep2 = prompt.trim().length >= 20;
 
   const handleGenerate = async () => {
@@ -67,7 +113,9 @@ const InstituteAIContentGenerator = () => {
     // Simulate AI generation with mock data
     await new Promise(resolve => setTimeout(resolve, 2500));
     
-    const topicName = selectedTopic || selectedChapter;
+    const chapterName = availableChapters.find(c => c.id === selectedChapter)?.name || selectedChapter;
+    const topicName = availableTopics.find(t => t.id === selectedTopic)?.name || chapterName;
+    
     const mockSlides: Slide[] = Array.from({ length: slideCount[0] }, (_, i) => ({
       id: `slide-${i + 1}`,
       title: i === 0 
@@ -134,71 +182,112 @@ const InstituteAIContentGenerator = () => {
         <div>
           <p className="font-medium text-foreground">Tell us what topic to create content for</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Select the class, subject, and chapter. This helps the AI create accurate, curriculum-aligned content.
+            Select the course, {isCBSE ? "class, " : ""}subject, and chapter. This helps the AI create accurate, curriculum-aligned content.
           </p>
         </div>
       </div>
 
       <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 space-y-5">
-        <div className="space-y-2">
-          <Label>Class *</Label>
-          <Select value={selectedClass} onValueChange={setSelectedClass}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select class" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableClasses.map((c) => (
-                <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Which class is this content for?</p>
+        {/* Course Selection */}
+        <div className="space-y-3">
+          <Label>Select Course *</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {assignedTracks.map((track) => (
+              <label
+                key={track.id}
+                className={cn(
+                  "flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all",
+                  selectedCourse === track.id
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50"
+                )}
+              >
+                <Checkbox
+                  checked={selectedCourse === track.id}
+                  onCheckedChange={() => handleCourseChange(track.id)}
+                />
+                <div>
+                  <p className="font-medium">{track.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {track.hasClasses ? "Curriculum-based" : "Competitive exam"}
+                  </p>
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>Subject *</Label>
-          <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select subject" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableSubjects.map((s) => (
-                <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Choose the subject area</p>
-        </div>
+        {/* Class - Only for CBSE */}
+        {selectedCourse && isCBSE && (
+          <div className="space-y-2">
+            <Label>Class *</Label>
+            <Select value={selectedClass} onValueChange={handleClassChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select class" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableClasses.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Which class is this content for?</p>
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label>Chapter *</Label>
-          <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select chapter" />
-            </SelectTrigger>
-            <SelectContent>
-              {chapters.map((ch) => (
-                <SelectItem key={ch} value={ch}>{ch}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Select the chapter this content belongs to</p>
-        </div>
+        {/* Subject */}
+        {selectedCourse && (!isCBSE || selectedClass) && (
+          <div className="space-y-2">
+            <Label>Subject *</Label>
+            <Select value={selectedSubject} onValueChange={handleSubjectChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select subject" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableSubjectsForCourse.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Choose the subject area</p>
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <Label>Topic (Optional)</Label>
-          <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select topic for more specific content" />
-            </SelectTrigger>
-            <SelectContent>
-              {topics.map((t) => (
-                <SelectItem key={t} value={t}>{t}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Narrow down to a specific topic if needed</p>
-        </div>
+        {/* Chapter */}
+        {selectedSubject && (
+          <div className="space-y-2">
+            <Label>Chapter *</Label>
+            <Select value={selectedChapter} onValueChange={handleChapterChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select chapter" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableChapters.map((ch) => (
+                  <SelectItem key={ch.id} value={ch.id}>{ch.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Select the chapter this content belongs to</p>
+          </div>
+        )}
+
+        {/* Topic */}
+        {selectedChapter && availableTopics.length > 0 && (
+          <div className="space-y-2">
+            <Label>Topic (Optional)</Label>
+            <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select topic for more specific content" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTopics.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Narrow down to a specific topic if needed</p>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end">
