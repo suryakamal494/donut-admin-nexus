@@ -1083,3 +1083,28 @@ export const instituteContent: InstituteContentItem[] = [
     instituteId: "inst-1",
   },
 ];
+
+// ============================================
+// ASSIGNED TRACKS (Institute's assigned curriculums/courses shown as unified "tracks")
+// ============================================
+export interface AssignedTrack {
+  id: string;
+  name: string;
+  type: "curriculum" | "course"; // Internal only - not shown to user
+  hasClasses: boolean; // Determines 3-panel vs 2-panel layout
+}
+
+export const assignedTracks: AssignedTrack[] = [
+  { 
+    id: "cbse", 
+    name: "CBSE", 
+    type: "curriculum",
+    hasClasses: true
+  },
+  { 
+    id: "jee-mains", 
+    name: "JEE Mains", 
+    type: "course",
+    hasClasses: false
+  },
+];
