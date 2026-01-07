@@ -481,6 +481,34 @@ export const getChapterById = (chapterId: string): CBSEChapter | undefined => {
   return allCBSEChapters.find(ch => ch.id === chapterId);
 };
 
+// Helper to get unique subjects by class
+export interface ClassSubject {
+  id: string;
+  name: string;
+}
+
+const subjectNames: Record<string, string> = {
+  "1": "Physics",
+  "2": "Chemistry",
+  "3": "Mathematics",
+  "4": "Biology",
+  "5": "History",
+  "6": "Hindi",
+};
+
+export const getSubjectsByClass = (classId: string): ClassSubject[] => {
+  const subjectIds = [...new Set(
+    allCBSEChapters
+      .filter(ch => ch.classId === classId)
+      .map(ch => ch.subjectId)
+  )];
+  
+  return subjectIds.map(id => ({
+    id,
+    name: subjectNames[id] || `Subject ${id}`,
+  })).sort((a, b) => a.name.localeCompare(b.name));
+};
+
 // Summary stats
 export const cbseDataStats = {
   totalChapters: allCBSEChapters.length,

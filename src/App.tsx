@@ -55,6 +55,7 @@ import InstituteUploadPDF from "./pages/institute/questions/UploadPDF";
 import InstituteCreateQuestion from "./pages/institute/questions/CreateQuestion";
 import InstituteExams from "./pages/institute/exams/Exams";
 import InstituteCreateExam from "./pages/institute/exams/CreateExam";
+import InstituteUploadExam from "./pages/institute/exams/UploadExam";
 import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
 import InstitutePreviousYearPapers from "./pages/institute/exams/PreviousYearPapers";
 import InstitutePYPView from "./pages/institute/exams/PYPView";
@@ -145,6 +146,8 @@ const App = () => (
             <Route path="content/ai-generate" element={<InstituteAIContentGenerator />} />
             <Route path="exams" element={<InstituteExams />} />
             <Route path="exams/create" element={<InstituteCreateExam />} />
+            <Route path="exams/upload" element={<InstituteUploadExam />} />
+            <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
             <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
             <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
             <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
