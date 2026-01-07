@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { 
   ArrowLeft, 
   Save, 
@@ -50,26 +50,56 @@ import {
 const LessonPlanCanvas = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isNew = planId === "create";
+
+  // Get context from URL params (when creating from schedule)
+  const contextBatch = searchParams.get('batch');
+  const contextBatchName = searchParams.get('batchName');
+  const contextDate = searchParams.get('date');
+  const contextPeriod = searchParams.get('period');
+  const contextClassName = searchParams.get('className');
 
   // Find existing plan or create new
   const existingPlan = !isNew ? teacherLessonPlans.find(p => p.id === planId) : null;
 
-  const [plan, setPlan] = useState<Partial<LessonPlan>>({
-    id: existingPlan?.id || `lp-${Date.now()}`,
-    title: existingPlan?.title || "",
-    subject: existingPlan?.subject || currentTeacher.subjects[0] || "Physics",
-    subjectId: existingPlan?.subjectId || "phy",
-    chapter: existingPlan?.chapter || "",
-    topic: existingPlan?.topic || "",
-    batchId: existingPlan?.batchId || "batch-10a",
-    batchName: existingPlan?.batchName || "10A",
-    className: existingPlan?.className || "Class 10",
-    scheduledDate: existingPlan?.scheduledDate || new Date().toISOString().split('T')[0],
-    periodNumber: existingPlan?.periodNumber || 1,
-    status: existingPlan?.status || "draft",
-    blocks: existingPlan?.blocks || [],
+  const [plan, setPlan] = useState<Partial<LessonPlan>>(() => {
+    // If we have URL context (coming from schedule), use it
+    if (isNew && contextBatch) {
+      return {
+        id: `lp-${Date.now()}`,
+        title: "",
+        subject: currentTeacher.subjects[0] || "Physics",
+        subjectId: "phy",
+        chapter: "",
+        topic: "",
+        batchId: contextBatch,
+        batchName: contextBatchName || contextBatch.replace('batch-', '').toUpperCase(),
+        className: contextClassName || "Class 10",
+        scheduledDate: contextDate || new Date().toISOString().split('T')[0],
+        periodNumber: contextPeriod ? parseInt(contextPeriod) : 1,
+        status: "draft",
+        blocks: [],
+      };
+    }
+    
+    // Otherwise use existing plan or defaults
+    return {
+      id: existingPlan?.id || `lp-${Date.now()}`,
+      title: existingPlan?.title || "",
+      subject: existingPlan?.subject || currentTeacher.subjects[0] || "Physics",
+      subjectId: existingPlan?.subjectId || "phy",
+      chapter: existingPlan?.chapter || "",
+      topic: existingPlan?.topic || "",
+      batchId: existingPlan?.batchId || "batch-10a",
+      batchName: existingPlan?.batchName || "10A",
+      className: existingPlan?.className || "Class 10",
+      scheduledDate: existingPlan?.scheduledDate || new Date().toISOString().split('T')[0],
+      periodNumber: existingPlan?.periodNumber || 1,
+      status: existingPlan?.status || "draft",
+      blocks: existingPlan?.blocks || [],
+    };
   });
 
   const [blocks, setBlocks] = useState<LessonPlanBlock[]>(existingPlan?.blocks || []);
