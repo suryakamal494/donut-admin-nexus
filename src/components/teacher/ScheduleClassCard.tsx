@@ -74,8 +74,8 @@ export const ScheduleClassCard = ({
         {/* Time */}
         <div className="flex items-center justify-between mb-1">
           <span className={cn(
-            "text-[10px] font-medium",
-            isLive ? "text-primary" : "text-muted-foreground"
+            "text-[11px] font-semibold",
+            isLive ? "text-primary" : "text-foreground/70"
           )}>
             {slot.startTime}
           </span>
@@ -91,20 +91,20 @@ export const ScheduleClassCard = ({
 
         {/* Subject */}
         <h4 className={cn(
-          "text-xs font-semibold text-foreground leading-tight truncate",
+          "text-sm font-bold text-foreground leading-tight truncate",
           isLive && "text-primary"
         )}>
           {slot.subject}
         </h4>
 
         {/* Batch + Class */}
-        <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+        <p className="text-xs text-foreground/60 font-medium truncate mt-0.5">
           {slot.className} • {slot.batchName}
         </p>
 
         {/* Topic (if available) */}
         {slot.topic && (
-          <p className="text-[9px] text-muted-foreground/70 truncate mt-0.5 italic">
+          <p className="text-[11px] text-foreground/50 truncate mt-0.5 italic">
             {slot.topic}
           </p>
         )}
@@ -112,7 +112,7 @@ export const ScheduleClassCard = ({
         {/* Plan Status Indicator */}
         <div className="flex items-center justify-between mt-1.5">
           {slot.room && (
-            <span className="text-[9px] text-muted-foreground flex items-center gap-0.5">
+            <span className="text-[10px] text-foreground/60 flex items-center gap-0.5">
               <MapPin className="w-2.5 h-2.5" />
               {slot.room}
             </span>
@@ -144,7 +144,7 @@ export const ScheduleClassCard = ({
             )}>
               {slot.startTime}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground/60">
               {slot.endTime}
             </p>
             <Badge variant="outline" className="mt-1 text-[10px] px-1.5">
@@ -156,7 +156,7 @@ export const ScheduleClassCard = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className={cn(
-                "font-semibold text-foreground",
+                "text-lg font-bold text-foreground",
                 isLive && "text-primary"
               )}>
                 {slot.subject}
@@ -174,8 +174,8 @@ export const ScheduleClassCard = ({
               )}
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <span className="font-medium">{slot.batchName}</span>
+            <div className="flex items-center gap-2 text-sm text-foreground/70 font-medium mb-2">
+              <span>{slot.batchName}</span>
               <span>•</span>
               <span>{slot.className}</span>
               {slot.room && (
@@ -191,7 +191,7 @@ export const ScheduleClassCard = ({
 
             {/* Topic */}
             {slot.topic && (
-              <p className="text-sm text-muted-foreground/80 italic mb-2 truncate">
+              <p className="text-sm text-foreground/60 italic mb-2 truncate">
                 📚 {slot.topic}
               </p>
             )}

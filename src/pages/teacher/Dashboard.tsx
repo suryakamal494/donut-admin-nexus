@@ -350,12 +350,12 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
           {/* Time Column */}
           <div className="text-center min-w-[60px]">
             <p className={cn(
-              "font-semibold text-sm",
+              "font-bold text-base",
               isLive ? "text-primary" : "text-foreground"
             )}>
               {slot.startTime}
             </p>
-            <p className="text-xs text-muted-foreground">{slot.endTime}</p>
+            <p className="text-xs text-foreground/60">{slot.endTime}</p>
           </div>
           
           {/* Divider */}
@@ -367,7 +367,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="font-semibold text-foreground truncate">
+              <h4 className="font-bold text-lg text-foreground truncate">
                 {slot.subject}
               </h4>
               {isLive && (
@@ -376,7 +376,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-foreground/70 font-medium">
               <span>{slot.batchName}</span>
               <span>•</span>
               <span>{slot.className}</span>

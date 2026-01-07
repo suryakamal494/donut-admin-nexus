@@ -279,7 +279,7 @@ const TeacherSchedule = () => {
                           />
                         ))
                       ) : (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-8 text-foreground/40">
                           <Clock className="w-6 h-6 mx-auto mb-2 opacity-30" />
                           <p className="text-xs">No classes</p>
                         </div>
@@ -338,7 +338,7 @@ const TeacherSchedule = () => {
                     )}>
                       {day.fullDayName}
                     </p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-foreground/60 font-medium">
                       <span>{slots.length} class{slots.length !== 1 ? 'es' : ''}</span>
                       <span>•</span>
                       <span className="text-green-600">
