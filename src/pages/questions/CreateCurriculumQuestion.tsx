@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { questionTypeLabels, type QuestionType, cognitiveTypeLabels, type CognitiveType, type QuestionDifficulty } from "@/data/questionsData";
-import { classes as cbseClasses } from "@/data/masterData";
+import { classes as cbseClasses } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
 const CreateCurriculumQuestion = () => {
