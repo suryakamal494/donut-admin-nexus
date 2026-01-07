@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -63,7 +62,7 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
           active
-            ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/25"
+            ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25"
             : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
         )}
       >
@@ -75,7 +74,7 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
           <span className="font-medium text-sm truncate">{item.label}</span>
         )}
         {!collapsed && item.badge && (
-          <span className="ml-auto px-2 py-0.5 text-xs font-semibold rounded-full bg-teal-100 text-teal-700">
+          <span className="ml-auto px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary">
             {item.badge}
           </span>
         )}
@@ -100,18 +99,19 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
     <aside
       className={cn(
         "fixed top-0 left-0 h-screen z-50 transition-all duration-300 ease-in-out",
-        "bg-gradient-to-b from-slate-50 to-white border-r border-border/50",
+        "bg-card sidebar-island",
         collapsed ? "w-20" : "w-72"
       )}
     >
-      {/* Header */}
+      {/* Header with Gradient Glow */}
       <div className={cn(
-        "h-16 flex items-center border-b border-border/50 px-4",
-        collapsed ? "justify-center" : "justify-between"
+        "h-16 flex items-center px-4 sidebar-header-glow",
+        collapsed ? "justify-center" : "justify-between",
+        !collapsed && "rounded-tr-[2rem]"
       )}>
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25">
+            <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -122,7 +122,7 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
         )}
         
         {collapsed && !isMobile && (
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25">
+          <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
         )}

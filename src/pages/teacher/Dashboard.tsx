@@ -94,9 +94,7 @@ const TeacherDashboard = () => {
         </div>
         
         {/* Quick Action FAB - Desktop */}
-        <Button 
-          className="hidden sm:flex bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white shadow-lg shadow-teal-500/25"
-        >
+        <Button className="hidden sm:flex gradient-button">
           <Plus className="w-4 h-4 mr-2" />
           Create Lesson Plan
         </Button>
@@ -105,9 +103,9 @@ const TeacherDashboard = () => {
       {/* Current/Next Class Highlight */}
       {classInfo && (
         <Card className={cn(
-          "overflow-hidden border-2 transition-all duration-300",
+          "overflow-hidden border-2 transition-all duration-300 card-premium",
           classInfo.status === 'current' 
-            ? "border-teal-500/50 bg-gradient-to-r from-teal-50 to-cyan-50" 
+            ? "border-primary/50 bg-gradient-to-r from-primary/5 to-accent/5" 
             : "border-border"
         )}>
           <CardContent className="p-4 md:p-6">
@@ -116,7 +114,7 @@ const TeacherDashboard = () => {
                 <div className={cn(
                   "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center flex-shrink-0",
                   classInfo.status === 'current'
-                    ? "bg-gradient-to-br from-teal-500 to-cyan-500 shadow-lg shadow-teal-500/25"
+                    ? "gradient-button"
                     : "bg-muted"
                 )}>
                   {classInfo.status === 'current' ? (
@@ -132,7 +130,7 @@ const TeacherDashboard = () => {
                       className={cn(
                         "text-xs",
                         classInfo.status === 'current' 
-                          ? "bg-teal-500 text-white" 
+                          ? "bg-primary text-white" 
                           : "bg-muted"
                       )}
                     >
@@ -165,14 +163,14 @@ const TeacherDashboard = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="flex-1 sm:flex-none border-teal-500/30 text-teal-600 hover:bg-teal-50"
+                    className="flex-1 sm:flex-none border-primary/30 text-primary hover:bg-primary/5"
                   >
                     View Plan
                   </Button>
                 ) : (
                   <Button 
                     size="sm"
-                    className="flex-1 sm:flex-none bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                    className="flex-1 sm:flex-none gradient-button"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Create Plan
@@ -181,7 +179,7 @@ const TeacherDashboard = () => {
                 {classInfo.status === 'current' && classInfo.slot.hasLessonPlan && (
                   <Button 
                     size="sm"
-                    className="flex-1 sm:flex-none bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                    className="flex-1 sm:flex-none gradient-button"
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Start Class
@@ -199,10 +197,10 @@ const TeacherDashboard = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-teal-500" />
+              <Calendar className="w-5 h-5 text-primary" />
               Today's Classes
             </h2>
-            <Button variant="ghost" size="sm" className="text-teal-600">
+            <Button variant="ghost" size="sm" className="text-primary">
               Full Schedule
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -224,10 +222,10 @@ const TeacherDashboard = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Quick Stats */}
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden card-premium">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-teal-500" />
+                <TrendingUp className="w-4 h-4 text-primary" />
                 This Week
               </CardTitle>
             </CardHeader>
@@ -252,7 +250,7 @@ const TeacherDashboard = () => {
           </Card>
 
           {/* Pending Actions */}
-          <Card>
+          <Card className="card-premium">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-warning" />
@@ -284,10 +282,10 @@ const TeacherDashboard = () => {
           </Card>
 
           {/* AI Assist Card */}
-          <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/20">
+          <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20 card-premium">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
@@ -298,7 +296,7 @@ const TeacherDashboard = () => {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="mt-3 border-teal-500/30 text-teal-600 hover:bg-teal-50"
+                    className="mt-3 border-primary/30 text-primary hover:bg-primary/5"
                   >
                     Try AI Assist
                   </Button>
@@ -313,7 +311,7 @@ const TeacherDashboard = () => {
       <div className="fixed bottom-20 right-4 md:hidden">
         <Button 
           size="lg"
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 shadow-lg shadow-teal-500/30"
+          className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -340,10 +338,10 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
   return (
     <Card 
       className={cn(
-        "transition-all duration-200 cursor-pointer hover:shadow-md",
-        isLive && "border-teal-500/50 bg-teal-50/50",
+        "transition-all duration-200 cursor-pointer hover:shadow-md card-premium",
+        isLive && "border-primary/50 bg-primary/5",
         isPast && "opacity-60",
-        isSelected && "ring-2 ring-teal-500"
+        isSelected && "ring-2 ring-primary"
       )}
       onClick={onSelect}
     >
@@ -353,7 +351,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
           <div className="text-center min-w-[60px]">
             <p className={cn(
               "font-semibold text-sm",
-              isLive ? "text-teal-600" : "text-foreground"
+              isLive ? "text-primary" : "text-foreground"
             )}>
               {slot.startTime}
             </p>
@@ -363,7 +361,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
           {/* Divider */}
           <div className={cn(
             "w-1 h-12 rounded-full",
-            isLive ? "bg-gradient-to-b from-teal-500 to-cyan-500" : "bg-muted"
+            isLive ? "bg-gradient-to-b from-primary to-accent" : "bg-muted"
           )} />
           
           {/* Content */}
@@ -373,7 +371,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
                 {slot.subject}
               </h4>
               {isLive && (
-                <Badge className="bg-teal-500 text-white text-[10px] px-1.5">
+                <Badge className="bg-primary text-white text-[10px] px-1.5">
                   LIVE
                 </Badge>
               )}
@@ -397,7 +395,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect }: ClassCardProps) => {
           {/* Status/Action */}
           <div className="flex items-center gap-2">
             {slot.hasLessonPlan ? (
-              <Badge variant="secondary" className="bg-teal-100 text-teal-700 border-0">
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
                 <BookOpen className="w-3 h-3 mr-1" />
                 Plan Ready
               </Badge>

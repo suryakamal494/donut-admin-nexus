@@ -107,7 +107,7 @@ const TeacherLayout = () => {
               <input
                 type="text"
                 placeholder="Search lessons, classes..."
-                className="w-48 lg:w-72 h-10 pl-10 pr-4 rounded-xl bg-muted/50 border-0 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                className="w-48 lg:w-72 h-10 pl-10 pr-4 rounded-xl bg-muted/50 border-0 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ const TeacherLayout = () => {
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative hover:bg-muted/50">
               <Bell className="w-5 h-5 text-muted-foreground" />
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-teal-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                 2
               </span>
             </Button>
@@ -130,7 +130,7 @@ const TeacherLayout = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 md:gap-3 hover:bg-muted/50 pr-2">
-                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                     <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
                   <div className="text-left hidden md:block">
@@ -142,7 +142,7 @@ const TeacherLayout = () => {
                         <Badge 
                           key={subject} 
                           variant="secondary" 
-                          className="text-[10px] px-1.5 py-0 bg-teal-100 text-teal-700 border-0"
+                          className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-0"
                         >
                           {subject}
                         </Badge>
