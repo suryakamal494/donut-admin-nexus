@@ -129,7 +129,7 @@ export const courses: Course[] = [
 // These chapters exist ONLY within courses, not in curriculum tree
 // ============================================
 export const courseOwnedChapters: Chapter[] = [
-  // JEE Advanced specific chapters
+  // JEE Advanced specific chapters - Physics
   { 
     id: "jee-adv-mech", 
     name: "Advanced Mechanics - Problem Solving", 
@@ -154,6 +154,56 @@ export const courseOwnedChapters: Chapter[] = [
     isCourseOwned: true,
     order: 3
   },
+  { 
+    id: "jee-adv-thermo", 
+    name: "Advanced Thermodynamics Problems", 
+    courseId: "jee-advanced",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 4
+  },
+  { 
+    id: "jee-adv-em", 
+    name: "Electromagnetic Theory Deep Dive", 
+    courseId: "jee-advanced",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 5
+  },
+  // JEE Advanced - Chemistry
+  { 
+    id: "jee-adv-org-mech", 
+    name: "Organic Reaction Mechanisms", 
+    courseId: "jee-advanced",
+    subjectId: "2", // Chemistry
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "jee-adv-coord-adv", 
+    name: "Advanced Coordination Chemistry", 
+    courseId: "jee-advanced",
+    subjectId: "2", // Chemistry
+    isCourseOwned: true,
+    order: 2
+  },
+  // JEE Advanced - Mathematics
+  { 
+    id: "jee-adv-complex-int", 
+    name: "Complex Integration Techniques", 
+    courseId: "jee-advanced",
+    subjectId: "3", // Mathematics
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "jee-adv-ode", 
+    name: "Advanced Differential Equations", 
+    courseId: "jee-advanced",
+    subjectId: "3", // Mathematics
+    isCourseOwned: true,
+    order: 2
+  },
   
   // JEE Mains specific chapters
   { 
@@ -171,6 +221,30 @@ export const courseOwnedChapters: Chapter[] = [
     subjectId: "3", // Mathematics
     isCourseOwned: true,
     order: 2
+  },
+  { 
+    id: "jee-dim-analysis", 
+    name: "Dimensional Analysis Mastery", 
+    courseId: "jee-mains",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "jee-error-analysis", 
+    name: "Error Analysis & Measurements", 
+    courseId: "jee-mains",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 2
+  },
+  { 
+    id: "jee-mole-concept", 
+    name: "Mole Concept Problem Bank", 
+    courseId: "jee-mains",
+    subjectId: "2", // Chemistry
+    isCourseOwned: true,
+    order: 1
   },
   
   // JEE Foundation specific chapters
@@ -190,13 +264,29 @@ export const courseOwnedChapters: Chapter[] = [
     isCourseOwned: true,
     order: 2
   },
+  { 
+    id: "jeef-science-lab", 
+    name: "Science Lab Techniques", 
+    courseId: "jee-foundation",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "jeef-exam-aware", 
+    name: "Competitive Exam Awareness", 
+    courseId: "jee-foundation",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 2
+  },
   
-  // NEET specific chapters
+  // NEET specific chapters - Biology
   { 
     id: "neet-bio-diagrams", 
     name: "Diagram-Based Questions in Biology", 
     courseId: "neet",
-    subjectId: "4", // Biology (assuming ID)
+    subjectId: "4", // Biology
     isCourseOwned: true,
     order: 1
   },
@@ -204,6 +294,66 @@ export const courseOwnedChapters: Chapter[] = [
     id: "neet-assertion", 
     name: "Assertion-Reason Practice", 
     courseId: "neet",
+    subjectId: "4", // Biology
+    isCourseOwned: true,
+    order: 2
+  },
+  { 
+    id: "neet-bio-quick-rev", 
+    name: "NEET Biology Quick Revision", 
+    courseId: "neet",
+    subjectId: "4", // Biology
+    isCourseOwned: true,
+    order: 3
+  },
+  { 
+    id: "neet-med-terms", 
+    name: "Medical Terminology Basics", 
+    courseId: "neet",
+    subjectId: "4", // Biology
+    isCourseOwned: true,
+    order: 4
+  },
+  { 
+    id: "neet-pyp-analysis", 
+    name: "Previous Year Pattern Analysis", 
+    courseId: "neet",
+    subjectId: "4", // Biology
+    isCourseOwned: true,
+    order: 5
+  },
+  // NEET - Physics
+  { 
+    id: "neet-phy-bio-apps", 
+    name: "Physics in Biological Systems", 
+    courseId: "neet",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 1
+  },
+  // NEET - Chemistry
+  { 
+    id: "neet-biomolecules-adv", 
+    name: "Advanced Biomolecules", 
+    courseId: "neet",
+    subjectId: "2", // Chemistry
+    isCourseOwned: true,
+    order: 1
+  },
+  
+  // NEET Foundation specific
+  { 
+    id: "neetf-bio-basics", 
+    name: "Biology Fundamentals for NEET", 
+    courseId: "neet-foundation",
+    subjectId: "4", // Biology
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "neetf-diagram-skills", 
+    name: "Diagram Drawing Skills", 
+    courseId: "neet-foundation",
     subjectId: "4", // Biology
     isCourseOwned: true,
     order: 2
@@ -234,6 +384,40 @@ export const courseOwnedChapters: Chapter[] = [
     isCourseOwned: true,
     order: 3
   },
+  { 
+    id: "oly-inequalities", 
+    name: "Algebraic Inequalities", 
+    courseId: "olympiad-math",
+    subjectId: "3", // Mathematics
+    isCourseOwned: true,
+    order: 4
+  },
+  { 
+    id: "oly-functional-eq", 
+    name: "Functional Equations", 
+    courseId: "olympiad-math",
+    subjectId: "3", // Mathematics
+    isCourseOwned: true,
+    order: 5
+  },
+  
+  // Science Olympiad
+  { 
+    id: "scio-exp-design", 
+    name: "Experimental Design", 
+    courseId: "olympiad-science",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 1
+  },
+  { 
+    id: "scio-data-analysis", 
+    name: "Scientific Data Analysis", 
+    courseId: "olympiad-science",
+    subjectId: "1", // Physics
+    isCourseOwned: true,
+    order: 2
+  },
 ];
 
 // ============================================
@@ -241,47 +425,277 @@ export const courseOwnedChapters: Chapter[] = [
 // Links curriculum chapters to courses
 // ============================================
 export const courseChapterMappings: CourseChapterMapping[] = [
-  // JEE Mains - Physics from CBSE Class 11
-  { id: "ccm-1", courseId: "jee-mains", chapterId: "phy-11-2", sourceCurriculumId: "cbse", order: 1 }, // Units and Measurements
-  { id: "ccm-2", courseId: "jee-mains", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 2 }, // Motion in a Straight Line
-  { id: "ccm-3", courseId: "jee-mains", chapterId: "phy-11-4", sourceCurriculumId: "cbse", order: 3 }, // Motion in a Plane
-  { id: "ccm-4", courseId: "jee-mains", chapterId: "phy-11-5", sourceCurriculumId: "cbse", order: 4 }, // Laws of Motion
-  { id: "ccm-5", courseId: "jee-mains", chapterId: "phy-11-6", sourceCurriculumId: "cbse", order: 5 }, // Work, Energy and Power
-  { id: "ccm-6", courseId: "jee-mains", chapterId: "phy-11-7", sourceCurriculumId: "cbse", order: 6 }, // System of Particles
-  { id: "ccm-7", courseId: "jee-mains", chapterId: "phy-11-8", sourceCurriculumId: "cbse", order: 7 }, // Gravitation
+  // ===============================
+  // JEE MAINS - Complete syllabus
+  // ===============================
   
-  // JEE Mains - Physics from CBSE Class 12
-  { id: "ccm-8", courseId: "jee-mains", chapterId: "phy-12-1", sourceCurriculumId: "cbse", order: 8 }, // Electric Charges and Fields
-  { id: "ccm-9", courseId: "jee-mains", chapterId: "phy-12-2", sourceCurriculumId: "cbse", order: 9 }, // Electrostatic Potential
-  { id: "ccm-10", courseId: "jee-mains", chapterId: "phy-12-3", sourceCurriculumId: "cbse", order: 10 }, // Current Electricity
+  // JEE Mains - Physics from CBSE Class 11 (All 15 chapters)
+  { id: "jm-phy-11-1", courseId: "jee-mains", chapterId: "phy-11-1", sourceCurriculumId: "cbse", order: 1 },
+  { id: "jm-phy-11-2", courseId: "jee-mains", chapterId: "phy-11-2", sourceCurriculumId: "cbse", order: 2 },
+  { id: "jm-phy-11-3", courseId: "jee-mains", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 3 },
+  { id: "jm-phy-11-4", courseId: "jee-mains", chapterId: "phy-11-4", sourceCurriculumId: "cbse", order: 4 },
+  { id: "jm-phy-11-5", courseId: "jee-mains", chapterId: "phy-11-5", sourceCurriculumId: "cbse", order: 5 },
+  { id: "jm-phy-11-6", courseId: "jee-mains", chapterId: "phy-11-6", sourceCurriculumId: "cbse", order: 6 },
+  { id: "jm-phy-11-7", courseId: "jee-mains", chapterId: "phy-11-7", sourceCurriculumId: "cbse", order: 7 },
+  { id: "jm-phy-11-8", courseId: "jee-mains", chapterId: "phy-11-8", sourceCurriculumId: "cbse", order: 8 },
+  { id: "jm-phy-11-9", courseId: "jee-mains", chapterId: "phy-11-9", sourceCurriculumId: "cbse", order: 9 },
+  { id: "jm-phy-11-10", courseId: "jee-mains", chapterId: "phy-11-10", sourceCurriculumId: "cbse", order: 10 },
+  { id: "jm-phy-11-11", courseId: "jee-mains", chapterId: "phy-11-11", sourceCurriculumId: "cbse", order: 11 },
+  { id: "jm-phy-11-12", courseId: "jee-mains", chapterId: "phy-11-12", sourceCurriculumId: "cbse", order: 12 },
+  { id: "jm-phy-11-13", courseId: "jee-mains", chapterId: "phy-11-13", sourceCurriculumId: "cbse", order: 13 },
+  { id: "jm-phy-11-14", courseId: "jee-mains", chapterId: "phy-11-14", sourceCurriculumId: "cbse", order: 14 },
+  { id: "jm-phy-11-15", courseId: "jee-mains", chapterId: "phy-11-15", sourceCurriculumId: "cbse", order: 15 },
   
-  // JEE Mains - Chemistry from CBSE Class 11
-  { id: "ccm-11", courseId: "jee-mains", chapterId: "che-11-1", sourceCurriculumId: "cbse", order: 11 }, // Some Basic Concepts
-  { id: "ccm-12", courseId: "jee-mains", chapterId: "che-11-2", sourceCurriculumId: "cbse", order: 12 }, // Structure of Atom
-  { id: "ccm-13", courseId: "jee-mains", chapterId: "che-11-3", sourceCurriculumId: "cbse", order: 13 }, // Periodic Table
+  // JEE Mains - Physics from CBSE Class 12 (All 14 chapters)
+  { id: "jm-phy-12-1", courseId: "jee-mains", chapterId: "phy-12-1", sourceCurriculumId: "cbse", order: 16 },
+  { id: "jm-phy-12-2", courseId: "jee-mains", chapterId: "phy-12-2", sourceCurriculumId: "cbse", order: 17 },
+  { id: "jm-phy-12-3", courseId: "jee-mains", chapterId: "phy-12-3", sourceCurriculumId: "cbse", order: 18 },
+  { id: "jm-phy-12-4", courseId: "jee-mains", chapterId: "phy-12-4", sourceCurriculumId: "cbse", order: 19 },
+  { id: "jm-phy-12-5", courseId: "jee-mains", chapterId: "phy-12-5", sourceCurriculumId: "cbse", order: 20 },
+  { id: "jm-phy-12-6", courseId: "jee-mains", chapterId: "phy-12-6", sourceCurriculumId: "cbse", order: 21 },
+  { id: "jm-phy-12-7", courseId: "jee-mains", chapterId: "phy-12-7", sourceCurriculumId: "cbse", order: 22 },
+  { id: "jm-phy-12-8", courseId: "jee-mains", chapterId: "phy-12-8", sourceCurriculumId: "cbse", order: 23 },
+  { id: "jm-phy-12-9", courseId: "jee-mains", chapterId: "phy-12-9", sourceCurriculumId: "cbse", order: 24 },
+  { id: "jm-phy-12-10", courseId: "jee-mains", chapterId: "phy-12-10", sourceCurriculumId: "cbse", order: 25 },
+  { id: "jm-phy-12-11", courseId: "jee-mains", chapterId: "phy-12-11", sourceCurriculumId: "cbse", order: 26 },
+  { id: "jm-phy-12-12", courseId: "jee-mains", chapterId: "phy-12-12", sourceCurriculumId: "cbse", order: 27 },
+  { id: "jm-phy-12-13", courseId: "jee-mains", chapterId: "phy-12-13", sourceCurriculumId: "cbse", order: 28 },
+  { id: "jm-phy-12-14", courseId: "jee-mains", chapterId: "phy-12-14", sourceCurriculumId: "cbse", order: 29 },
   
-  // JEE Mains - Mathematics from CBSE Class 11
-  { id: "ccm-14", courseId: "jee-mains", chapterId: "mat-11-1", sourceCurriculumId: "cbse", order: 14 }, // Sets
-  { id: "ccm-15", courseId: "jee-mains", chapterId: "mat-11-2", sourceCurriculumId: "cbse", order: 15 }, // Relations and Functions
-  { id: "ccm-16", courseId: "jee-mains", chapterId: "mat-11-3", sourceCurriculumId: "cbse", order: 16 }, // Trigonometric Functions
+  // JEE Mains - Chemistry from CBSE Class 11 (All 14 chapters)
+  { id: "jm-che-11-1", courseId: "jee-mains", chapterId: "che-11-1", sourceCurriculumId: "cbse", order: 30 },
+  { id: "jm-che-11-2", courseId: "jee-mains", chapterId: "che-11-2", sourceCurriculumId: "cbse", order: 31 },
+  { id: "jm-che-11-3", courseId: "jee-mains", chapterId: "che-11-3", sourceCurriculumId: "cbse", order: 32 },
+  { id: "jm-che-11-4", courseId: "jee-mains", chapterId: "che-11-4", sourceCurriculumId: "cbse", order: 33 },
+  { id: "jm-che-11-5", courseId: "jee-mains", chapterId: "che-11-5", sourceCurriculumId: "cbse", order: 34 },
+  { id: "jm-che-11-6", courseId: "jee-mains", chapterId: "che-11-6", sourceCurriculumId: "cbse", order: 35 },
+  { id: "jm-che-11-7", courseId: "jee-mains", chapterId: "che-11-7", sourceCurriculumId: "cbse", order: 36 },
+  { id: "jm-che-11-8", courseId: "jee-mains", chapterId: "che-11-8", sourceCurriculumId: "cbse", order: 37 },
+  { id: "jm-che-11-9", courseId: "jee-mains", chapterId: "che-11-9", sourceCurriculumId: "cbse", order: 38 },
+  { id: "jm-che-11-10", courseId: "jee-mains", chapterId: "che-11-10", sourceCurriculumId: "cbse", order: 39 },
+  { id: "jm-che-11-11", courseId: "jee-mains", chapterId: "che-11-11", sourceCurriculumId: "cbse", order: 40 },
+  { id: "jm-che-11-12", courseId: "jee-mains", chapterId: "che-11-12", sourceCurriculumId: "cbse", order: 41 },
+  { id: "jm-che-11-13", courseId: "jee-mains", chapterId: "che-11-13", sourceCurriculumId: "cbse", order: 42 },
+  { id: "jm-che-11-14", courseId: "jee-mains", chapterId: "che-11-14", sourceCurriculumId: "cbse", order: 43 },
   
-  // JEE Advanced - inherits JEE Mains + more
-  { id: "ccm-17", courseId: "jee-advanced", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 1 },
-  { id: "ccm-18", courseId: "jee-advanced", chapterId: "phy-11-4", sourceCurriculumId: "cbse", order: 2 },
-  { id: "ccm-19", courseId: "jee-advanced", chapterId: "phy-11-5", sourceCurriculumId: "cbse", order: 3 },
-  { id: "ccm-20", courseId: "jee-advanced", chapterId: "mat-12-5", sourceCurriculumId: "cbse", order: 4 }, // Continuity & Differentiability
-  { id: "ccm-21", courseId: "jee-advanced", chapterId: "mat-12-7", sourceCurriculumId: "cbse", order: 5 }, // Integrals
+  // JEE Mains - Chemistry from CBSE Class 12 (All 16 chapters)
+  { id: "jm-che-12-1", courseId: "jee-mains", chapterId: "che-12-1", sourceCurriculumId: "cbse", order: 44 },
+  { id: "jm-che-12-2", courseId: "jee-mains", chapterId: "che-12-2", sourceCurriculumId: "cbse", order: 45 },
+  { id: "jm-che-12-3", courseId: "jee-mains", chapterId: "che-12-3", sourceCurriculumId: "cbse", order: 46 },
+  { id: "jm-che-12-4", courseId: "jee-mains", chapterId: "che-12-4", sourceCurriculumId: "cbse", order: 47 },
+  { id: "jm-che-12-5", courseId: "jee-mains", chapterId: "che-12-5", sourceCurriculumId: "cbse", order: 48 },
+  { id: "jm-che-12-6", courseId: "jee-mains", chapterId: "che-12-6", sourceCurriculumId: "cbse", order: 49 },
+  { id: "jm-che-12-7", courseId: "jee-mains", chapterId: "che-12-7", sourceCurriculumId: "cbse", order: 50 },
+  { id: "jm-che-12-8", courseId: "jee-mains", chapterId: "che-12-8", sourceCurriculumId: "cbse", order: 51 },
+  { id: "jm-che-12-9", courseId: "jee-mains", chapterId: "che-12-9", sourceCurriculumId: "cbse", order: 52 },
+  { id: "jm-che-12-10", courseId: "jee-mains", chapterId: "che-12-10", sourceCurriculumId: "cbse", order: 53 },
+  { id: "jm-che-12-11", courseId: "jee-mains", chapterId: "che-12-11", sourceCurriculumId: "cbse", order: 54 },
+  { id: "jm-che-12-12", courseId: "jee-mains", chapterId: "che-12-12", sourceCurriculumId: "cbse", order: 55 },
+  { id: "jm-che-12-13", courseId: "jee-mains", chapterId: "che-12-13", sourceCurriculumId: "cbse", order: 56 },
+  { id: "jm-che-12-14", courseId: "jee-mains", chapterId: "che-12-14", sourceCurriculumId: "cbse", order: 57 },
+  { id: "jm-che-12-15", courseId: "jee-mains", chapterId: "che-12-15", sourceCurriculumId: "cbse", order: 58 },
+  { id: "jm-che-12-16", courseId: "jee-mains", chapterId: "che-12-16", sourceCurriculumId: "cbse", order: 59 },
   
+  // JEE Mains - Mathematics from CBSE Class 11 (All 16 chapters)
+  { id: "jm-mat-11-1", courseId: "jee-mains", chapterId: "mat-11-1", sourceCurriculumId: "cbse", order: 60 },
+  { id: "jm-mat-11-2", courseId: "jee-mains", chapterId: "mat-11-2", sourceCurriculumId: "cbse", order: 61 },
+  { id: "jm-mat-11-3", courseId: "jee-mains", chapterId: "mat-11-3", sourceCurriculumId: "cbse", order: 62 },
+  { id: "jm-mat-11-4", courseId: "jee-mains", chapterId: "mat-11-4", sourceCurriculumId: "cbse", order: 63 },
+  { id: "jm-mat-11-5", courseId: "jee-mains", chapterId: "mat-11-5", sourceCurriculumId: "cbse", order: 64 },
+  { id: "jm-mat-11-6", courseId: "jee-mains", chapterId: "mat-11-6", sourceCurriculumId: "cbse", order: 65 },
+  { id: "jm-mat-11-7", courseId: "jee-mains", chapterId: "mat-11-7", sourceCurriculumId: "cbse", order: 66 },
+  { id: "jm-mat-11-8", courseId: "jee-mains", chapterId: "mat-11-8", sourceCurriculumId: "cbse", order: 67 },
+  { id: "jm-mat-11-9", courseId: "jee-mains", chapterId: "mat-11-9", sourceCurriculumId: "cbse", order: 68 },
+  { id: "jm-mat-11-10", courseId: "jee-mains", chapterId: "mat-11-10", sourceCurriculumId: "cbse", order: 69 },
+  { id: "jm-mat-11-11", courseId: "jee-mains", chapterId: "mat-11-11", sourceCurriculumId: "cbse", order: 70 },
+  { id: "jm-mat-11-12", courseId: "jee-mains", chapterId: "mat-11-12", sourceCurriculumId: "cbse", order: 71 },
+  { id: "jm-mat-11-13", courseId: "jee-mains", chapterId: "mat-11-13", sourceCurriculumId: "cbse", order: 72 },
+  { id: "jm-mat-11-14", courseId: "jee-mains", chapterId: "mat-11-14", sourceCurriculumId: "cbse", order: 73 },
+  { id: "jm-mat-11-15", courseId: "jee-mains", chapterId: "mat-11-15", sourceCurriculumId: "cbse", order: 74 },
+  { id: "jm-mat-11-16", courseId: "jee-mains", chapterId: "mat-11-16", sourceCurriculumId: "cbse", order: 75 },
+  
+  // JEE Mains - Mathematics from CBSE Class 12 (All 13 chapters)
+  { id: "jm-mat-12-1", courseId: "jee-mains", chapterId: "mat-12-1", sourceCurriculumId: "cbse", order: 76 },
+  { id: "jm-mat-12-2", courseId: "jee-mains", chapterId: "mat-12-2", sourceCurriculumId: "cbse", order: 77 },
+  { id: "jm-mat-12-3", courseId: "jee-mains", chapterId: "mat-12-3", sourceCurriculumId: "cbse", order: 78 },
+  { id: "jm-mat-12-4", courseId: "jee-mains", chapterId: "mat-12-4", sourceCurriculumId: "cbse", order: 79 },
+  { id: "jm-mat-12-5", courseId: "jee-mains", chapterId: "mat-12-5", sourceCurriculumId: "cbse", order: 80 },
+  { id: "jm-mat-12-6", courseId: "jee-mains", chapterId: "mat-12-6", sourceCurriculumId: "cbse", order: 81 },
+  { id: "jm-mat-12-7", courseId: "jee-mains", chapterId: "mat-12-7", sourceCurriculumId: "cbse", order: 82 },
+  { id: "jm-mat-12-8", courseId: "jee-mains", chapterId: "mat-12-8", sourceCurriculumId: "cbse", order: 83 },
+  { id: "jm-mat-12-9", courseId: "jee-mains", chapterId: "mat-12-9", sourceCurriculumId: "cbse", order: 84 },
+  { id: "jm-mat-12-10", courseId: "jee-mains", chapterId: "mat-12-10", sourceCurriculumId: "cbse", order: 85 },
+  { id: "jm-mat-12-11", courseId: "jee-mains", chapterId: "mat-12-11", sourceCurriculumId: "cbse", order: 86 },
+  { id: "jm-mat-12-12", courseId: "jee-mains", chapterId: "mat-12-12", sourceCurriculumId: "cbse", order: 87 },
+  { id: "jm-mat-12-13", courseId: "jee-mains", chapterId: "mat-12-13", sourceCurriculumId: "cbse", order: 88 },
+  
+  // ===============================
+  // JEE ADVANCED - Inherits JEE Mains + Advanced topics
+  // ===============================
+  
+  // JEE Advanced - Physics Class 11 (Key chapters)
+  { id: "ja-phy-11-3", courseId: "jee-advanced", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 1 },
+  { id: "ja-phy-11-4", courseId: "jee-advanced", chapterId: "phy-11-4", sourceCurriculumId: "cbse", order: 2 },
+  { id: "ja-phy-11-5", courseId: "jee-advanced", chapterId: "phy-11-5", sourceCurriculumId: "cbse", order: 3 },
+  { id: "ja-phy-11-6", courseId: "jee-advanced", chapterId: "phy-11-6", sourceCurriculumId: "cbse", order: 4 },
+  { id: "ja-phy-11-7", courseId: "jee-advanced", chapterId: "phy-11-7", sourceCurriculumId: "cbse", order: 5 },
+  { id: "ja-phy-11-8", courseId: "jee-advanced", chapterId: "phy-11-8", sourceCurriculumId: "cbse", order: 6 },
+  { id: "ja-phy-11-9", courseId: "jee-advanced", chapterId: "phy-11-9", sourceCurriculumId: "cbse", order: 7 },
+  { id: "ja-phy-11-10", courseId: "jee-advanced", chapterId: "phy-11-10", sourceCurriculumId: "cbse", order: 8 },
+  { id: "ja-phy-11-12", courseId: "jee-advanced", chapterId: "phy-11-12", sourceCurriculumId: "cbse", order: 9 },
+  { id: "ja-phy-11-14", courseId: "jee-advanced", chapterId: "phy-11-14", sourceCurriculumId: "cbse", order: 10 },
+  { id: "ja-phy-11-15", courseId: "jee-advanced", chapterId: "phy-11-15", sourceCurriculumId: "cbse", order: 11 },
+  
+  // JEE Advanced - Physics Class 12
+  { id: "ja-phy-12-1", courseId: "jee-advanced", chapterId: "phy-12-1", sourceCurriculumId: "cbse", order: 12 },
+  { id: "ja-phy-12-2", courseId: "jee-advanced", chapterId: "phy-12-2", sourceCurriculumId: "cbse", order: 13 },
+  { id: "ja-phy-12-3", courseId: "jee-advanced", chapterId: "phy-12-3", sourceCurriculumId: "cbse", order: 14 },
+  { id: "ja-phy-12-4", courseId: "jee-advanced", chapterId: "phy-12-4", sourceCurriculumId: "cbse", order: 15 },
+  { id: "ja-phy-12-6", courseId: "jee-advanced", chapterId: "phy-12-6", sourceCurriculumId: "cbse", order: 16 },
+  { id: "ja-phy-12-9", courseId: "jee-advanced", chapterId: "phy-12-9", sourceCurriculumId: "cbse", order: 17 },
+  { id: "ja-phy-12-10", courseId: "jee-advanced", chapterId: "phy-12-10", sourceCurriculumId: "cbse", order: 18 },
+  
+  // JEE Advanced - Mathematics Class 12 (Key advanced chapters)
+  { id: "ja-mat-12-5", courseId: "jee-advanced", chapterId: "mat-12-5", sourceCurriculumId: "cbse", order: 19 },
+  { id: "ja-mat-12-6", courseId: "jee-advanced", chapterId: "mat-12-6", sourceCurriculumId: "cbse", order: 20 },
+  { id: "ja-mat-12-7", courseId: "jee-advanced", chapterId: "mat-12-7", sourceCurriculumId: "cbse", order: 21 },
+  { id: "ja-mat-12-8", courseId: "jee-advanced", chapterId: "mat-12-8", sourceCurriculumId: "cbse", order: 22 },
+  { id: "ja-mat-12-9", courseId: "jee-advanced", chapterId: "mat-12-9", sourceCurriculumId: "cbse", order: 23 },
+  { id: "ja-mat-12-10", courseId: "jee-advanced", chapterId: "mat-12-10", sourceCurriculumId: "cbse", order: 24 },
+  { id: "ja-mat-12-11", courseId: "jee-advanced", chapterId: "mat-12-11", sourceCurriculumId: "cbse", order: 25 },
+  
+  // JEE Advanced - Chemistry Class 11
+  { id: "ja-che-11-2", courseId: "jee-advanced", chapterId: "che-11-2", sourceCurriculumId: "cbse", order: 26 },
+  { id: "ja-che-11-4", courseId: "jee-advanced", chapterId: "che-11-4", sourceCurriculumId: "cbse", order: 27 },
+  { id: "ja-che-11-6", courseId: "jee-advanced", chapterId: "che-11-6", sourceCurriculumId: "cbse", order: 28 },
+  { id: "ja-che-11-7", courseId: "jee-advanced", chapterId: "che-11-7", sourceCurriculumId: "cbse", order: 29 },
+  { id: "ja-che-11-12", courseId: "jee-advanced", chapterId: "che-11-12", sourceCurriculumId: "cbse", order: 30 },
+  
+  // JEE Advanced - Chemistry Class 12
+  { id: "ja-che-12-3", courseId: "jee-advanced", chapterId: "che-12-3", sourceCurriculumId: "cbse", order: 31 },
+  { id: "ja-che-12-4", courseId: "jee-advanced", chapterId: "che-12-4", sourceCurriculumId: "cbse", order: 32 },
+  { id: "ja-che-12-9", courseId: "jee-advanced", chapterId: "che-12-9", sourceCurriculumId: "cbse", order: 33 },
+  
+  // ===============================
   // NEET - Biology focused
-  { id: "ccm-22", courseId: "neet", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 1 },
-  { id: "ccm-23", courseId: "neet", chapterId: "che-11-1", sourceCurriculumId: "cbse", order: 2 },
-  { id: "ccm-24", courseId: "neet", chapterId: "che-11-12", sourceCurriculumId: "cbse", order: 3 }, // Organic Chemistry
+  // ===============================
   
-  // JEE Foundation - from Class 9 & 10
-  { id: "ccm-25", courseId: "jee-foundation", chapterId: "mat-9-1", sourceCurriculumId: "cbse", order: 1 }, // Number Systems
-  { id: "ccm-26", courseId: "jee-foundation", chapterId: "mat-9-2", sourceCurriculumId: "cbse", order: 2 }, // Polynomials
-  { id: "ccm-27", courseId: "jee-foundation", chapterId: "mat-10-4", sourceCurriculumId: "cbse", order: 3 }, // Quadratic Equations
-  { id: "ccm-28", courseId: "jee-foundation", chapterId: "mat-10-8", sourceCurriculumId: "cbse", order: 4 }, // Trigonometry
+  // NEET - Physics from Class 11
+  { id: "neet-phy-11-3", courseId: "neet", chapterId: "phy-11-3", sourceCurriculumId: "cbse", order: 1 },
+  { id: "neet-phy-11-5", courseId: "neet", chapterId: "phy-11-5", sourceCurriculumId: "cbse", order: 2 },
+  { id: "neet-phy-11-6", courseId: "neet", chapterId: "phy-11-6", sourceCurriculumId: "cbse", order: 3 },
+  { id: "neet-phy-11-8", courseId: "neet", chapterId: "phy-11-8", sourceCurriculumId: "cbse", order: 4 },
+  { id: "neet-phy-11-10", courseId: "neet", chapterId: "phy-11-10", sourceCurriculumId: "cbse", order: 5 },
+  { id: "neet-phy-11-11", courseId: "neet", chapterId: "phy-11-11", sourceCurriculumId: "cbse", order: 6 },
+  { id: "neet-phy-11-14", courseId: "neet", chapterId: "phy-11-14", sourceCurriculumId: "cbse", order: 7 },
+  { id: "neet-phy-11-15", courseId: "neet", chapterId: "phy-11-15", sourceCurriculumId: "cbse", order: 8 },
+  
+  // NEET - Physics from Class 12
+  { id: "neet-phy-12-1", courseId: "neet", chapterId: "phy-12-1", sourceCurriculumId: "cbse", order: 9 },
+  { id: "neet-phy-12-3", courseId: "neet", chapterId: "phy-12-3", sourceCurriculumId: "cbse", order: 10 },
+  { id: "neet-phy-12-9", courseId: "neet", chapterId: "phy-12-9", sourceCurriculumId: "cbse", order: 11 },
+  { id: "neet-phy-12-11", courseId: "neet", chapterId: "phy-12-11", sourceCurriculumId: "cbse", order: 12 },
+  { id: "neet-phy-12-12", courseId: "neet", chapterId: "phy-12-12", sourceCurriculumId: "cbse", order: 13 },
+  { id: "neet-phy-12-13", courseId: "neet", chapterId: "phy-12-13", sourceCurriculumId: "cbse", order: 14 },
+  
+  // NEET - Chemistry from Class 11
+  { id: "neet-che-11-1", courseId: "neet", chapterId: "che-11-1", sourceCurriculumId: "cbse", order: 15 },
+  { id: "neet-che-11-2", courseId: "neet", chapterId: "che-11-2", sourceCurriculumId: "cbse", order: 16 },
+  { id: "neet-che-11-3", courseId: "neet", chapterId: "che-11-3", sourceCurriculumId: "cbse", order: 17 },
+  { id: "neet-che-11-4", courseId: "neet", chapterId: "che-11-4", sourceCurriculumId: "cbse", order: 18 },
+  { id: "neet-che-11-7", courseId: "neet", chapterId: "che-11-7", sourceCurriculumId: "cbse", order: 19 },
+  { id: "neet-che-11-12", courseId: "neet", chapterId: "che-11-12", sourceCurriculumId: "cbse", order: 20 },
+  { id: "neet-che-11-13", courseId: "neet", chapterId: "che-11-13", sourceCurriculumId: "cbse", order: 21 },
+  
+  // NEET - Chemistry from Class 12
+  { id: "neet-che-12-2", courseId: "neet", chapterId: "che-12-2", sourceCurriculumId: "cbse", order: 22 },
+  { id: "neet-che-12-3", courseId: "neet", chapterId: "che-12-3", sourceCurriculumId: "cbse", order: 23 },
+  { id: "neet-che-12-4", courseId: "neet", chapterId: "che-12-4", sourceCurriculumId: "cbse", order: 24 },
+  { id: "neet-che-12-10", courseId: "neet", chapterId: "che-12-10", sourceCurriculumId: "cbse", order: 25 },
+  { id: "neet-che-12-11", courseId: "neet", chapterId: "che-12-11", sourceCurriculumId: "cbse", order: 26 },
+  { id: "neet-che-12-12", courseId: "neet", chapterId: "che-12-12", sourceCurriculumId: "cbse", order: 27 },
+  { id: "neet-che-12-13", courseId: "neet", chapterId: "che-12-13", sourceCurriculumId: "cbse", order: 28 },
+  { id: "neet-che-12-14", courseId: "neet", chapterId: "che-12-14", sourceCurriculumId: "cbse", order: 29 },
+  
+  // ===============================
+  // JEE FOUNDATION - Class 9 & 10
+  // ===============================
+  
+  // JEE Foundation - Mathematics Class 9
+  { id: "jf-mat-9-1", courseId: "jee-foundation", chapterId: "mat-9-1", sourceCurriculumId: "cbse", order: 1 },
+  { id: "jf-mat-9-2", courseId: "jee-foundation", chapterId: "mat-9-2", sourceCurriculumId: "cbse", order: 2 },
+  { id: "jf-mat-9-3", courseId: "jee-foundation", chapterId: "mat-9-3", sourceCurriculumId: "cbse", order: 3 },
+  { id: "jf-mat-9-4", courseId: "jee-foundation", chapterId: "mat-9-4", sourceCurriculumId: "cbse", order: 4 },
+  { id: "jf-mat-9-5", courseId: "jee-foundation", chapterId: "mat-9-5", sourceCurriculumId: "cbse", order: 5 },
+  { id: "jf-mat-9-6", courseId: "jee-foundation", chapterId: "mat-9-6", sourceCurriculumId: "cbse", order: 6 },
+  { id: "jf-mat-9-7", courseId: "jee-foundation", chapterId: "mat-9-7", sourceCurriculumId: "cbse", order: 7 },
+  { id: "jf-mat-9-10", courseId: "jee-foundation", chapterId: "mat-9-10", sourceCurriculumId: "cbse", order: 8 },
+  { id: "jf-mat-9-12", courseId: "jee-foundation", chapterId: "mat-9-12", sourceCurriculumId: "cbse", order: 9 },
+  { id: "jf-mat-9-13", courseId: "jee-foundation", chapterId: "mat-9-13", sourceCurriculumId: "cbse", order: 10 },
+  
+  // JEE Foundation - Mathematics Class 10
+  { id: "jf-mat-10-1", courseId: "jee-foundation", chapterId: "mat-10-1", sourceCurriculumId: "cbse", order: 11 },
+  { id: "jf-mat-10-2", courseId: "jee-foundation", chapterId: "mat-10-2", sourceCurriculumId: "cbse", order: 12 },
+  { id: "jf-mat-10-3", courseId: "jee-foundation", chapterId: "mat-10-3", sourceCurriculumId: "cbse", order: 13 },
+  { id: "jf-mat-10-4", courseId: "jee-foundation", chapterId: "mat-10-4", sourceCurriculumId: "cbse", order: 14 },
+  { id: "jf-mat-10-5", courseId: "jee-foundation", chapterId: "mat-10-5", sourceCurriculumId: "cbse", order: 15 },
+  { id: "jf-mat-10-6", courseId: "jee-foundation", chapterId: "mat-10-6", sourceCurriculumId: "cbse", order: 16 },
+  { id: "jf-mat-10-7", courseId: "jee-foundation", chapterId: "mat-10-7", sourceCurriculumId: "cbse", order: 17 },
+  { id: "jf-mat-10-8", courseId: "jee-foundation", chapterId: "mat-10-8", sourceCurriculumId: "cbse", order: 18 },
+  { id: "jf-mat-10-12", courseId: "jee-foundation", chapterId: "mat-10-12", sourceCurriculumId: "cbse", order: 19 },
+  { id: "jf-mat-10-13", courseId: "jee-foundation", chapterId: "mat-10-13", sourceCurriculumId: "cbse", order: 20 },
+  
+  // ===============================
+  // NEET FOUNDATION - Class 9 & 10
+  // ===============================
+  
+  // NEET Foundation - Mathematics Class 9
+  { id: "nf-mat-9-1", courseId: "neet-foundation", chapterId: "mat-9-1", sourceCurriculumId: "cbse", order: 1 },
+  { id: "nf-mat-9-2", courseId: "neet-foundation", chapterId: "mat-9-2", sourceCurriculumId: "cbse", order: 2 },
+  { id: "nf-mat-9-13", courseId: "neet-foundation", chapterId: "mat-9-13", sourceCurriculumId: "cbse", order: 3 },
+  { id: "nf-mat-9-14", courseId: "neet-foundation", chapterId: "mat-9-14", sourceCurriculumId: "cbse", order: 4 },
+  
+  // NEET Foundation - Mathematics Class 10
+  { id: "nf-mat-10-1", courseId: "neet-foundation", chapterId: "mat-10-1", sourceCurriculumId: "cbse", order: 5 },
+  { id: "nf-mat-10-14", courseId: "neet-foundation", chapterId: "mat-10-14", sourceCurriculumId: "cbse", order: 6 },
+  { id: "nf-mat-10-15", courseId: "neet-foundation", chapterId: "mat-10-15", sourceCurriculumId: "cbse", order: 7 },
+  
+  // ===============================
+  // MATHEMATICS OLYMPIAD
+  // ===============================
+  
+  // Olympiad - Math Class 9
+  { id: "om-mat-9-1", courseId: "olympiad-math", chapterId: "mat-9-1", sourceCurriculumId: "cbse", order: 1 },
+  { id: "om-mat-9-2", courseId: "olympiad-math", chapterId: "mat-9-2", sourceCurriculumId: "cbse", order: 2 },
+  { id: "om-mat-9-7", courseId: "olympiad-math", chapterId: "mat-9-7", sourceCurriculumId: "cbse", order: 3 },
+  { id: "om-mat-9-10", courseId: "olympiad-math", chapterId: "mat-9-10", sourceCurriculumId: "cbse", order: 4 },
+  
+  // Olympiad - Math Class 10
+  { id: "om-mat-10-1", courseId: "olympiad-math", chapterId: "mat-10-1", sourceCurriculumId: "cbse", order: 5 },
+  { id: "om-mat-10-4", courseId: "olympiad-math", chapterId: "mat-10-4", sourceCurriculumId: "cbse", order: 6 },
+  { id: "om-mat-10-5", courseId: "olympiad-math", chapterId: "mat-10-5", sourceCurriculumId: "cbse", order: 7 },
+  { id: "om-mat-10-6", courseId: "olympiad-math", chapterId: "mat-10-6", sourceCurriculumId: "cbse", order: 8 },
+  { id: "om-mat-10-15", courseId: "olympiad-math", chapterId: "mat-10-15", sourceCurriculumId: "cbse", order: 9 },
+  
+  // Olympiad - Math Class 11
+  { id: "om-mat-11-4", courseId: "olympiad-math", chapterId: "mat-11-4", sourceCurriculumId: "cbse", order: 10 },
+  { id: "om-mat-11-5", courseId: "olympiad-math", chapterId: "mat-11-5", sourceCurriculumId: "cbse", order: 11 },
+  { id: "om-mat-11-7", courseId: "olympiad-math", chapterId: "mat-11-7", sourceCurriculumId: "cbse", order: 12 },
+  { id: "om-mat-11-9", courseId: "olympiad-math", chapterId: "mat-11-9", sourceCurriculumId: "cbse", order: 13 },
+  
+  // ===============================
+  // SCIENCE OLYMPIAD
+  // ===============================
+  
+  // Science Olympiad - Mathematics Class 6
+  { id: "so-mat-6-1", courseId: "olympiad-science", chapterId: "mat-6-1", sourceCurriculumId: "cbse", order: 1 },
+  { id: "so-mat-6-3", courseId: "olympiad-science", chapterId: "mat-6-3", sourceCurriculumId: "cbse", order: 2 },
+  { id: "so-mat-6-11", courseId: "olympiad-science", chapterId: "mat-6-11", sourceCurriculumId: "cbse", order: 3 },
+  
+  // Science Olympiad - Mathematics Class 7
+  { id: "so-mat-7-1", courseId: "olympiad-science", chapterId: "mat-7-1", sourceCurriculumId: "cbse", order: 4 },
+  { id: "so-mat-7-9", courseId: "olympiad-science", chapterId: "mat-7-9", sourceCurriculumId: "cbse", order: 5 },
+  { id: "so-mat-7-12", courseId: "olympiad-science", chapterId: "mat-7-12", sourceCurriculumId: "cbse", order: 6 },
 ];
 
 // ============================================
@@ -345,6 +759,11 @@ export const getPublishedCourses = (): Course[] => {
 // Get courses by type
 export const getCoursesByType = (type: Course['courseType']): Course[] => {
   return courses.filter(c => c.courseType === type && c.isActive);
+};
+
+// Get mappings for a specific course
+export const getMappingsForCourse = (courseId: string): CourseChapterMapping[] => {
+  return courseChapterMappings.filter(m => m.courseId === courseId);
 };
 
 // Stats
