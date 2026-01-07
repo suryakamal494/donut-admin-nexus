@@ -50,20 +50,28 @@ export const CurriculumManageDialog = ({ open, onOpenChange }: CurriculumManageD
         <div className="space-y-3 pr-4">
           {/* Add form */}
           {addingItem && (
-            <div className="p-4 rounded-lg border-2 border-dashed border-primary bg-primary/5 space-y-3">
-              <div className="space-y-2">
-                <Label>Name</Label>
-                <Input placeholder="Enter curriculum name" />
+            <div className="p-5 rounded-xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border border-primary/20 space-y-4">
+              <h4 className="font-semibold text-sm text-primary flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                New Curriculum
+              </h4>
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Name</Label>
+                    <Input placeholder="Central Board of Secondary Education" className="bg-background" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Code</Label>
+                    <Input placeholder="CBSE" className="bg-background font-mono" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Input placeholder="Enter a brief description..." className="bg-background" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Code</Label>
-                <Input placeholder="Enter code (e.g., CBSE)" />
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Input placeholder="Enter description" />
-              </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-2">
                 <Button variant="ghost" size="sm" onClick={() => setAddingItem(false)}>
                   Cancel
                 </Button>

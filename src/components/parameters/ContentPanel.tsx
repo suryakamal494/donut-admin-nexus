@@ -5,8 +5,21 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { classes, subjects } from "@/data/mockData";
-import { allCBSEChapters, allCBSETopics, type CBSEChapter } from "@/data/cbseMasterData";
+import { allCBSEChapters, allCBSETopics, type CBSEChapter, type CBSETopic } from "@/data/cbseMasterData";
 import { SubjectBadge } from "@/components/subject";
+import { ChapterFormDialog } from "./ChapterFormDialog";
+import { TopicFormDialog } from "./TopicFormDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ContentPanelProps {
   selectedClassId: string | null;
@@ -20,6 +33,8 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
   const [addingTopicToChapter, setAddingTopicToChapter] = useState<string | null>(null);
   const [newChapterName, setNewChapterName] = useState("");
   const [newTopicName, setNewTopicName] = useState("");
+  const [editingChapter, setEditingChapter] = useState<CBSEChapter | null>(null);
+  const [editingTopic, setEditingTopic] = useState<CBSETopic | null>(null);
 
   // Get filtered chapters
   const chapters = useMemo(() => {
@@ -170,7 +185,7 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
               const isExpanded = expandedChapters.has(chapter.id);
               
               return (
-                <div key={chapter.id} className="rounded-lg border border-border/50 overflow-hidden">
+                <div key={chapter.id} className="rounded-lg border border-border/50 overflow-hidden group/chapter">
                   {/* Chapter Header */}
                   <div
                     className={cn(
@@ -199,13 +214,44 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
                       {topics.length} topics
                     </span>
                     
-                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="w-7 h-7">
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover/chapter:opacity-100 transition-opacity">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-7 h-7"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingChapter(chapter);
+                        }}
+                      >
                         <Edit className="w-3.5 h-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="w-7 h-7 text-destructive">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="w-7 h-7 text-destructive"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Chapter</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{chapter.name}"? This will also remove all topics under this chapter.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
 
@@ -238,12 +284,35 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
                               )}
                             </div>
                             <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button variant="ghost" size="icon" className="w-6 h-6">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="w-6 h-6"
+                                onClick={() => setEditingTopic(topic)}
+                              >
                                 <Edit className="w-3 h-3" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="w-6 h-6 text-destructive">
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="w-6 h-6 text-destructive">
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Topic</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{topic.name}"?
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </div>
                         ))
@@ -345,6 +414,30 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
           )}
         </div>
       </ScrollArea>
+
+      {/* Edit Chapter Dialog */}
+      <ChapterFormDialog
+        open={!!editingChapter}
+        onOpenChange={(open) => !open && setEditingChapter(null)}
+        editingChapter={editingChapter}
+        onSave={(data) => {
+          // TODO: Implement save
+          console.log("Save chapter:", data);
+          setEditingChapter(null);
+        }}
+      />
+
+      {/* Edit Topic Dialog */}
+      <TopicFormDialog
+        open={!!editingTopic}
+        onOpenChange={(open) => !open && setEditingTopic(null)}
+        editingTopic={editingTopic}
+        onSave={(data) => {
+          // TODO: Implement save
+          console.log("Save topic:", data);
+          setEditingTopic(null);
+        }}
+      />
     </div>
   );
 };
