@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus, FolderOpen, ChevronRight, FileText } from "lucide-react";
+import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus, FolderOpen, ChevronRight, FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
@@ -73,10 +73,16 @@ const Exams = () => {
           { label: "Exams" },
         ]}
         actions={
-          <Button className="gradient-button gap-2" onClick={() => navigate("/institute/exams/create")}>
-            <Plus className="w-4 h-4" />
-            Create Exam
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/institute/exams/upload")}>
+              <Upload className="w-4 h-4" />
+              Upload PDF
+            </Button>
+            <Button className="gradient-button gap-2" onClick={() => navigate("/institute/exams/create")}>
+              <Plus className="w-4 h-4" />
+              Create Exam
+            </Button>
+          </div>
         }
       />
 

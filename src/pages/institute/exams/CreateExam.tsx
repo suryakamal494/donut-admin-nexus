@@ -11,8 +11,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { batches, availableSubjects } from "@/data/instituteData";
+import { batches, assignedTracks } from "@/data/instituteData";
 import { examPatternConfig } from "@/data/examsData";
+import { classes } from "@/data/mockData";
+import { getSubjectsForCourse } from "@/data/masterData";
+import { getSubjectsByClass } from "@/data/cbseMasterData";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -44,9 +47,24 @@ const CreateExam = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processComplete, setProcessComplete] = useState(false);
   
-  // Step 1: Basic Config (no exam type anymore)
+  // Step 1: Basic Config with course-based selection
   const [examName, setExamName] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  
+  // Determine if CBSE (has classes) or JEE Mains (no classes)
+  const selectedTrack = assignedTracks.find(t => t.id === selectedCourse);
+  const isCBSE = selectedTrack?.hasClasses ?? false;
+
+  // Get subjects based on course selection
+  const availableSubjects = selectedCourse
+    ? isCBSE
+      ? selectedClassId
+        ? getSubjectsByClass(selectedClassId).map(s => ({ id: s.id, name: s.name }))
+        : []
+      : getSubjectsForCourse(selectedCourse).map(s => ({ id: s.id, name: s.name }))
+    : [];
   
   // Step 2: Pattern & UI
   const [pattern, setPattern] = useState<PatternType>("custom");
@@ -107,6 +125,17 @@ const CreateExam = () => {
         ? prev.filter(s => s !== subjectId)
         : [...prev, subjectId]
     );
+  };
+
+  const handleCourseChange = (courseId: string) => {
+    setSelectedCourse(courseId);
+    setSelectedClassId("");
+    setSelectedSubjects([]);
+  };
+
+  const handleClassChange = (classId: string) => {
+    setSelectedClassId(classId);
+    setSelectedSubjects([]);
   };
 
   const toggleBatch = (batchId: string) => {
@@ -176,7 +205,7 @@ const CreateExam = () => {
   ];
 
   const totalSteps = pattern === "custom" ? 6 : 5;
-  const canProceedStep1 = examName && selectedSubjects.length > 0;
+  const canProceedStep1 = examName && selectedCourse && selectedSubjects.length > 0 && (!isCBSE || selectedClassId);
   const canProceedStep2 = pattern && uiType;
   const canProceedStep3Custom = totalQuestions > 0 && duration > 0;
   const canProceedCreation = creationMethod === "ai" ? selectedCognitiveTypes.length > 0 : uploadedFile;
@@ -206,7 +235,7 @@ const CreateExam = () => {
       );
     }
 
-    // Step 1: Exam Details (without exam type)
+    // Step 1: Exam Details with course-based subject selection
     if (currentStep === 1) {
       return (
         <div className="space-y-6">
@@ -226,28 +255,77 @@ const CreateExam = () => {
               />
             </div>
 
+            {/* Course Selection */}
             <div className="space-y-3">
-              <Label>Subjects *</Label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {availableSubjects.map((subject) => (
+              <Label>Select Course *</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {assignedTracks.map((track) => (
                   <label
-                    key={subject.id}
+                    key={track.id}
                     className={cn(
-                      "flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
-                      selectedSubjects.includes(subject.id)
+                      "flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all",
+                      selectedCourse === track.id
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
                     )}
                   >
                     <Checkbox 
-                      checked={selectedSubjects.includes(subject.id)}
-                      onCheckedChange={() => toggleSubject(subject.id)}
+                      checked={selectedCourse === track.id}
+                      onCheckedChange={() => handleCourseChange(track.id)}
                     />
-                    <span className="text-sm">{subject.name}</span>
+                    <div>
+                      <p className="font-medium">{track.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {track.hasClasses ? "Board curriculum" : "Competitive exam"}
+                      </p>
+                    </div>
                   </label>
                 ))}
               </div>
             </div>
+
+            {/* Class Selection (only for CBSE) */}
+            {isCBSE && selectedCourse && (
+              <div className="space-y-2">
+                <Label>Class *</Label>
+                <Select value={selectedClassId} onValueChange={handleClassChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classes.map((cls) => (
+                      <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Subject Selection */}
+            {availableSubjects.length > 0 && (
+              <div className="space-y-3">
+                <Label>Subjects *</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {availableSubjects.map((subject) => (
+                    <label
+                      key={subject.id}
+                      className={cn(
+                        "flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
+                        selectedSubjects.includes(subject.id)
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <Checkbox 
+                        checked={selectedSubjects.includes(subject.id)}
+                        onCheckedChange={() => toggleSubject(subject.id)}
+                      />
+                      <span className="text-sm">{subject.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="flex justify-between pt-4">
