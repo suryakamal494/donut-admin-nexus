@@ -332,13 +332,29 @@ export const ContentPanel = ({ selectedClassId, selectedSubjectId }: ContentPane
                                 setNewTopicName("");
                               }
                               if (e.key === "Enter" && newTopicName.trim()) {
-                                // TODO: Add topic
+                                // TODO: Add topic to database
+                                console.log("Add topic:", newTopicName, "to chapter:", chapter.id);
                                 setAddingTopicToChapter(null);
                                 setNewTopicName("");
                               }
                             }}
                             className="h-8 flex-1"
                           />
+                          <Button 
+                            size="sm" 
+                            className="gradient-button"
+                            onClick={() => {
+                              if (newTopicName.trim()) {
+                                // TODO: Add topic to database
+                                console.log("Add topic:", newTopicName, "to chapter:", chapter.id);
+                                setAddingTopicToChapter(null);
+                                setNewTopicName("");
+                              }
+                            }}
+                            disabled={!newTopicName.trim()}
+                          >
+                            Add
+                          </Button>
                           <Button 
                             size="sm" 
                             variant="ghost"

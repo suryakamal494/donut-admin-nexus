@@ -1,15 +1,28 @@
-import { Star, BookOpen, ChevronDown, ChevronRight, FileText } from "lucide-react";
+import { Star, BookOpen, ChevronDown, ChevronRight, FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { getChaptersForCourseBySubject, DisplayChapter, getSubjectById } from "@/data/masterData";
+import { getChaptersForCourseBySubject, DisplayChapter, getSubjectById, courseOwnedChapterTopics } from "@/data/masterData";
 import { allCBSETopics } from "@/data/cbseMasterData";
+import { toast } from "sonner";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface CourseContentPanelProps {
   selectedCourseId: string | null;
@@ -40,8 +53,23 @@ export const CourseContentPanel = ({
     });
   };
 
-  const getTopicsForChapter = (chapterId: string) => {
+  const getTopicsForChapter = (chapterId: string, isCourseOwned: boolean) => {
+    if (isCourseOwned) {
+      return courseOwnedChapterTopics.filter(t => t.chapterId === chapterId);
+    }
     return allCBSETopics.filter(t => t.chapterId === chapterId);
+  };
+
+  const handleDeleteChapter = (chapterId: string, chapterName: string) => {
+    // TODO: Implement actual deletion
+    console.log("Delete chapter:", chapterId);
+    toast.success(`Chapter "${chapterName}" removed from course`);
+  };
+
+  const handleDeleteTopic = (topicId: string, topicName: string) => {
+    // TODO: Implement actual deletion
+    console.log("Delete topic:", topicId);
+    toast.success(`Topic "${topicName}" removed from course`);
   };
 
   if (!selectedCourseId) {
@@ -104,7 +132,7 @@ export const CourseContentPanel = ({
             </div>
           ) : (
             chapters.map((chapter) => {
-              const topics = getTopicsForChapter(chapter.id);
+              const topics = getTopicsForChapter(chapter.id, chapter.isCourseOwned);
               const isExpanded = expandedChapters.has(chapter.id);
               
               return (
@@ -114,7 +142,7 @@ export const CourseContentPanel = ({
                   onOpenChange={() => toggleChapter(chapter.id)}
                 >
                   <div className={cn(
-                    "rounded-lg border transition-all",
+                    "rounded-lg border transition-all group/chapter",
                     chapter.isCourseOwned 
                       ? "border-coral-200 dark:border-coral-800/50 bg-coral-50/50 dark:bg-coral-950/20" 
                       : "border-border/50 bg-card"
@@ -161,6 +189,34 @@ export const CourseContentPanel = ({
                             </div>
                           </div>
                         </div>
+                        
+                        {/* Delete Chapter Button */}
+                        <div className="opacity-0 group-hover/chapter:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="w-7 h-7 text-destructive">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove Chapter</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Remove "{chapter.name}" from this course? This won't delete the chapter from the curriculum.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={() => handleDeleteChapter(chapter.id, chapter.name)}
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </button>
                     </CollapsibleTrigger>
                     
@@ -171,12 +227,40 @@ export const CourseContentPanel = ({
                             {topics.map((topic, index) => (
                               <div 
                                 key={topic.id}
-                                className="flex items-center gap-2 py-1.5 px-2 rounded text-sm hover:bg-muted/30 transition-colors"
+                                className="flex items-center gap-2 py-1.5 px-2 rounded text-sm hover:bg-muted/30 transition-colors group/topic"
                               >
                                 <span className="text-xs text-muted-foreground w-5">
                                   {index + 1}.
                                 </span>
-                                <span className="text-foreground">{topic.name}</span>
+                                <span className="text-foreground flex-1">{topic.name}</span>
+                                
+                                {/* Delete Topic Button */}
+                                <div className="opacity-0 group-hover/topic:opacity-100 transition-opacity">
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="w-6 h-6 text-destructive">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Remove Topic</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Remove "{topic.name}" from this course?
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction 
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          onClick={() => handleDeleteTopic(topic.id, topic.name)}
+                                        >
+                                          Remove
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
                               </div>
                             ))}
                           </div>

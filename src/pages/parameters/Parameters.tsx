@@ -8,16 +8,21 @@ import {
   ContentPanel, 
   QuickAddMenu,
   CurriculumTabs,
-  CurriculumManageDialog
+  CurriculumManageDialog,
+  ClassFormDialog,
+  SubjectFormDialog
 } from "@/components/parameters";
 import { cbseDataStats } from "@/data/cbseMasterData";
 import { masterDataStats } from "@/data/masterData";
+import { toast } from "sonner";
 
 const Parameters = () => {
   const [selectedCurriculumId, setSelectedCurriculumId] = useState<string>("cbse");
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [showCurriculumDialog, setShowCurriculumDialog] = useState(false);
+  const [showAddClassDialog, setShowAddClassDialog] = useState(false);
+  const [showAddSubjectDialog, setShowAddSubjectDialog] = useState(false);
 
   const handleClassSelect = (classId: string) => {
     setSelectedClassId(classId);
@@ -56,8 +61,24 @@ const Parameters = () => {
               Manage Curriculums
             </Button>
             <QuickAddMenu 
-              onAddChapter={() => {}}
-              onAddTopic={() => {}}
+              onAddClass={() => setShowAddClassDialog(true)}
+              onAddSubject={() => setShowAddSubjectDialog(true)}
+              onAddCurriculum={() => setShowCurriculumDialog(true)}
+              onAddChapter={() => {
+                if (!selectedClassId || !selectedSubjectId) {
+                  toast.info("Please select a class and subject first");
+                  return;
+                }
+                // Scroll to add chapter button - will be handled by ContentPanel
+                toast.info("Use the 'Add Chapter' button in the content panel");
+              }}
+              onAddTopic={() => {
+                if (!selectedClassId || !selectedSubjectId) {
+                  toast.info("Please select a class and subject first");
+                  return;
+                }
+                toast.info("Expand a chapter and click 'Add Topic'");
+              }}
             />
           </div>
         }
@@ -124,6 +145,18 @@ const Parameters = () => {
       <CurriculumManageDialog 
         open={showCurriculumDialog}
         onOpenChange={setShowCurriculumDialog}
+      />
+
+      {/* Add Class Dialog */}
+      <ClassFormDialog
+        open={showAddClassDialog}
+        onOpenChange={setShowAddClassDialog}
+      />
+
+      {/* Add Subject Dialog */}
+      <SubjectFormDialog
+        open={showAddSubjectDialog}
+        onOpenChange={setShowAddSubjectDialog}
       />
     </div>
   );

@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   DndContext,
   closestCenter,
@@ -79,9 +79,16 @@ interface CourseChapterEntry {
 
 const CourseBuilder = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
-  // Course selection
-  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  // Course selection - initialize from URL if present
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
+    const courseFromUrl = searchParams.get('course');
+    if (courseFromUrl && courses.find(c => c.id === courseFromUrl)) {
+      return courseFromUrl;
+    }
+    return "";
+  });
   const [showCreateCourseDialog, setShowCreateCourseDialog] = useState(false);
   const [showCreateChapterDialog, setShowCreateChapterDialog] = useState(false);
   
