@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { QuestionCard } from "@/components/questions/QuestionCard";
 import { mockQuestions, questionTypeLabels, type QuestionType } from "@/data/questionsData";
-import { classes as cbseClasses } from "@/data/masterData";
+import { classes as cbseClasses } from "@/data/mockData";
 
 const CurriculumQuestions = () => {
   const navigate = useNavigate();
