@@ -1,3 +1,5 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { 
   GripVertical, 
@@ -30,7 +32,7 @@ interface LessonBlockCardProps {
   isGenerating?: boolean;
 }
 
-const blockTypeConfig = {
+export const blockTypeConfig = {
   explain: {
     icon: Lightbulb,
     label: "Explain",
@@ -81,6 +83,8 @@ const blockTypeConfig = {
   },
 };
 
+export type BlockType = keyof typeof blockTypeConfig;
+
 export const LessonBlockCard = ({
   block,
   index,
@@ -93,17 +97,41 @@ export const LessonBlockCard = ({
   const config = blockTypeConfig[block.type];
   const Icon = config.icon;
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <Card className={cn(
-      "transition-all duration-200 group",
-      config.bgColor,
-      config.borderColor,
-      "border-2"
-    )}>
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "transition-all duration-200 group",
+        config.bgColor,
+        config.borderColor,
+        "border-2",
+        isDragging && "opacity-50 shadow-xl scale-[1.02] z-50"
+      )}
+    >
       <CardContent className="p-0">
         {/* Header */}
-        <div className="flex items-center gap-3 p-3 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-          <div className="flex items-center gap-2 cursor-grab active:cursor-grabbing opacity-50 group-hover:opacity-100">
+        <div className="flex items-center gap-3 p-3">
+          {/* Drag Handle */}
+          <div 
+            {...attributes}
+            {...listeners}
+            className="flex items-center gap-2 cursor-grab active:cursor-grabbing opacity-50 group-hover:opacity-100 touch-none"
+          >
             <GripVertical className="w-4 h-4 text-muted-foreground" />
             <span className="text-xs font-medium text-muted-foreground w-5">{index + 1}</span>
           </div>
@@ -112,7 +140,7 @@ export const LessonBlockCard = ({
             <Icon className="w-4 h-4 text-white" />
           </div>
           
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                 {config.label}
@@ -140,6 +168,7 @@ export const LessonBlockCard = ({
             variant="ghost"
             size="icon"
             className="h-7 w-7 opacity-50 group-hover:opacity-100"
+            onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? (
               <ChevronUp className="w-4 h-4" />
@@ -219,6 +248,3 @@ export const LessonBlockCard = ({
     </Card>
   );
 };
-
-export type BlockType = keyof typeof blockTypeConfig;
-export { blockTypeConfig };

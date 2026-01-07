@@ -59,6 +59,7 @@ import InstituteAIContentGenerator from "./pages/institute/content/AIContentGene
 // Teacher Panel Pages
 import TeacherLayout from "./components/layout/TeacherLayout";
 import TeacherDashboard from "./pages/teacher/Dashboard";
+import TeacherSchedule from "./pages/teacher/Schedule";
 import LessonPlans from "./pages/teacher/LessonPlans";
 import LessonPlanCanvas from "./pages/teacher/LessonPlanCanvas";
 
@@ -135,6 +136,7 @@ const App = () => (
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<Navigate to="/teacher/dashboard" replace />} />
             <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="schedule" element={<TeacherSchedule />} />
             <Route path="lesson-plans" element={<LessonPlans />} />
             <Route path="lesson-plans/:planId" element={<LessonPlanCanvas />} />
           </Route>
