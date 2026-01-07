@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
+import { SourceTypeSelector } from "@/components/parameters";
 import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
 import { getActiveCurriculums, getPublishedCourses, getAllCourseChapters } from "@/data/masterData";
 import { classes, subjects } from "@/data/mockData";
@@ -37,8 +37,6 @@ const CreateQuestion = () => {
   const [selectedClassId, setSelectedClassId] = useState("");
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedChapterId, setSelectedChapterId] = useState("");
-  const [visibleInCurriculum, setVisibleInCurriculum] = useState(true);
-  const [visibleInCourses, setVisibleInCourses] = useState<string[]>([]);
 
   const activeCurriculums = getActiveCurriculums();
   const publishedCourses = getPublishedCourses();
@@ -232,16 +230,6 @@ const CreateQuestion = () => {
                 </Select>
               </div>
             </div>
-          </div>
-
-          {/* Visibility */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <VisibilitySelector
-              visibleInCurriculum={visibleInCurriculum}
-              visibleInCourses={visibleInCourses}
-              onCurriculumChange={setVisibleInCurriculum}
-              onCoursesChange={setVisibleInCourses}
-            />
           </div>
 
           {/* Marking */}

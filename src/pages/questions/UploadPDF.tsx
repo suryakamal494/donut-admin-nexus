@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
+import { SourceTypeSelector } from "@/components/parameters";
 import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
 import { getActiveCurriculums, getPublishedCourses, getAllCourseChapters } from "@/data/masterData";
 import { getChaptersByClassAndSubject } from "@/data/cbseMasterData";
@@ -29,10 +29,6 @@ const UploadPDF = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedChapterId, setSelectedChapterId] = useState("");
   
-  // Visibility state
-  const [visibleInCurriculum, setVisibleInCurriculum] = useState(true);
-  const [visibleInCourses, setVisibleInCourses] = useState<string[]>([]);
-
   const activeCurriculums = getActiveCurriculums();
   const publishedCourses = getPublishedCourses();
 
@@ -301,14 +297,6 @@ const UploadPDF = () => {
               </>
             )}
 
-            <div className="pt-4 border-t border-border/50">
-              <VisibilitySelector
-                visibleInCurriculum={visibleInCurriculum}
-                visibleInCourses={visibleInCourses}
-                onCurriculumChange={setVisibleInCurriculum}
-                onCoursesChange={setVisibleInCourses}
-              />
-            </div>
           </div>
 
           <div className="flex justify-end">

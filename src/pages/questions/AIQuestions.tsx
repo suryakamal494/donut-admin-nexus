@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { questionTypeLabels, QuestionType } from "@/data/questionsData";
 import { toast } from "sonner";
-import { SourceTypeSelector, VisibilitySelector } from "@/components/parameters";
+import { SourceTypeSelector } from "@/components/parameters";
 import { ContentSourceType } from "@/components/parameters/SourceTypeSelector";
 import { getActiveCurriculums, getPublishedCourses, getAllCourseChapters } from "@/data/masterData";
 import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
@@ -28,10 +28,6 @@ const AIQuestions = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedChapterId, setSelectedChapterId] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState("");
-  
-  // Visibility state
-  const [visibleInCurriculum, setVisibleInCurriculum] = useState(true);
-  const [visibleInCourses, setVisibleInCourses] = useState<string[]>([]);
   
   // Question generation state
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(["mcq_single"]);
@@ -364,15 +360,6 @@ const AIQuestions = () => {
               </div>
             </div>
 
-            {/* Visibility */}
-            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-              <VisibilitySelector
-                visibleInCurriculum={visibleInCurriculum}
-                visibleInCourses={visibleInCourses}
-                onCurriculumChange={setVisibleInCurriculum}
-                onCoursesChange={setVisibleInCourses}
-              />
-            </div>
           </div>
         </div>
       </div>
