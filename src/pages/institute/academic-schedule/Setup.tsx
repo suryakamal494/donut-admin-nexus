@@ -1,19 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BookOpen,
   Clock,
@@ -22,85 +15,174 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Import real master data
+import { assignedTracks, availableClasses } from "@/data/instituteData";
+import { 
+  allCBSEChapters, 
+  getSubjectsByClass,
+  type CBSEChapter 
+} from "@/data/cbseMasterData";
+import { 
+  courseChapterMappings, 
+  courseOwnedChapters 
+} from "@/data/masterData";
+import { 
+  subjectMasterList, 
+  findSubject, 
+  getSubjectColor,
+  type SubjectInfo 
+} from "@/components/subject/SubjectBadge";
 import { academicScheduleSetups } from "@/data/academicScheduleData";
 import { ChapterHourAllocation } from "@/types/academicSchedule";
 import { toast } from "sonner";
 
-// Mock data for courses and subjects
-const courses = [
-  { id: "cbse", name: "CBSE" },
-  { id: "jee-mains", name: "JEE Mains" },
-];
-
-const classes = [
-  { id: "class-6", name: "Class 6" },
-  { id: "class-7", name: "Class 7" },
-  { id: "class-8", name: "Class 8" },
-  { id: "class-9", name: "Class 9" },
-  { id: "class-10", name: "Class 10" },
-  { id: "class-11", name: "Class 11" },
-  { id: "class-12", name: "Class 12" },
-];
-
-const subjectsByCourse: Record<string, { id: string; name: string }[]> = {
-  cbse: [
-    { id: "phy", name: "Physics" },
-    { id: "che", name: "Chemistry" },
-    { id: "mat", name: "Mathematics" },
-    { id: "bio", name: "Biology" },
-    { id: "eng", name: "English" },
-  ],
-  "jee-mains": [
-    { id: "phy", name: "Physics" },
-    { id: "che", name: "Chemistry" },
-    { id: "mat", name: "Mathematics" },
-  ],
+// Map class IDs to internal IDs used in CBSE data
+const classIdMapping: Record<string, string> = {
+  "class-6": "1",
+  "class-7": "2", 
+  "class-8": "3",
+  "class-9": "4",
+  "class-10": "5",
+  "class-11": "6",
+  "class-12": "7",
 };
 
-// Mock chapters (would come from master data)
-const chaptersBySubject: Record<string, ChapterHourAllocation[]> = {
-  phy: [
-    { chapterId: "phy-10-1", chapterName: "Light - Reflection and Refraction", plannedHours: 12, order: 1 },
-    { chapterId: "phy-10-2", chapterName: "Human Eye and Colourful World", plannedHours: 8, order: 2 },
-    { chapterId: "phy-10-3", chapterName: "Electricity", plannedHours: 14, order: 3 },
-    { chapterId: "phy-10-4", chapterName: "Magnetic Effects of Electric Current", plannedHours: 10, order: 4 },
-    { chapterId: "phy-10-5", chapterName: "Sources of Energy", plannedHours: 6, order: 5 },
-  ],
-  mat: [
-    { chapterId: "mat-10-1", chapterName: "Real Numbers", plannedHours: 8, order: 1 },
-    { chapterId: "mat-10-2", chapterName: "Polynomials", plannedHours: 6, order: 2 },
-    { chapterId: "mat-10-3", chapterName: "Pair of Linear Equations", plannedHours: 10, order: 3 },
-    { chapterId: "mat-10-4", chapterName: "Quadratic Equations", plannedHours: 10, order: 4 },
-    { chapterId: "mat-10-5", chapterName: "Arithmetic Progressions", plannedHours: 8, order: 5 },
-    { chapterId: "mat-10-6", chapterName: "Triangles", plannedHours: 12, order: 6 },
-    { chapterId: "mat-10-7", chapterName: "Coordinate Geometry", plannedHours: 8, order: 7 },
-    { chapterId: "mat-10-8", chapterName: "Introduction to Trigonometry", plannedHours: 10, order: 8 },
-  ],
-  che: [
-    { chapterId: "che-10-1", chapterName: "Chemical Reactions and Equations", plannedHours: 10, order: 1 },
-    { chapterId: "che-10-2", chapterName: "Acids, Bases and Salts", plannedHours: 12, order: 2 },
-    { chapterId: "che-10-3", chapterName: "Metals and Non-metals", plannedHours: 10, order: 3 },
-    { chapterId: "che-10-4", chapterName: "Carbon and its Compounds", plannedHours: 14, order: 4 },
-    { chapterId: "che-10-5", chapterName: "Periodic Classification of Elements", plannedHours: 8, order: 5 },
-  ],
+// Reverse mapping for display
+const internalToClassId: Record<string, string> = {
+  "1": "class-6",
+  "2": "class-7",
+  "3": "class-8",
+  "4": "class-9",
+  "5": "class-10",
+  "6": "class-11",
+  "7": "class-12",
 };
+
+// Subject ID to code mapping
+const subjectIdToCode: Record<string, string> = {
+  "1": "phy",
+  "2": "che",
+  "3": "mat",
+  "4": "bio",
+  "5": "his",
+  "6": "hin",
+};
+
+// JEE Mains subjects (Physics, Chemistry, Mathematics only)
+const jeeMainsSubjects = ["1", "2", "3"];
 
 export default function AcademicScheduleSetup() {
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
+  // Selection state
+  const [selectedTrack, setSelectedTrack] = useState<string>(assignedTracks[0]?.id || "cbse");
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
+  
+  // Chapter allocation state
   const [chapters, setChapters] = useState<ChapterHourAllocation[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Get current track config
+  const currentTrack = assignedTracks.find(t => t.id === selectedTrack);
+  const requiresClass = currentTrack?.hasClasses ?? true;
+
+  // Get available classes (for CBSE, all classes 6-12)
+  const availableClassList = useMemo(() => {
+    if (!requiresClass) return [];
+    return availableClasses;
+  }, [requiresClass]);
+
+  // Get subjects based on selection
+  const availableSubjects = useMemo(() => {
+    if (selectedTrack === "cbse") {
+      if (!selectedClass) return [];
+      const internalClassId = classIdMapping[selectedClass];
+      if (!internalClassId) return [];
+      
+      // Get subjects that have chapters for this class
+      const subjectsWithData = getSubjectsByClass(internalClassId);
+      return subjectsWithData.map(s => {
+        const subjectInfo = findSubject(s.name);
+        return {
+          id: s.id,
+          name: s.name,
+          code: subjectIdToCode[s.id] || s.id,
+          info: subjectInfo,
+        };
+      });
+    } else if (selectedTrack === "jee-mains") {
+      // JEE Mains has fixed subjects: Physics, Chemistry, Mathematics
+      return jeeMainsSubjects.map(id => {
+        const names: Record<string, string> = { "1": "Physics", "2": "Chemistry", "3": "Mathematics" };
+        const codes: Record<string, string> = { "1": "phy", "2": "che", "3": "mat" };
+        const subjectInfo = findSubject(names[id]);
+        return {
+          id,
+          name: names[id],
+          code: codes[id],
+          info: subjectInfo,
+        };
+      });
+    }
+    return [];
+  }, [selectedTrack, selectedClass]);
+
+  // Get chapters for selected combination
+  const getChaptersForSelection = (): CBSEChapter[] => {
+    if (selectedTrack === "cbse") {
+      if (!selectedClass || !selectedSubject) return [];
+      const internalClassId = classIdMapping[selectedClass];
+      return allCBSEChapters.filter(
+        ch => ch.classId === internalClassId && ch.subjectId === selectedSubject
+      );
+    } else if (selectedTrack === "jee-mains") {
+      if (!selectedSubject) return [];
+      
+      // Get mapped chapters from CBSE (Class 11 & 12)
+      const mappedChapterIds = courseChapterMappings
+        .filter(m => m.courseId === "jee-mains")
+        .map(m => m.chapterId);
+      
+      const mappedChapters = allCBSEChapters.filter(
+        ch => mappedChapterIds.includes(ch.id) && ch.subjectId === selectedSubject
+      );
+      
+      // Get course-owned chapters
+      const ownedChapters = courseOwnedChapters.filter(
+        ch => ch.courseId === "jee-mains" && ch.subjectId === selectedSubject
+      );
+      
+      // Combine and convert to CBSEChapter format
+      const combined: CBSEChapter[] = [
+        ...mappedChapters,
+        ...ownedChapters.map(ch => ({
+          id: ch.id,
+          name: ch.name,
+          curriculumId: "jee-mains",
+          classId: "",
+          subjectId: ch.subjectId,
+          order: ch.order,
+          isCourseOwned: true,
+          courseId: ch.courseId,
+        })),
+      ];
+      
+      return combined.sort((a, b) => a.order - b.order);
+    }
+    return [];
+  };
+
   // Check if setup exists for selected combination
   const existingSetup = academicScheduleSetups.find(
-    s => s.courseId === selectedCourse && 
+    s => s.courseId === selectedTrack && 
          s.classId === selectedClass && 
          s.subjectId === selectedSubject
   );
 
-  const handleCourseChange = (value: string) => {
-    setSelectedCourse(value);
+  // Handlers
+  const handleTrackChange = (value: string) => {
+    setSelectedTrack(value);
     setSelectedClass("");
     setSelectedSubject("");
     setChapters([]);
@@ -114,21 +196,62 @@ export default function AcademicScheduleSetup() {
     setHasChanges(false);
   };
 
-  const handleSubjectChange = (value: string) => {
-    setSelectedSubject(value);
+  const handleSubjectChange = (subjectId: string) => {
+    setSelectedSubject(subjectId);
     
     // Load existing setup or default chapters
     const existing = academicScheduleSetups.find(
-      s => s.courseId === selectedCourse && 
+      s => s.courseId === selectedTrack && 
            s.classId === selectedClass && 
-           s.subjectId === value
+           s.subjectId === subjectId
     );
     
     if (existing) {
       setChapters(existing.chapters);
     } else {
       // Load from master data with default hours
-      const defaultChapters = chaptersBySubject[value] || [];
+      const rawChapters = getChaptersForSelection();
+      // Need to re-filter since selectedSubject wasn't updated yet
+      let filteredChapters: CBSEChapter[];
+      if (selectedTrack === "cbse") {
+        const internalClassId = classIdMapping[selectedClass];
+        filteredChapters = allCBSEChapters.filter(
+          ch => ch.classId === internalClassId && ch.subjectId === subjectId
+        );
+      } else {
+        const mappedChapterIds = courseChapterMappings
+          .filter(m => m.courseId === "jee-mains")
+          .map(m => m.chapterId);
+        
+        const mappedChapters = allCBSEChapters.filter(
+          ch => mappedChapterIds.includes(ch.id) && ch.subjectId === subjectId
+        );
+        
+        const ownedChapters = courseOwnedChapters.filter(
+          ch => ch.courseId === "jee-mains" && ch.subjectId === subjectId
+        );
+        
+        filteredChapters = [
+          ...mappedChapters,
+          ...ownedChapters.map(ch => ({
+            id: ch.id,
+            name: ch.name,
+            curriculumId: "jee-mains",
+            classId: "",
+            subjectId: ch.subjectId,
+            order: ch.order,
+            isCourseOwned: true,
+            courseId: ch.courseId,
+          })),
+        ].sort((a, b) => a.order - b.order);
+      }
+      
+      const defaultChapters: ChapterHourAllocation[] = filteredChapters.map((ch, idx) => ({
+        chapterId: ch.id,
+        chapterName: ch.name,
+        plannedHours: 8, // Default 8 hours per chapter
+        order: idx + 1,
+      }));
       setChapters(defaultChapters);
     }
     setHasChanges(false);
@@ -148,9 +271,8 @@ export default function AcademicScheduleSetup() {
     setHasChanges(false);
   };
 
-  const requiresClass = selectedCourse === "cbse";
-  const subjects = selectedCourse ? subjectsByCourse[selectedCourse] || [] : [];
-  const canSelectSubject = selectedCourse && (!requiresClass || selectedClass);
+  const canSelectSubject = selectedTrack && (!requiresClass || selectedClass);
+  const selectedSubjectInfo = availableSubjects.find(s => s.id === selectedSubject);
 
   return (
     <div className="space-y-6">
@@ -163,64 +285,91 @@ export default function AcademicScheduleSetup() {
         ]}
       />
 
-      {/* Selection Controls */}
+      {/* Compact Selection Card */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label>Course / Board</Label>
-              <Select value={selectedCourse} onValueChange={handleCourseChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select course" />
-                </SelectTrigger>
-                <SelectContent>
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id}>
-                      {course.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {requiresClass && (
-              <div className="space-y-2">
-                <Label>Class</Label>
-                <Select value={selectedClass} onValueChange={handleClassChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select class" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classes.map((cls) => (
-                      <SelectItem key={cls.id} value={cls.id}>
-                        {cls.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Subject</Label>
-              <Select 
-                value={selectedSubject} 
-                onValueChange={handleSubjectChange}
-                disabled={!canSelectSubject}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subjects.map((subject) => (
-                    <SelectItem key={subject.id} value={subject.id}>
-                      {subject.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <CardContent className="pt-5 pb-4 space-y-4">
+          {/* Row 1: Track Tabs */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Track</span>
+            <Tabs value={selectedTrack} onValueChange={handleTrackChange}>
+              <TabsList className="h-9">
+                {assignedTracks.map((track) => (
+                  <TabsTrigger 
+                    key={track.id} 
+                    value={track.id}
+                    className="px-4 text-sm"
+                  >
+                    {track.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
+
+          {/* Row 2: Class Chips (only for curriculum-based tracks) */}
+          {requiresClass && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Class</span>
+              <div className="flex flex-wrap gap-1.5">
+                {availableClassList.map((cls) => {
+                  const classNum = cls.name.replace("Class ", "");
+                  const isSelected = selectedClass === cls.id;
+                  return (
+                    <Button
+                      key={cls.id}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "h-8 min-w-[40px] px-3 font-medium transition-all",
+                        isSelected && "shadow-md"
+                      )}
+                      onClick={() => handleClassChange(cls.id)}
+                    >
+                      {classNum}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Row 3: Subject Cards */}
+          {canSelectSubject && availableSubjects.length > 0 && (
+            <div className="flex items-start gap-3">
+              <span className="text-sm font-medium text-muted-foreground min-w-[60px] pt-1.5">Subject</span>
+              <div className="flex flex-wrap gap-2">
+                {availableSubjects.map((subject) => {
+                  const isSelected = selectedSubject === subject.id;
+                  const Icon = subject.info?.icon || BookOpen;
+                  const colors = getSubjectColor(subject.code);
+                  
+                  return (
+                    <button
+                      key={subject.id}
+                      onClick={() => handleSubjectChange(subject.id)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium",
+                        isSelected 
+                          ? `${colors.bg} ${colors.text} border-transparent shadow-md scale-105` 
+                          : "bg-card border-border hover:border-primary/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{subject.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state for subjects */}
+          {canSelectSubject && availableSubjects.length === 0 && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Subject</span>
+              <span className="text-sm text-muted-foreground italic">No subjects available for this selection</span>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -228,7 +377,7 @@ export default function AcademicScheduleSetup() {
       {selectedSubject && chapters.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-white" />
@@ -236,7 +385,7 @@ export default function AcademicScheduleSetup() {
                 <div>
                   <CardTitle className="text-lg">Chapter Hour Allocation</CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    {subjects.find(s => s.id === selectedSubject)?.name} • {chapters.length} chapters
+                    {selectedSubjectInfo?.name} • {chapters.length} chapters
                   </p>
                 </div>
               </div>
@@ -319,9 +468,19 @@ export default function AcademicScheduleSetup() {
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Select Course & Subject</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                {!selectedTrack 
+                  ? "Select a Track" 
+                  : requiresClass && !selectedClass 
+                    ? "Select a Class" 
+                    : "Select a Subject"}
+              </h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                Choose a course, class (if applicable), and subject to configure the academic schedule with planned hours per chapter.
+                {!selectedTrack 
+                  ? "Choose a curriculum or course track to get started."
+                  : requiresClass && !selectedClass 
+                    ? "Select a class to view available subjects."
+                    : "Choose a subject to configure planned hours per chapter."}
               </p>
             </div>
           </CardContent>
