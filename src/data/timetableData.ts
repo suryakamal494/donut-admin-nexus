@@ -185,6 +185,8 @@ export const teacherLoads: TeacherLoad[] = [
       { batchId: 'batch-1', batchName: 'Class 10 - Section A', subject: 'Physics' },
       { batchId: 'batch-2', batchName: 'Class 10 - Section B', subject: 'Physics' },
       { batchId: 'batch-3', batchName: 'Class 9 - Section A', subject: 'Physics' },
+      { batchId: 'batch-6', batchName: 'Class 11 - Section A (JEE)', subject: 'Physics' },
+      { batchId: 'batch-7', batchName: 'Class 11 - Section B (JEE)', subject: 'Physics' },
     ],
   },
   {
@@ -201,6 +203,8 @@ export const teacherLoads: TeacherLoad[] = [
       { batchId: 'batch-2', batchName: 'Class 10 - Section B', subject: 'Mathematics' },
       { batchId: 'batch-3', batchName: 'Class 9 - Section A', subject: 'Mathematics' },
       { batchId: 'batch-4', batchName: 'Class 9 - Section B', subject: 'Mathematics' },
+      { batchId: 'batch-6', batchName: 'Class 11 - Section A (JEE)', subject: 'Mathematics' },
+      { batchId: 'batch-8', batchName: 'Class 12 - Section A (JEE)', subject: 'Mathematics' },
     ],
   },
   {
@@ -215,6 +219,8 @@ export const teacherLoads: TeacherLoad[] = [
     allowedBatches: [
       { batchId: 'batch-1', batchName: 'Class 10 - Section A', subject: 'Chemistry' },
       { batchId: 'batch-2', batchName: 'Class 10 - Section B', subject: 'Chemistry' },
+      { batchId: 'batch-7', batchName: 'Class 11 - Section B (JEE)', subject: 'Chemistry' },
+      { batchId: 'batch-8', batchName: 'Class 12 - Section A (JEE)', subject: 'Chemistry' },
     ],
   },
   {
