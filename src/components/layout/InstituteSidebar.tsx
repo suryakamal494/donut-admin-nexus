@@ -20,6 +20,7 @@ import {
   Eye,
   Library,
   UserCheck,
+  Shield,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -59,6 +60,7 @@ const navItems: NavItem[] = [
   { title: "Content Library", icon: Library, href: "/institute/content" },
   { title: "Exams", icon: ClipboardList, href: "/institute/exams" },
   { title: "Master Data", icon: Database, href: "/institute/master-data" },
+  { title: "Roles & Access", icon: Shield, href: "/institute/roles" },
   { title: "Settings", icon: Settings, href: "/institute/settings" },
 ];
 

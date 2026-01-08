@@ -63,6 +63,7 @@ import InstituteMasterData from "./pages/institute/masterdata/MasterData";
 import InstituteContent from "./pages/institute/content/Content";
 import InstituteCreateContent from "./pages/institute/content/CreateContent";
 import InstituteAIContentGenerator from "./pages/institute/content/AIContentGenerator";
+import InstituteRoles from "./pages/institute/roles/Roles";
 
 // Teacher Panel Pages
 import TeacherLayout from "./components/layout/TeacherLayout";
@@ -152,6 +153,7 @@ const App = () => (
             <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
             <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
             <Route path="master-data" element={<InstituteMasterData />} />
+            <Route path="roles" element={<InstituteRoles />} />
           </Route>
 
           {/* Teacher Panel Routes */}
