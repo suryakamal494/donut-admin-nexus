@@ -21,6 +21,8 @@ import {
   Library,
   UserCheck,
   Shield,
+  BookOpenCheck,
+  TrendingUp,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -54,6 +56,16 @@ const navItems: NavItem[] = [
       { title: "Workspace", icon: Wrench, href: "/institute/timetable" },
       { title: "View Timetable", icon: Eye, href: "/institute/timetable/view" },
       { title: "Substitution", icon: UserCheck, href: "/institute/timetable/substitution" },
+    ]
+  },
+  { 
+    title: "Academic Schedule", 
+    icon: BookOpenCheck, 
+    href: "/institute/academic-schedule",
+    subItems: [
+      { title: "Setup", icon: Settings, href: "/institute/academic-schedule/setup" },
+      { title: "Weekly Plans", icon: Calendar, href: "/institute/academic-schedule/plans" },
+      { title: "Progress", icon: TrendingUp, href: "/institute/academic-schedule/progress" },
     ]
   },
   { title: "Question Bank", icon: FileQuestion, href: "/institute/questions" },
