@@ -67,6 +67,9 @@ import InstituteRoles from "./pages/institute/roles/Roles";
 import AcademicScheduleSetup from "./pages/institute/academic-schedule/Setup";
 import AcademicScheduleWeeklyPlans from "./pages/institute/academic-schedule/WeeklyPlans";
 import AcademicScheduleProgress from "./pages/institute/academic-schedule/Progress";
+import AcademicScheduleBatchProgress from "./pages/institute/academic-schedule/BatchProgress";
+import AcademicSchedulePending from "./pages/institute/academic-schedule/PendingConfirmations";
+import TeacherAcademicProgress from "./pages/teacher/AcademicProgress";
 
 // Teacher Panel Pages
 import TeacherLayout from "./components/layout/TeacherLayout";
@@ -160,6 +163,8 @@ const App = () => (
             <Route path="academic-schedule/setup" element={<AcademicScheduleSetup />} />
             <Route path="academic-schedule/plans" element={<AcademicScheduleWeeklyPlans />} />
             <Route path="academic-schedule/progress" element={<AcademicScheduleProgress />} />
+            <Route path="academic-schedule/progress/:batchId" element={<AcademicScheduleBatchProgress />} />
+            <Route path="academic-schedule/pending" element={<AcademicSchedulePending />} />
           </Route>
 
           {/* Teacher Panel Routes */}
@@ -169,6 +174,7 @@ const App = () => (
             <Route path="schedule" element={<TeacherSchedule />} />
             <Route path="lesson-plans" element={<LessonPlans />} />
             <Route path="lesson-plans/:planId" element={<LessonPlanCanvas />} />
+            <Route path="academic-progress" element={<TeacherAcademicProgress />} />
             <Route path="assessments" element={<TeacherAssessments />} />
             <Route path="homework" element={<TeacherHomework />} />
             <Route path="content" element={<TeacherContent />} />

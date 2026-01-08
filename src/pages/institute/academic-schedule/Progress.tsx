@@ -89,8 +89,12 @@ export default function AcademicProgress() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Academic Progress"
+        title="Syllabus Progress"
         description="Track syllabus completion across all batches"
+        breadcrumbs={[
+          { label: "Syllabus Tracker" },
+          { label: "Progress" },
+        ]}
       />
 
       {/* Summary Stats */}

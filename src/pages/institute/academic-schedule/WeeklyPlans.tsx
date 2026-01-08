@@ -127,8 +127,12 @@ export default function WeeklyPlans() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Weekly Chapter Plans"
+        title="Weekly Plans"
         description="Assign chapters to batches for each week"
+        breadcrumbs={[
+          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
+          { label: "Weekly Plans" },
+        ]}
       />
 
       {/* Week Navigator & Filters */}
