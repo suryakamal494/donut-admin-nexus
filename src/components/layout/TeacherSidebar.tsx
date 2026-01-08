@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Sparkles,
   X,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,6 +36,7 @@ const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/teacher/dashboard" },
   { icon: Calendar, label: "My Schedule", path: "/teacher/schedule" },
   { icon: BookOpen, label: "Lesson Plans", path: "/teacher/lesson-plans" },
+  { icon: TrendingUp, label: "Syllabus Progress", path: "/teacher/academic-progress" },
   { icon: ClipboardCheck, label: "Assessments", path: "/teacher/assessments" },
   { icon: FileText, label: "Homework", path: "/teacher/homework" },
   { icon: Library, label: "Content Library", path: "/teacher/content" },

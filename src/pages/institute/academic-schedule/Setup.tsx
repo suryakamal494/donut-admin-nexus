@@ -155,8 +155,12 @@ export default function AcademicScheduleSetup() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Academic Schedule Setup"
+        title="Syllabus Setup"
         description="Define planned hours per chapter for the academic year"
+        breadcrumbs={[
+          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
+          { label: "Setup" },
+        ]}
       />
 
       {/* Selection Controls */}

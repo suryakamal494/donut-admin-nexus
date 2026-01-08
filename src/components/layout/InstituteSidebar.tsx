@@ -23,6 +23,7 @@ import {
   Shield,
   BookOpenCheck,
   TrendingUp,
+  Clock,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -59,13 +60,14 @@ const navItems: NavItem[] = [
     ]
   },
   { 
-    title: "Academic Schedule", 
+    title: "Syllabus Tracker", 
     icon: BookOpenCheck, 
     href: "/institute/academic-schedule",
     subItems: [
       { title: "Setup", icon: Settings, href: "/institute/academic-schedule/setup" },
       { title: "Weekly Plans", icon: Calendar, href: "/institute/academic-schedule/plans" },
       { title: "Progress", icon: TrendingUp, href: "/institute/academic-schedule/progress" },
+      { title: "Pending", icon: Clock, href: "/institute/academic-schedule/pending" },
     ]
   },
   { title: "Question Bank", icon: FileQuestion, href: "/institute/questions" },
