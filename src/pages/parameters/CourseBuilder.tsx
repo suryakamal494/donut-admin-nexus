@@ -418,11 +418,11 @@ const CourseBuilder = () => {
       />
 
       {/* Course Selector */}
-      <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-        <div className="flex items-center gap-4 flex-wrap">
-          <Label className="text-sm font-medium">Course:</Label>
+      <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
+          <Label className="text-sm font-medium shrink-0">Course:</Label>
           <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
-            <SelectTrigger className="w-[280px]">
+            <SelectTrigger className="w-full sm:w-[280px]">
               <SelectValue placeholder="Select or create a course" />
             </SelectTrigger>
             <SelectContent>
@@ -449,7 +449,7 @@ const CourseBuilder = () => {
           </Button>
           
           {selectedCourse && (
-            <div className="ml-auto flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
               <span>Type: <strong className="text-foreground capitalize">{selectedCourse.courseType}</strong></span>
               <span>Chapters: <strong className="text-foreground">{currentCourseChapters.length}</strong></span>
               {isDirty && <Badge variant="outline" className="text-amber-600 border-amber-300">Unsaved</Badge>}
@@ -460,7 +460,7 @@ const CourseBuilder = () => {
 
       {/* Main Workspace */}
       {selectedCourseId ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-320px)] min-h-[500px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-auto lg:h-[calc(100vh-380px)] lg:min-h-[500px]">
           {/* Left Panel: Source (Curriculum Tree) */}
           <div className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden flex flex-col">
             <div className="p-4 border-b border-border/50 space-y-3">

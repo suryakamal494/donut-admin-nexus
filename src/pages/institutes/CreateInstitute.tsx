@@ -122,7 +122,7 @@ const CreateInstitute = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <PageHeader
         title="Create Institute"
         description="Register a new institute on the platform"
@@ -134,25 +134,31 @@ const CreateInstitute = () => {
       />
 
       {/* Stepper */}
-      <div className="bg-card rounded-2xl p-4 md:p-6 shadow-soft border border-border/50 overflow-x-auto">
-        <div className="flex items-center justify-between min-w-[500px]">
+      <div className="bg-card rounded-2xl p-3 md:p-6 shadow-soft border border-border/50 overflow-x-auto">
+        <div className="flex items-center justify-between min-w-0">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-1">
-              <div className="flex items-center gap-2 md:gap-3">
+            <div key={step.id} className="flex items-center flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
                 <div className={cn(
-                  "w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all shrink-0",
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shrink-0",
                   currentStep >= step.id ? "gradient-button" : "bg-muted text-muted-foreground"
                 )}>
-                  {currentStep > step.id ? <Check className="w-4 h-4 md:w-5 md:h-5" /> : <step.icon className="w-4 h-4 md:w-5 md:h-5" />}
+                  {currentStep > step.id ? <Check className="w-4 h-4" /> : <step.icon className="w-4 h-4" />}
                 </div>
-                <div className="hidden lg:block">
+                <div className="hidden md:block">
                   <p className={cn("text-xs md:text-sm font-medium whitespace-nowrap", currentStep >= step.id ? "text-foreground" : "text-muted-foreground")}>
                     {step.title}
                   </p>
                 </div>
+                <span className={cn(
+                  "text-[10px] text-center md:hidden",
+                  currentStep >= step.id ? "text-foreground font-medium" : "text-muted-foreground"
+                )}>
+                  Step {step.id}
+                </span>
               </div>
               {index < steps.length - 1 && (
-                <div className={cn("flex-1 h-0.5 mx-2 md:mx-4", currentStep > step.id ? "bg-primary" : "bg-muted")} />
+                <div className={cn("flex-1 h-0.5 mx-1 sm:mx-4 min-w-4", currentStep > step.id ? "bg-primary" : "bg-muted")} />
               )}
             </div>
           ))}

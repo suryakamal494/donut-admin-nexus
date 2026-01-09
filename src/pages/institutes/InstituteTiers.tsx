@@ -63,7 +63,7 @@ const InstituteTiers = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 md:space-y-8 animate-fade-in">
       <PageHeader
         title="Tier Management"
         description="Configure subscription tiers and features"
@@ -76,7 +76,7 @@ const InstituteTiers = () => {
       />
 
       {/* Tier Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {instituteTiers.map((tier, index) => (
           <div
             key={tier.id}
@@ -132,16 +132,16 @@ const InstituteTiers = () => {
 
       {/* Feature Comparison Table */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <div className="p-6 border-b border-border/50">
-          <h2 className="text-xl font-bold">Feature Comparison</h2>
+        <div className="p-4 md:p-6 border-b border-border/50">
+          <h2 className="text-lg md:text-xl font-bold">Feature Comparison</h2>
           <p className="text-sm text-muted-foreground mt-1">Compare all features across tiers</p>
         </div>
         
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="w-[280px] font-semibold">Feature</TableHead>
+                <TableHead className="w-[200px] md:w-[280px] font-semibold">Feature</TableHead>
                 {instituteTiers.map((tier) => (
                   <TableHead key={tier.id} className="text-center font-semibold min-w-[140px]">
                     <div className="flex flex-col items-center gap-1">

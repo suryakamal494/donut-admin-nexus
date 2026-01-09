@@ -17,6 +17,7 @@ import {
   PanelLeft,
   GraduationCap,
   FolderTree,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ import {
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  isMobile?: boolean;
+  onMobileClose?: () => void;
 }
 
 interface NavItem {
@@ -87,7 +90,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
+const Sidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: SidebarProps) => {
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState<string[]>(["Institutes", "Master Data"]);
 
@@ -101,12 +104,21 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const isActiveParent = (children?: { href: string }[]) =>
     children?.some((child) => location.pathname.startsWith(child.href));
 
+  const handleNavClick = () => {
+    if (isMobile && onMobileClose) {
+      onMobileClose();
+    }
+  };
+
+  // For mobile, always show expanded
+  const isCollapsed = isMobile ? false : collapsed;
+
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen transition-all duration-300 ease-in-out",
+        "h-screen transition-all duration-300 ease-in-out",
         "border-r",
-        collapsed ? "w-16" : "w-64"
+        isMobile ? "w-full" : (isCollapsed ? "fixed left-0 top-0 z-40 w-16" : "fixed left-0 top-0 z-40 w-64")
       )}
       style={{
         background: "linear-gradient(180deg, hsl(30 40% 96%) 0%, hsl(30 35% 94%) 100%)",
@@ -115,7 +127,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
     >
       {/* Logo Section */}
       <div className="h-16 flex items-center justify-between px-4 border-b" style={{ borderColor: "hsl(30 25% 88%)" }}>
-        {!collapsed && (
+        {!isCollapsed && (
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl gradient-button flex items-center justify-center shadow-glow">
               <Sparkles className="w-5 h-5 text-white" />
@@ -123,17 +135,28 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
             <span className="font-bold text-lg text-primary">DonutAI</span>
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggle}
-          className={cn(
-            "text-muted-foreground hover:text-primary hover:bg-primary/10",
-            collapsed && "mx-auto"
-          )}
-        >
-          {collapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
-        </Button>
+        {isMobile ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onMobileClose}
+            className="text-muted-foreground hover:text-primary hover:bg-primary/10 ml-auto"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className={cn(
+              "text-muted-foreground hover:text-primary hover:bg-primary/10",
+              isCollapsed && "mx-auto"
+            )}
+          >
+            {isCollapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+          </Button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -148,10 +171,12 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
               <NavLink
                 key={item.title}
                 to={item.href}
+                onClick={handleNavClick}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
                   "text-foreground/90 font-semibold hover:bg-pink-100/60",
-                  isActive && "text-white shadow-md"
+                  isActive && "text-white shadow-md",
+                  isCollapsed && "justify-center px-0"
                 )}
                 style={isActive ? {
                   background: "linear-gradient(135deg, #F97316 0%, #EC4899 100%)",
@@ -159,7 +184,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 } : undefined}
               >
                 <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-white")} />
-                {!collapsed && <span>{item.title}</span>}
+                {!isCollapsed && <span>{item.title}</span>}
               </NavLink>
             );
           }
@@ -167,19 +192,20 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
           return (
             <Collapsible
               key={item.title}
-              open={!collapsed && isOpen}
-              onOpenChange={() => !collapsed && toggleMenu(item.title)}
+              open={!isCollapsed && isOpen}
+              onOpenChange={() => !isCollapsed && toggleMenu(item.title)}
             >
               <CollapsibleTrigger asChild>
                 <button
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
                     "text-foreground/90 font-semibold hover:bg-pink-100/60",
-                    isActive && "text-primary"
+                    isActive && "text-primary",
+                    isCollapsed && "justify-center px-0"
                   )}
                 >
                   <Icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
-                  {!collapsed && (
+                  {!isCollapsed && (
                     <>
                       <span className="flex-1 text-left">{item.title}</span>
                       {isOpen ? (
@@ -191,7 +217,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                   )}
                 </button>
               </CollapsibleTrigger>
-              {!collapsed && (
+              {!isCollapsed && (
                 <CollapsibleContent className="pl-4 mt-1 space-y-1">
                   {item.children?.map((child) => {
                     const ChildIcon = child.icon;
@@ -200,6 +226,7 @@ const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                       <NavLink
                         key={child.href}
                         to={child.href}
+                        onClick={handleNavClick}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 text-sm",
                           "text-foreground/80 font-medium hover:bg-pink-100/60",
