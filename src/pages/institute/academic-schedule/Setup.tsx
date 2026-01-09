@@ -27,14 +27,19 @@ import {
 } from "@/components/ui/tooltip";
 
 const SUBJECT_COLORS: Record<string, string> = {
-  phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
-  mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
-  che: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200",
-  bio: "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",
-  eng: "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",
-  cs: "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",
-  eco: "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",
-  hin: "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",
+  // Numeric IDs from getSubjectsByClass
+  "1": "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",     // Physics
+  "2": "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200", // Chemistry
+  "3": "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",   // Mathematics
+  "4": "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",       // Biology
+  "5": "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",       // History
+  "6": "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",               // Hindi
+  "7": "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",   // English
+  "8": "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",           // Computer Science
+  // JEE subjects
+  jee_phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
+  jee_mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
+  jee_che: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200",
 };
 
 export default function Setup() {
@@ -99,8 +104,9 @@ export default function Setup() {
         classId: cls.id,
         className: `Class ${cls.name}`,
         subjects: classSubjects.map(s => {
+          // Check if any setup exists for this class + subject combination
           const hasSetup = academicScheduleSetups.some(
-            setup => setup.classId === `class-${cls.name}` && setup.subjectId === s.id
+            setup => setup.classId.includes(`class-${cls.name}`) && setup.subjectId === s.id
           );
           return {
             subjectId: s.id,
