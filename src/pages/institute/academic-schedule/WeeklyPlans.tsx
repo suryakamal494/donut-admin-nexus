@@ -1,15 +1,7 @@
 import { useState, useMemo } from "react";
-import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -21,16 +13,17 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import {
   BookOpen,
-  Calendar,
   CheckCircle,
   AlertCircle,
-  Filter,
   Plus,
   Check,
   Layers,
   Eye,
+  ChevronLeft,
+  Lock,
 } from "lucide-react";
 import { WeekNavigator, BatchPlanAccordion } from "@/components/academic-schedule";
 import { weeklyChapterPlans, academicWeeks, currentWeekIndex, academicScheduleSetups } from "@/data/academicScheduleData";
@@ -38,13 +31,12 @@ import { batches } from "@/data/instituteData";
 import { WeeklyChapterPlan, ChapterHourAllocation } from "@/types/academicSchedule";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 // Subject configuration based on class level
 const getSubjectsForClass = (classId: string): { subjectId: string; subjectName: string }[] => {
-  // Extract class number from classId (e.g., "class-6" -> 6)
   const classNum = parseInt(classId.replace("class-", ""));
   
-  // Class 6-8: General subjects
   if (classNum >= 6 && classNum <= 8) {
     return [
       { subjectId: "mat", subjectName: "Mathematics" },
@@ -55,7 +47,6 @@ const getSubjectsForClass = (classId: string): { subjectId: string; subjectName:
     ];
   }
   
-  // Class 9-10: Science stream
   if (classNum >= 9 && classNum <= 10) {
     return [
       { subjectId: "phy", subjectName: "Physics" },
@@ -68,7 +59,6 @@ const getSubjectsForClass = (classId: string): { subjectId: string; subjectName:
     ];
   }
   
-  // Class 11-12: Science stream
   if (classNum >= 11 && classNum <= 12) {
     return [
       { subjectId: "phy", subjectName: "Physics" },
@@ -78,7 +68,6 @@ const getSubjectsForClass = (classId: string): { subjectId: string; subjectName:
     ];
   }
   
-  // Default
   return [
     { subjectId: "mat", subjectName: "Mathematics" },
     { subjectId: "sci", subjectName: "Science" },
@@ -86,7 +75,6 @@ const getSubjectsForClass = (classId: string): { subjectId: string; subjectName:
   ];
 };
 
-// JEE subjects
 const getJEESubjects = (): { subjectId: string; subjectName: string }[] => {
   return [
     { subjectId: "jee_phy", subjectName: "JEE Physics" },
@@ -95,16 +83,13 @@ const getJEESubjects = (): { subjectId: string; subjectName: string }[] => {
   ];
 };
 
-// Get subjects for a batch
 const getBatchSubjects = (batch: typeof batches[0]) => {
-  // Check if JEE batch
   if (batch.assignedCourses?.includes("jee-mains") || batch.id.startsWith("jee-")) {
     return getJEESubjects();
   }
   return getSubjectsForClass(batch.classId);
 };
 
-// Class numbers for filter chips
 const CLASS_CHIPS = ["6", "7", "8", "9", "10", "11", "12"];
 
 export default function WeeklyPlans() {
@@ -118,13 +103,9 @@ export default function WeeklyPlans() {
   const [bulkSelectedBatches, setBulkSelectedBatches] = useState<string[]>([]);
 
   const selectedWeek = academicWeeks[selectedWeekIndex];
-  
-  // Determine if selected week is past, current, or future
   const isPastWeek = selectedWeekIndex < currentWeekIndex;
   const isCurrentWeek = selectedWeekIndex === currentWeekIndex;
-  const isFutureWeek = selectedWeekIndex > currentWeekIndex;
 
-  // Filter plans for the selected week
   const weekPlans = useMemo(() => {
     if (!selectedWeek) return [];
     return weeklyChapterPlans.filter(
@@ -132,7 +113,6 @@ export default function WeeklyPlans() {
     );
   }, [selectedWeek]);
 
-  // Filter batches by class
   const filteredBatches = useMemo(() => {
     if (classFilter === "all") return batches;
     return batches.filter(b => {
@@ -141,7 +121,6 @@ export default function WeeklyPlans() {
     });
   }, [classFilter]);
 
-  // Build batch data with their subject plans
   const batchPlansData = useMemo(() => {
     return filteredBatches.map(batch => {
       const batchSubjects = getBatchSubjects(batch);
@@ -151,7 +130,6 @@ export default function WeeklyPlans() {
           p => p.batchId === batch.id && p.subjectId === subject.subjectId
         );
         
-        // Get chapter names from setups
         const chapterNames = plan?.plannedChapters.map(chapterId => {
           const setup = academicScheduleSetups.find(s => s.subjectId === subject.subjectId);
           const chapter = setup?.chapters.find(c => c.chapterId === chapterId);
@@ -178,18 +156,14 @@ export default function WeeklyPlans() {
     });
   }, [filteredBatches, weekPlans]);
 
-  // Summary stats
   const stats = useMemo(() => {
-    const totalBatches = batchPlansData.length;
     const totalSubjects = batchPlansData.reduce((sum, b) => sum + b.totalCount, 0);
     const plannedSubjects = batchPlansData.reduce((sum, b) => sum + b.plannedCount, 0);
-    const totalChapters = weekPlans.reduce((sum, p) => sum + p.plannedChapters.length, 0);
     const missingPlans = totalSubjects - plannedSubjects;
     
-    return { totalBatches, totalSubjects, plannedSubjects, totalChapters, missingPlans };
-  }, [batchPlansData, weekPlans]);
+    return { plannedSubjects, missingPlans };
+  }, [batchPlansData]);
 
-  // Get chapters for the editing dialog
   const getChaptersForSubject = (subjectId: string): ChapterHourAllocation[] => {
     const setup = academicScheduleSetups.find(s => s.subjectId === subjectId);
     return setup?.chapters || [];
@@ -273,117 +247,117 @@ export default function WeeklyPlans() {
   };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Weekly Chapter Plans"
-        description="Map chapters to weeks for each batch and subject"
-        breadcrumbs={[
-          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
-          { label: "Weekly Plans" },
-        ]}
-      />
+    <div className="space-y-4">
+      {/* Compact Header Row 1: Breadcrumb + Title + Stats + Action */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 min-w-0">
+          <Link 
+            to="/institute/academic-schedule/progress" 
+            className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Link>
+          <h1 className="text-lg sm:text-xl font-semibold truncate">Weekly Plans</h1>
+          
+          {/* Inline Stats - Desktop */}
+          <div className="hidden md:flex items-center gap-2 ml-2">
+            <Separator orientation="vertical" className="h-5" />
+            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 gap-1">
+              <CheckCircle className="w-3 h-3" />
+              {stats.plannedSubjects} Planned
+            </Badge>
+            <Badge variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100 gap-1">
+              <AlertCircle className="w-3 h-3" />
+              {stats.missingPlans} Missing
+            </Badge>
+          </div>
+        </div>
+        
+        {/* Bulk Add Button */}
+        {!isPastWeek && (
+          <Button size="sm" className="gap-1.5 h-8 shrink-0" onClick={() => setIsBulkDialogOpen(true)}>
+            <Layers className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Bulk Add</span>
+            <span className="sm:hidden">Bulk</span>
+          </Button>
+        )}
+      </div>
 
-      {/* Class Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        <span className="text-sm font-medium text-muted-foreground shrink-0">Class:</span>
-        <button
-          onClick={() => setClassFilter("all")}
-          className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-all min-w-[44px] h-[44px] flex items-center justify-center",
-            classFilter === "all"
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "bg-muted hover:bg-muted/80 text-muted-foreground"
-          )}
-        >
-          All
-        </button>
-        {CLASS_CHIPS.map(cls => (
+      {/* Compact Header Row 2: Class Chips + Week Navigator */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 bg-muted/30 rounded-xl p-2 sm:p-3">
+        {/* Class Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 sm:pb-0">
           <button
-            key={cls}
-            onClick={() => setClassFilter(cls)}
+            onClick={() => setClassFilter("all")}
             className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium transition-all min-w-[44px] h-[44px] flex items-center justify-center",
-              classFilter === cls
-                ? "bg-primary text-primary-foreground shadow-md"
-                : "bg-muted hover:bg-muted/80 text-muted-foreground"
+              "px-3 h-8 rounded-full text-xs font-medium transition-all shrink-0",
+              classFilter === "all"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-background hover:bg-muted text-muted-foreground"
             )}
           >
-            {cls}
+            All
           </button>
-        ))}
-      </div>
-
-      {/* Week Navigator */}
-      <WeekNavigator
-        weeks={academicWeeks}
-        currentWeekIndex={currentWeekIndex}
-        selectedWeekIndex={selectedWeekIndex}
-        onWeekChange={setSelectedWeekIndex}
-      />
-
-      {/* Summary Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <BookOpen className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.totalBatches}</p>
-              <p className="text-xs text-muted-foreground">Batches</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-              <CheckCircle className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.plannedSubjects}</p>
-              <p className="text-xs text-muted-foreground">Plans Created</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.missingPlans}</p>
-              <p className="text-xs text-muted-foreground">Missing Plans</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
-              <Calendar className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.totalChapters}</p>
-              <p className="text-xs text-muted-foreground">Total Chapters</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Actions Row */}
-      {!isPastWeek && (
-        <div className="flex justify-end">
-          <Button className="gap-2" onClick={() => setIsBulkDialogOpen(true)}>
-            <Layers className="w-4 h-4" />
-            Bulk Add Plans
-          </Button>
+          {CLASS_CHIPS.map(cls => (
+            <button
+              key={cls}
+              onClick={() => setClassFilter(cls)}
+              className={cn(
+                "w-8 h-8 rounded-full text-xs font-medium transition-all shrink-0 flex items-center justify-center",
+                classFilter === cls
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-background hover:bg-muted text-muted-foreground"
+              )}
+            >
+              {cls}
+            </button>
+          ))}
         </div>
-      )}
+
+        <Separator orientation="vertical" className="h-6 hidden sm:block" />
+        
+        {/* Week Navigator */}
+        <div className="flex items-center justify-between sm:justify-start gap-2">
+          <WeekNavigator
+            weeks={academicWeeks}
+            currentWeekIndex={currentWeekIndex}
+            selectedWeekIndex={selectedWeekIndex}
+            onWeekChange={setSelectedWeekIndex}
+          />
+          
+          {/* Week Status Badge */}
+          {isPastWeek && (
+            <Badge variant="secondary" className="text-muted-foreground gap-1 text-xs shrink-0">
+              <Lock className="w-3 h-3" />
+              <span className="hidden sm:inline">View Only</span>
+            </Badge>
+          )}
+          {isCurrentWeek && (
+            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-0 text-xs shrink-0">
+              <span className="relative flex h-1.5 w-1.5 mr-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+              </span>
+              Current
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Stats Row */}
+      <div className="flex md:hidden items-center gap-2">
+        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 gap-1 text-xs">
+          <CheckCircle className="w-3 h-3" />
+          {stats.plannedSubjects} Planned
+        </Badge>
+        <Badge variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100 gap-1 text-xs">
+          <AlertCircle className="w-3 h-3" />
+          {stats.missingPlans} Missing
+        </Badge>
+      </div>
 
       {/* Batch Accordions */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {batchPlansData.length === 0 ? (
           <Card className="p-8">
             <div className="text-center text-muted-foreground">
@@ -410,24 +384,22 @@ export default function WeeklyPlans() {
         )}
       </div>
 
-      {/* Week Progress Legend */}
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center gap-4 text-sm">
-          <span className="text-muted-foreground font-medium">Legend:</span>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary ring-2 ring-primary/50" />
-            <span>Current Week</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-muted" />
-            <span>Past Weeks (View Only)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-muted/50" />
-            <span>Future Weeks</span>
-          </div>
+      {/* Legend - Moved to bottom */}
+      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-2">
+        <span className="font-medium">Legend:</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-primary" />
+          <span>Current</span>
         </div>
-      </Card>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-muted" />
+          <span>Past</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-muted/50" />
+          <span>Future</span>
+        </div>
+      </div>
 
       {/* Add/Edit/View Plan Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
