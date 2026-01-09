@@ -14,7 +14,8 @@ import {
   Printer,
   CalendarOff,
   Pencil,
-  Lock
+  Lock,
+  AlertTriangle
 } from "lucide-react";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addMonths, subMonths, eachDayOfInterval, startOfMonth, endOfMonth, isToday, getDay, isBefore, isAfter, startOfDay } from "date-fns";
 import { timetableEntries, defaultPeriodStructure, subjectColors, TimetableEntry } from "@/data/timetableData";
@@ -22,6 +23,8 @@ import { batches } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
 import { Holiday } from "@/components/timetable/HolidayCalendarDialog";
 import { academicHolidays } from "@/data/timetableData";
+import { examBlocks, defaultExamTypes } from "@/data/examBlockData";
+import { isSlotBlocked, getBlocksForDate } from "@/lib/examBlockUtils";
 
 // Convert academic holidays to Holiday format
 const defaultHolidays: Holiday[] = academicHolidays.map(h => ({
@@ -429,6 +432,10 @@ const ViewTimetable = () => {
                               dateOfDay.setDate(weekStart.getDate() + (dayIndex === 0 ? 6 : dayIndex - 1));
                               const holiday = getHoliday(dateOfDay);
                               
+                              // Check for exam blocks
+                              const blockResult = isSlotBlocked(dateOfDay, period, selectedBatch !== 'all' ? selectedBatch : null, examBlocks);
+                              const examType = blockResult.blocked ? defaultExamTypes.find(t => t.id === blockResult.examTypeId) : undefined;
+                              
                               if (holiday) {
                                 return (
                                   <td 
@@ -438,6 +445,59 @@ const ViewTimetable = () => {
                                     <div className="flex items-center justify-center text-amber-600">
                                       <CalendarOff className="w-4 h-4" />
                                     </div>
+                                  </td>
+                                );
+                              }
+                              
+                              // Show exam block
+                              if (blockResult.blocked) {
+                                const typeColor = examType?.color || 'red';
+                                const colorClasses: Record<string, string> = {
+                                  red: 'bg-red-50 dark:bg-red-950/20 border-red-200',
+                                  orange: 'bg-orange-50 dark:bg-orange-950/20 border-orange-200',
+                                  amber: 'bg-amber-50 dark:bg-amber-950/20 border-amber-200',
+                                  green: 'bg-green-50 dark:bg-green-950/20 border-green-200',
+                                  blue: 'bg-blue-50 dark:bg-blue-950/20 border-blue-200',
+                                  purple: 'bg-purple-50 dark:bg-purple-950/20 border-purple-200',
+                                  pink: 'bg-pink-50 dark:bg-pink-950/20 border-pink-200',
+                                };
+                                const textClasses: Record<string, string> = {
+                                  red: 'text-red-600',
+                                  orange: 'text-orange-600',
+                                  amber: 'text-amber-600',
+                                  green: 'text-green-600',
+                                  blue: 'text-blue-600',
+                                  purple: 'text-purple-600',
+                                  pink: 'text-pink-600',
+                                };
+                                
+                                return (
+                                  <td 
+                                    key={day} 
+                                    className={cn(
+                                      "border border-border/50 p-2",
+                                      colorClasses[typeColor] || colorClasses.red
+                                    )}
+                                  >
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex flex-col items-center justify-center gap-1 cursor-help">
+                                          <AlertTriangle className={cn("w-4 h-4", textClasses[typeColor] || textClasses.red)} />
+                                          <span className={cn("text-xs font-medium text-center line-clamp-2", textClasses[typeColor] || textClasses.red)}>
+                                            {blockResult.blockName}
+                                          </span>
+                                          {examType && (
+                                            <Badge variant="outline" className={cn("text-[10px]", textClasses[typeColor] || textClasses.red)}>
+                                              {examType.name}
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="font-medium">{blockResult.blockName}</p>
+                                        <p className="text-xs text-muted-foreground">No regular classes</p>
+                                      </TooltipContent>
+                                    </Tooltip>
                                   </td>
                                 );
                               }
