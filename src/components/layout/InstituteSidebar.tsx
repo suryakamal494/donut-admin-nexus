@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { preloadRoute } from "@/lib/route-preloader";
-import { X, ClipboardList as ClipboardListIcon } from "lucide-react";
+import { X } from "lucide-react";
 import {
   LayoutDashboard,
   Users,
@@ -88,7 +87,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
   
   // Track which submenus are open
   const [openSubmenus, setOpenSubmenus] = useState<string[]>(() => {
-    // Auto-open timetable submenu if on a timetable route
     if (currentPath.startsWith('/institute/timetable')) {
       return ['Timetable'];
     }
@@ -99,7 +97,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
     if (href === "/institute/dashboard") {
       return currentPath === href;
     }
-    // For submenu items, exact match
     if (href === "/institute/timetable") {
       return currentPath === href || currentPath === "/institute/timetable/setup" || currentPath === "/institute/timetable/upload";
     }
@@ -124,11 +121,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
     );
   };
 
-  // Preload handler for hover/focus
-  const handlePreload = useCallback((href: string) => {
-    preloadRoute(href);
-  }, []);
-
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon;
     const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -136,16 +128,12 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
     const parentActive = isParentActive(item);
 
     if (hasSubItems) {
-      // Render collapsible menu
       if (collapsed) {
-        // When collapsed, show tooltip with submenu
         return (
           <Tooltip key={item.href} delayDuration={0}>
             <TooltipTrigger asChild>
               <button
                 onClick={() => navigate(item.subItems![0].href)}
-                onMouseEnter={() => handlePreload(item.subItems![0].href)}
-                onFocus={() => handlePreload(item.subItems![0].href)}
                 className={cn(
                   "w-full h-10 flex items-center justify-center rounded-xl transition-all duration-200",
                   parentActive
@@ -163,8 +151,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
                   <button
                     key={sub.href}
                     onClick={() => navigate(sub.href)}
-                    onMouseEnter={() => handlePreload(sub.href)}
-                    onFocus={() => handlePreload(sub.href)}
                     className={cn(
                       "block w-full text-left px-2 py-1 rounded text-sm",
                       isActive(sub.href) ? "bg-primary/10 text-primary" : "hover:bg-muted"
@@ -216,8 +202,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
                 <button
                   key={sub.href}
                   onClick={() => navigate(sub.href)}
-                  onMouseEnter={() => handlePreload(sub.href)}
-                  onFocus={() => handlePreload(sub.href)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
                     subActive
@@ -235,14 +219,11 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
       );
     }
 
-    // Regular nav item without submenu
     const active = isActive(item.href);
 
     const linkContent = (
       <button
         onClick={() => navigate(item.href)}
-        onMouseEnter={() => handlePreload(item.href)}
-        onFocus={() => handlePreload(item.href)}
         className={cn(
           "w-full flex items-center rounded-xl transition-all duration-200 group",
           collapsed ? "h-10 justify-center" : "gap-3 px-3 py-2.5",
@@ -314,7 +295,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
           )}
         </button>
         
-        {/* Mobile close button or desktop toggle */}
         {isMobile ? (
           <button
             onClick={onMobileClose}
@@ -341,7 +321,6 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
           {navItems.map(item => renderNavItem(item))}
         </div>
       </nav>
-
     </aside>
   );
 };

@@ -1,6 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { preloadRoute } from "@/lib/route-preloader";
 import {
   LayoutDashboard,
   Building2,
@@ -111,11 +110,6 @@ const Sidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: SidebarProps)
     }
   };
 
-  const handlePreload = useCallback((href: string) => {
-    preloadRoute(href);
-  }, []);
-
-  // For mobile, always show expanded
   const isCollapsed = isMobile ? false : collapsed;
 
   return (
@@ -177,8 +171,6 @@ const Sidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: SidebarProps)
                 key={item.title}
                 to={item.href}
                 onClick={handleNavClick}
-                onMouseEnter={() => handlePreload(item.href)}
-                onFocus={() => handlePreload(item.href)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
                   "text-foreground/90 font-semibold hover:bg-pink-100/60",
@@ -234,8 +226,6 @@ const Sidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: SidebarProps)
                         key={child.href}
                         to={child.href}
                         onClick={handleNavClick}
-                        onMouseEnter={() => handlePreload(child.href)}
-                        onFocus={() => handlePreload(child.href)}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 text-sm",
                           "text-foreground/80 font-medium hover:bg-pink-100/60",
