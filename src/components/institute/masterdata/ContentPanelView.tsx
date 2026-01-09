@@ -223,14 +223,14 @@ export const ContentPanelView = ({
 
   if (!shouldShowContent) {
     return (
-      <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden min-h-0">
-        <div className="p-3 border-b border-border/50 bg-muted/30 shrink-0">
+      <div className="flex flex-col bg-card rounded-xl border shadow-sm overflow-hidden min-h-[400px] max-h-[70vh]">
+        <div className="p-3 border-b border-border/50 bg-muted/30">
           <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
             <FileText className="w-4 h-4 text-primary" />
             Chapters & Topics
           </h3>
         </div>
-        <div className="flex-1 flex items-center justify-center p-6 min-h-0">
+        <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center text-muted-foreground">
             <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">
@@ -246,7 +246,7 @@ export const ContentPanelView = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden min-h-0">
+    <div className="flex flex-col bg-card rounded-xl border shadow-sm overflow-hidden min-h-[400px] max-h-[70vh]">
       <div className="p-3 border-b border-border/50 bg-muted/30 space-y-3 shrink-0">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">

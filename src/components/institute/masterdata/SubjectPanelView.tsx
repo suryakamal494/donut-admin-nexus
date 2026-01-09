@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { subjects } from "@/data/mockData";
 import { allCBSEChapters } from "@/data/cbseMasterData";
 import { courseChapterMappings, courseOwnedChapters } from "@/data/masterData";
@@ -127,8 +126,8 @@ export const SubjectPanelView = ({
   const isDisabled = trackType === "curriculum" && !selectedClassId;
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden min-h-0">
-      <div className="p-3 border-b border-border/50 bg-muted/30 shrink-0">
+    <div className="bg-card rounded-xl border shadow-sm overflow-hidden w-[180px] lg:w-[200px]">
+      <div className="p-3 border-b border-border/50 bg-muted/30">
         <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
           <Folder className="w-4 h-4 text-primary" />
           Subjects
@@ -141,57 +140,55 @@ export const SubjectPanelView = ({
           </p>
         )}
       </div>
-      <ScrollArea className="flex-1 min-h-0">
-        <div className="p-2 space-y-1">
-          {displaySubjects.map((subject) => {
-            const chapterCount = trackType === "course"
-              ? getCourseChapterCount(subject.id)
-              : selectedClassId 
-                ? getChapterCount(selectedClassId, subject.id) 
-                : 0;
-            const isSelected = selectedSubjectId === subject.id;
-            
-            return (
-              <button
-                key={subject.id}
-                onClick={() => onSelectSubject(subject.id)}
-                disabled={isDisabled}
-                className={cn(
-                  "w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center justify-between gap-2",
-                  isSelected 
-                    ? 'gradient-button text-white shadow-md' 
-                    : isDisabled 
-                      ? 'text-muted-foreground/50 cursor-not-allowed'
-                      : 'hover:bg-muted/50 text-foreground'
-                )}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <div 
-                    className={cn(
-                      "w-2.5 h-2.5 rounded-full flex-shrink-0 ring-2",
-                      isSelected ? "ring-white/30" : "ring-transparent"
-                    )}
-                    style={{ backgroundColor: isSelected ? '#fff' : getSubjectDotColor(subject.id) }}
-                  />
-                  <span className="text-sm font-medium truncate">{subject.name}</span>
-                </div>
-                <span className={cn(
-                  "text-xs px-2 py-0.5 rounded-full min-w-[32px] text-center font-medium flex-shrink-0",
-                  chapterCount > 0 
-                    ? isSelected 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-primary/10 text-primary'
-                    : isSelected
-                      ? 'bg-white/10 text-white/60'
-                      : 'text-muted-foreground/50'
-                )}>
-                  {chapterCount > 0 ? chapterCount : '—'}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </ScrollArea>
+      <div className="p-2 space-y-1">
+        {displaySubjects.map((subject) => {
+          const chapterCount = trackType === "course"
+            ? getCourseChapterCount(subject.id)
+            : selectedClassId 
+              ? getChapterCount(selectedClassId, subject.id) 
+              : 0;
+          const isSelected = selectedSubjectId === subject.id;
+          
+          return (
+            <button
+              key={subject.id}
+              onClick={() => onSelectSubject(subject.id)}
+              disabled={isDisabled}
+              className={cn(
+                "w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center justify-between gap-2",
+                isSelected 
+                  ? 'gradient-button text-white shadow-md' 
+                  : isDisabled 
+                    ? 'text-muted-foreground/50 cursor-not-allowed'
+                    : 'hover:bg-muted/50 text-foreground'
+              )}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div 
+                  className={cn(
+                    "w-2.5 h-2.5 rounded-full flex-shrink-0 ring-2",
+                    isSelected ? "ring-white/30" : "ring-transparent"
+                  )}
+                  style={{ backgroundColor: isSelected ? '#fff' : getSubjectDotColor(subject.id) }}
+                />
+                <span className="text-sm font-medium truncate">{subject.name}</span>
+              </div>
+              <span className={cn(
+                "text-xs px-2 py-0.5 rounded-full min-w-[32px] text-center font-medium flex-shrink-0",
+                chapterCount > 0 
+                  ? isSelected 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-primary/10 text-primary'
+                  : isSelected
+                    ? 'bg-white/10 text-white/60'
+                    : 'text-muted-foreground/50'
+              )}>
+                {chapterCount > 0 ? chapterCount : '—'}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
