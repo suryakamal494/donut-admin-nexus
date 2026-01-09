@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -95,23 +95,23 @@ const InstituteContent = () => {
     setCurrentPage(1);
   };
 
-  const handlePreview = (content: ContentItem) => setPreviewContent(content as InstituteContentItem);
+  const handlePreview = useCallback((content: ContentItem) => setPreviewContent(content as InstituteContentItem), []);
   
-  const handleEdit = (content: ContentItem) => {
+  const handleEdit = useCallback((content: ContentItem) => {
     const instituteItem = content as InstituteContentItem;
     if (instituteItem.source === "institute") {
       navigate(`/institute/content/edit/${instituteItem.id}`);
     }
-  };
+  }, [navigate]);
   
-  const handleDelete = (content: ContentItem) => {
+  const handleDelete = useCallback((content: ContentItem) => {
     const instituteItem = content as InstituteContentItem;
     if (instituteItem.source === "institute") {
       setContentToDelete(instituteItem);
     }
-  };
+  }, []);
 
-  const confirmDelete = () => {
+  const confirmDelete = useCallback(() => {
     if (contentToDelete) {
       setContentList(prev => prev.filter(c => c.id !== contentToDelete.id));
       toast({
@@ -120,7 +120,7 @@ const InstituteContent = () => {
       });
       setContentToDelete(null);
     }
-  };
+  }, [contentToDelete, toast]);
 
   return (
     <div className="space-y-6 animate-fade-in">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Eye, Edit2, Calendar, Users, Clock, Monitor, MonitorPlay, UserPlus, FolderOpen, ChevronRight, FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,15 +28,15 @@ const Exams = () => {
   const [assignBatchesDialogOpen, setAssignBatchesDialogOpen] = useState(false);
   const [selectedExam, setSelectedExam] = useState<{ id: string; name: string; batches: string[] } | null>(null);
 
-  const handleOpenScheduleDialog = (exam: { id: string; name: string; batches: string[] }) => {
+  const handleOpenScheduleDialog = useCallback((exam: { id: string; name: string; batches: string[] }) => {
     setSelectedExam(exam);
     setScheduleDialogOpen(true);
-  };
+  }, []);
 
-  const handleOpenAssignBatchesDialog = (exam: { id: string; name: string; batches: string[] }) => {
+  const handleOpenAssignBatchesDialog = useCallback((exam: { id: string; name: string; batches: string[] }) => {
     setSelectedExam(exam);
     setAssignBatchesDialogOpen(true);
-  };
+  }, []);
 
   const filteredExams = instituteExams.filter((exam) => {
     const matchesSearch = exam.name.toLowerCase().includes(searchQuery.toLowerCase());
