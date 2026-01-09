@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { classes, subjects } from "@/data/mockData";
 import { allCBSEChapters, allCBSETopics, CBSEChapter } from "@/data/cbseMasterData";
 import { courseChapterMappings, courseOwnedChapters, courseOwnedChapterTopics, curriculums } from "@/data/masterData";
+import { cn } from "@/lib/utils";
 
 interface ContentPanelViewProps {
   selectedClassId: string | null;
@@ -222,9 +223,12 @@ export const ContentPanelView = ({
 
   if (!shouldShowContent) {
     return (
-      <div className="flex flex-col h-full bg-card rounded-lg border">
-        <div className="p-3 border-b">
-          <h3 className="font-semibold text-sm text-foreground">Chapters & Topics</h3>
+      <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden">
+        <div className="p-3 border-b border-border/50 bg-muted/30">
+          <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
+            <FileText className="w-4 h-4 text-primary" />
+            Chapters & Topics
+          </h3>
         </div>
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center text-muted-foreground">
@@ -242,24 +246,27 @@ export const ContentPanelView = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-lg border">
-      <div className="p-3 border-b space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-sm text-foreground">
-              {getSubjectName(selectedSubjectId!)}
-              {selectedClassId && trackType === "curriculum" && ` • ${getClassName(selectedClassId)}`}
+    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden">
+      <div className="p-3 border-b border-border/50 bg-muted/30 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
+              <FileText className="w-4 h-4 text-primary shrink-0" />
+              <span className="truncate">
+                {getSubjectName(selectedSubjectId!)}
+                {selectedClassId && trackType === "curriculum" && ` • ${getClassName(selectedClassId)}`}
+              </span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {displayChapters.length} chapters • {totalTopics} topics
             </p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={expandAll}
-              className="h-7 px-2 text-xs"
+              className="h-7 px-2 text-xs hidden sm:flex"
             >
               <ChevronsUpDown className="h-3 w-3 mr-1" />
               Expand
@@ -268,10 +275,23 @@ export const ContentPanelView = ({
               variant="ghost"
               size="sm"
               onClick={collapseAll}
-              className="h-7 px-2 text-xs"
+              className="h-7 px-2 text-xs hidden sm:flex"
             >
               <ChevronsDownUp className="h-3 w-3 mr-1" />
               Collapse
+            </Button>
+            {/* Mobile version */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={expandedChapters.size > 0 ? collapseAll : expandAll}
+              className="h-7 w-7 sm:hidden"
+            >
+              {expandedChapters.size > 0 ? (
+                <ChevronsDownUp className="h-4 w-4" />
+              ) : (
+                <ChevronsUpDown className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -281,13 +301,13 @@ export const ContentPanelView = ({
             placeholder="Search chapters or topics..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-8 text-sm"
+            className="pl-8 h-8 text-sm bg-background"
           />
         </div>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-1">
+        <div className="p-2 sm:p-3 space-y-2">
           {displayChapters.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-8 w-8 mx-auto mb-2 opacity-30" />
@@ -298,37 +318,45 @@ export const ContentPanelView = ({
           ) : trackType === "course" && groupedChapters ? (
             // Course view with grouped chapters
             <>
+              {/* Owned chapters first */}
+              {groupedChapters.owned.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 px-2 py-2 mb-2">
+                    <div className="h-px flex-1 bg-gradient-to-r from-amber-300 to-transparent" />
+                    <span className="text-xs font-semibold text-amber-600 uppercase tracking-wide flex items-center gap-1.5">
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+                      Course Exclusive
+                    </span>
+                    <Badge className="text-[10px] h-5 px-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border-amber-200 hover:bg-amber-100">
+                      {groupedChapters.owned.length}
+                    </Badge>
+                    <div className="h-px flex-1 bg-gradient-to-l from-amber-300 to-transparent" />
+                  </div>
+                  <div className="space-y-2">
+                    {groupedChapters.owned.map((chapter) => renderChapterItem(chapter))}
+                  </div>
+                </div>
+              )}
+              
               {/* Mapped chapters by source */}
               {Object.entries(groupedChapters.mappedBySource).map(([source, chapters]) => (
                 <div key={source} className="mb-4">
-                  <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
-                    <BookMarked className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="flex items-center gap-2 px-2 py-2 mb-2">
+                    <div className="h-px flex-1 bg-gradient-to-r from-teal-300 to-transparent" />
+                    <span className="text-xs font-semibold text-teal-600 uppercase tracking-wide flex items-center gap-1.5">
+                      <BookMarked className="h-3.5 w-3.5" />
                       {source}
                     </span>
-                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                    <Badge className="text-[10px] h-5 px-2 bg-teal-50 text-teal-700 border-teal-200 hover:bg-teal-50">
                       {chapters.length}
                     </Badge>
+                    <div className="h-px flex-1 bg-gradient-to-l from-teal-300 to-transparent" />
                   </div>
-                  {chapters.map((chapter) => renderChapterItem(chapter))}
+                  <div className="space-y-2">
+                    {chapters.map((chapter) => renderChapterItem(chapter))}
+                  </div>
                 </div>
               ))}
-              
-              {/* Owned chapters */}
-              {groupedChapters.owned.length > 0 && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
-                    <Star className="h-3.5 w-3.5 text-amber-500" />
-                    <span className="text-xs font-medium text-amber-600 uppercase tracking-wide">
-                      Course Exclusive
-                    </span>
-                    <Badge className="text-[10px] h-4 px-1.5 bg-amber-100 text-amber-700 hover:bg-amber-100">
-                      {groupedChapters.owned.length}
-                    </Badge>
-                  </div>
-                  {groupedChapters.owned.map((chapter) => renderChapterItem(chapter))}
-                </div>
-              )}
             </>
           ) : (
             // Curriculum view - simple list
@@ -344,47 +372,68 @@ export const ContentPanelView = ({
     const isExpanded = expandedChapters.has(chapter.id);
 
     return (
-      <div key={chapter.id} className={`rounded-md border bg-background ${chapter.isCourseOwned ? 'border-amber-200' : ''}`}>
+      <div 
+        key={chapter.id} 
+        className={cn(
+          "rounded-lg border bg-background shadow-sm overflow-hidden transition-all",
+          chapter.isCourseOwned 
+            ? "border-amber-200/50 bg-gradient-to-r from-amber-50/30 to-orange-50/30" 
+            : "border-border/50"
+        )}
+      >
         <button
           onClick={() => toggleChapter(chapter.id)}
-          className="w-full text-left px-3 py-2.5 flex items-start gap-2 hover:bg-muted/50 transition-colors rounded-t-md"
+          className={cn(
+            "w-full text-left px-3 py-2.5 flex items-start gap-2 transition-colors",
+            isExpanded ? "bg-muted/50" : "hover:bg-muted/30"
+          )}
         >
-          <span className="mt-0.5 text-muted-foreground">
+          <span className={cn(
+            "mt-0.5 p-1 rounded transition-colors",
+            isExpanded ? "bg-primary/10 text-primary" : "text-muted-foreground"
+          )}>
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3.5 w-3.5" />
             ) : (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3.5 w-3.5" />
             )}
           </span>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {chapter.isCourseOwned && (
-                <Star className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+                <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400 flex-shrink-0" />
               )}
               {renderChapterName(chapter)}
             </div>
-            <span className="text-xs text-muted-foreground ml-0">
-              ({topics.length} topics)
-            </span>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className={cn(
+                "text-xs px-2 py-0.5 rounded-full",
+                topics.length > 0 ? "bg-primary/10 text-primary" : "text-muted-foreground"
+              )}>
+                {topics.length} {topics.length === 1 ? 'topic' : 'topics'}
+              </span>
+            </div>
           </div>
         </button>
 
         {isExpanded && topics.length > 0 && (
-          <div className="border-t bg-muted/30 px-3 py-2 space-y-1">
-            {topics.map((topic) => (
+          <div className="border-t border-border/50 bg-muted/20 px-3 py-2 space-y-1">
+            {topics.map((topic, idx) => (
               <div
                 key={topic.id}
-                className="flex items-center gap-2 px-6 py-1.5 text-sm text-muted-foreground"
+                className="flex items-start gap-2 px-4 sm:px-6 py-1.5 text-sm text-muted-foreground hover:bg-background/50 rounded transition-colors"
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                <span>{topic.name}</span>
+                <span className="text-xs text-primary font-medium min-w-[20px] mt-0.5">
+                  {idx + 1}.
+                </span>
+                <span className="text-sm">{topic.name}</span>
               </div>
             ))}
           </div>
         )}
 
         {isExpanded && topics.length === 0 && (
-          <div className="border-t bg-muted/30 px-3 py-3 text-center">
+          <div className="border-t border-border/50 bg-muted/20 px-3 py-3 text-center">
             <span className="text-xs text-muted-foreground">No topics available</span>
           </div>
         )}

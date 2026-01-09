@@ -54,7 +54,7 @@ const AddStaffDialog = ({ open, onOpenChange, member, roles, onSave }: AddStaffD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-[95vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Staff Member" : "Add Staff Member"}</DialogTitle>
         </DialogHeader>
@@ -120,11 +120,11 @@ const AddStaffDialog = ({ open, onOpenChange, member, roles, onSave }: AddStaffD
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button onClick={handleSubmit} disabled={!isValid} className="w-full sm:w-auto">
             {isEditing ? "Save Changes" : "Add Staff"}
           </Button>
         </DialogFooter>
