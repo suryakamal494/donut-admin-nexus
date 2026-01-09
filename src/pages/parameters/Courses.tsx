@@ -41,24 +41,26 @@ const Courses = () => {
           { label: "Courses" }
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-2"
+              className="gap-1.5 sm:gap-2 h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               onClick={() => setShowManageDialog(true)}
             >
-              <Settings className="w-4 h-4" />
-              Manage Courses
+              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Manage Courses</span>
+              <span className="sm:hidden">Manage</span>
             </Button>
             <Button 
               variant="default" 
               size="sm" 
-              className="gap-2"
+              className="gap-1.5 sm:gap-2 h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               onClick={() => navigate("/superadmin/parameters/course-builder")}
             >
-              <Layers className="w-4 h-4" />
-              Course Builder
+              <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Course Builder</span>
+              <span className="sm:hidden">Builder</span>
             </Button>
           </div>
         }
@@ -93,8 +95,8 @@ const Courses = () => {
       </div>
 
       {/* Three-Panel Layout */}
-      <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_200px_1fr] h-auto lg:h-[calc(100vh-440px)] lg:min-h-[450px]">
+      <div className="bg-card rounded-xl sm:rounded-2xl shadow-soft border border-border/50 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[180px_180px_1fr] xl:grid-cols-[220px_200px_1fr] h-auto lg:h-[calc(100vh-440px)] lg:min-h-[450px]">
           <CourseListPanel 
             selectedCourseId={selectedCourseId}
             onSelectCourse={handleCourseSelect}
