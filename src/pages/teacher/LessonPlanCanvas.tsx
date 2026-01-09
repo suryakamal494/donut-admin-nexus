@@ -9,8 +9,6 @@ import {
   WorkspaceToolbar,
   WorkspaceCanvas,
   WorkspaceFooter,
-  BlockPopover,
-  QuizPopover,
   AIAssistDialog,
   type LessonPlanBlock,
   type BlockType,
@@ -158,35 +156,12 @@ const LessonPlanCanvas = () => {
       <WorkspaceToolbar
         onBlockClick={handleBlockClick}
         onAIAssist={() => setShowAIDialog(true)}
+        onAddBlock={handleAddBlock}
         isGenerating={isGenerating}
         activeBlock={activeBlockType}
+        chapter={context.chapter}
+        subject={context.subject}
       />
-
-      {/* Block Popovers - rendered conditionally */}
-      {activeBlockType && activeBlockType !== 'quiz' && (
-        <BlockPopover
-          type={activeBlockType}
-          open={!!activeBlockType}
-          onOpenChange={(open) => !open && setActiveBlockType(null)}
-          onAddBlock={handleAddBlock}
-          chapter={context.chapter}
-          subject={context.subject}
-        >
-          <div />
-        </BlockPopover>
-      )}
-
-      {activeBlockType === 'quiz' && (
-        <QuizPopover
-          open={true}
-          onOpenChange={(open) => !open && setActiveBlockType(null)}
-          onAddBlock={handleAddBlock}
-          chapter={context.chapter}
-          subject={context.subject}
-        >
-          <div />
-        </QuizPopover>
-      )}
 
       <WorkspaceCanvas
         blocks={blocks}
