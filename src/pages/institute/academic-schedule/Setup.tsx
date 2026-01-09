@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { SetupProgressMatrix } from "@/components/academic-schedule";
 import { academicScheduleSetups } from "@/data/academicScheduleData";
-import { getSubjectsByClass } from "@/data/cbseMasterData";
+import { getSubjectsByClass, hindiChapters } from "@/data/cbseMasterData";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -293,6 +293,12 @@ export default function Setup() {
                         <p className="text-sm font-medium truncate">
                           {chapter.chapterName}
                         </p>
+                        {/* Show English transliteration for Hindi chapters */}
+                        {selectedSubject === "8" && chapter.chapterName.match(/[\u0900-\u097F]/) && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {hindiChapters.find(h => h.id === chapter.chapterId)?.name || ''}
+                          </p>
+                        )}
                       </div>
                       
                       <div className="flex items-center gap-2 shrink-0">
