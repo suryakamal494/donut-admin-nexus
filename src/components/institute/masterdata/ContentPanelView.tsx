@@ -247,7 +247,7 @@ export const ContentPanelView = ({
 
   return (
     <div className="flex flex-col bg-card rounded-xl border shadow-sm overflow-hidden min-h-[400px] max-h-[70vh]">
-      <div className="p-3 border-b border-border/50 bg-muted/30 space-y-3 shrink-0">
+      <div className="p-3 border-b border-border/50 bg-muted/30 space-y-3 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
@@ -306,7 +306,7 @@ export const ContentPanelView = ({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 overflow-auto">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="p-2 sm:p-3 space-y-2">
           {displayChapters.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
