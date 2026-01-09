@@ -170,17 +170,17 @@ const ReviewQuestions = () => {
       </div>
 
       {/* Stats */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <Badge variant="outline" className="text-base px-4 py-2 bg-card">
-          <FileText className="w-4 h-4 mr-2" />
-          {reviewQuestions.length} Questions to Review
+      <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <Badge variant="outline" className="text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2 bg-card">
+          <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+          {reviewQuestions.length} <span className="hidden xs:inline">Questions to</span> Review
         </Badge>
-        <Badge variant="outline" className="text-base px-4 py-2 bg-success/10 text-success border-success/20">
-          <CheckCircle className="w-4 h-4 mr-2" />
+        <Badge variant="outline" className="text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2 bg-success/10 text-success border-success/20">
+          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           {selectedCount} Selected
         </Badge>
         {excludedIds.size > 0 && (
-          <Badge variant="outline" className="text-base px-4 py-2 bg-muted">
+          <Badge variant="outline" className="text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2 bg-muted">
             {excludedIds.size} Excluded
           </Badge>
         )}
@@ -191,16 +191,17 @@ const ReviewQuestions = () => {
         {reviewQuestions.map((question, index) => (
           <div key={question.id} className="relative">
             {/* Exclude Checkbox */}
-            <div className="absolute -left-3 top-5 z-10 bg-card rounded-lg shadow-md p-2 border border-border/50">
-              <div className="flex items-center gap-2">
+            <div className="absolute left-0 sm:-left-3 top-3 sm:top-5 z-10 bg-card rounded-lg shadow-md p-1.5 sm:p-2 border border-border/50">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <Checkbox
                   id={`exclude-${question.id}`}
                   checked={!excludedIds.has(question.id)}
                   onCheckedChange={() => toggleExclude(question.id)}
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                 />
                 <label 
                   htmlFor={`exclude-${question.id}`}
-                  className="text-xs font-medium text-muted-foreground cursor-pointer"
+                  className="text-[10px] sm:text-xs font-medium text-muted-foreground cursor-pointer hidden sm:inline"
                 >
                   {excludedIds.has(question.id) ? "Excluded" : "Include"}
                 </label>

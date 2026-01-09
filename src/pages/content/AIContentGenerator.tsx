@@ -130,12 +130,12 @@ const AIContentGenerator = () => {
   };
 
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center mb-8">
+    <div className="flex items-center justify-center mb-6 sm:mb-8">
       {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center">
           <div
             className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all",
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base transition-all",
               currentStep >= step
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground"
@@ -146,7 +146,7 @@ const AIContentGenerator = () => {
           {step < 3 && (
             <div
               className={cn(
-                "w-16 md:w-24 h-1 mx-2",
+                "w-8 sm:w-16 md:w-24 h-0.5 sm:h-1 mx-1 sm:mx-2",
                 currentStep > step ? "bg-primary" : "bg-muted"
               )}
             />
@@ -322,22 +322,22 @@ const AIContentGenerator = () => {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Label>Presentation Style</Label>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2 sm:space-y-3">
+          <Label className="text-sm">Presentation Style</Label>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {stylePresets.map((style) => (
               <button
                 key={style.id}
                 onClick={() => setStylePreset(style.id)}
                 className={cn(
-                  "p-4 rounded-xl border text-left transition-all",
+                  "p-3 sm:p-4 rounded-lg sm:rounded-xl border text-left transition-all",
                   stylePreset === style.id
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
                 )}
               >
-                <p className="font-medium">{style.label}</p>
-                <p className="text-xs text-muted-foreground mt-1">{style.description}</p>
+                <p className="font-medium text-sm">{style.label}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{style.description}</p>
               </button>
             ))}
           </div>

@@ -151,7 +151,7 @@ export const QuestionCard = ({
 
   return (
     <div className={cn(
-      "bg-card rounded-2xl p-5 shadow-soft border hover:shadow-lg transition-shadow",
+      "bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-soft border hover:shadow-lg transition-shadow",
       isInstituteMode 
         ? isGlobal 
           ? "border-blue-200/50" 

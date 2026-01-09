@@ -43,63 +43,65 @@ export const GrandTestCard = ({
   const pattern = examPatternConfig[test.pattern];
   
   return (
-    <div className="group relative bg-card rounded-xl border border-border/50 p-5 hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+    <div className="group relative bg-card rounded-xl border border-border/50 p-4 sm:p-5 hover:shadow-lg hover:border-primary/20 transition-all duration-300">
       {/* Creation Method Badge */}
-      <div className="absolute top-3 right-3">
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
         {test.creationMethod === "ai" ? (
-          <div className="flex items-center gap-1 text-xs bg-donut-purple/10 text-donut-purple px-2 py-0.5 rounded-full">
-            <Sparkles className="w-3 h-3" />
-            <span>AI Generated</span>
+          <div className="flex items-center gap-1 text-[10px] sm:text-xs bg-donut-purple/10 text-donut-purple px-1.5 sm:px-2 py-0.5 rounded-full">
+            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span className="hidden xs:inline">AI Generated</span>
+            <span className="xs:hidden">AI</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1 text-xs bg-donut-teal/10 text-donut-teal px-2 py-0.5 rounded-full">
-            <FileUp className="w-3 h-3" />
-            <span>PDF Import</span>
+          <div className="flex items-center gap-1 text-[10px] sm:text-xs bg-donut-teal/10 text-donut-teal px-1.5 sm:px-2 py-0.5 rounded-full">
+            <FileUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span className="hidden xs:inline">PDF Import</span>
+            <span className="xs:hidden">PDF</span>
           </div>
         )}
       </div>
       
       {/* Header */}
-      <div className="pr-24 mb-3">
-        <h4 className="font-semibold text-foreground mb-1 line-clamp-2">{test.name}</h4>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
+      <div className="pr-16 sm:pr-24 mb-2 sm:mb-3">
+        <h4 className="font-semibold text-sm sm:text-base text-foreground mb-1 line-clamp-2">{test.name}</h4>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] sm:text-xs">
             {patternLabels[test.pattern]}
           </Badge>
-          <Badge className={status.className}>{status.label}</Badge>
+          <Badge className={`${status.className} text-[10px] sm:text-xs`}>{status.label}</Badge>
         </div>
       </div>
       
       {/* Stats Row */}
-      <div className="flex flex-wrap items-center gap-3 mb-3 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center gap-1">
-          <HelpCircle className="w-3.5 h-3.5" />
+          <HelpCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           <span>{test.totalQuestions} Qs</span>
         </div>
         <div className="flex items-center gap-1">
-          <FileText className="w-3.5 h-3.5" />
+          <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           <span>{test.totalMarks} Marks</span>
         </div>
         <div className="flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5" />
+          <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           <span>{test.duration} min</span>
         </div>
       </div>
       
       {/* Subjects */}
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-2 sm:mb-3">
         {test.subjects.map((subject) => (
-          <SubjectBadge key={subject} subject={subject} size="sm" />
+          <SubjectBadge key={subject} subject={subject} size="xs" />
         ))}
       </div>
       
       {/* Status-specific Information */}
-      <div className="mb-3 space-y-1.5">
+      <div className="mb-2 sm:mb-3 space-y-1 sm:space-y-1.5">
         {/* Sharing Config */}
         {test.status !== "completed" && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+            <Building2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="truncate">
               {test.sharingConfig === "none" && "Not configured for sharing"}
               {test.sharingConfig === "all" && "Shared with all institutes"}
               {test.sharingConfig === "selected" && `Shared with ${test.sharedInstitutes?.length || 0} institutes`}
@@ -109,8 +111,8 @@ export const GrandTestCard = ({
         
         {/* Scheduled Date */}
         {test.status === "scheduled" && test.scheduledDate && (
-          <div className="flex items-center gap-1.5 text-xs text-warning">
-            <Calendar className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-warning">
+            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
             <span>Scheduled for {format(new Date(test.scheduledDate), "dd MMM yyyy")}</span>
           </div>
         )}
@@ -118,16 +120,16 @@ export const GrandTestCard = ({
         {/* Completed Info */}
         {test.status === "completed" && (
           <>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Calendar className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+              <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span>Completed on {format(new Date(test.completedDate!), "dd MMM yyyy")}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Users className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+              <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span>{test.participantCount?.toLocaleString()} participants</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs">
-              <Award className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs">
+              <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span className={test.ranksPublished ? "text-success" : "text-warning"}>
                 {test.ranksPublished ? "Ranks Published" : "Ranks Pending"}
               </span>
@@ -137,14 +139,14 @@ export const GrandTestCard = ({
       </div>
       
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-1 pt-3 border-t border-border/50">
+      <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 pt-2 sm:pt-3 border-t border-border/50">
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-8 text-xs px-2"
+          className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
           onClick={() => onView?.(test)}
         >
-          <Eye className="w-3.5 h-3.5 mr-1" />
+          <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
           View
         </Button>
         
@@ -153,29 +155,30 @@ export const GrandTestCard = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 text-xs px-2"
+              className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
               onClick={() => onEdit?.(test)}
             >
-              <Edit className="w-3.5 h-3.5 mr-1" />
+              <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
               Edit
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 text-xs px-2"
+              className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
               onClick={() => onSchedule?.(test)}
             >
-              <CalendarClock className="w-3.5 h-3.5 mr-1" />
-              Schedule
+              <CalendarClock className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
+              <span className="hidden xs:inline">Schedule</span>
+              <span className="xs:hidden">Sched</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 text-xs px-2"
+              className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
               onClick={() => onAudience?.(test)}
             >
-              <Users className="w-3.5 h-3.5 mr-1" />
-              Audience
+              <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
+              <span className="hidden sm:inline">Audience</span>
             </Button>
           </>
         )}
@@ -184,10 +187,10 @@ export const GrandTestCard = ({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 text-xs px-2 text-destructive hover:text-destructive"
+            className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2 text-destructive hover:text-destructive"
             onClick={() => onDelete?.(test)}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </Button>
         )}
         
@@ -196,21 +199,22 @@ export const GrandTestCard = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 text-xs px-2"
+              className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
               onClick={() => onStats?.(test)}
             >
-              <BarChart3 className="w-3.5 h-3.5 mr-1" />
+              <BarChart3 className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
               Stats
             </Button>
             {!test.ranksPublished && (
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 text-xs px-2 text-primary hover:text-primary"
+                className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2 text-primary hover:text-primary"
                 onClick={() => onPublishRanks?.(test)}
               >
-                <Award className="w-3.5 h-3.5 mr-1" />
-                Publish Ranks
+                <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" />
+                <span className="hidden sm:inline">Publish Ranks</span>
+                <span className="sm:hidden">Ranks</span>
               </Button>
             )}
           </>
