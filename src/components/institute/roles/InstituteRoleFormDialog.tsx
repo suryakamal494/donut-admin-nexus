@@ -100,12 +100,12 @@ const InstituteRoleFormDialog = ({ open, onOpenChange, role, onSave }: Institute
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-4 sm:p-6 pb-0">
           <DialogTitle>{isEditing ? "Edit Role" : "Create New Role"}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 px-4 sm:px-6">
           <div className="space-y-6 py-4">
             {/* Basic Info */}
             <div className="space-y-4">
@@ -245,11 +245,11 @@ const InstituteRoleFormDialog = ({ open, onOpenChange, role, onSave }: Institute
           </div>
         </ScrollArea>
 
-        <DialogFooter className="pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="p-4 sm:p-6 pt-4 border-t flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button onClick={handleSubmit} disabled={!isValid} className="w-full sm:w-auto">
             {isEditing ? "Save Changes" : "Create Role"}
           </Button>
         </DialogFooter>

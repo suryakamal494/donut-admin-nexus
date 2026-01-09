@@ -159,68 +159,83 @@ const InstituteRoles = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Roles & Access"
         description="Manage role types and assign staff members"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/institute/dashboard" },
+          { label: "Roles & Access" },
+        ]}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <TabsList>
-            <TabsTrigger value="roles" className="gap-2">
-              <Shield className="w-4 h-4" />
-              Role Types
-            </TabsTrigger>
-            <TabsTrigger value="staff" className="gap-2">
-              <Users className="w-4 h-4" />
-              Staff Members
-            </TabsTrigger>
-          </TabsList>
+        {/* Controls Row - Stack on mobile */}
+        <div className="flex flex-col gap-3 sm:gap-4">
+          {/* Tabs - full width on mobile */}
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="h-10 p-1 w-full sm:w-auto inline-flex">
+              <TabsTrigger value="roles" className="gap-1.5 sm:gap-2 flex-1 sm:flex-none px-3 sm:px-4">
+                <Shield className="w-4 h-4" />
+                <span className="hidden xs:inline">Role Types</span>
+                <span className="xs:hidden">Roles</span>
+              </TabsTrigger>
+              <TabsTrigger value="staff" className="gap-1.5 sm:gap-2 flex-1 sm:flex-none px-3 sm:px-4">
+                <Users className="w-4 h-4" />
+                <span className="hidden xs:inline">Staff Members</span>
+                <span className="xs:hidden">Staff</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1 sm:w-64">
+          {/* Search + Button - stack on mobile */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder={activeTab === "roles" ? "Search roles..." : "Search staff..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                className="pl-9 h-9"
               />
             </div>
             {activeTab === "roles" ? (
-              <Button onClick={handleCreateRole} className="gap-2">
+              <Button onClick={handleCreateRole} className="gap-2 h-9 w-full sm:w-auto shrink-0">
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">New Role</span>
+                <span>New Role</span>
               </Button>
             ) : (
-              <Button onClick={handleAddStaff} className="gap-2">
+              <Button onClick={handleAddStaff} className="gap-2 h-9 w-full sm:w-auto shrink-0">
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add Staff</span>
+                <span>Add Staff</span>
               </Button>
             )}
           </div>
         </div>
 
-        <TabsContent value="roles" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRoles.map((role) => (
-              <InstituteRoleCard
-                key={role.id}
-                role={role}
-                onEdit={handleEditRole}
-                onDelete={handleDeleteRole}
-              />
-            ))}
-          </div>
-          {filteredRoles.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              No roles found matching your search.
+        <TabsContent value="roles" className="mt-4 sm:mt-6">
+          {filteredRoles.length === 0 ? (
+            <div className="text-center py-12 bg-muted/30 rounded-lg border border-dashed">
+              <Shield className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
+              <p className="text-muted-foreground">
+                {searchQuery ? "No roles match your search" : "No roles found"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+              {filteredRoles.map((role) => (
+                <InstituteRoleCard
+                  key={role.id}
+                  role={role}
+                  onEdit={handleEditRole}
+                  onDelete={handleDeleteRole}
+                />
+              ))}
             </div>
           )}
         </TabsContent>
 
-        <TabsContent value="staff" className="mt-6">
+        <TabsContent value="staff" className="mt-4 sm:mt-6">
           <InstituteStaffTable
             members={filteredMembers}
             roles={roles}
