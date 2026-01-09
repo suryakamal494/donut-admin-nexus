@@ -1,11 +1,41 @@
+import { useState, lazy, Suspense } from "react";
 import { PageHeader } from "@/components/ui/page-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarRange, Layout, GitCompareArrows } from "lucide-react";
-import { YearOverviewContent } from "./YearOverview";
-import { TeachingViewContent } from "./TeachingView";
-import { SectionAlignmentContent } from "./SectionAlignment";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load heavy tab content components
+const YearOverviewContent = lazy(() => 
+  import("./YearOverview").then(module => ({ default: module.YearOverviewContent }))
+);
+const TeachingViewContent = lazy(() => 
+  import("./TeachingView").then(module => ({ default: module.TeachingViewContent }))
+);
+const SectionAlignmentContent = lazy(() => 
+  import("./SectionAlignment").then(module => ({ default: module.SectionAlignmentContent }))
+);
+
+// Loading skeleton for tab content
+function TabContentSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="flex gap-4">
+        <Skeleton className="h-10 w-40" />
+        <Skeleton className="h-10 w-40" />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <Skeleton key={i} className="h-24 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
 
 export default function AcademicViews() {
+  const [activeTab, setActiveTab] = useState("year-overview");
+
   return (
     <div className="space-y-4 md:space-y-6">
       <PageHeader
@@ -17,7 +47,7 @@ export default function AcademicViews() {
         ]}
       />
 
-      <Tabs defaultValue="year-overview" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full grid grid-cols-3 lg:w-auto lg:inline-flex bg-white/80 backdrop-blur-sm border border-orange-100/50 p-1 rounded-lg h-auto">
           <TabsTrigger 
             value="year-overview"
@@ -45,17 +75,14 @@ export default function AcademicViews() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="year-overview" className="mt-4">
-          <YearOverviewContent />
-        </TabsContent>
-
-        <TabsContent value="teaching-view" className="mt-4">
-          <TeachingViewContent />
-        </TabsContent>
-
-        <TabsContent value="section-alignment" className="mt-4">
-          <SectionAlignmentContent />
-        </TabsContent>
+        {/* Conditional rendering - only load active tab */}
+        <div className="mt-4">
+          <Suspense fallback={<TabContentSkeleton />}>
+            {activeTab === "year-overview" && <YearOverviewContent />}
+            {activeTab === "teaching-view" && <TeachingViewContent />}
+            {activeTab === "section-alignment" && <SectionAlignmentContent />}
+          </Suspense>
+        </div>
       </Tabs>
     </div>
   );
