@@ -107,19 +107,19 @@ export const TeacherTimetableGrid = ({
                     "min-w-[120px] p-2 text-center border-b transition-colors",
                     day.isToday 
                       ? "bg-gradient-to-b from-primary/15 to-primary/5" 
-                      : "bg-white"
+                      : "bg-muted/30"
                   )}
                 >
                   <div className="flex flex-col items-center gap-0.5">
                     <span className={cn(
                       "text-[10px] font-semibold uppercase tracking-wide",
-                      day.isToday ? "text-primary" : "text-black"
+                      day.isToday ? "text-primary" : "text-muted-foreground"
                     )}>
                       {day.shortDayName}
                     </span>
                     <span className={cn(
                       "text-lg font-bold leading-none",
-                      day.isToday ? "text-primary" : "text-black"
+                      day.isToday ? "text-primary" : "text-foreground"
                     )}>
                       {day.dayNum}
                     </span>
