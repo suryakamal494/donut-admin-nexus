@@ -306,7 +306,7 @@ export const ContentPanelView = ({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0">
+      <ScrollArea className="flex-1 overflow-auto">
         <div className="p-2 sm:p-3 space-y-2">
           {displayChapters.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
