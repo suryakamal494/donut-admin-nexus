@@ -18,3 +18,10 @@ export type {
 
 // Export constants
 export { NO_TEACH_REASON_LABELS } from "@/types/academicSchedule";
+
+// Export components
+export { BatchPlanAccordion } from "./BatchPlanAccordion";
+export { SetupProgressMatrix } from "./SetupProgressMatrix";
+export { WeekNavigator } from "./WeekNavigator";
+export { UrgencySection } from "./UrgencySection";
+export { ProgressBatchCard } from "./ProgressBatchCard";
