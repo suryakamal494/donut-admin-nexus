@@ -149,45 +149,40 @@ const ViewTimetable = () => {
         ]}
       />
 
-      {/* Filter Bar */}
+      {/* Filter Bar - Compact */}
       <Card>
-        <CardContent className="py-3 sm:py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
-            {/* Left: View Toggle + Navigator */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+        <CardContent className="py-2 px-3 sm:py-3 sm:px-4">
+          {/* Mobile Layout */}
+          <div className="md:hidden space-y-2">
+            {/* Row 1: View toggle + Navigator */}
+            <div className="flex items-center gap-2">
               <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'weekly' | 'monthly')}>
-                <TabsList className="w-full sm:w-auto">
-                  <TabsTrigger value="weekly" className="flex-1 sm:flex-none">Weekly</TabsTrigger>
-                  <TabsTrigger value="monthly" className="flex-1 sm:flex-none">Monthly</TabsTrigger>
+                <TabsList className="h-8">
+                  <TabsTrigger value="weekly" className="h-7 px-2 text-xs">Weekly</TabsTrigger>
+                  <TabsTrigger value="monthly" className="h-7 px-2 text-xs">Monthly</TabsTrigger>
                 </TabsList>
               </Tabs>
-
-              <div className="flex items-center justify-between sm:justify-start gap-2">
-                <Button variant="outline" size="icon" onClick={goToPrevious} className="shrink-0">
+              <div className="flex items-center gap-1 flex-1 justify-end">
+                <Button variant="outline" size="icon" onClick={goToPrevious} className="h-8 w-8 shrink-0">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <div className="min-w-0 flex-1 sm:flex-none sm:min-w-[140px] lg:min-w-[180px] text-center font-medium text-sm sm:text-base truncate">
+                <div className="min-w-[100px] text-center font-medium text-xs truncate">
                   {viewMode === 'weekly' 
-                    ? `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`
-                    : format(currentDate, 'MMMM yyyy')
+                    ? `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'd')}`
+                    : format(currentDate, 'MMM yyyy')
                   }
                 </div>
-                <Button variant="outline" size="icon" onClick={goToNext} className="shrink-0">
+                <Button variant="outline" size="icon" onClick={goToNext} className="h-8 w-8 shrink-0">
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
-
-              <Button variant="outline" size="sm" onClick={goToToday} className="hidden sm:flex">
-                <CalendarIcon className="w-4 h-4 mr-2" />
-                Today
-              </Button>
             </div>
-
-            {/* Right: Filters + Export */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            
+            {/* Row 2: Filters + Actions (horizontal scroll) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
               <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-                <SelectTrigger className="w-full sm:w-[140px] lg:w-[160px]">
-                  <SelectValue placeholder="Select Batch" />
+                <SelectTrigger className="h-8 w-[110px] shrink-0 text-xs">
+                  <SelectValue placeholder="Batch" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Batches</SelectItem>
@@ -196,10 +191,10 @@ const ViewTimetable = () => {
                   ))}
                 </SelectContent>
               </Select>
-
+              
               <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
-                <SelectTrigger className="w-full sm:w-[140px] lg:w-[160px]">
-                  <SelectValue placeholder="Select Teacher" />
+                <SelectTrigger className="h-8 w-[110px] shrink-0 text-xs">
+                  <SelectValue placeholder="Teacher" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Teachers</SelectItem>
@@ -208,43 +203,144 @@ const ViewTimetable = () => {
                   ))}
                 </SelectContent>
               </Select>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Button variant="outline" onClick={handlePrint} className="print:hidden flex-1 sm:flex-none" size="sm">
-                  <Printer className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Export PDF</span>
-                </Button>
-
-                {/* Edit button - only for future weeks */}
-                {!isPastWeek && viewMode === 'weekly' && (
-                  <Button onClick={handleEditWeek} className="print:hidden flex-1 sm:flex-none" size="sm">
-                    <Pencil className="w-4 h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Edit Week</span>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" onClick={goToToday} className="h-8 w-8 shrink-0 print:hidden">
+                    <CalendarIcon className="w-4 h-4" />
                   </Button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Past/Future Week Indicator */}
-          {viewMode === 'weekly' && (isPastWeek || isFutureWeek) && (
-            <div className={cn(
-              "mt-3 pt-3 border-t flex items-center gap-2",
-              isPastWeek ? "text-muted-foreground" : "text-primary"
-            )}>
-              {isPastWeek ? (
-                <>
-                  <Lock className="w-4 h-4" />
-                  <span className="text-sm">This is a past week. Timetable is read-only.</span>
-                </>
-              ) : (
-                <>
-                  <Pencil className="w-4 h-4" />
-                  <span className="text-sm">This is a future week. You can edit this timetable.</span>
-                </>
+                </TooltipTrigger>
+                <TooltipContent>Today</TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" onClick={handlePrint} className="h-8 w-8 shrink-0 print:hidden">
+                    <Printer className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Export PDF</TooltipContent>
+              </Tooltip>
+              
+              {!isPastWeek && viewMode === 'weekly' && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button size="icon" onClick={handleEditWeek} className="h-8 w-8 shrink-0 print:hidden">
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit Week</TooltipContent>
+                </Tooltip>
               )}
             </div>
-          )}
+            
+            {/* Past/Future Week Indicator - Mobile */}
+            {viewMode === 'weekly' && (isPastWeek || isFutureWeek) && (
+              <div className={cn(
+                "flex items-center gap-1.5 text-xs",
+                isPastWeek ? "text-muted-foreground" : "text-primary"
+              )}>
+                {isPastWeek ? <Lock className="w-3 h-3" /> : <Pencil className="w-3 h-3" />}
+                <span>{isPastWeek ? "Past week (read-only)" : "Future week (editable)"}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Tablet+ Layout: Single Compact Row */}
+          <div className="hidden md:flex items-center gap-2 flex-wrap">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'weekly' | 'monthly')}>
+              <TabsList className="h-8">
+                <TabsTrigger value="weekly" className="h-7 px-3 text-xs">Weekly</TabsTrigger>
+                <TabsTrigger value="monthly" className="h-7 px-3 text-xs">Monthly</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="flex items-center gap-1">
+              <Button variant="outline" size="icon" onClick={goToPrevious} className="h-8 w-8">
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <div className="min-w-[120px] lg:min-w-[150px] text-center font-medium text-sm truncate">
+                {viewMode === 'weekly' 
+                  ? `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d')}`
+                  : format(currentDate, 'MMMM yyyy')
+                }
+              </div>
+              <Button variant="outline" size="icon" onClick={goToNext} className="h-8 w-8">
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={goToToday} className="h-8 w-8 print:hidden">
+                  <CalendarIcon className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Today</TooltipContent>
+            </Tooltip>
+            
+            <div className="w-px h-5 bg-border mx-1" />
+            
+            <Select value={selectedBatch} onValueChange={setSelectedBatch}>
+              <SelectTrigger className="h-8 w-[120px] lg:w-[140px] text-xs">
+                <SelectValue placeholder="Batch" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Batches</SelectItem>
+                {batches.map(batch => (
+                  <SelectItem key={batch.id} value={batch.id}>{batch.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
+              <SelectTrigger className="h-8 w-[120px] lg:w-[140px] text-xs">
+                <SelectValue placeholder="Teacher" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Teachers</SelectItem>
+                {teachers.map(teacher => (
+                  <SelectItem key={teacher.id} value={teacher.id}>{teacher.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <div className="w-px h-5 bg-border mx-1" />
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 print:hidden">
+                  <Printer className="w-4 h-4 lg:mr-2" />
+                  <span className="hidden lg:inline text-xs">Export</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="lg:hidden">Export PDF</TooltipContent>
+            </Tooltip>
+            
+            {!isPastWeek && viewMode === 'weekly' && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" onClick={handleEditWeek} className="h-8 print:hidden">
+                    <Pencil className="w-4 h-4 lg:mr-2" />
+                    <span className="hidden lg:inline text-xs">Edit</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="lg:hidden">Edit Week</TooltipContent>
+              </Tooltip>
+            )}
+            
+            {/* Past/Future Week Indicator - Tablet+ */}
+            {viewMode === 'weekly' && (isPastWeek || isFutureWeek) && (
+              <div className={cn(
+                "flex items-center gap-1.5 text-xs ml-auto",
+                isPastWeek ? "text-muted-foreground" : "text-primary"
+              )}>
+                {isPastWeek ? <Lock className="w-3 h-3" /> : <Pencil className="w-3 h-3" />}
+                <span className="hidden lg:inline">{isPastWeek ? "Past week (read-only)" : "Future week (editable)"}</span>
+                <span className="lg:hidden">{isPastWeek ? "Read-only" : "Editable"}</span>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
