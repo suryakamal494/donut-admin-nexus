@@ -140,6 +140,7 @@ const App = () => (
             <Route path="teachers/bulk-upload" element={<BulkUploadTeachers />} />
             <Route path="students" element={<InstituteStudents />} />
             <Route path="students/add" element={<AddStudent />} />
+            <Route path="students/:studentId/edit" element={<AddStudent />} />
             <Route path="timetable" element={<InstituteTimetable />} />
             <Route path="timetable/setup" element={<InstituteTimetableSetup />} />
             <Route path="timetable/upload" element={<InstituteTimetableUpload />} />

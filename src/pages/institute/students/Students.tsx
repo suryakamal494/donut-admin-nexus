@@ -5,7 +5,6 @@ import {
   Search,
   MoreVertical,
   Users,
-  ChevronDown,
   ChevronRight,
   Edit,
   Trash2,
@@ -36,8 +35,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PageHeader } from "@/components/ui/page-header";
-import { students, batches } from "@/data/instituteData";
+import { students, batches, Student } from "@/data/instituteData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +59,7 @@ const Students = () => {
   const [expandedBatches, setExpandedBatches] = useState<string[]>(
     batchIdFilter ? [batchIdFilter] : batches.slice(0, 2).map((b) => b.id)
   );
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
   // Group students by batch
   const studentsByBatch = batches.reduce((acc, batch) => {
@@ -95,6 +105,13 @@ const Students = () => {
 
   const handleResetPassword = (studentName: string) => {
     toast.success(`Password reset for ${studentName}`);
+  };
+
+  const handleDeleteStudent = () => {
+    if (studentToDelete) {
+      toast.success(`${studentToDelete.name} has been removed`);
+      setStudentToDelete(null);
+    }
   };
 
   return (
@@ -151,24 +168,15 @@ const Students = () => {
         </Card>
       </div>
 
-      {/* Search and Actions */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, username, or roll number..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => navigate("/institute/students/bulk-upload")}
-          className="shrink-0"
-        >
-          Bulk Upload
-        </Button>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by name, username, or roll number..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {/* Students grouped by Batch */}
@@ -223,7 +231,7 @@ const Students = () => {
               <CollapsibleContent>
                 <CardContent className="pt-0">
                   {batchStudents.length > 0 ? (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
                       <Table className="min-w-[500px]">
                         <TableHeader>
                           <TableRow>
@@ -268,12 +276,17 @@ const Students = () => {
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
-                                    <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Edit</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate(`/institute/students/${student.id}/edit`)}>
+                                      <Edit className="h-4 w-4 mr-2" />Edit
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => handleResetPassword(student.name)}>
                                       <Key className="h-4 w-4 mr-2" />Reset Password
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive">
+                                    <DropdownMenuItem 
+                                      className="text-destructive"
+                                      onClick={() => setStudentToDelete(student)}
+                                    >
                                       <Trash2 className="h-4 w-4 mr-2" />Remove
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
@@ -324,6 +337,28 @@ const Students = () => {
           </Card>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!studentToDelete} onOpenChange={() => setStudentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Student</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {studentToDelete?.name} from this batch? 
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteStudent} 
+              className="w-full sm:w-auto bg-destructive hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
