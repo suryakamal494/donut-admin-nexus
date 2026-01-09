@@ -58,30 +58,31 @@ const Institutes = () => {
         breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Institutes" }]}
         actions={
           <Link to="/superadmin/institutes/create">
-            <Button className="gradient-button gap-2">
-              <Plus className="w-4 h-4" />
-              Add Institute
+            <Button size="sm" className="gradient-button gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Add Institute</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </Link>
         }
       />
 
       {/* Filters */}
-      <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-soft border border-border/50">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search institutes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-9 sm:h-10 text-sm"
             />
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Select value={planFilter} onValueChange={setPlanFilter}>
-              <SelectTrigger className="w-40">
-                <Filter className="w-4 h-4 mr-2" />
+              <SelectTrigger className="flex-1 sm:w-32 md:w-40 h-9 text-xs sm:text-sm">
+                <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                 <SelectValue placeholder="Plan" />
               </SelectTrigger>
               <SelectContent>
@@ -92,7 +93,7 @@ const Institutes = () => {
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="flex-1 sm:w-32 md:w-40 h-9 text-xs sm:text-sm">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -109,16 +110,16 @@ const Institutes = () => {
       {/* Table */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[500px]">
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead>Institute</TableHead>
-                <TableHead className="hidden md:table-cell">Admin</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-center hidden sm:table-cell">Students</TableHead>
-                <TableHead className="text-center hidden sm:table-cell">Teachers</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-xs sm:text-sm">Institute</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Admin</TableHead>
+                <TableHead className="text-xs sm:text-sm">Plan</TableHead>
+                <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                <TableHead className="text-center hidden md:table-cell text-xs sm:text-sm">Students</TableHead>
+                <TableHead className="text-center hidden md:table-cell text-xs sm:text-sm">Teachers</TableHead>
+                <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -126,14 +127,14 @@ const Institutes = () => {
                 <TableRow key={institute.id} className="hover:bg-muted/20">
                   <TableCell>
                     <div>
-                      <p className="font-medium text-foreground">{institute.name}</p>
-                      <p className="text-sm text-muted-foreground">{institute.code}</p>
+                      <p className="font-medium text-foreground text-xs sm:text-sm">{institute.name}</p>
+                      <p className="text-[10px] sm:text-sm text-muted-foreground">{institute.code}</p>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden lg:table-cell">
                     <div>
-                      <p className="text-sm font-medium">{institute.adminName}</p>
-                      <p className="text-xs text-muted-foreground">{institute.adminEmail}</p>
+                      <p className="text-xs sm:text-sm font-medium">{institute.adminName}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">{institute.adminEmail}</p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -142,16 +143,16 @@ const Institutes = () => {
                   <TableCell>
                     <StatusBadge status={institute.status} />
                   </TableCell>
-                  <TableCell className="text-center hidden sm:table-cell">
+                  <TableCell className="text-center hidden md:table-cell">
                     <div className="flex items-center justify-center gap-1">
-                      <GraduationCap className="w-4 h-4 text-muted-foreground" />
-                      <span>{institute.students.toLocaleString()}</span>
+                      <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                      <span className="text-xs sm:text-sm">{institute.students.toLocaleString()}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center hidden sm:table-cell">
+                  <TableCell className="text-center hidden md:table-cell">
                     <div className="flex items-center justify-center gap-1">
-                      <Users className="w-4 h-4 text-muted-foreground" />
-                      <span>{institute.teachers}</span>
+                      <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                      <span className="text-xs sm:text-sm">{institute.teachers}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
