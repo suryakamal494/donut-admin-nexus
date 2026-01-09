@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Plus, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -27,27 +27,26 @@ const Roles = () => {
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<SuperAdminTeamMember | null>(null);
 
-  // Role handlers
-  const handleCreateRole = () => {
+  const handleCreateRole = useCallback(() => {
     setEditingRole(null);
     setRoleDialogOpen(true);
-  };
+  }, []);
 
-  const handleEditRole = (role: SuperAdminRole) => {
+  const handleEditRole = useCallback((role: SuperAdminRole) => {
     setEditingRole(role);
     setRoleDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeleteRole = (role: SuperAdminRole) => {
+  const handleDeleteRole = useCallback((role: SuperAdminRole) => {
     if (role.isSystem) {
       toast.error("System roles cannot be deleted");
       return;
     }
     setRoles(prev => prev.filter(r => r.id !== role.id));
     toast.success(`Role "${role.name}" deleted`);
-  };
+  }, []);
 
-  const handleSaveRole = (roleData: Omit<SuperAdminRole, "id" | "memberCount" | "createdAt">) => {
+  const handleSaveRole = useCallback((roleData: Omit<SuperAdminRole, "id" | "memberCount" | "createdAt">) => {
     if (editingRole) {
       setRoles(prev => prev.map(r => 
         r.id === editingRole.id 
@@ -65,25 +64,24 @@ const Roles = () => {
       setRoles(prev => [...prev, newRole]);
       toast.success(`Role "${roleData.name}" created`);
     }
-  };
+  }, [editingRole]);
 
-  // Member handlers
-  const handleAddMember = () => {
+  const handleAddMember = useCallback(() => {
     setEditingMember(null);
     setMemberDialogOpen(true);
-  };
+  }, []);
 
-  const handleEditMember = (member: SuperAdminTeamMember) => {
+  const handleEditMember = useCallback((member: SuperAdminTeamMember) => {
     setEditingMember(member);
     setMemberDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeleteMember = (member: SuperAdminTeamMember) => {
+  const handleDeleteMember = useCallback((member: SuperAdminTeamMember) => {
     setMembers(prev => prev.filter(m => m.id !== member.id));
     toast.success(`Member "${member.name}" removed`);
-  };
+  }, []);
 
-  const handleSaveMember = (memberData: Omit<SuperAdminTeamMember, "id" | "createdAt">) => {
+  const handleSaveMember = useCallback((memberData: Omit<SuperAdminTeamMember, "id" | "createdAt">) => {
     if (editingMember) {
       setMembers(prev => prev.map(m => 
         m.id === editingMember.id 
@@ -107,7 +105,7 @@ const Roles = () => {
       ));
       toast.success(`Member "${memberData.name}" added`);
     }
-  };
+  }, [editingMember]);
 
   return (
     <div className="space-y-6 animate-fade-in">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,18 +29,17 @@ const InstituteRoles = () => {
   const [staffDialogOpen, setStaffDialogOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<InstituteStaffMember | null>(null);
 
-  // Role Handlers
-  const handleCreateRole = () => {
+  const handleCreateRole = useCallback(() => {
     setEditingRole(null);
     setRoleDialogOpen(true);
-  };
+  }, []);
 
-  const handleEditRole = (role: InstituteRole) => {
+  const handleEditRole = useCallback((role: InstituteRole) => {
     setEditingRole(role);
     setRoleDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeleteRole = (role: InstituteRole) => {
+  const handleDeleteRole = useCallback((role: InstituteRole) => {
     if (role.memberCount > 0) {
       toast({
         title: "Cannot delete role",
@@ -51,9 +50,9 @@ const InstituteRoles = () => {
     }
     setRoles((prev) => prev.filter((r) => r.id !== role.id));
     toast({ title: "Role deleted", description: `${role.name} has been removed.` });
-  };
+  }, [toast]);
 
-  const handleSaveRole = (roleData: Omit<InstituteRole, "id" | "memberCount" | "createdAt">) => {
+  const handleSaveRole = useCallback((roleData: Omit<InstituteRole, "id" | "memberCount" | "createdAt">) => {
     if (editingRole) {
       setRoles((prev) =>
         prev.map((r) =>
@@ -71,20 +70,19 @@ const InstituteRoles = () => {
       setRoles((prev) => [...prev, newRole]);
       toast({ title: "Role created", description: `${roleData.name} has been created.` });
     }
-  };
+  }, [editingRole, toast]);
 
-  // Staff Handlers
-  const handleAddStaff = () => {
+  const handleAddStaff = useCallback(() => {
     setEditingStaff(null);
     setStaffDialogOpen(true);
-  };
+  }, []);
 
-  const handleEditStaff = (member: InstituteStaffMember) => {
+  const handleEditStaff = useCallback((member: InstituteStaffMember) => {
     setEditingStaff(member);
     setStaffDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeleteStaff = (member: InstituteStaffMember) => {
+  const handleDeleteStaff = useCallback((member: InstituteStaffMember) => {
     setMembers((prev) => prev.filter((m) => m.id !== member.id));
     // Update role member count
     setRoles((prev) =>
@@ -93,9 +91,9 @@ const InstituteRoles = () => {
       )
     );
     toast({ title: "Staff removed", description: `${member.name} has been removed.` });
-  };
+  }, [toast]);
 
-  const handleToggleStaffStatus = (member: InstituteStaffMember) => {
+  const handleToggleStaffStatus = useCallback((member: InstituteStaffMember) => {
     const newStatus = member.status === "active" ? "inactive" : "active";
     setMembers((prev) =>
       prev.map((m) =>
@@ -106,9 +104,9 @@ const InstituteRoles = () => {
       title: `Staff ${newStatus === "active" ? "activated" : "deactivated"}`,
       description: `${member.name} is now ${newStatus}.`,
     });
-  };
+  }, [toast]);
 
-  const handleSaveStaff = (staffData: Omit<InstituteStaffMember, "id" | "createdAt">) => {
+  const handleSaveStaff = useCallback((staffData: Omit<InstituteStaffMember, "id" | "createdAt">) => {
     if (editingStaff) {
       const oldRoleId = editingStaff.roleTypeId;
       const newRoleId = staffData.roleTypeId;
@@ -145,7 +143,7 @@ const InstituteRoles = () => {
       );
       toast({ title: "Staff added", description: `${staffData.name} has been added.` });
     }
-  };
+  }, [editingStaff, toast]);
 
   // Filtering
   const filteredRoles = roles.filter((r) =>

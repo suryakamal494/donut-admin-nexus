@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Sparkles, Lock, Building2, Upload, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -114,7 +114,7 @@ const Questions = () => {
     selectedClass !== "all",
   ].filter(Boolean).length;
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearchQuery("");
     setSelectedSubject("all");
     setSelectedType("all");
@@ -122,34 +122,34 @@ const Questions = () => {
     setSelectedLanguage("all");
     setSelectedStatus("all");
     setSelectedClass("all");
-  };
+  }, []);
 
-  const handleView = (question: QuestionWithSource) => {
+  const handleView = useCallback((question: QuestionWithSource) => {
     setViewingQuestion(question);
-  };
+  }, []);
 
-  const handleEdit = (question: QuestionWithSource) => {
+  const handleEdit = useCallback((question: QuestionWithSource) => {
     if (question.sourceType === "global") {
       toast.error("Global questions cannot be edited. You can only view them.");
       return;
     }
     navigate(`/institute/questions/edit/${question.id}`);
-  };
+  }, [navigate]);
 
-  const handleDelete = (question: QuestionWithSource) => {
+  const handleDelete = useCallback((question: QuestionWithSource) => {
     if (question.sourceType === "global") {
       toast.error("Global questions cannot be deleted.");
       return;
     }
     setQuestionToDelete(question);
-  };
+  }, []);
 
-  const confirmDelete = () => {
+  const confirmDelete = useCallback(() => {
     if (questionToDelete) {
       toast.success(`Question ${questionToDelete.questionId} deleted successfully`);
       setQuestionToDelete(null);
     }
-  };
+  }, [questionToDelete]);
 
   return (
     <div className="space-y-6">
