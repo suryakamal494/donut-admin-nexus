@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Trash2, Copy, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,14 +18,14 @@ interface SlideCardProps {
   onDuplicate: () => void;
 }
 
-export const SlideCard = ({
+export const SlideCard = memo(function SlideCard({
   slide,
   index,
   isSelected,
   onSelect,
   onDelete,
   onDuplicate,
-}: SlideCardProps) => {
+}: SlideCardProps) {
   return (
     <div
       onClick={onSelect}
@@ -82,4 +83,4 @@ export const SlideCard = ({
       </div>
     </div>
   );
-};
+});

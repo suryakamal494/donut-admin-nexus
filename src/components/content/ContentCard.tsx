@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Eye, Edit, MoreVertical, Download, Trash2, Lock, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContentThumbnail } from "./ContentThumbnail";
@@ -49,14 +50,14 @@ interface ContentCardProps {
   className?: string;
 }
 
-export const ContentCard = ({ 
+export const ContentCard = memo(function ContentCard({ 
   content, 
   mode = "superadmin",
   onPreview, 
   onEdit, 
   onDelete, 
   className 
-}: ContentCardProps) => {
+}: ContentCardProps) {
   const meta = content.duration 
     ? `${content.duration} min` 
     : content.size || getContentTypeLabel(content.type);
@@ -204,4 +205,4 @@ export const ContentCard = ({
       </div>
     </div>
   );
-};
+});

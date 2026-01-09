@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Eye, Edit, BarChart3, Award, Percent, Clock, HelpCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,7 @@ const statusConfig = {
   published: { label: "Published", className: "bg-success/20 text-success" },
 };
 
-export const PreviousYearPaperCard = ({ paper, onView, onEdit, onStats }: PreviousYearPaperCardProps) => {
+export const PreviousYearPaperCard = memo(function PreviousYearPaperCard({ paper, onView, onEdit, onStats }: PreviousYearPaperCardProps) {
   const status = statusConfig[paper.status];
   
   return (
@@ -112,4 +113,4 @@ export const PreviousYearPaperCard = ({ paper, onView, onEdit, onStats }: Previo
       </div>
     </div>
   );
-};
+});

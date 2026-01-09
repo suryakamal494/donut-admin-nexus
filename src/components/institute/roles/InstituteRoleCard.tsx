@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +12,7 @@ interface InstituteRoleCardProps {
   onDelete: (role: InstituteRole) => void;
 }
 
-const InstituteRoleCard = ({ role, onEdit, onDelete }: InstituteRoleCardProps) => {
+const InstituteRoleCard = memo(function InstituteRoleCard({ role, onEdit, onDelete }: InstituteRoleCardProps) {
   const getActiveModules = () => {
     const modules: string[] = [];
     const p = role.permissions;
@@ -111,6 +112,6 @@ const InstituteRoleCard = ({ role, onEdit, onDelete }: InstituteRoleCardProps) =
       </CardContent>
     </Card>
   );
-};
+});
 
 export default InstituteRoleCard;
