@@ -1,7 +1,5 @@
-// Exam Block System Types
-// Blocks are temporary rules that prevent normal classes from running
-
-export type BlockType = 'exam' | 'assessment' | 'internal_test' | 'competition' | 'workshop' | 'other';
+// Exam Schedule System Types
+// Exams are temporary rules that prevent normal classes from running
 
 export type ScopeType = 'institution' | 'course' | 'class' | 'batch';
 
@@ -9,7 +7,13 @@ export type DateType = 'single_day' | 'multi_day' | 'recurring';
 
 export type TimeType = 'full_day' | 'time_range' | 'periods';
 
-export type BlockStrength = 'hard' | 'soft';
+// Custom exam types that institutes can create
+export interface ExamType {
+  id: string;
+  name: string;
+  color?: string; // Optional color for visual distinction
+  isDefault?: boolean; // System-provided types vs custom
+}
 
 export interface RecurringConfig {
   dayOfWeek: string; // 'Monday', 'Tuesday', etc.
@@ -22,27 +26,24 @@ export interface ExamBlock {
   name: string;
   description?: string;
   
-  // What is this block for?
-  blockType: BlockType;
+  // Exam type (references ExamType)
+  examTypeId: string;
   
   // Who is affected?
   scopeType: ScopeType;
   scopeId?: string; // ID of course/class/batch if applicable
   scopeName?: string; // Name for display
   
-  // When does the block apply?
+  // When does the exam apply?
   dateType: DateType;
   dates: string[]; // Array of ISO date strings (for single/multi day)
-  recurringConfig?: RecurringConfig; // For recurring blocks
+  recurringConfig?: RecurringConfig; // For recurring exams
   
   // Time specification
   timeType: TimeType;
   startTime?: string; // HH:mm format for time_range
   endTime?: string; // HH:mm format for time_range
   periods?: number[]; // Array of period numbers for periods type
-  
-  // How strong is this block?
-  blockStrength: BlockStrength;
   
   // Metadata
   createdAt: string;
@@ -53,19 +54,8 @@ export interface ExamBlock {
 export interface BlockCheckResult {
   blocked: boolean;
   blockName?: string;
-  blockType?: BlockType;
-  blockStrength?: BlockStrength;
+  examTypeId?: string;
 }
-
-// Block type display config
-export const blockTypeConfig: Record<BlockType, { label: string; icon: string; color: string }> = {
-  exam: { label: 'Exam', icon: 'FileText', color: 'red' },
-  assessment: { label: 'Assessment', icon: 'ClipboardCheck', color: 'amber' },
-  internal_test: { label: 'Internal Test', icon: 'FileEdit', color: 'orange' },
-  competition: { label: 'Competition', icon: 'Trophy', color: 'purple' },
-  workshop: { label: 'Workshop', icon: 'Wrench', color: 'blue' },
-  other: { label: 'Other Activity', icon: 'Calendar', color: 'gray' },
-};
 
 // Scope type display config
 export const scopeTypeConfig: Record<ScopeType, { label: string; description: string }> = {

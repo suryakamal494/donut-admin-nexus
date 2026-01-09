@@ -15,14 +15,14 @@ const ExamSchedule = () => {
 
   const handleSaveBlock = (block: ExamBlock) => {
     if (editingBlock) {
-      // Update existing block
+      // Update existing exam
       setBlocks(prev => prev.map(b => b.id === block.id ? block : b));
-      toast.success("Block updated successfully");
+      toast.success("Exam updated successfully");
       setEditingBlock(null);
     } else {
-      // Add new block
+      // Add new exam
       setBlocks(prev => [...prev, { ...block, id: `block-${Date.now()}`, createdAt: new Date().toISOString() }]);
-      toast.success("Block created successfully");
+      toast.success("Exam created successfully");
     }
     setActiveTab("view");
   };
@@ -34,7 +34,7 @@ const ExamSchedule = () => {
 
   const handleDeleteBlock = (blockId: string) => {
     setBlocks(prev => prev.filter(b => b.id !== blockId));
-    toast.success("Block deleted successfully");
+    toast.success("Exam deleted successfully");
   };
 
   const handleToggleActive = (blockId: string) => {
@@ -47,7 +47,7 @@ const ExamSchedule = () => {
     <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Exam Schedule"
-        description="Create blocks to reserve time slots for exams and activities"
+        description="Schedule exams and reserve time slots in the timetable"
         breadcrumbs={[
           { label: "Timetable", href: "/institute/timetable" },
           { label: "Exam Schedule" },
@@ -66,7 +66,7 @@ const ExamSchedule = () => {
           </TabsTrigger>
           <TabsTrigger value="create" className="gap-2">
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">{editingBlock ? "Edit Block" : "Create Block"}</span>
+            <span className="hidden sm:inline">{editingBlock ? "Edit Exam" : "Create Exam"}</span>
             <span className="sm:hidden">{editingBlock ? "Edit" : "Create"}</span>
           </TabsTrigger>
         </TabsList>
