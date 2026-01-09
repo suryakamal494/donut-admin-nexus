@@ -95,8 +95,8 @@ export const TeacherTimetableGrid = ({
           <thead>
             <tr>
               {/* Period Column Header */}
-              <th className="sticky left-0 z-20 w-[100px] min-w-[100px] bg-muted/50 border-b border-r p-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Period</span>
+              <th className="sticky left-0 z-20 w-[100px] min-w-[100px] bg-white border-b border-r p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Period</span>
               </th>
               
               {/* Day Headers */}
@@ -166,13 +166,13 @@ export const TeacherTimetableGrid = ({
               return (
                 <tr key={`period-row-${periodNumber}`}>
                   {/* Period Label Cell - Sticky */}
-                  <td className="sticky left-0 z-10 w-[100px] min-w-[100px] bg-muted/30 border-b border-r p-2">
+                  <td className="sticky left-0 z-10 w-[100px] min-w-[100px] bg-gray-50 border-b border-r p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)]">
                     <div className="flex flex-col items-center justify-center">
-                      <span className="text-xs font-bold text-foreground">
+                      <span className="text-xs font-bold text-gray-800">
                         Period {periodNumber}
                       </span>
                       {periodTime && (
-                        <span className="text-[10px] text-muted-foreground mt-0.5 font-medium">
+                        <span className="text-[10px] text-gray-500 mt-0.5 font-medium">
                           {periodTime.startTime} - {periodTime.endTime}
                         </span>
                       )}

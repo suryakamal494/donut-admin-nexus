@@ -89,7 +89,7 @@ export const TeacherTimetableCell = ({
           
           {/* Class + Section - Bold and prominent */}
           <span className={cn(
-            "text-sm font-bold text-foreground leading-none",
+            "text-sm font-bold text-gray-900 leading-none",
             isLive && "text-primary"
           )}>
             {classSection}
@@ -110,7 +110,7 @@ export const TeacherTimetableCell = ({
             <Clock className="w-3.5 h-3.5 text-amber-600" />
           )}
           {slot.room && !isReady && !isDraft && (
-            <span className="text-[9px] font-medium text-muted-foreground bg-muted/60 px-1 py-0.5 rounded">
+            <span className="text-[9px] font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
               {slot.room.replace('Room ', 'R').replace('Physics Lab', 'Lab')}
             </span>
           )}
@@ -121,9 +121,9 @@ export const TeacherTimetableCell = ({
       <div className="mt-0.5">
         {hasLessonPlan && slot.topic ? (
           <p className={cn(
-            "text-[11px] leading-tight line-clamp-1",
-            isReady && "text-teal-700/80",
-            isDraft && "text-amber-700/80"
+            "text-[11px] leading-tight line-clamp-1 font-medium",
+            isReady && "text-gray-700",
+            isDraft && "text-gray-600"
           )}>
             {slot.topic}
           </p>
@@ -136,7 +136,7 @@ export const TeacherTimetableCell = ({
             <span>Add Plan</span>
           </div>
         ) : (
-          <span className="text-[10px] text-muted-foreground/50">No plan</span>
+          <span className="text-[10px] text-gray-400 font-medium">No plan</span>
         )}
       </div>
     </div>
