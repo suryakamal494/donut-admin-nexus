@@ -64,7 +64,7 @@ const Exams = () => {
   const publishedPYPCount = mockPreviousYearPapers.filter(p => p.status === "published").length;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <PageHeader
         title="Exams"
         description="Create and manage tests for your batches"
@@ -73,14 +73,16 @@ const Exams = () => {
           { label: "Exams" },
         ]}
         actions={
-          <div className="flex gap-2">
-            <Button variant="outline" className="gap-2" onClick={() => navigate("/institute/exams/upload")}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" className="gap-2 w-full sm:w-auto" onClick={() => navigate("/institute/exams/upload")}>
               <Upload className="w-4 h-4" />
-              Upload PDF
+              <span className="hidden xs:inline">Upload PDF</span>
+              <span className="xs:hidden">Upload</span>
             </Button>
-            <Button className="gradient-button gap-2" onClick={() => navigate("/institute/exams/create")}>
+            <Button className="gradient-button gap-2 w-full sm:w-auto" onClick={() => navigate("/institute/exams/create")}>
               <Plus className="w-4 h-4" />
-              Create Exam
+              <span className="hidden xs:inline">Create Exam</span>
+              <span className="xs:hidden">Create</span>
             </Button>
           </div>
         }
@@ -114,35 +116,35 @@ const Exams = () => {
       </Card>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <Card className="bg-card">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-            <p className="text-sm text-muted-foreground">Total Exams</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-foreground">{stats.total}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Total Exams</p>
           </CardContent>
         </Card>
         <Card className="bg-muted/30">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-muted-foreground">{stats.draft}</p>
-            <p className="text-sm text-muted-foreground">Drafts</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-muted-foreground">{stats.draft}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Drafts</p>
           </CardContent>
         </Card>
         <Card className="bg-amber-50 dark:bg-amber-950/20">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-amber-600">{stats.scheduled}</p>
-            <p className="text-sm text-muted-foreground">Scheduled</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-amber-600">{stats.scheduled}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Scheduled</p>
           </CardContent>
         </Card>
         <Card className="bg-blue-50 dark:bg-blue-950/20">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-blue-600">{stats.live}</p>
-            <p className="text-sm text-muted-foreground">Live Now</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.live}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Live Now</p>
           </CardContent>
         </Card>
-        <Card className="bg-success/5">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-success">{stats.completed}</p>
-            <p className="text-sm text-muted-foreground">Completed</p>
+        <Card className="bg-success/5 col-span-2 sm:col-span-1">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-success">{stats.completed}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
           </CardContent>
         </Card>
       </div>
@@ -159,7 +161,7 @@ const Exams = () => {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="w-full sm:w-[150px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -233,39 +235,43 @@ const Exams = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-2 border-t">
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="sm"
+                  className="h-8 px-2 sm:px-3"
                   onClick={() => navigate(`/institute/exams/review/${exam.id}`)}
                 >
-                  <Eye className="w-4 h-4 mr-1" />
-                  View
+                  <Eye className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">View</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="sm"
+                  className="h-8 px-2 sm:px-3"
                   onClick={() => navigate(`/institute/exams/review/${exam.id}`)}
                 >
-                  <Edit2 className="w-4 h-4 mr-1" />
-                  Edit
+                  <Edit2 className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="sm"
+                  className="h-8 px-2 sm:px-3"
                   onClick={() => handleOpenAssignBatchesDialog({ id: exam.id, name: exam.name, batches: exam.batches })}
                 >
-                  <UserPlus className="w-4 h-4 mr-1" />
-                  Assign
+                  <UserPlus className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Assign</span>
                 </Button>
                 {(exam.status === "draft" || exam.batches.length > 0) && (
                   <Button 
                     variant="default" 
-                    size="sm" 
+                    size="sm"
+                    className="h-8 px-2 sm:px-3"
                     onClick={() => handleOpenScheduleDialog({ id: exam.id, name: exam.name, batches: exam.batches })}
                   >
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Schedule
+                    <Calendar className="w-4 h-4 sm:mr-1" />
+                    <span className="hidden sm:inline">Schedule</span>
                   </Button>
                 )}
               </div>

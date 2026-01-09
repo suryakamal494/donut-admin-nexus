@@ -52,7 +52,7 @@ const PreviousYearPapers = () => {
   const examTypes = [...new Set(publishedPapers.map(p => p.examType))];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <PageHeader
         title="Previous Year Papers"
         description="Access and assign past exam papers shared by Super Admin"
@@ -62,28 +62,29 @@ const PreviousYearPapers = () => {
           { label: "Previous Year Papers" },
         ]}
         actions={
-          <Button variant="outline" onClick={() => navigate("/institute/exams")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Exams
+          <Button variant="outline" onClick={() => navigate("/institute/exams")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Back to Exams</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         }
       />
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <Card className="bg-card">
-          <CardContent className="p-4">
-            <p className="text-2xl font-bold text-foreground">{totalPapers}</p>
-            <p className="text-sm text-muted-foreground">Total Papers</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xl sm:text-2xl font-bold text-foreground">{totalPapers}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Total Papers</p>
           </CardContent>
         </Card>
         {examTypes.map(type => (
           <Card key={type} className="bg-muted/30">
-            <CardContent className="p-4">
-              <p className="text-2xl font-bold text-foreground">
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-bold text-foreground">
                 {publishedPapers.filter(p => p.examType === type).length}
               </p>
-              <p className="text-sm text-muted-foreground">{examTypeLabels[type]}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{examTypeLabels[type]}</p>
             </CardContent>
           </Card>
         ))}
@@ -101,7 +102,7 @@ const PreviousYearPapers = () => {
           />
         </div>
         <Select value={examTypeFilter} onValueChange={setExamTypeFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Exam Type" />
           </SelectTrigger>
           <SelectContent>
@@ -194,30 +195,33 @@ const PreviousYearPapers = () => {
                                 )}
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-2 pt-2 border-t">
+                                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-2 border-t">
                                   <Button 
                                     variant="outline" 
                                     size="sm"
+                                    className="flex-1 sm:flex-none h-8 px-2 sm:px-3"
                                     onClick={() => handleViewPaper(paper)}
                                   >
-                                    <Eye className="w-4 h-4 mr-1" />
-                                    View
+                                    <Eye className="w-4 h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline">View</span>
                                   </Button>
                                   <Button 
                                     variant="outline" 
                                     size="sm"
+                                    className="flex-1 sm:flex-none h-8 px-2 sm:px-3"
                                     onClick={() => handleAssignPaper(paper)}
                                   >
-                                    <UserPlus className="w-4 h-4 mr-1" />
-                                    Assign
+                                    <UserPlus className="w-4 h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline">Assign</span>
                                   </Button>
                                   <Button 
                                     variant="default" 
                                     size="sm"
+                                    className="flex-1 sm:flex-none h-8 px-2 sm:px-3"
                                     onClick={() => handleSchedulePaper(paper)}
                                   >
-                                    <Calendar className="w-4 h-4 mr-1" />
-                                    Schedule
+                                    <Calendar className="w-4 h-4 sm:mr-1" />
+                                    <span className="hidden sm:inline">Schedule</span>
                                   </Button>
                                 </div>
                               </CardContent>

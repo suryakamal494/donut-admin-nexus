@@ -172,7 +172,7 @@ const ReviewExam = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <PageHeader
         title="Review Exam Questions"
         description="Review and approve questions before publishing"
@@ -182,66 +182,69 @@ const ReviewExam = () => {
           { label: "Review" },
         ]}
         actions={
-          <Button className="gradient-button" onClick={handlePublish}>
-            <Check className="w-4 h-4 mr-2" />
-            Publish Exam
+          <Button className="gradient-button gap-2 w-full sm:w-auto" onClick={handlePublish}>
+            <Check className="w-4 h-4" />
+            <span className="hidden xs:inline">Publish Exam</span>
+            <span className="xs:hidden">Publish</span>
           </Button>
         }
       />
 
       {/* Stats */}
-      <div className="flex gap-4">
-        <Card className="flex-1">
-          <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Total Questions</span>
-            <span className="text-xl font-bold">{stats.total}</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <Card>
+          <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-xs sm:text-sm text-muted-foreground">Total</span>
+            <span className="text-lg sm:text-xl font-bold">{stats.total}</span>
           </CardContent>
         </Card>
-        <Card className="flex-1 bg-success/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Reviewed</span>
-            <span className="text-xl font-bold text-success">{stats.reviewed}</span>
+        <Card className="bg-success/5">
+          <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-xs sm:text-sm text-muted-foreground">Reviewed</span>
+            <span className="text-lg sm:text-xl font-bold text-success">{stats.reviewed}</span>
           </CardContent>
         </Card>
-        <Card className="flex-1 bg-amber-50 dark:bg-amber-950/20">
-          <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Pending</span>
-            <span className="text-xl font-bold text-amber-600">{stats.pending}</span>
+        <Card className="bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-xs sm:text-sm text-muted-foreground">Pending</span>
+            <span className="text-lg sm:text-xl font-bold text-amber-600">{stats.pending}</span>
           </CardContent>
         </Card>
-        <Card className="flex-1 bg-destructive/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Deleted</span>
-            <span className="text-xl font-bold text-destructive">{stats.deleted}</span>
+        <Card className="bg-destructive/5">
+          <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-xs sm:text-sm text-muted-foreground">Deleted</span>
+            <span className="text-lg sm:text-xl font-bold text-destructive">{stats.deleted}</span>
           </CardContent>
         </Card>
       </div>
 
       {/* Subject Tabs with Color Coding */}
       <Tabs value={activeSubject} onValueChange={(v) => { setActiveSubject(v); setCurrentPage(1); }}>
-        <TabsList className="h-auto flex-wrap">
-          <TabsTrigger value="all" className="px-4">
-            All ({mockQuestions.length})
-          </TabsTrigger>
-          {subjects.map(sub => (
-            <TabsTrigger key={sub} value={sub} className="px-3">
-              <SubjectBadge subject={sub} size="xs" showIcon={false} className="mr-1.5" />
-              ({mockQuestions.filter(q => q.subject === sub).length})
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="h-auto flex-nowrap min-w-max">
+            <TabsTrigger value="all" className="px-3 sm:px-4 shrink-0">
+              All ({mockQuestions.length})
             </TabsTrigger>
-          ))}
-        </TabsList>
+            {subjects.map(sub => (
+              <TabsTrigger key={sub} value={sub} className="px-2 sm:px-3 shrink-0">
+                <SubjectBadge subject={sub} size="xs" showIcon={false} className="mr-1 sm:mr-1.5" />
+                ({mockQuestions.filter(q => q.subject === sub).length})
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
       </Tabs>
 
       {/* Quick Jump Grid with Subject Colors */}
-      <div className="bg-card rounded-xl p-4 border border-border/50">
-        <p className="text-sm text-muted-foreground mb-3">Quick Jump</p>
-        <div className="flex flex-wrap gap-2">
+      <div className="bg-card rounded-xl p-3 sm:p-4 border border-border/50">
+        <p className="text-sm text-muted-foreground mb-2 sm:mb-3">Quick Jump</p>
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-[100px] sm:max-h-[120px] overflow-y-auto">
           {filteredQuestions.map((q, idx) => (
             <button
               key={q.id}
               onClick={() => setCurrentPage(Math.floor(idx / questionsPerPage) + 1)}
               className={cn(
-                "w-8 h-8 rounded-lg text-sm font-medium transition-all",
+                "w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs sm:text-sm font-medium transition-all",
                 getQuickNavColor(q)
               )}
             >
@@ -348,14 +351,14 @@ const ReviewExam = () => {
                     )}
                   </div>
                 </div>
-                <div className={cn("p-4", isDeleted && "line-through opacity-70")}>
-                  <p className="text-foreground mb-4">{displayText}</p>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className={cn("p-3 sm:p-4", isDeleted && "line-through opacity-70")}>
+                  <p className="text-sm sm:text-base text-foreground mb-3 sm:mb-4">{displayText}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {displayOptions.map((option, optIdx) => (
                       <div
                         key={optIdx}
                         className={cn(
-                          "p-3 rounded-lg border text-sm",
+                          "p-2.5 sm:p-3 rounded-lg border text-sm",
                           optIdx === question.correct
                             ? "border-success bg-success/5 text-success"
                             : "border-border"
@@ -400,7 +403,7 @@ const ReviewExam = () => {
 
       {/* Edit Question Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Question</DialogTitle>
           </DialogHeader>
