@@ -11,6 +11,13 @@ interface TeacherTimetableCellProps {
   onCellClick?: () => void;
 }
 
+// Helper to format batch name for display
+const formatBatchDisplay = (batchName: string): string => {
+  // If already in expanded format, return as-is
+  if (batchName.includes('Class')) return batchName;
+  return batchName;
+};
+
 const getPeriodTypeIcon = (type?: string) => {
   switch (type) {
     case 'lab':
@@ -36,11 +43,11 @@ export const TeacherTimetableCell = ({
   if (!slot) {
     return (
       <div className={cn(
-        "h-[52px] flex items-center justify-center",
+        "min-h-[90px] flex items-center justify-center",
         "bg-muted/20 rounded-md",
         isToday && "bg-primary/5"
       )}>
-        <span className="text-muted-foreground/40 text-xs">—</span>
+        <span className="text-black/40 text-xs">—</span>
       </div>
     );
   }
@@ -50,16 +57,16 @@ export const TeacherTimetableCell = ({
   const isDraft = slot.lessonPlanStatus === 'draft';
   const periodTypeIcon = getPeriodTypeIcon(slot.periodType);
 
-  // Extract section from batchName (e.g., "10A" -> "10A")
-  const classSection = slot.batchName;
+  // Display batch name (can be short like "10A" or expanded like "Class Tenth, Section A")
+  const classSection = formatBatchDisplay(slot.batchName);
 
   return (
     <div
       onClick={onCellClick}
       className={cn(
-        // Base styles - Compact design
-        "h-[52px] px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-150",
-        "flex flex-col justify-center group relative",
+        // Base styles - Taller design for full content
+        "min-h-[90px] px-3 py-2.5 rounded-md cursor-pointer transition-all duration-150",
+        "flex flex-col justify-start group relative",
         
         // Status-based backgrounds
         isReady && "bg-teal-50 border border-teal-200/60",
@@ -77,9 +84,9 @@ export const TeacherTimetableCell = ({
         !isPast && "hover:shadow-sm"
       )}
     >
-      {/* Top Row: Class+Section + Room/Type Badge */}
-      <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1.5">
+      {/* Top Row: Class+Section + Status Icon */}
+      <div className="flex items-center justify-between gap-1 mb-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {/* Live Badge */}
           {isLive && (
             <span className="text-[8px] font-bold text-white bg-primary px-1 py-0.5 rounded uppercase tracking-wide animate-pulse">
@@ -87,9 +94,9 @@ export const TeacherTimetableCell = ({
             </span>
           )}
           
-          {/* Class + Section - Bold and prominent */}
+          {/* Class + Section - Bold and prominent in BLACK */}
           <span className={cn(
-            "text-sm font-bold text-gray-900 leading-none",
+            "text-sm font-bold text-black leading-tight",
             isLive && "text-primary"
           )}>
             {classSection}
@@ -97,11 +104,11 @@ export const TeacherTimetableCell = ({
           
           {/* Period Type Icon */}
           {periodTypeIcon && (
-            <span className="text-muted-foreground">{periodTypeIcon}</span>
+            <span className="text-black">{periodTypeIcon}</span>
           )}
         </div>
         
-        {/* Room Badge or Status Icon */}
+        {/* Status Icon */}
         <div className="flex items-center gap-1 flex-shrink-0">
           {isReady && (
             <CheckCircle2 className="w-4 h-4 text-green-600" />
@@ -109,36 +116,42 @@ export const TeacherTimetableCell = ({
           {isDraft && (
             <Clock className="w-3.5 h-3.5 text-amber-600" />
           )}
-          {slot.room && !isReady && !isDraft && (
-            <span className="text-[9px] font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
-              {slot.room.replace('Room ', 'R').replace('Physics Lab', 'Lab')}
-            </span>
-          )}
         </div>
       </div>
 
-      {/* Bottom Row: Chapter/Topic OR Add Plan CTA */}
-      <div className="mt-0.5">
-        {hasLessonPlan && slot.topic ? (
-          <p className={cn(
-            "text-[11px] leading-tight line-clamp-1 font-medium",
-            isReady && "text-gray-700",
-            isDraft && "text-gray-600"
-          )}>
+      {/* Room Badge - Separate row */}
+      {slot.room && (
+        <div className="mb-1">
+          <span className="text-[10px] font-semibold text-black bg-gray-100 px-1.5 py-0.5 rounded">
+            {slot.room}
+          </span>
+        </div>
+      )}
+
+      {/* Chapter/Topic - Full display, BLACK text */}
+      <div className="flex-1">
+        {slot.topic && (
+          <p className="text-[12px] leading-snug font-medium text-black line-clamp-2">
             {slot.topic}
           </p>
-        ) : !isPast ? (
-          <div className={cn(
-            "flex items-center gap-0.5 text-[11px] font-semibold",
-            "text-green-600 group-hover:text-green-700 transition-colors"
-          )}>
-            <Plus className="w-3 h-3" />
-            <span>Add Plan</span>
-          </div>
-        ) : (
-          <span className="text-[10px] text-gray-400 font-medium">No plan</span>
         )}
       </div>
+
+      {/* Add Plan Button - Always visible for tiles without lesson plan */}
+      {!hasLessonPlan && !isPast && (
+        <div className={cn(
+          "flex items-center gap-1 text-[12px] font-bold mt-1",
+          "text-green-600 group-hover:text-green-700 transition-colors"
+        )}>
+          <Plus className="w-3.5 h-3.5" />
+          <span>Add Plan</span>
+        </div>
+      )}
+      
+      {/* Past slot without plan */}
+      {!hasLessonPlan && isPast && (
+        <span className="text-[11px] text-black font-medium mt-1">No plan</span>
+      )}
     </div>
   );
 };
