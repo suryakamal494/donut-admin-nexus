@@ -158,8 +158,7 @@ const App = () => (
             <Route path="exams" element={<InstituteExams />} />
             <Route path="exams/create" element={<InstituteCreateExam />} />
             <Route path="exams/upload" element={<InstituteUploadExam />} />
-            <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
-            <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
+              <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
             <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
             <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
             <Route path="master-data" element={<InstituteMasterData />} />
