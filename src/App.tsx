@@ -6,80 +6,87 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import LazyErrorBoundary from "@/components/ui/lazy-error-boundary";
-import { DelayedFallback } from "@/components/ui/delayed-fallback";
 
-// Layouts - Keep these as regular imports (small, always needed)
+// ============================================
+// LAYOUTS - Regular imports (small, always needed)
+// ============================================
 import AdminLayout from "./components/layout/AdminLayout";
 import InstituteLayout from "./components/layout/InstituteLayout";
 import TeacherLayout from "./components/layout/TeacherLayout";
 
-// Landing - Regular import (entry point)
+// ============================================
+// LANDING & ERROR - Regular imports (entry points)
+// ============================================
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 // ============================================
-// SUPER ADMIN PAGES - Lazy Loaded
+// SUPER ADMIN PAGES - EAGER LOADED (Core pages for instant navigation)
 // ============================================
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Institutes = lazy(() => import("./pages/institutes/Institutes"));
-const CreateInstitute = lazy(() => import("./pages/institutes/CreateInstitute"));
-const InstituteDetails = lazy(() => import("./pages/institutes/InstituteDetails"));
-const InstituteCustomCourse = lazy(() => import("./pages/institutes/InstituteCustomCourse"));
-const EditInstitute = lazy(() => import("./pages/institutes/EditInstitute"));
-const InstituteTiers = lazy(() => import("./pages/institutes/InstituteTiers"));
-const EditTier = lazy(() => import("./pages/institutes/EditTier"));
-const Users = lazy(() => import("./pages/users/Users"));
-const Parameters = lazy(() => import("./pages/parameters/Parameters"));
+import Dashboard from "./pages/Dashboard";
+import Institutes from "./pages/institutes/Institutes";
+import CreateInstitute from "./pages/institutes/CreateInstitute";
+import InstituteDetails from "./pages/institutes/InstituteDetails";
+import InstituteCustomCourse from "./pages/institutes/InstituteCustomCourse";
+import EditInstitute from "./pages/institutes/EditInstitute";
+import InstituteTiers from "./pages/institutes/InstituteTiers";
+import EditTier from "./pages/institutes/EditTier";
+import Users from "./pages/users/Users";
+import Parameters from "./pages/parameters/Parameters";
+import Courses from "./pages/parameters/Courses";
+import Roles from "./pages/roles/Roles";
+import Questions from "./pages/questions/Questions";
+import CreateQuestion from "./pages/questions/CreateQuestion";
+import Exams from "./pages/exams/Exams";
+import CreatePreviousYearPaper from "./pages/exams/CreatePreviousYearPaper";
+import CreateGrandTest from "./pages/exams/CreateGrandTest";
+import ReviewExam from "./pages/exams/ReviewExam";
+import Content from "./pages/content/Content";
+import CreateContent from "./pages/content/CreateContent";
+
+// Super Admin - LAZY (Heavy/rarely used)
 const CourseBuilder = lazy(() => import("./pages/parameters/CourseBuilder"));
-const Courses = lazy(() => import("./pages/parameters/Courses"));
-const Roles = lazy(() => import("./pages/roles/Roles"));
-const Questions = lazy(() => import("./pages/questions/Questions"));
-const CreateQuestion = lazy(() => import("./pages/questions/CreateQuestion"));
 const AIQuestions = lazy(() => import("./pages/questions/AIQuestions"));
 const UploadPDF = lazy(() => import("./pages/questions/UploadPDF"));
 const ReviewQuestions = lazy(() => import("./pages/questions/ReviewQuestions"));
-const Exams = lazy(() => import("./pages/exams/Exams"));
-const CreatePreviousYearPaper = lazy(() => import("./pages/exams/CreatePreviousYearPaper"));
-const CreateGrandTest = lazy(() => import("./pages/exams/CreateGrandTest"));
-const ReviewExam = lazy(() => import("./pages/exams/ReviewExam"));
-const Content = lazy(() => import("./pages/content/Content"));
-const CreateContent = lazy(() => import("./pages/content/CreateContent"));
 const AIContentGenerator = lazy(() => import("./pages/content/AIContentGenerator"));
 
 // ============================================
-// INSTITUTE PANEL PAGES - Lazy Loaded
+// INSTITUTE PANEL - EAGER LOADED (Core pages for instant navigation)
 // ============================================
-const InstituteDashboard = lazy(() => import("./pages/institute/Dashboard"));
-const InstituteBatches = lazy(() => import("./pages/institute/batches/Batches"));
-const CreateBatch = lazy(() => import("./pages/institute/batches/CreateBatch"));
-const BatchDashboard = lazy(() => import("./pages/institute/batches/BatchDashboard"));
-const BatchTimetable = lazy(() => import("./pages/institute/batches/BatchTimetable"));
-const InstituteTeachers = lazy(() => import("./pages/institute/teachers/Teachers"));
-const CreateTeacher = lazy(() => import("./pages/institute/teachers/CreateTeacher"));
+import InstituteDashboard from "./pages/institute/Dashboard";
+import InstituteBatches from "./pages/institute/batches/Batches";
+import CreateBatch from "./pages/institute/batches/CreateBatch";
+import BatchDashboard from "./pages/institute/batches/BatchDashboard";
+import BatchTimetable from "./pages/institute/batches/BatchTimetable";
+import InstituteTeachers from "./pages/institute/teachers/Teachers";
+import CreateTeacher from "./pages/institute/teachers/CreateTeacher";
+import InstituteStudents from "./pages/institute/students/Students";
+import AddStudent from "./pages/institute/students/AddStudent";
+import InstituteTimetable from "./pages/institute/timetable/Timetable";
+import InstituteTimetableSetup from "./pages/institute/timetable/TimetableSetup";
+import InstituteViewTimetable from "./pages/institute/timetable/ViewTimetable";
+import InstituteSubstitution from "./pages/institute/timetable/Substitution";
+import InstituteQuestions from "./pages/institute/questions/Questions";
+import InstituteCreateQuestion from "./pages/institute/questions/CreateQuestion";
+import InstituteExams from "./pages/institute/exams/Exams";
+import InstituteCreateExam from "./pages/institute/exams/CreateExam";
+import InstituteReviewExam from "./pages/institute/exams/ReviewExam";
+import InstitutePreviousYearPapers from "./pages/institute/exams/PreviousYearPapers";
+import InstitutePYPView from "./pages/institute/exams/PYPView";
+import InstituteMasterData from "./pages/institute/masterdata/MasterData";
+import InstituteContent from "./pages/institute/content/Content";
+import InstituteCreateContent from "./pages/institute/content/CreateContent";
+import InstituteRoles from "./pages/institute/roles/Roles";
+
+// Institute - LAZY (Heavy/rarely used)
 const BulkUploadTeachers = lazy(() => import("./pages/institute/teachers/BulkUploadTeachers"));
-const InstituteStudents = lazy(() => import("./pages/institute/students/Students"));
-const AddStudent = lazy(() => import("./pages/institute/students/AddStudent"));
-const InstituteTimetable = lazy(() => import("./pages/institute/timetable/Timetable"));
-const InstituteTimetableSetup = lazy(() => import("./pages/institute/timetable/TimetableSetup"));
 const InstituteTimetableUpload = lazy(() => import("./pages/institute/timetable/TimetableUpload"));
-const InstituteViewTimetable = lazy(() => import("./pages/institute/timetable/ViewTimetable"));
-const InstituteSubstitution = lazy(() => import("./pages/institute/timetable/Substitution"));
 const InstituteExamSchedule = lazy(() => import("./pages/institute/timetable/ExamSchedule"));
-const InstituteQuestions = lazy(() => import("./pages/institute/questions/Questions"));
 const InstituteAIQuestions = lazy(() => import("./pages/institute/questions/AIQuestions"));
 const InstituteUploadPDF = lazy(() => import("./pages/institute/questions/UploadPDF"));
-const InstituteCreateQuestion = lazy(() => import("./pages/institute/questions/CreateQuestion"));
-const InstituteExams = lazy(() => import("./pages/institute/exams/Exams"));
-const InstituteCreateExam = lazy(() => import("./pages/institute/exams/CreateExam"));
 const InstituteUploadExam = lazy(() => import("./pages/institute/exams/UploadExam"));
-const InstituteReviewExam = lazy(() => import("./pages/institute/exams/ReviewExam"));
-const InstitutePreviousYearPapers = lazy(() => import("./pages/institute/exams/PreviousYearPapers"));
-const InstitutePYPView = lazy(() => import("./pages/institute/exams/PYPView"));
-const InstituteMasterData = lazy(() => import("./pages/institute/masterdata/MasterData"));
-const InstituteContent = lazy(() => import("./pages/institute/content/Content"));
-const InstituteCreateContent = lazy(() => import("./pages/institute/content/CreateContent"));
 const InstituteAIContentGenerator = lazy(() => import("./pages/institute/content/AIContentGenerator"));
-const InstituteRoles = lazy(() => import("./pages/institute/roles/Roles"));
 const AcademicScheduleSetup = lazy(() => import("./pages/institute/academic-schedule/Setup"));
 const AcademicScheduleWeeklyPlans = lazy(() => import("./pages/institute/academic-schedule/WeeklyPlans"));
 const AcademicScheduleProgress = lazy(() => import("./pages/institute/academic-schedule/Progress"));
@@ -92,32 +99,28 @@ const AcademicScheduleChapterDetail = lazy(() => import("./pages/institute/acade
 const AcademicViews = lazy(() => import("./pages/institute/academic-schedule/AcademicViews"));
 
 // ============================================
-// TEACHER PANEL PAGES - Lazy Loaded
+// TEACHER PANEL - EAGER LOADED (Core pages for instant navigation)
 // ============================================
-const TeacherDashboard = lazy(() => import("./pages/teacher/Dashboard"));
-const TeacherSchedule = lazy(() => import("./pages/teacher/Schedule"));
-const LessonPlans = lazy(() => import("./pages/teacher/LessonPlans"));
+import TeacherDashboard from "./pages/teacher/Dashboard";
+import TeacherSchedule from "./pages/teacher/Schedule";
+import LessonPlans from "./pages/teacher/LessonPlans";
+import TeacherAcademicProgress from "./pages/teacher/AcademicProgress";
+import TeacherAssessments from "./pages/teacher/Assessments";
+import TeacherHomework from "./pages/teacher/Homework";
+import TeacherContent from "./pages/teacher/Content";
+import TeacherReference from "./pages/teacher/Reference";
+import TeacherProfile from "./pages/teacher/Profile";
+
+// Teacher - LAZY (Heavy page)
 const LessonPlanCanvas = lazy(() => import("./pages/teacher/LessonPlanCanvas"));
-const TeacherAcademicProgress = lazy(() => import("./pages/teacher/AcademicProgress"));
-const TeacherAssessments = lazy(() => import("./pages/teacher/Assessments"));
-const TeacherHomework = lazy(() => import("./pages/teacher/Homework"));
-const TeacherContent = lazy(() => import("./pages/teacher/Content"));
-const TeacherReference = lazy(() => import("./pages/teacher/Reference"));
-const TeacherProfile = lazy(() => import("./pages/teacher/Profile"));
 
 const queryClient = new QueryClient();
 
-// Suspense wrapper component with error boundary and delayed fallback
+// Suspense wrapper for remaining lazy-loaded pages
 function LazyPage({ children }: { children: React.ReactNode }) {
   return (
     <LazyErrorBoundary>
-      <Suspense
-        fallback={
-          <DelayedFallback delay={150}>
-            <PageSkeleton />
-          </DelayedFallback>
-        }
-      >
+      <Suspense fallback={<PageSkeleton />}>
         {children}
       </Suspense>
     </LazyErrorBoundary>
@@ -137,72 +140,72 @@ const App = () => (
           {/* Super Admin Routes */}
           <Route path="/superadmin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/superadmin/dashboard" replace />} />
-            <Route path="dashboard" element={<LazyPage><Dashboard /></LazyPage>} />
-            <Route path="institutes" element={<LazyPage><Institutes /></LazyPage>} />
-            <Route path="institutes/create" element={<LazyPage><CreateInstitute /></LazyPage>} />
-            <Route path="institutes/:id" element={<LazyPage><InstituteDetails /></LazyPage>} />
-            <Route path="institutes/:id/custom-course" element={<LazyPage><InstituteCustomCourse /></LazyPage>} />
-            <Route path="institutes/:id/edit" element={<LazyPage><EditInstitute /></LazyPage>} />
-            <Route path="institutes/tiers" element={<LazyPage><InstituteTiers /></LazyPage>} />
-            <Route path="institutes/tiers/edit/:tierId" element={<LazyPage><EditTier /></LazyPage>} />
-            <Route path="users" element={<LazyPage><Users /></LazyPage>} />
-            <Route path="parameters" element={<LazyPage><Parameters /></LazyPage>} />
-            <Route path="parameters/courses" element={<LazyPage><Courses /></LazyPage>} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="institutes" element={<Institutes />} />
+            <Route path="institutes/create" element={<CreateInstitute />} />
+            <Route path="institutes/:id" element={<InstituteDetails />} />
+            <Route path="institutes/:id/custom-course" element={<InstituteCustomCourse />} />
+            <Route path="institutes/:id/edit" element={<EditInstitute />} />
+            <Route path="institutes/tiers" element={<InstituteTiers />} />
+            <Route path="institutes/tiers/edit/:tierId" element={<EditTier />} />
+            <Route path="users" element={<Users />} />
+            <Route path="parameters" element={<Parameters />} />
+            <Route path="parameters/courses" element={<Courses />} />
             <Route path="parameters/course-builder" element={<LazyPage><CourseBuilder /></LazyPage>} />
-            <Route path="roles" element={<LazyPage><Roles /></LazyPage>} />
-            <Route path="questions" element={<LazyPage><Questions /></LazyPage>} />
-            <Route path="questions/create" element={<LazyPage><CreateQuestion /></LazyPage>} />
+            <Route path="roles" element={<Roles />} />
+            <Route path="questions" element={<Questions />} />
+            <Route path="questions/create" element={<CreateQuestion />} />
             <Route path="questions/ai" element={<LazyPage><AIQuestions /></LazyPage>} />
             <Route path="questions/upload-pdf" element={<LazyPage><UploadPDF /></LazyPage>} />
             <Route path="questions/review" element={<LazyPage><ReviewQuestions /></LazyPage>} />
-            <Route path="exams" element={<LazyPage><Exams /></LazyPage>} />
-            <Route path="exams/previous-year/create" element={<LazyPage><CreatePreviousYearPaper /></LazyPage>} />
-            <Route path="exams/grand-test/create" element={<LazyPage><CreateGrandTest /></LazyPage>} />
-            <Route path="exams/review/:examId" element={<LazyPage><ReviewExam /></LazyPage>} />
-            <Route path="content" element={<LazyPage><Content /></LazyPage>} />
-            <Route path="content/upload" element={<LazyPage><CreateContent /></LazyPage>} />
-            <Route path="content/create" element={<LazyPage><CreateContent /></LazyPage>} />
+            <Route path="exams" element={<Exams />} />
+            <Route path="exams/previous-year/create" element={<CreatePreviousYearPaper />} />
+            <Route path="exams/grand-test/create" element={<CreateGrandTest />} />
+            <Route path="exams/review/:examId" element={<ReviewExam />} />
+            <Route path="content" element={<Content />} />
+            <Route path="content/upload" element={<CreateContent />} />
+            <Route path="content/create" element={<CreateContent />} />
             <Route path="content/ai-generate" element={<LazyPage><AIContentGenerator /></LazyPage>} />
           </Route>
           
           {/* Institute Panel Routes */}
           <Route path="/institute" element={<InstituteLayout />}>
             <Route index element={<Navigate to="/institute/dashboard" replace />} />
-            <Route path="dashboard" element={<LazyPage><InstituteDashboard /></LazyPage>} />
-            <Route path="batches" element={<LazyPage><InstituteBatches /></LazyPage>} />
-            <Route path="batches/create" element={<LazyPage><CreateBatch /></LazyPage>} />
-            <Route path="batches/:batchId" element={<LazyPage><BatchDashboard /></LazyPage>} />
-            <Route path="batches/:batchId/timetable" element={<LazyPage><BatchTimetable /></LazyPage>} />
-            <Route path="teachers" element={<LazyPage><InstituteTeachers /></LazyPage>} />
-            <Route path="teachers/create" element={<LazyPage><CreateTeacher /></LazyPage>} />
-            <Route path="teachers/:teacherId/edit" element={<LazyPage><CreateTeacher /></LazyPage>} />
+            <Route path="dashboard" element={<InstituteDashboard />} />
+            <Route path="batches" element={<InstituteBatches />} />
+            <Route path="batches/create" element={<CreateBatch />} />
+            <Route path="batches/:batchId" element={<BatchDashboard />} />
+            <Route path="batches/:batchId/timetable" element={<BatchTimetable />} />
+            <Route path="teachers" element={<InstituteTeachers />} />
+            <Route path="teachers/create" element={<CreateTeacher />} />
+            <Route path="teachers/:teacherId/edit" element={<CreateTeacher />} />
             <Route path="teachers/bulk-upload" element={<LazyPage><BulkUploadTeachers /></LazyPage>} />
-            <Route path="students" element={<LazyPage><InstituteStudents /></LazyPage>} />
-            <Route path="students/add" element={<LazyPage><AddStudent /></LazyPage>} />
-            <Route path="students/:studentId/edit" element={<LazyPage><AddStudent /></LazyPage>} />
-            <Route path="timetable" element={<LazyPage><InstituteTimetable /></LazyPage>} />
-            <Route path="timetable/setup" element={<LazyPage><InstituteTimetableSetup /></LazyPage>} />
+            <Route path="students" element={<InstituteStudents />} />
+            <Route path="students/add" element={<AddStudent />} />
+            <Route path="students/:studentId/edit" element={<AddStudent />} />
+            <Route path="timetable" element={<InstituteTimetable />} />
+            <Route path="timetable/setup" element={<InstituteTimetableSetup />} />
             <Route path="timetable/upload" element={<LazyPage><InstituteTimetableUpload /></LazyPage>} />
-            <Route path="timetable/view" element={<LazyPage><InstituteViewTimetable /></LazyPage>} />
-            <Route path="timetable/substitution" element={<LazyPage><InstituteSubstitution /></LazyPage>} />
+            <Route path="timetable/view" element={<InstituteViewTimetable />} />
+            <Route path="timetable/substitution" element={<InstituteSubstitution />} />
             <Route path="timetable/exam-schedule" element={<LazyPage><InstituteExamSchedule /></LazyPage>} />
-            <Route path="questions" element={<LazyPage><InstituteQuestions /></LazyPage>} />
+            <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<LazyPage><InstituteAIQuestions /></LazyPage>} />
             <Route path="questions/upload-pdf" element={<LazyPage><InstituteUploadPDF /></LazyPage>} />
-            <Route path="questions/create" element={<LazyPage><InstituteCreateQuestion /></LazyPage>} />
-            <Route path="questions/edit/:questionId" element={<LazyPage><InstituteCreateQuestion /></LazyPage>} />
-            <Route path="content" element={<LazyPage><InstituteContent /></LazyPage>} />
-            <Route path="content/create" element={<LazyPage><InstituteCreateContent /></LazyPage>} />
-            <Route path="content/edit/:contentId" element={<LazyPage><InstituteCreateContent /></LazyPage>} />
+            <Route path="questions/create" element={<InstituteCreateQuestion />} />
+            <Route path="questions/edit/:questionId" element={<InstituteCreateQuestion />} />
+            <Route path="content" element={<InstituteContent />} />
+            <Route path="content/create" element={<InstituteCreateContent />} />
+            <Route path="content/edit/:contentId" element={<InstituteCreateContent />} />
             <Route path="content/ai-generate" element={<LazyPage><InstituteAIContentGenerator /></LazyPage>} />
-            <Route path="exams" element={<LazyPage><InstituteExams /></LazyPage>} />
-            <Route path="exams/create" element={<LazyPage><InstituteCreateExam /></LazyPage>} />
+            <Route path="exams" element={<InstituteExams />} />
+            <Route path="exams/create" element={<InstituteCreateExam />} />
             <Route path="exams/upload" element={<LazyPage><InstituteUploadExam /></LazyPage>} />
-            <Route path="exams/review/:examId" element={<LazyPage><InstituteReviewExam /></LazyPage>} />
-            <Route path="exams/previous-year-papers" element={<LazyPage><InstitutePreviousYearPapers /></LazyPage>} />
-            <Route path="exams/pyp-view/:paperId" element={<LazyPage><InstitutePYPView /></LazyPage>} />
-            <Route path="master-data" element={<LazyPage><InstituteMasterData /></LazyPage>} />
-            <Route path="roles" element={<LazyPage><InstituteRoles /></LazyPage>} />
+            <Route path="exams/review/:examId" element={<InstituteReviewExam />} />
+            <Route path="exams/previous-year-papers" element={<InstitutePreviousYearPapers />} />
+            <Route path="exams/pyp-view/:paperId" element={<InstitutePYPView />} />
+            <Route path="master-data" element={<InstituteMasterData />} />
+            <Route path="roles" element={<InstituteRoles />} />
             <Route path="academic-schedule/setup" element={<LazyPage><AcademicScheduleSetup /></LazyPage>} />
             <Route path="academic-schedule/plans" element={<LazyPage><AcademicScheduleWeeklyPlans /></LazyPage>} />
             <Route path="academic-schedule/views" element={<LazyPage><AcademicViews /></LazyPage>} />
@@ -218,16 +221,16 @@ const App = () => (
           {/* Teacher Panel Routes */}
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<Navigate to="/teacher/dashboard" replace />} />
-            <Route path="dashboard" element={<LazyPage><TeacherDashboard /></LazyPage>} />
-            <Route path="schedule" element={<LazyPage><TeacherSchedule /></LazyPage>} />
-            <Route path="lesson-plans" element={<LazyPage><LessonPlans /></LazyPage>} />
+            <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="schedule" element={<TeacherSchedule />} />
+            <Route path="lesson-plans" element={<LessonPlans />} />
             <Route path="lesson-plans/:planId" element={<LazyPage><LessonPlanCanvas /></LazyPage>} />
-            <Route path="academic-progress" element={<LazyPage><TeacherAcademicProgress /></LazyPage>} />
-            <Route path="assessments" element={<LazyPage><TeacherAssessments /></LazyPage>} />
-            <Route path="homework" element={<LazyPage><TeacherHomework /></LazyPage>} />
-            <Route path="content" element={<LazyPage><TeacherContent /></LazyPage>} />
-            <Route path="reference" element={<LazyPage><TeacherReference /></LazyPage>} />
-            <Route path="profile" element={<LazyPage><TeacherProfile /></LazyPage>} />
+            <Route path="academic-progress" element={<TeacherAcademicProgress />} />
+            <Route path="assessments" element={<TeacherAssessments />} />
+            <Route path="homework" element={<TeacherHomework />} />
+            <Route path="content" element={<TeacherContent />} />
+            <Route path="reference" element={<TeacherReference />} />
+            <Route path="profile" element={<TeacherProfile />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
