@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, CreditCard, Shield, Users, GraduationCap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,30 +25,31 @@ const Institutes = () => {
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedInstitute, setSelectedInstitute] = useState<Institute | null>(null);
 
-  const filteredInstitutes = mockInstitutes.filter((institute) => {
-    const matchesSearch = institute.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      institute.code.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPlan = planFilter === "all" || institute.plan === planFilter;
-    const matchesStatus = statusFilter === "all" || institute.status === statusFilter;
-    return matchesSearch && matchesPlan && matchesStatus;
-  });
+  const filteredInstitutes = useMemo(() => 
+    mockInstitutes.filter((institute) => {
+      const matchesSearch = institute.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        institute.code.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPlan = planFilter === "all" || institute.plan === planFilter;
+      const matchesStatus = statusFilter === "all" || institute.status === statusFilter;
+      return matchesSearch && matchesPlan && matchesStatus;
+    }), [searchQuery, planFilter, statusFilter]);
 
-  const handleViewDetails = (institute: Institute) => {
+  const handleViewDetails = useCallback((institute: Institute) => {
     navigate(`/superadmin/institutes/${institute.id}`);
-  };
+  }, [navigate]);
 
-  const handleEdit = (institute: Institute) => {
+  const handleEdit = useCallback((institute: Institute) => {
     navigate(`/superadmin/institutes/${institute.id}/edit`);
-  };
+  }, [navigate]);
 
-  const handleAssign = (institute: Institute) => {
+  const handleAssign = useCallback((institute: Institute) => {
     setSelectedInstitute(institute);
     setAssignDialogOpen(true);
-  };
+  }, []);
 
-  const handleBilling = (institute: Institute) => {
+  const handleBilling = useCallback((institute: Institute) => {
     toast.info(`Billing management for ${institute.name} coming soon`);
-  };
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">

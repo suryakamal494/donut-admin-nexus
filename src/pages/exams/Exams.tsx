@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, FileText, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,64 +31,67 @@ const Exams = () => {
   const [audienceDialogOpen, setAudienceDialogOpen] = useState(false);
   const [selectedTest, setSelectedTest] = useState<GrandTest | null>(null);
 
-  // Group PYPs by exam type and year
-  const groupedPapers = groupPapersByExamAndYear(mockPreviousYearPapers);
+  // Group PYPs by exam type and year - memoized
+  const groupedPapers = useMemo(() => 
+    groupPapersByExamAndYear(mockPreviousYearPapers), []);
   
-  // Filter PYPs
-  const filteredGroupedPapers = pypExamFilter === "all" 
-    ? groupedPapers 
-    : { [pypExamFilter]: groupedPapers[pypExamFilter] || {} };
+  // Filter PYPs - memoized
+  const filteredGroupedPapers = useMemo(() => 
+    pypExamFilter === "all" 
+      ? groupedPapers 
+      : { [pypExamFilter]: groupedPapers[pypExamFilter] || {} }, [pypExamFilter, groupedPapers]);
   
-  // Filter Grand Tests
-  const filteredGrandTests = mockGrandTests.filter(test => {
-    const matchesSearch = test.name.toLowerCase().includes(gtSearchQuery.toLowerCase());
-    const matchesStatus = gtStatusFilter === "all" || test.status === gtStatusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Filter Grand Tests - memoized
+  const filteredGrandTests = useMemo(() => 
+    mockGrandTests.filter(test => {
+      const matchesSearch = test.name.toLowerCase().includes(gtSearchQuery.toLowerCase());
+      const matchesStatus = gtStatusFilter === "all" || test.status === gtStatusFilter;
+      return matchesSearch && matchesStatus;
+    }), [gtSearchQuery, gtStatusFilter]);
 
-  // Handlers for Previous Year Papers
-  const handleViewPaper = (paper: PreviousYearPaper) => {
+  // Handlers for Previous Year Papers - memoized
+  const handleViewPaper = useCallback((paper: PreviousYearPaper) => {
     navigate(`/superadmin/exams/review/${paper.id}?type=previous_year&method=pdf`);
-  };
+  }, [navigate]);
 
-  const handleEditPaper = (paper: PreviousYearPaper) => {
+  const handleEditPaper = useCallback((paper: PreviousYearPaper) => {
     navigate(`/superadmin/exams/review/${paper.id}?type=previous_year&method=pdf`);
-  };
+  }, [navigate]);
 
-  const handleStatsPaper = (paper: PreviousYearPaper) => {
+  const handleStatsPaper = useCallback((paper: PreviousYearPaper) => {
     toast.info(`Viewing stats for ${paper.name}`);
-  };
+  }, []);
 
-  // Handlers for Grand Tests
-  const handleViewTest = (test: GrandTest) => {
+  // Handlers for Grand Tests - memoized
+  const handleViewTest = useCallback((test: GrandTest) => {
     navigate(`/superadmin/exams/review/${test.id}?type=grand_test&method=${test.creationMethod}`);
-  };
+  }, [navigate]);
 
-  const handleEditTest = (test: GrandTest) => {
+  const handleEditTest = useCallback((test: GrandTest) => {
     navigate(`/superadmin/exams/review/${test.id}?type=grand_test&method=${test.creationMethod}`);
-  };
+  }, [navigate]);
 
-  const handleStatsTest = (test: GrandTest) => {
+  const handleStatsTest = useCallback((test: GrandTest) => {
     toast.info(`Viewing stats for ${test.name}`);
-  };
+  }, []);
   
-  const handleScheduleTest = (test: GrandTest) => {
+  const handleScheduleTest = useCallback((test: GrandTest) => {
     setSelectedTest(test);
     setScheduleDialogOpen(true);
-  };
+  }, []);
   
-  const handleAudienceTest = (test: GrandTest) => {
+  const handleAudienceTest = useCallback((test: GrandTest) => {
     setSelectedTest(test);
     setAudienceDialogOpen(true);
-  };
+  }, []);
 
-  const handlePublishRanks = (test: GrandTest) => {
+  const handlePublishRanks = useCallback((test: GrandTest) => {
     toast.success(`Ranks published for ${test.name}`);
-  };
+  }, []);
 
-  const handleDeleteTest = (test: GrandTest) => {
+  const handleDeleteTest = useCallback((test: GrandTest) => {
     toast.warning(`Delete ${test.name}? (Mock action)`);
-  };
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">
