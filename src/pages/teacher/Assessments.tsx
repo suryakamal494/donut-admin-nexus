@@ -124,9 +124,9 @@ const Assessments = () => {
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-hide">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="min-w-[100px] w-auto shrink-0">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
@@ -138,7 +138,7 @@ const Assessments = () => {
           </Select>
           
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="min-w-[110px] w-auto shrink-0">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -151,7 +151,7 @@ const Assessments = () => {
           </Select>
           
           <Button 
-            className="gradient-button gap-2"
+            className="gradient-button gap-2 shrink-0 h-10 min-w-[44px]"
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-4 h-4" />

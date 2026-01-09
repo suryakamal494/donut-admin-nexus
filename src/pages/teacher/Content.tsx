@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { Search, Grid3X3, List, BookOpen, Filter } from "lucide-react";
+import { Search, Grid3X3, List, BookOpen, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentCard, ContentItem } from "@/components/content/ContentCard";
 import { ContentPagination } from "@/components/content/ContentPagination";
@@ -29,6 +30,7 @@ const Content = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [previewContent, setPreviewContent] = useState<ContentItem | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const ITEMS_PER_PAGE = 15;
 
@@ -125,6 +127,7 @@ const Content = () => {
   };
 
   const hasActiveFilters = searchQuery || selectedClass !== "all" || selectedChapter !== "all" || selectedType !== "all" || selectedSource !== "all";
+  const activeFilterCount = [selectedClass !== "all", selectedChapter !== "all", selectedType !== "all", selectedSource !== "all"].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
@@ -152,23 +155,62 @@ const Content = () => {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by title, chapter, or topic..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pl-10"
-              />
+          <div className="flex flex-col gap-4">
+            {/* Search + Mobile Filter Toggle */}
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by title, chapter, or topic..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10"
+                />
+              </div>
+              
+              {/* Mobile Filter Toggle */}
+              <Button
+                variant="outline"
+                className="lg:hidden h-10 min-w-[44px] shrink-0"
+                onClick={() => setShowMobileFilters(!showMobileFilters)}
+              >
+                <Filter className="w-4 h-4" />
+                {activeFilterCount > 0 && (
+                  <Badge className="ml-1 h-5 w-5 p-0 text-[10px]">{activeFilterCount}</Badge>
+                )}
+                {showMobileFilters ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )}
+              </Button>
+
+              {/* View toggle - always visible */}
+              <div className="flex border rounded-md shrink-0">
+                <Button
+                  variant={viewMode === "grid" ? "secondary" : "ghost"}
+                  size="icon"
+                  className="h-10 w-10 rounded-r-none"
+                  onClick={() => setViewMode("grid")}
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "secondary" : "ghost"}
+                  size="icon"
+                  className="h-10 w-10 rounded-l-none"
+                  onClick={() => setViewMode("list")}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
-            {/* Filter dropdowns */}
-            <div className="flex flex-wrap gap-2">
+            {/* Desktop Filter dropdowns - inline */}
+            <div className="hidden lg:flex flex-wrap gap-2">
               <Select value={selectedClass} onValueChange={handleFilterChange(setSelectedClass)}>
                 <SelectTrigger className="w-[130px]">
                   <SelectValue placeholder="Class" />
@@ -215,27 +257,61 @@ const Content = () => {
                   <SelectItem value="institute">Our Content</SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* View toggle */}
-              <div className="flex border rounded-md">
-                <Button
-                  variant={viewMode === "grid" ? "secondary" : "ghost"}
-                  size="icon"
-                  className="h-10 w-10 rounded-r-none"
-                  onClick={() => setViewMode("grid")}
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "secondary" : "ghost"}
-                  size="icon"
-                  className="h-10 w-10 rounded-l-none"
-                  onClick={() => setViewMode("list")}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
             </div>
+
+            {/* Mobile Collapsible Filters */}
+            <Collapsible open={showMobileFilters} onOpenChange={setShowMobileFilters} className="lg:hidden">
+              <CollapsibleContent className="pt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={selectedClass} onValueChange={handleFilterChange(setSelectedClass)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Classes</SelectItem>
+                      {availableClasses.map(cls => (
+                        <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={selectedChapter} onValueChange={handleFilterChange(setSelectedChapter)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Chapter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Chapters</SelectItem>
+                      {availableChapters.map(ch => (
+                        <SelectItem key={ch} value={ch}>{ch}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={selectedType} onValueChange={handleFilterChange(setSelectedType)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      {availableTypes.map(type => (
+                        <SelectItem key={type} value={type}>{type.toUpperCase()}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={selectedSource} onValueChange={handleFilterChange(setSelectedSource)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Sources</SelectItem>
+                      <SelectItem value="global">Global</SelectItem>
+                      <SelectItem value="institute">Our Content</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
 
           {/* Active filters */}

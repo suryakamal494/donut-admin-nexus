@@ -264,7 +264,7 @@ const TeacherSchedule = () => {
                 
                 {/* Slots */}
                 <CardContent className="p-2 flex-1">
-                  <ScrollArea className="h-[280px] pr-1">
+                  <ScrollArea className="h-[280px] sm:h-[320px] pr-1">
                     <div className="space-y-2">
                       {slots.length > 0 ? (
                         slots.map((slot) => (
@@ -292,10 +292,10 @@ const TeacherSchedule = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full mt-2 h-7 text-xs text-muted-foreground hover:text-primary gap-1"
+                      className="w-full mt-2 h-10 text-xs text-muted-foreground hover:text-primary gap-1"
                       onClick={() => navigate(`/teacher/lesson-plans/create?date=${day.dateStr}`)}
                     >
-                      <Plus className="w-3 h-3" />
+                      <Plus className="w-4 h-4" />
                       Add Plan
                     </Button>
                   )}

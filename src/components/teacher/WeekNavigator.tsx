@@ -45,8 +45,8 @@ export const WeekNavigator = ({ currentWeekStart, onWeekChange, className }: Wee
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <Button variant="ghost" size="icon" onClick={goToPreviousWeek}>
-        <ChevronLeft className="w-4 h-4" />
+      <Button variant="ghost" size="icon" className="h-11 w-11" onClick={goToPreviousWeek}>
+        <ChevronLeft className="w-5 h-5" />
       </Button>
       
       <div className="flex items-center gap-2 min-w-[180px] justify-center">
@@ -57,7 +57,7 @@ export const WeekNavigator = ({ currentWeekStart, onWeekChange, className }: Wee
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-xs text-primary px-2 h-6"
+            className="text-xs text-primary px-3 h-8 min-w-[44px]"
             onClick={goToThisWeek}
           >
             Today
@@ -65,8 +65,8 @@ export const WeekNavigator = ({ currentWeekStart, onWeekChange, className }: Wee
         )}
       </div>
       
-      <Button variant="ghost" size="icon" onClick={goToNextWeek}>
-        <ChevronRight className="w-4 h-4" />
+      <Button variant="ghost" size="icon" className="h-11 w-11" onClick={goToNextWeek}>
+        <ChevronRight className="w-5 h-5" />
       </Button>
     </div>
   );

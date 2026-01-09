@@ -62,7 +62,7 @@ export const ScheduleClassCard = ({
     return (
       <div 
         className={cn(
-          "p-2 rounded-lg transition-all duration-200 cursor-pointer group",
+          "p-3 rounded-lg min-h-[90px] transition-all duration-200 cursor-pointer group",
           planConfig.borderClass,
           planConfig.bgClass,
           isLive && "ring-2 ring-primary ring-offset-1 bg-primary/10",
@@ -72,20 +72,20 @@ export const ScheduleClassCard = ({
         onClick={slot.hasLessonPlan ? onViewPlan : onCreatePlan}
       >
         {/* Time */}
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1.5">
           <span className={cn(
-            "text-[11px] font-semibold",
+            "text-xs font-semibold",
             isLive ? "text-primary" : "text-foreground/70"
           )}>
             {slot.startTime}
           </span>
           {isLive && (
-            <Badge className="bg-primary text-white text-[8px] px-1 py-0 h-4 animate-pulse">
+            <Badge className="bg-primary text-white text-[9px] px-1.5 py-0.5 h-5 animate-pulse">
               LIVE
             </Badge>
           )}
           {isLab && !isLive && (
-            <FlaskConical className="w-3 h-3 text-purple-500" />
+            <FlaskConical className="w-3.5 h-3.5 text-purple-500" />
           )}
         </div>
 
@@ -98,26 +98,26 @@ export const ScheduleClassCard = ({
         </h4>
 
         {/* Batch + Class */}
-        <p className="text-xs text-foreground/60 font-medium truncate mt-0.5">
+        <p className="text-xs text-foreground/60 font-medium truncate mt-1">
           {slot.className} • {slot.batchName}
         </p>
 
         {/* Topic (if available) */}
         {slot.topic && (
-          <p className="text-[11px] text-foreground/50 truncate mt-0.5 italic">
+          <p className="text-[11px] text-foreground/50 truncate mt-1 italic">
             {slot.topic}
           </p>
         )}
 
         {/* Plan Status Indicator */}
-        <div className="flex items-center justify-between mt-1.5">
+        <div className="flex items-center justify-between mt-2">
           {slot.room && (
-            <span className="text-[10px] text-foreground/60 flex items-center gap-0.5">
-              <MapPin className="w-2.5 h-2.5" />
+            <span className="text-[11px] text-foreground/60 flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
               {slot.room}
             </span>
           )}
-          <PlanIcon className={cn("w-3 h-3", planConfig.iconColor)} />
+          <PlanIcon className={cn("w-4 h-4", planConfig.iconColor)} />
         </div>
       </div>
     );
