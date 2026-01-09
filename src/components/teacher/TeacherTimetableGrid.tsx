@@ -88,114 +88,127 @@ export const TeacherTimetableGrid = ({
 
   return (
     <ScrollArea className="w-full">
-      <div className="min-w-[700px]">
-        {/* Grid Container */}
-        <div className="grid" style={{ gridTemplateColumns: '70px repeat(6, 1fr)' }}>
-          
+      <div className="min-w-[800px]">
+        {/* Table Structure */}
+        <table className="w-full border-collapse">
           {/* Header Row */}
-          <div className="sticky top-0 z-10 bg-background p-2 border-b" />
-          {days.map((day) => (
-            <div
-              key={day.dateStr}
-              className={cn(
-                "sticky top-0 z-10 p-2 text-center border-b transition-colors",
-                day.isToday 
-                  ? "bg-gradient-to-b from-primary/10 to-primary/5" 
-                  : "bg-background"
-              )}
-            >
-              <p className={cn(
-                "text-[10px] font-semibold uppercase tracking-wide",
-                day.isToday ? "text-primary" : "text-muted-foreground"
-              )}>
-                {day.shortDayName}
-              </p>
-              <p className={cn(
-                "text-lg font-bold",
-                day.isToday ? "text-primary" : "text-foreground"
-              )}>
-                {day.dayNum}
-              </p>
-              {day.isToday && (
-                <span className="inline-block text-[9px] font-bold text-white bg-primary px-1.5 py-0.5 rounded-full mt-0.5">
-                  TODAY
-                </span>
-              )}
-            </div>
-          ))}
-
-          {/* Grid Rows */}
-          {gridRows.map((row, index) => {
-            if (row.type === 'break') {
-              const BreakIcon = getBreakIcon(row.break!.name);
-              return (
-                <div
-                  key={`break-${row.break!.id}`}
-                  className="col-span-7 flex items-center justify-center gap-2 py-2 px-3 bg-amber-50/50 border-y border-amber-200/50"
-                >
-                  <BreakIcon className="w-4 h-4 text-amber-600" />
-                  <span className="text-xs font-medium text-amber-700">
-                    {row.break!.name}
-                  </span>
-                  <span className="text-[10px] text-amber-600/70">
-                    ({row.break!.duration} min)
-                  </span>
-                </div>
-              );
-            }
-
-            // Period row
-            const periodNumber = row.period!;
-            const periodTime = row.time;
-
-            return (
-              <div key={`period-row-${periodNumber}`} className="contents">
-                {/* Period Label Cell */}
-                <div
+          <thead>
+            <tr>
+              {/* Period Column Header */}
+              <th className="sticky left-0 z-20 w-[100px] min-w-[100px] bg-muted/50 border-b border-r p-2">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Period</span>
+              </th>
+              
+              {/* Day Headers */}
+              {days.map((day) => (
+                <th
+                  key={day.dateStr}
                   className={cn(
-                    "p-2 flex flex-col items-center justify-center border-b border-r bg-muted/30",
-                    index === 0 && "rounded-tl-lg"
+                    "min-w-[120px] p-2 text-center border-b transition-colors",
+                    day.isToday 
+                      ? "bg-gradient-to-b from-primary/15 to-primary/5" 
+                      : "bg-muted/30"
                   )}
                 >
-                  <span className="text-xs font-bold text-foreground">
-                    P{periodNumber}
-                  </span>
-                  {periodTime && (
-                    <span className="text-[9px] text-muted-foreground mt-0.5">
-                      {periodTime.startTime}
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className={cn(
+                      "text-[10px] font-semibold uppercase tracking-wide",
+                      day.isToday ? "text-primary" : "text-muted-foreground"
+                    )}>
+                      {day.shortDayName}
                     </span>
-                  )}
-                </div>
-
-                {/* Day Cells */}
-                {days.map((day) => {
-                  const slot = getSlotForPeriod(day.dateStr, periodNumber);
-                  const live = isSlotLive(slot, day.dateStr);
-                  const past = isSlotPast(slot, day.dateStr, periodNumber);
-
-                  return (
-                    <div
-                      key={`cell-${day.dateStr}-${periodNumber}`}
-                      className={cn(
-                        "p-1.5 border-b",
-                        day.isToday && "bg-primary/[0.02]"
-                      )}
+                    <span className={cn(
+                      "text-lg font-bold leading-none",
+                      day.isToday ? "text-primary" : "text-foreground"
+                    )}>
+                      {day.dayNum}
+                    </span>
+                    {day.isToday && (
+                      <span className="text-[8px] font-bold text-white bg-primary px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                        Today
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          
+          {/* Body Rows */}
+          <tbody>
+            {gridRows.map((row) => {
+              if (row.type === 'break') {
+                const BreakIcon = getBreakIcon(row.break!.name);
+                return (
+                  <tr key={`break-${row.break!.id}`}>
+                    <td 
+                      colSpan={7} 
+                      className="bg-amber-50/60 border-y border-amber-200/40 py-1.5 px-3"
                     >
-                      <TeacherTimetableCell
-                        slot={slot}
-                        isLive={live}
-                        isPast={past}
-                        isToday={day.isToday}
-                        dateStr={day.dateStr}
-                        onCellClick={() => onCellClick(slot, day.dateStr, periodNumber)}
-                      />
+                      <div className="flex items-center justify-center gap-2">
+                        <BreakIcon className="w-3.5 h-3.5 text-amber-600" />
+                        <span className="text-xs font-medium text-amber-700">
+                          {row.break!.name}
+                        </span>
+                        <span className="text-[10px] text-amber-600/70">
+                          ({row.break!.duration} min)
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              }
+
+              // Period row
+              const periodNumber = row.period!;
+              const periodTime = row.time;
+
+              return (
+                <tr key={`period-row-${periodNumber}`}>
+                  {/* Period Label Cell - Sticky */}
+                  <td className="sticky left-0 z-10 w-[100px] min-w-[100px] bg-muted/30 border-b border-r p-2">
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-xs font-bold text-foreground">
+                        Period {periodNumber}
+                      </span>
+                      {periodTime && (
+                        <span className="text-[10px] text-muted-foreground mt-0.5 font-medium">
+                          {periodTime.startTime} - {periodTime.endTime}
+                        </span>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+                  </td>
+
+                  {/* Day Cells */}
+                  {days.map((day) => {
+                    const slot = getSlotForPeriod(day.dateStr, periodNumber);
+                    const live = isSlotLive(slot, day.dateStr);
+                    const past = isSlotPast(slot, day.dateStr, periodNumber);
+
+                    return (
+                      <td
+                        key={`cell-${day.dateStr}-${periodNumber}`}
+                        className={cn(
+                          "border-b p-1",
+                          day.isToday && "bg-primary/[0.03]"
+                        )}
+                      >
+                        <TeacherTimetableCell
+                          slot={slot}
+                          isLive={live}
+                          isPast={past}
+                          isToday={day.isToday}
+                          dateStr={day.dateStr}
+                          onCellClick={() => onCellClick(slot, day.dateStr, periodNumber)}
+                        />
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>

@@ -1,4 +1,4 @@
-import { CheckCircle2, Edit3, Plus, FlaskConical, Dumbbell, BookOpen } from "lucide-react";
+import { CheckCircle2, Clock, Plus, FlaskConical, Dumbbell, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TeacherTimetableSlot } from "@/data/teacherData";
 
@@ -14,11 +14,11 @@ interface TeacherTimetableCellProps {
 const getPeriodTypeIcon = (type?: string) => {
   switch (type) {
     case 'lab':
-      return <FlaskConical className="w-3 h-3 text-purple-500" />;
+      return <FlaskConical className="w-3 h-3" />;
     case 'sports':
-      return <Dumbbell className="w-3 h-3 text-orange-500" />;
+      return <Dumbbell className="w-3 h-3" />;
     case 'library':
-      return <BookOpen className="w-3 h-3 text-blue-500" />;
+      return <BookOpen className="w-3 h-3" />;
     default:
       return null;
   }
@@ -36,11 +36,11 @@ export const TeacherTimetableCell = ({
   if (!slot) {
     return (
       <div className={cn(
-        "h-full min-h-[72px] flex items-center justify-center",
-        "bg-muted/20 rounded-lg border border-dashed border-muted-foreground/10",
+        "h-[52px] flex items-center justify-center",
+        "bg-muted/20 rounded-md",
         isToday && "bg-primary/5"
       )}>
-        <span className="text-muted-foreground/30 text-xs">—</span>
+        <span className="text-muted-foreground/40 text-xs">—</span>
       </div>
     );
   }
@@ -50,88 +50,94 @@ export const TeacherTimetableCell = ({
   const isDraft = slot.lessonPlanStatus === 'draft';
   const periodTypeIcon = getPeriodTypeIcon(slot.periodType);
 
+  // Extract section from batchName (e.g., "10A" -> "10A")
+  const classSection = slot.batchName;
+
   return (
     <div
       onClick={onCellClick}
       className={cn(
-        // Base styles
-        "h-full min-h-[72px] p-2.5 rounded-lg cursor-pointer transition-all duration-200",
-        "flex flex-col justify-between group relative overflow-hidden",
+        // Base styles - Compact design
+        "h-[52px] px-2.5 py-1.5 rounded-md cursor-pointer transition-all duration-150",
+        "flex flex-col justify-center group relative",
         
-        // Status-based styling
-        isReady && "bg-gradient-to-br from-teal-50 to-cyan-50 border-l-[3px] border-l-green-500",
-        isDraft && "bg-amber-50/70 border-l-[3px] border-l-amber-500",
-        !hasLessonPlan && "bg-white border border-dashed border-muted-foreground/20 hover:border-primary/40",
+        // Status-based backgrounds
+        isReady && "bg-teal-50 border border-teal-200/60",
+        isDraft && "bg-amber-50 border border-amber-200/60",
+        !hasLessonPlan && !isPast && "bg-white border border-border hover:border-green-400 hover:bg-green-50/30",
+        !hasLessonPlan && isPast && "bg-muted/30 border border-transparent",
         
-        // Live state
-        isLive && "ring-2 ring-primary ring-offset-1 bg-primary/10 animate-pulse-subtle",
+        // Live state - Prominent
+        isLive && "ring-2 ring-primary ring-offset-1 bg-primary/10 border-primary/30",
         
         // Past state
-        isPast && "opacity-50",
+        isPast && "opacity-60",
         
-        // Hover
-        !isPast && "hover:shadow-md hover:scale-[1.02]",
-        
-        // Today column highlight
-        isToday && !isReady && !isDraft && "bg-primary/5"
+        // Hover effects
+        !isPast && "hover:shadow-sm"
       )}
     >
-      {/* Top Row: Batch + Room Badge */}
-      <div className="flex items-start justify-between gap-1">
-        <span className={cn(
-          "text-sm font-bold text-foreground leading-tight truncate",
-          isLive && "text-primary"
-        )}>
-          {slot.batchName}
-        </span>
+      {/* Top Row: Class+Section + Room/Type Badge */}
+      <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center gap-1.5">
+          {/* Live Badge */}
+          {isLive && (
+            <span className="text-[8px] font-bold text-white bg-primary px-1 py-0.5 rounded uppercase tracking-wide animate-pulse">
+              LIVE
+            </span>
+          )}
+          
+          {/* Class + Section - Bold and prominent */}
+          <span className={cn(
+            "text-sm font-bold text-foreground leading-none",
+            isLive && "text-primary"
+          )}>
+            {classSection}
+          </span>
+          
+          {/* Period Type Icon */}
+          {periodTypeIcon && (
+            <span className="text-muted-foreground">{periodTypeIcon}</span>
+          )}
+        </div>
         
+        {/* Room Badge or Status Icon */}
         <div className="flex items-center gap-1 flex-shrink-0">
-          {periodTypeIcon}
-          {slot.room && (
-            <span className="text-[10px] font-medium text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">
-              {slot.room.replace('Room ', 'R')}
+          {isReady && (
+            <CheckCircle2 className="w-4 h-4 text-green-600" />
+          )}
+          {isDraft && (
+            <Clock className="w-3.5 h-3.5 text-amber-600" />
+          )}
+          {slot.room && !isReady && !isDraft && (
+            <span className="text-[9px] font-medium text-muted-foreground bg-muted/60 px-1 py-0.5 rounded">
+              {slot.room.replace('Room ', 'R').replace('Physics Lab', 'Lab')}
             </span>
           )}
         </div>
       </div>
 
-      {/* Middle: Chapter/Topic (only if lesson plan exists) */}
-      {slot.topic && (
-        <p className={cn(
-          "text-xs text-foreground/60 leading-snug line-clamp-2 my-1",
-          isDraft && "text-amber-700/70"
-        )}>
-          {slot.topic}
-        </p>
-      )}
-
-      {/* Bottom: Status Indicator */}
-      <div className="flex items-center justify-between mt-auto">
-        {/* Live Badge */}
-        {isLive && (
-          <span className="text-[9px] font-bold text-white bg-primary px-1.5 py-0.5 rounded uppercase tracking-wide">
-            Live
-          </span>
+      {/* Bottom Row: Chapter/Topic OR Add Plan CTA */}
+      <div className="mt-0.5">
+        {hasLessonPlan && slot.topic ? (
+          <p className={cn(
+            "text-[11px] leading-tight line-clamp-1",
+            isReady && "text-teal-700/80",
+            isDraft && "text-amber-700/80"
+          )}>
+            {slot.topic}
+          </p>
+        ) : !isPast ? (
+          <div className={cn(
+            "flex items-center gap-0.5 text-[11px] font-semibold",
+            "text-green-600 group-hover:text-green-700 transition-colors"
+          )}>
+            <Plus className="w-3 h-3" />
+            <span>Add Plan</span>
+          </div>
+        ) : (
+          <span className="text-[10px] text-muted-foreground/50">No plan</span>
         )}
-        
-        {/* Status Icon */}
-        <div className="ml-auto">
-          {isReady && (
-            <CheckCircle2 className="w-4 h-4 text-green-600" />
-          )}
-          {isDraft && (
-            <Edit3 className="w-4 h-4 text-amber-600" />
-          )}
-          {!hasLessonPlan && !isPast && (
-            <div className={cn(
-              "flex items-center gap-1 text-[10px] font-medium",
-              "text-muted-foreground group-hover:text-primary transition-colors"
-            )}>
-              <Plus className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Add Plan</span>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
