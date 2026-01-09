@@ -243,39 +243,39 @@ const CreateGrandTest = () => {
               </div>
 
               {/* Content Source Selection */}
-              <div className="space-y-3">
-                <Label>Content Source *</Label>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm">Content Source *</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <button
                     type="button"
                     onClick={() => { setContentSource('curriculum'); setSelectedCourseId(""); }}
                     className={cn(
-                      "flex items-center gap-3 p-4 rounded-xl border transition-all",
+                      "flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all",
                       contentSource === 'curriculum' 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50"
                     )}
                   >
-                    <BookOpen className={cn("w-5 h-5", contentSource === 'curriculum' ? "text-primary" : "text-muted-foreground")} />
+                    <BookOpen className={cn("w-4 h-4 sm:w-5 sm:h-5 shrink-0", contentSource === 'curriculum' ? "text-primary" : "text-muted-foreground")} />
                     <div className="text-left">
-                      <p className="font-medium">Curriculum</p>
-                      <p className="text-xs text-muted-foreground">Pull from CBSE/ICSE syllabus</p>
+                      <p className="font-medium text-sm">Curriculum</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Pull from CBSE/ICSE syllabus</p>
                     </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => { setContentSource('course'); setSelectedCurriculumId(""); }}
                     className={cn(
-                      "flex items-center gap-3 p-4 rounded-xl border transition-all",
+                      "flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all",
                       contentSource === 'course' 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50"
                     )}
                   >
-                    <Layers className={cn("w-5 h-5", contentSource === 'course' ? "text-primary" : "text-muted-foreground")} />
+                    <Layers className={cn("w-4 h-4 sm:w-5 sm:h-5 shrink-0", contentSource === 'course' ? "text-primary" : "text-muted-foreground")} />
                     <div className="text-left">
-                      <p className="font-medium">Course</p>
-                      <p className="text-xs text-muted-foreground">Pull from JEE/NEET courses</p>
+                      <p className="font-medium text-sm">Course</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Pull from JEE/NEET courses</p>
                     </div>
                   </button>
                 </div>
@@ -306,14 +306,14 @@ const CreateGrandTest = () => {
                 )}
               </div>
               
-              <div className="space-y-3">
-                <Label>Exam Pattern *</Label>
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm">Exam Pattern *</Label>
                 <RadioGroup value={pattern} onValueChange={(v) => setPattern(v as typeof pattern)}>
                   {Object.entries(examPatternConfig).map(([key, config]) => (
                     <label
                       key={key}
                       className={cn(
-                        "flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all",
+                        "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl border cursor-pointer transition-all",
                         pattern === key 
                           ? "border-primary bg-primary/5" 
                           : "border-border hover:border-primary/50"
@@ -321,8 +321,8 @@ const CreateGrandTest = () => {
                     >
                       <RadioGroupItem value={key} />
                       <div>
-                        <p className="font-medium">{config.label}</p>
-                        <p className="text-sm text-muted-foreground">{config.description}</p>
+                        <p className="font-medium text-sm">{config.label}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{config.description}</p>
                       </div>
                     </label>
                   ))}
@@ -348,28 +348,28 @@ const CreateGrandTest = () => {
 
         {/* Step 2: Creation Method */}
         {currentStep === 2 && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-1">How do you want to create questions?</h3>
-              <p className="text-muted-foreground text-sm">Choose your preferred method</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-1">How do you want to create questions?</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Choose your preferred method</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <button
                 onClick={() => setCreationMethod("ai")}
                 className={cn(
-                  "p-6 rounded-xl border-2 text-center transition-all",
+                  "p-4 sm:p-6 rounded-lg sm:rounded-xl border-2 text-center transition-all",
                   creationMethod === "ai"
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
                 )}
               >
                 <Sparkles className={cn(
-                  "w-12 h-12 mx-auto mb-3",
+                  "w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3",
                   creationMethod === "ai" ? "text-primary" : "text-muted-foreground"
                 )} />
-                <h4 className="font-semibold mb-1">Generate using AI</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-semibold mb-1 text-sm sm:text-base">Generate using AI</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   AI will create questions based on your specifications
                 </p>
               </button>
@@ -377,18 +377,18 @@ const CreateGrandTest = () => {
               <button
                 onClick={() => setCreationMethod("pdf")}
                 className={cn(
-                  "p-6 rounded-xl border-2 text-center transition-all",
+                  "p-4 sm:p-6 rounded-lg sm:rounded-xl border-2 text-center transition-all",
                   creationMethod === "pdf"
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
                 )}
               >
                 <FileUp className={cn(
-                  "w-12 h-12 mx-auto mb-3",
+                  "w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3",
                   creationMethod === "pdf" ? "text-primary" : "text-muted-foreground"
                 )} />
-                <h4 className="font-semibold mb-1">Upload PDF</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-semibold mb-1 text-sm sm:text-base">Upload PDF</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Upload a question paper PDF and we'll extract questions
                 </p>
               </button>
@@ -413,71 +413,71 @@ const CreateGrandTest = () => {
 
         {/* Step 3A: AI Configuration */}
         {currentStep === 3 && creationMethod === "ai" && !processComplete && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-1">AI Question Configuration</h3>
-              <p className="text-muted-foreground text-sm">Configure how AI should generate questions</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-1">AI Question Configuration</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Configure how AI should generate questions</p>
             </div>
             
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <Label>Subject-wise Question Distribution</Label>
+            <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-3 sm:space-y-4">
+                <Label className="text-sm">Subject-wise Question Distribution</Label>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Physics</span>
+                    <span className="text-xs sm:text-sm">Physics</span>
                     <div className="flex items-center gap-2">
                       <Slider 
                         value={[physicsCount]} 
                         onValueChange={([v]) => setPhysicsCount(v)}
                         max={50}
                         min={10}
-                        className="w-32"
+                        className="w-24 sm:w-32"
                       />
-                      <span className="text-sm font-medium w-8">{physicsCount}</span>
+                      <span className="text-xs sm:text-sm font-medium w-6 sm:w-8">{physicsCount}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Chemistry</span>
+                    <span className="text-xs sm:text-sm">Chemistry</span>
                     <div className="flex items-center gap-2">
                       <Slider 
                         value={[chemistryCount]} 
                         onValueChange={([v]) => setChemistryCount(v)}
                         max={50}
                         min={10}
-                        className="w-32"
+                        className="w-24 sm:w-32"
                       />
-                      <span className="text-sm font-medium w-8">{chemistryCount}</span>
+                      <span className="text-xs sm:text-sm font-medium w-6 sm:w-8">{chemistryCount}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">{thirdSubject}</span>
+                    <span className="text-xs sm:text-sm">{thirdSubject}</span>
                     <div className="flex items-center gap-2">
                       <Slider 
                         value={[mathBioCount]} 
                         onValueChange={([v]) => setMathBioCount(v)}
                         max={50}
                         min={10}
-                        className="w-32"
+                        className="w-24 sm:w-32"
                       />
-                      <span className="text-sm font-medium w-8">{mathBioCount}</span>
+                      <span className="text-xs sm:text-sm font-medium w-6 sm:w-8">{mathBioCount}</span>
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[10px] sm:text-xs text-muted-foreground">
                   Total: {physicsCount + chemistryCount + mathBioCount} questions
                 </p>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label>Difficulty Distribution</Label>
-                  <span className="text-xs text-muted-foreground">Total: {easyPercent + mediumPercent + hardPercent}%</span>
+                  <Label className="text-sm">Difficulty Distribution</Label>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">Total: {easyPercent + mediumPercent + hardPercent}%</span>
                 </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-success font-medium">Easy</span>
-                      <span className="text-sm font-medium w-12 text-right">{easyPercent}%</span>
+                      <span className="text-xs sm:text-sm text-success font-medium">Easy</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{easyPercent}%</span>
                     </div>
                     <Slider 
                       value={[easyPercent]} 
@@ -487,10 +487,10 @@ const CreateGrandTest = () => {
                       className="[&_[role=slider]]:bg-success [&_.bg-primary]:bg-success"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-warning font-medium">Medium</span>
-                      <span className="text-sm font-medium w-12 text-right">{mediumPercent}%</span>
+                      <span className="text-xs sm:text-sm text-warning font-medium">Medium</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{mediumPercent}%</span>
                     </div>
                     <Slider 
                       value={[mediumPercent]} 
@@ -500,12 +500,12 @@ const CreateGrandTest = () => {
                       className="[&_[role=slider]]:bg-warning [&_.bg-primary]:bg-warning"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-destructive font-medium">Hard</span>
-                      <span className="text-sm font-medium w-12 text-right">{hardPercent}%</span>
+                      <span className="text-xs sm:text-sm text-destructive font-medium">Hard</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{hardPercent}%</span>
                     </div>
-                    <Slider 
+                    <Slider
                       value={[hardPercent]} 
                       onValueChange={([v]) => handleHardChange(v)}
                       max={100}
@@ -517,18 +517,18 @@ const CreateGrandTest = () => {
               </div>
 
               {/* Cognitive Distribution */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label>Cognitive Distribution</Label>
-                  <span className="text-xs text-muted-foreground">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <Label className="text-sm">Cognitive Distribution</Label>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">
                     Total: {logicalPercent + analyticalPercent + conceptualPercent + numericalPercent + applicationPercent + memoryPercent}%
                   </span>
                 </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Logical Reasoning</span>
-                      <span className="text-sm font-medium w-12 text-right">{logicalPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Logical Reasoning</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{logicalPercent}%</span>
                     </div>
                     <Slider 
                       value={[logicalPercent]} 
@@ -537,10 +537,10 @@ const CreateGrandTest = () => {
                       min={0}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Analytical Thinking</span>
-                      <span className="text-sm font-medium w-12 text-right">{analyticalPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Analytical Thinking</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{analyticalPercent}%</span>
                     </div>
                     <Slider 
                       value={[analyticalPercent]} 
@@ -549,10 +549,10 @@ const CreateGrandTest = () => {
                       min={0}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Conceptual Understanding</span>
-                      <span className="text-sm font-medium w-12 text-right">{conceptualPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Conceptual Understanding</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{conceptualPercent}%</span>
                     </div>
                     <Slider 
                       value={[conceptualPercent]} 
@@ -561,10 +561,10 @@ const CreateGrandTest = () => {
                       min={0}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Numerical Ability</span>
-                      <span className="text-sm font-medium w-12 text-right">{numericalPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Numerical Ability</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{numericalPercent}%</span>
                     </div>
                     <Slider 
                       value={[numericalPercent]} 
@@ -573,10 +573,10 @@ const CreateGrandTest = () => {
                       min={0}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Application-Based</span>
-                      <span className="text-sm font-medium w-12 text-right">{applicationPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Application-Based</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{applicationPercent}%</span>
                     </div>
                     <Slider 
                       value={[applicationPercent]} 
@@ -585,10 +585,10 @@ const CreateGrandTest = () => {
                       min={0}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Memory/Recall</span>
-                      <span className="text-sm font-medium w-12 text-right">{memoryPercent}%</span>
+                      <span className="text-xs sm:text-sm font-medium">Memory/Recall</span>
+                      <span className="text-xs sm:text-sm font-medium w-10 sm:w-12 text-right">{memoryPercent}%</span>
                     </div>
                     <Slider 
                       value={[memoryPercent]} 
@@ -601,9 +601,9 @@ const CreateGrandTest = () => {
               </div>
             </div>
             
-            <div className="bg-muted/50 rounded-xl p-4 flex gap-3">
-              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div className="text-sm text-muted-foreground">
+            <div className="bg-muted/50 rounded-lg sm:rounded-xl p-3 sm:p-4 flex gap-2 sm:gap-3">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5" />
+              <div className="text-xs sm:text-sm text-muted-foreground">
                 Questions will be generated with answers and solutions. You can review and edit before publishing.
               </div>
             </div>
@@ -636,15 +636,15 @@ const CreateGrandTest = () => {
 
         {/* Step 3B: PDF Upload */}
         {currentStep === 3 && creationMethod === "pdf" && !processComplete && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-1">Upload Question Paper</h3>
-              <p className="text-muted-foreground text-sm">Upload a PDF to create the grand test</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-1">Upload Question Paper</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Upload a PDF to create the grand test</p>
             </div>
             
             <div 
               className={cn(
-                "border-2 border-dashed rounded-xl p-8 text-center transition-colors",
+                "border-2 border-dashed rounded-lg sm:rounded-xl p-6 sm:p-8 text-center transition-colors",
                 uploadedFile ? "border-success bg-success/5" : "border-border hover:border-primary/50"
               )}
             >
@@ -658,23 +658,23 @@ const CreateGrandTest = () => {
               <label htmlFor="pdf-upload" className="cursor-pointer">
                 {uploadedFile ? (
                   <div className="space-y-2">
-                    <FileText className="w-12 h-12 text-success mx-auto" />
-                    <p className="font-medium text-foreground">{uploadedFile.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-success mx-auto" />
+                    <p className="font-medium text-foreground text-sm sm:text-base">{uploadedFile.name}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
-                    <Button variant="outline" size="sm" className="mt-2">
+                    <Button variant="outline" size="sm" className="mt-2 text-xs sm:text-sm h-8 sm:h-9">
                       Change File
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Upload className="w-12 h-12 text-muted-foreground mx-auto" />
-                    <p className="font-medium text-foreground">
+                    <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto" />
+                    <p className="font-medium text-foreground text-sm sm:text-base">
                       Drag & drop a question paper PDF
                     </p>
-                    <p className="text-sm text-muted-foreground">or click to browse</p>
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground">or click to browse</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-2">
                       Supported: PDF (max 50MB)
                     </p>
                   </div>
@@ -682,9 +682,9 @@ const CreateGrandTest = () => {
               </label>
             </div>
             
-            <div className="bg-muted/50 rounded-xl p-4 flex gap-3">
-              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div className="text-sm text-muted-foreground">
+            <div className="bg-muted/50 rounded-lg sm:rounded-xl p-3 sm:p-4 flex gap-2 sm:gap-3">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5" />
+              <div className="text-xs sm:text-sm text-muted-foreground">
                 PDF will be converted into a full-length mock test automatically. You can review before publishing.
               </div>
             </div>
@@ -717,24 +717,24 @@ const CreateGrandTest = () => {
 
         {/* Step 4: Complete */}
         {processComplete && (
-          <div className="text-center py-8 space-y-4">
-            <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10 text-success" />
+          <div className="text-center py-6 sm:py-8 space-y-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-success" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-1">Grand Test Created!</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-lg sm:text-xl font-semibold mb-1">Grand Test Created!</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm px-4">
                 {creationMethod === "ai" 
                   ? "AI has generated your questions. Review them before publishing."
                   : "Questions extracted from PDF. Review them before publishing."}
               </p>
             </div>
-            <div className="pt-4 flex justify-center gap-3">
-              <Button variant="outline" onClick={() => navigate("/superadmin/exams")}>
+            <div className="pt-4 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+              <Button variant="outline" className="text-xs sm:text-sm h-9 sm:h-10" onClick={() => navigate("/superadmin/exams")}>
                 Go to Grand Tests
               </Button>
               <Button 
-                className="gradient-button"
+                className="gradient-button text-xs sm:text-sm h-9 sm:h-10"
                 onClick={() => navigate(`/superadmin/exams/review/new-grand-test?type=grand_test&method=${creationMethod}`)}
               >
                 Review Questions
