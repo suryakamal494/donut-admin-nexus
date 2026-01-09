@@ -11,3 +11,5 @@ export { CreateAssessmentDialog } from "./CreateAssessmentDialog";
 export { HomeworkCard } from "./HomeworkCard";
 export { CreateHomeworkDialog } from "./CreateHomeworkDialog";
 export { CurrentClassWidget } from "./CurrentClassWidget";
+export { TeacherTimetableCell } from "./TeacherTimetableCell";
+export { TeacherTimetableGrid } from "./TeacherTimetableGrid";
