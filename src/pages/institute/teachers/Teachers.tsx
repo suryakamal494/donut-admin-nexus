@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,
@@ -46,26 +46,34 @@ const Teachers = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const getSubjectName = (subjectId: string) => {
+  const getSubjectName = useCallback((subjectId: string) => {
     return availableSubjects.find((s) => s.id === subjectId)?.name || subjectId;
-  };
+  }, []);
 
-  const filteredTeachers = teachers.filter(
-    (teacher) =>
-      teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      teacher.subjects.some((s) =>
-        getSubjectName(s).toLowerCase().includes(searchQuery.toLowerCase())
-      )
-  );
+  const filteredTeachers = useMemo(() => 
+    teachers.filter(
+      (teacher) =>
+        teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        teacher.subjects.some((s) =>
+          getSubjectName(s).toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    ), [searchQuery, getSubjectName]);
 
-  const handleResetPassword = (teacherName: string) => {
+  // Computed stats
+  const stats = useMemo(() => ({
+    totalTeachers: teachers.length,
+    uniqueSubjects: new Set(teachers.flatMap((t) => t.subjects)).size,
+    activeTeachers: teachers.filter((t) => t.status === "active").length,
+  }), []);
+
+  const handleResetPassword = useCallback((teacherName: string) => {
     toast.success(`Password reset email sent to ${teacherName}`);
-  };
+  }, []);
 
-  const handleDeactivate = (teacherName: string) => {
+  const handleDeactivate = useCallback((teacherName: string) => {
     toast.success(`${teacherName} has been deactivated`);
-  };
+  }, []);
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -92,7 +100,7 @@ const Teachers = () => {
               <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-foreground">{teachers.length}</p>
+              <p className="text-xl md:text-2xl font-bold text-foreground">{stats.totalTeachers}</p>
               <p className="text-xs md:text-sm text-muted-foreground truncate">Total</p>
             </div>
           </CardContent>
@@ -104,7 +112,7 @@ const Teachers = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl md:text-2xl font-bold text-foreground">
-                {new Set(teachers.flatMap((t) => t.subjects)).size}
+                {stats.uniqueSubjects}
               </p>
               <p className="text-xs md:text-sm text-muted-foreground truncate">Subjects</p>
             </div>
@@ -117,7 +125,7 @@ const Teachers = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xl md:text-2xl font-bold text-foreground">
-                {teachers.filter((t) => t.status === "active").length}
+                {stats.activeTeachers}
               </p>
               <p className="text-xs md:text-sm text-muted-foreground truncate">Active</p>
             </div>

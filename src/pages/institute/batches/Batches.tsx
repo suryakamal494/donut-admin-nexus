@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Users, GraduationCap, BookOpen, ChevronRight, Calendar, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,37 +15,44 @@ const Batches = () => {
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Group batches by class
-  const batchesByClass = availableClasses.reduce((acc, cls) => {
-    const classBatches = batches.filter((b) => b.classId === cls.id);
-    if (classBatches.length > 0) {
-      acc[cls.id] = {
-        className: cls.name,
-        batches: classBatches,
-      };
-    }
-    return acc;
-  }, {} as Record<string, { className: string; batches: typeof batches }>);
+  // Group batches by class - memoized
+  const batchesByClass = useMemo(() => 
+    availableClasses.reduce((acc, cls) => {
+      const classBatches = batches.filter((b) => b.classId === cls.id);
+      if (classBatches.length > 0) {
+        acc[cls.id] = {
+          className: cls.name,
+          batches: classBatches,
+        };
+      }
+      return acc;
+    }, {} as Record<string, { className: string; batches: typeof batches }>), []);
 
-  // Class chips with batch counts
-  const classChips = availableClasses
-    .map((cls) => ({
-      id: cls.id,
-      name: cls.name,
-      count: batchesByClass[cls.id]?.batches.length || 0,
-    }))
-    .filter((c) => c.count > 0);
+  // Class chips with batch counts - memoized
+  const classChips = useMemo(() => 
+    availableClasses
+      .map((cls) => ({
+        id: cls.id,
+        name: cls.name,
+        count: batchesByClass[cls.id]?.batches.length || 0,
+      }))
+      .filter((c) => c.count > 0), [batchesByClass]);
 
-  // Filtered batches based on selection
-  const filteredBatchesByClass = selectedClass
-    ? { [selectedClass]: batchesByClass[selectedClass] }
-    : batchesByClass;
+  // Filtered batches based on selection - memoized
+  const filteredBatchesByClass = useMemo(() => 
+    selectedClass
+      ? { [selectedClass]: batchesByClass[selectedClass] }
+      : batchesByClass, [selectedClass, batchesByClass]);
 
-  const totalBatches = batches.length;
-  const totalStudents = batches.reduce((sum, b) => sum + b.studentCount, 0);
+  // Computed stats - memoized
+  const stats = useMemo(() => ({
+    totalBatches: batches.length,
+    totalStudents: batches.reduce((sum, b) => sum + b.studentCount, 0),
+    totalClasses: Object.keys(batchesByClass).length,
+  }), [batchesByClass]);
 
   // Handle chip click - filter and scroll
-  const handleChipClick = (classId: string | null) => {
+  const handleChipClick = useCallback((classId: string | null) => {
     setSelectedClass(classId);
     if (classId && sectionRefs.current[classId]) {
       setTimeout(() => {
@@ -55,7 +62,7 @@ const Batches = () => {
         });
       }, 100);
     }
-  };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -81,7 +88,7 @@ const Batches = () => {
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{totalBatches}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.totalBatches}</p>
               <p className="text-xs text-muted-foreground truncate">Batches</p>
             </div>
           </CardContent>
@@ -92,7 +99,7 @@ const Batches = () => {
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{totalStudents}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.totalStudents}</p>
               <p className="text-xs text-muted-foreground truncate">Students</p>
             </div>
           </CardContent>
@@ -103,7 +110,7 @@ const Batches = () => {
               <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{Object.keys(batchesByClass).length}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.totalClasses}</p>
               <p className="text-xs text-muted-foreground truncate">Classes</p>
             </div>
           </CardContent>
@@ -124,7 +131,7 @@ const Batches = () => {
             )}
           >
             All
-            <span className="ml-1 text-xs opacity-80">({totalBatches})</span>
+            <span className="ml-1 text-xs opacity-80">({stats.totalBatches})</span>
           </button>
           {classChips.map((chip) => (
             <button

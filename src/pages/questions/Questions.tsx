@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Plus, Sparkles, Upload, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -137,8 +137,8 @@ const Questions = () => {
 
   const totalPages = Math.ceil(allDisplayItems.length / itemsPerPage);
 
-  // Clear all filters
-  const handleClearFilters = () => {
+  // Clear all filters - memoized
+  const handleClearFilters = useCallback(() => {
     setSearchQuery("");
     setSelectedSubject("all");
     setSelectedType("all");
@@ -147,32 +147,32 @@ const Questions = () => {
     setSelectedStatus("all");
     setSelectedClass("all");
     setCurrentPage(1);
-  };
+  }, []);
 
-  // Handle page change
-  const handlePageChange = (page: number) => {
+  // Handle page change - memoized
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
-  // Handle items per page change
-  const handleItemsPerPageChange = (value: number) => {
+  // Handle items per page change - memoized
+  const handleItemsPerPageChange = useCallback((value: number) => {
     setItemsPerPage(value);
     setCurrentPage(1);
-  };
+  }, []);
 
-  // Question actions
-  const handleViewQuestion = (question: Question) => {
+  // Question actions - memoized
+  const handleViewQuestion = useCallback((question: Question) => {
     console.log("View question:", question.id);
-  };
+  }, []);
 
-  const handleEditQuestion = (question: Question) => {
+  const handleEditQuestion = useCallback((question: Question) => {
     console.log("Edit question:", question.id);
-  };
+  }, []);
 
-  const handleDeleteQuestion = (question: Question) => {
+  const handleDeleteQuestion = useCallback((question: Question) => {
     console.log("Delete question:", question.id);
-  };
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">

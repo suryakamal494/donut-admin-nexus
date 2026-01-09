@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Plus,
@@ -62,76 +62,84 @@ const Students = () => {
   );
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
-  // Create class chips with student counts
-  const classChips = availableClasses
-    .map((cls) => {
-      const classBatches = batches.filter(b => b.classId === cls.id);
-      const classStudentCount = students.filter(s => 
-        classBatches.some(b => b.id === s.batchId)
-      ).length;
-      return {
-        id: cls.id,
-        name: cls.name,
-        count: classStudentCount,
-      };
-    })
-    .filter((c) => c.count > 0);
+  // Computed stats - memoized
+  const stats = useMemo(() => ({
+    totalStudents: students.length,
+    activeStudents: students.filter((s) => s.status === "active").length,
+    totalBatches: batches.length,
+  }), []);
 
-  // Group students by batch
-  const studentsByBatch = batches.reduce((acc, batch) => {
-    // Filter by selected class
-    if (selectedClass && batch.classId !== selectedClass) return acc;
-    
-    const batchStudents = students.filter((s) => s.batchId === batch.id);
-    if (batchStudents.length > 0 || !batchIdFilter) {
-      acc[batch.id] = {
-        batch,
-        students: batchStudents,
-      };
-    }
-    return acc;
-  }, {} as Record<string, { batch: typeof batches[0]; students: typeof students }>);
+  // Create class chips with student counts - memoized
+  const classChips = useMemo(() => 
+    availableClasses
+      .map((cls) => {
+        const classBatches = batches.filter(b => b.classId === cls.id);
+        const classStudentCount = students.filter(s => 
+          classBatches.some(b => b.id === s.batchId)
+        ).length;
+        return {
+          id: cls.id,
+          name: cls.name,
+          count: classStudentCount,
+        };
+      })
+      .filter((c) => c.count > 0), []);
 
-  const toggleBatch = (batchId: string) => {
+  // Group students by batch - memoized
+  const studentsByBatch = useMemo(() => 
+    batches.reduce((acc, batch) => {
+      // Filter by selected class
+      if (selectedClass && batch.classId !== selectedClass) return acc;
+      
+      const batchStudents = students.filter((s) => s.batchId === batch.id);
+      if (batchStudents.length > 0 || !batchIdFilter) {
+        acc[batch.id] = {
+          batch,
+          students: batchStudents,
+        };
+      }
+      return acc;
+    }, {} as Record<string, { batch: typeof batches[0]; students: typeof students }>), [selectedClass, batchIdFilter]);
+
+  const toggleBatch = useCallback((batchId: string) => {
     setExpandedBatches((prev) =>
       prev.includes(batchId)
         ? prev.filter((id) => id !== batchId)
         : [...prev, batchId]
     );
-  };
+  }, []);
 
-  const filteredStudentsByBatch = Object.entries(studentsByBatch).reduce(
-    (acc, [batchId, data]) => {
-      if (batchIdFilter && batchId !== batchIdFilter) return acc;
+  // Filter students by batch and search - memoized
+  const filteredStudentsByBatch = useMemo(() => 
+    Object.entries(studentsByBatch).reduce(
+      (acc, [batchId, data]) => {
+        if (batchIdFilter && batchId !== batchIdFilter) return acc;
 
-      const filteredStudents = data.students.filter(
-        (student) =>
-          student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.rollNumber.includes(searchQuery)
-      );
+        const filteredStudents = data.students.filter(
+          (student) =>
+            student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            student.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            student.rollNumber.includes(searchQuery)
+        );
 
-      if (filteredStudents.length > 0 || !searchQuery) {
-        acc[batchId] = { ...data, students: filteredStudents };
-      }
-      return acc;
-    },
-    {} as typeof studentsByBatch
-  );
+        if (filteredStudents.length > 0 || !searchQuery) {
+          acc[batchId] = { ...data, students: filteredStudents };
+        }
+        return acc;
+      },
+      {} as typeof studentsByBatch
+    ), [studentsByBatch, searchQuery, batchIdFilter]);
 
-  const totalStudents = students.length;
-  const activeStudents = students.filter((s) => s.status === "active").length;
-
-  const handleResetPassword = (studentName: string) => {
+  const handleResetPassword = useCallback((studentName: string) => {
     toast.success(`Password reset for ${studentName}`);
-  };
+  }, []);
 
-  const handleDeleteStudent = () => {
+  const handleDeleteStudent = useCallback(() => {
     if (studentToDelete) {
       toast.success(`${studentToDelete.name} has been removed`);
       setStudentToDelete(null);
     }
-  };
+  }, [studentToDelete]);
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -158,7 +166,7 @@ const Students = () => {
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{totalStudents}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.totalStudents}</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Total</p>
             </div>
           </CardContent>
@@ -169,7 +177,7 @@ const Students = () => {
               <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{activeStudents}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.activeStudents}</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Active</p>
             </div>
           </CardContent>
@@ -180,7 +188,7 @@ const Students = () => {
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg sm:text-xl font-bold text-foreground">{batches.length}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{stats.totalBatches}</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Batches</p>
             </div>
           </CardContent>
@@ -201,7 +209,7 @@ const Students = () => {
             )}
           >
             All
-            <span className="ml-1 text-xs opacity-80">({totalStudents})</span>
+            <span className="ml-1 text-xs opacity-80">({stats.totalStudents})</span>
           </button>
           {classChips.map((chip) => (
             <button
