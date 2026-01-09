@@ -1,12 +1,12 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, CreditCard, Shield, Users, GraduationCap, BookOpen } from "lucide-react";
+import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, CreditCard, BookOpen, Users, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { PlanBadge } from "@/components/ui/plan-badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { VirtualizedTable, VirtualTableColumn } from "@/components/ui/virtualized-table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mockInstitutes, Institute } from "@/data/mockData";
@@ -50,6 +50,100 @@ const Institutes = () => {
   const handleBilling = useCallback((institute: Institute) => {
     toast.info(`Billing management for ${institute.name} coming soon`);
   }, []);
+
+  // Define table columns with memoization
+  const columns: VirtualTableColumn<Institute>[] = useMemo(() => [
+    {
+      key: "institute",
+      header: "Institute",
+      render: (institute) => (
+        <div>
+          <p className="font-medium text-foreground text-xs sm:text-sm">{institute.name}</p>
+          <p className="text-[10px] sm:text-sm text-muted-foreground">{institute.code}</p>
+        </div>
+      ),
+    },
+    {
+      key: "admin",
+      header: "Admin",
+      headerClassName: "hidden lg:table-cell",
+      className: "hidden lg:table-cell",
+      render: (institute) => (
+        <div>
+          <p className="text-xs sm:text-sm font-medium">{institute.adminName}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">{institute.adminEmail}</p>
+        </div>
+      ),
+    },
+    {
+      key: "plan",
+      header: "Plan",
+      render: (institute) => <PlanBadge plan={institute.plan} />,
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (institute) => <StatusBadge status={institute.status} />,
+    },
+    {
+      key: "students",
+      header: "Students",
+      headerClassName: "text-center hidden md:table-cell",
+      className: "text-center hidden md:table-cell",
+      render: (institute) => (
+        <div className="flex items-center justify-center gap-1">
+          <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+          <span className="text-xs sm:text-sm">{institute.students.toLocaleString()}</span>
+        </div>
+      ),
+    },
+    {
+      key: "teachers",
+      header: "Teachers",
+      headerClassName: "text-center hidden md:table-cell",
+      className: "text-center hidden md:table-cell",
+      render: (institute) => (
+        <div className="flex items-center justify-center gap-1">
+          <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+          <span className="text-xs sm:text-sm">{institute.teachers}</span>
+        </div>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      headerClassName: "text-right",
+      className: "text-right",
+      render: (institute) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+              <MoreHorizontal className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleViewDetails(institute)}>
+              <Eye className="w-4 h-4 mr-2" />
+              View Details
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleEdit(institute)}>
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleAssign(institute)}>
+              <BookOpen className="w-4 h-4 mr-2" />
+              Assign Curriculum/Courses
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleBilling(institute)}>
+              <CreditCard className="w-4 h-4 mr-2" />
+              Billing
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ], [handleViewDetails, handleEdit, handleAssign, handleBilling]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -108,87 +202,16 @@ const Institutes = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table className="min-w-[500px]">
-            <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead className="text-xs sm:text-sm">Institute</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs sm:text-sm">Admin</TableHead>
-                <TableHead className="text-xs sm:text-sm">Plan</TableHead>
-                <TableHead className="text-xs sm:text-sm">Status</TableHead>
-                <TableHead className="text-center hidden md:table-cell text-xs sm:text-sm">Students</TableHead>
-                <TableHead className="text-center hidden md:table-cell text-xs sm:text-sm">Teachers</TableHead>
-                <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredInstitutes.map((institute) => (
-                <TableRow key={institute.id} className="hover:bg-muted/20">
-                  <TableCell>
-                    <div>
-                      <p className="font-medium text-foreground text-xs sm:text-sm">{institute.name}</p>
-                      <p className="text-[10px] sm:text-sm text-muted-foreground">{institute.code}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    <div>
-                      <p className="text-xs sm:text-sm font-medium">{institute.adminName}</p>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">{institute.adminEmail}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <PlanBadge plan={institute.plan} />
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={institute.status} />
-                  </TableCell>
-                  <TableCell className="text-center hidden md:table-cell">
-                    <div className="flex items-center justify-center gap-1">
-                      <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                      <span className="text-xs sm:text-sm">{institute.students.toLocaleString()}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center hidden md:table-cell">
-                    <div className="flex items-center justify-center gap-1">
-                      <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                      <span className="text-xs sm:text-sm">{institute.teachers}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewDetails(institute)}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(institute)}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleAssign(institute)}>
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Assign Curriculum/Courses
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleBilling(institute)}>
-                          <CreditCard className="w-4 h-4 mr-2" />
-                          Billing
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+      {/* Virtualized Table */}
+      <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
+        <VirtualizedTable
+          data={filteredInstitutes}
+          columns={columns}
+          getRowKey={(institute) => institute.id}
+          rowHeight={64}
+          maxHeight={520}
+          emptyMessage="No institutes found"
+        />
       </div>
 
       {/* Dialogs */}
@@ -203,7 +226,7 @@ const Institutes = () => {
             open={assignDialogOpen}
             onOpenChange={setAssignDialogOpen}
             instituteId={selectedInstitute.id}
-            currentCurriculums={[]} // Would come from DB in real app
+            currentCurriculums={[]}
             currentCourses={[]}
           />
         </>

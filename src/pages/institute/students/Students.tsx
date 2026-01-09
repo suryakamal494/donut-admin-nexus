@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   Plus,
   Search,
@@ -50,6 +51,175 @@ import { students, batches, availableClasses, Student } from "@/data/instituteDa
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+// Virtualized student rows component
+const VirtualizedStudentTable = ({ 
+  batchStudents, 
+  onEdit, 
+  onResetPassword, 
+  onDelete 
+}: { 
+  batchStudents: Student[];
+  onEdit: (student: Student) => void;
+  onResetPassword: (name: string) => void;
+  onDelete: (student: Student) => void;
+}) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const ROW_HEIGHT = 52;
+
+  const virtualizer = useVirtualizer({
+    count: batchStudents.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+
+  // Only virtualize if more than 15 students
+  if (batchStudents.length <= 15) {
+    return (
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <Table className="min-w-[500px]">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="min-w-[150px]">Student</TableHead>
+              <TableHead className="min-w-[80px]">Roll No.</TableHead>
+              <TableHead className="min-w-[100px] hidden sm:table-cell">Username</TableHead>
+              <TableHead className="min-w-[70px]">Status</TableHead>
+              <TableHead className="text-right w-[50px]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {batchStudents.map((student) => (
+              <StudentRow 
+                key={student.id} 
+                student={student} 
+                onEdit={onEdit}
+                onResetPassword={onResetPassword}
+                onDelete={onDelete}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto -mx-4 sm:mx-0">
+      {/* Fixed header */}
+      <Table className="min-w-[500px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="min-w-[150px]">Student</TableHead>
+            <TableHead className="min-w-[80px]">Roll No.</TableHead>
+            <TableHead className="min-w-[100px] hidden sm:table-cell">Username</TableHead>
+            <TableHead className="min-w-[70px]">Status</TableHead>
+            <TableHead className="text-right w-[50px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+      
+      {/* Virtualized body */}
+      <div 
+        ref={parentRef} 
+        className="overflow-auto"
+        style={{ maxHeight: `${Math.min(batchStudents.length * ROW_HEIGHT, 400)}px` }}
+      >
+        <Table className="min-w-[500px]">
+          <TableBody>
+            <tr style={{ height: `${virtualItems[0]?.start ?? 0}px` }} />
+            {virtualItems.map((virtualRow) => {
+              const student = batchStudents[virtualRow.index];
+              return (
+                <StudentRow 
+                  key={student.id} 
+                  student={student} 
+                  onEdit={onEdit}
+                  onResetPassword={onResetPassword}
+                  onDelete={onDelete}
+                />
+              );
+            })}
+            <tr style={{ height: `${virtualizer.getTotalSize() - (virtualItems[virtualItems.length - 1]?.end ?? 0)}px` }} />
+          </TableBody>
+        </Table>
+      </div>
+      
+      {/* Count indicator */}
+      <div className="px-3 py-1.5 bg-muted/20 border-t border-border/50 text-xs text-muted-foreground">
+        {batchStudents.length} students
+      </div>
+    </div>
+  );
+};
+
+// Memoized student row
+const StudentRow = React.memo(({ 
+  student, 
+  onEdit, 
+  onResetPassword, 
+  onDelete 
+}: { 
+  student: Student;
+  onEdit: (student: Student) => void;
+  onResetPassword: (name: string) => void;
+  onDelete: (student: Student) => void;
+}) => (
+  <TableRow>
+    <TableCell>
+      <div className="flex items-center gap-2 md:gap-3">
+        <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs md:text-sm font-medium text-primary shrink-0">
+          {student.name.charAt(0)}
+        </div>
+        <div className="min-w-0">
+          <span className="font-medium text-sm truncate block">{student.name}</span>
+          <span className="text-xs text-muted-foreground sm:hidden">@{student.username}</span>
+        </div>
+      </div>
+    </TableCell>
+    <TableCell className="text-sm">{student.rollNumber}</TableCell>
+    <TableCell className="text-muted-foreground hidden sm:table-cell text-sm">
+      @{student.username}
+    </TableCell>
+    <TableCell>
+      <Badge
+        variant={student.status === "active" ? "default" : "secondary"}
+        className={student.status === "active" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-xs" : "text-xs"}
+      >
+        {student.status}
+      </Badge>
+    </TableCell>
+    <TableCell className="text-right">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => onEdit(student)}>
+            <Edit className="h-4 w-4 mr-2" />Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onResetPassword(student.name)}>
+            <Key className="h-4 w-4 mr-2" />Reset Password
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            className="text-destructive"
+            onClick={() => onDelete(student)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />Remove
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TableCell>
+  </TableRow>
+));
+StudentRow.displayName = "StudentRow";
+
+import React from "react";
+
 const Students = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -88,7 +258,6 @@ const Students = () => {
   // Group students by batch - memoized
   const studentsByBatch = useMemo(() => 
     batches.reduce((acc, batch) => {
-      // Filter by selected class
       if (selectedClass && batch.classId !== selectedClass) return acc;
       
       const batchStudents = students.filter((s) => s.batchId === batch.id);
@@ -129,6 +298,10 @@ const Students = () => {
       },
       {} as typeof studentsByBatch
     ), [studentsByBatch, searchQuery, batchIdFilter]);
+
+  const handleEdit = useCallback((student: Student) => {
+    navigate(`/institute/students/${student.id}/edit`);
+  }, [navigate]);
 
   const handleResetPassword = useCallback((studentName: string) => {
     toast.success(`Password reset for ${studentName}`);
@@ -293,72 +466,12 @@ const Students = () => {
               <CollapsibleContent>
                 <CardContent className="pt-0">
                   {batchStudents.length > 0 ? (
-                    <div className="overflow-x-auto -mx-4 sm:mx-0">
-                      <Table className="min-w-[500px]">
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="min-w-[150px]">Student</TableHead>
-                            <TableHead className="min-w-[80px]">Roll No.</TableHead>
-                            <TableHead className="min-w-[100px] hidden sm:table-cell">Username</TableHead>
-                            <TableHead className="min-w-[70px]">Status</TableHead>
-                            <TableHead className="text-right w-[50px]"></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {batchStudents.map((student) => (
-                            <TableRow key={student.id}>
-                              <TableCell>
-                                <div className="flex items-center gap-2 md:gap-3">
-                                  <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs md:text-sm font-medium text-primary shrink-0">
-                                    {student.name.charAt(0)}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="font-medium text-sm truncate block">{student.name}</span>
-                                    <span className="text-xs text-muted-foreground sm:hidden">@{student.username}</span>
-                                  </div>
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-sm">{student.rollNumber}</TableCell>
-                              <TableCell className="text-muted-foreground hidden sm:table-cell text-sm">
-                                @{student.username}
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={student.status === "active" ? "default" : "secondary"}
-                                  className={student.status === "active" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-xs" : "text-xs"}
-                                >
-                                  {student.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8">
-                                      <MoreVertical className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => navigate(`/institute/students/${student.id}/edit`)}>
-                                      <Edit className="h-4 w-4 mr-2" />Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleResetPassword(student.name)}>
-                                      <Key className="h-4 w-4 mr-2" />Reset Password
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem 
-                                      className="text-destructive"
-                                      onClick={() => setStudentToDelete(student)}
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-2" />Remove
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                    <VirtualizedStudentTable
+                      batchStudents={batchStudents}
+                      onEdit={handleEdit}
+                      onResetPassword={handleResetPassword}
+                      onDelete={setStudentToDelete}
+                    />
                   ) : (
                     <div className="text-center py-8">
                       <Users className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
@@ -406,16 +519,12 @@ const Students = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Student</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove {studentToDelete?.name} from this batch? 
-              This action cannot be undone.
+              Are you sure you want to remove {studentToDelete?.name}? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeleteStudent} 
-              className="w-full sm:w-auto bg-destructive hover:bg-destructive/90"
-            >
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteStudent} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Remove
             </AlertDialogAction>
           </AlertDialogFooter>
