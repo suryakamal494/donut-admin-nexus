@@ -241,32 +241,34 @@ const ReviewExam = () => {
 
       {/* Subject Tabs */}
       <Tabs value={activeSubject} onValueChange={handleSubjectChange}>
-        <TabsList className="w-full justify-start h-auto p-1 bg-muted/50">
-          {subjects.map((subject) => {
-            const stats = getSubjectStats(subject);
-            return (
-              <TabsTrigger
-                key={subject}
-                value={subject}
-                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                {subject}
-                <Badge variant="secondary" className="text-xs">
-                  {stats.reviewed}/{stats.total}
-                </Badge>
-                {stats.deleted > 0 && (
-                  <Badge variant="destructive" className="text-xs">{stats.deleted}</Badge>
-                )}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="w-max sm:w-full justify-start h-auto p-1 bg-muted/50">
+            {subjects.map((subject) => {
+              const stats = getSubjectStats(subject);
+              return (
+                <TabsTrigger
+                  key={subject}
+                  value={subject}
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  {subject}
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
+                    {stats.reviewed}/{stats.total}
+                  </Badge>
+                  {stats.deleted > 0 && (
+                    <Badge variant="destructive" className="text-[10px] sm:text-xs">{stats.deleted}</Badge>
+                  )}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </div>
       </Tabs>
 
       {/* Quick Navigation */}
       <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <span className="text-sm font-medium">Quick Navigation</span>
             <span className="text-xs text-muted-foreground">
               Showing {(currentPage - 1) * QUESTIONS_PER_PAGE + 1}-{Math.min(currentPage * QUESTIONS_PER_PAGE, subjectQuestions.length)} of {subjectQuestions.length}
@@ -278,7 +280,7 @@ const ReviewExam = () => {
                 key={q.id}
                 onClick={() => setCurrentPage(Math.floor(idx / QUESTIONS_PER_PAGE) + 1)}
                 className={cn(
-                  "w-8 h-8 text-xs font-medium rounded border transition-colors",
+                  "w-7 h-7 sm:w-8 sm:h-8 text-[10px] sm:text-xs font-medium rounded border transition-colors",
                   getQuickNavColor(q.id),
                   idx >= (currentPage - 1) * QUESTIONS_PER_PAGE && idx < currentPage * QUESTIONS_PER_PAGE && "ring-2 ring-primary"
                 )}
@@ -299,20 +301,22 @@ const ReviewExam = () => {
           
           return (
             <Card key={question.id} className={cn(isDeleted && "opacity-50 border-destructive/50")}>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 {/* Question Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg font-semibold">Q{globalIdx}</span>
-                    <Badge variant="outline">{question.type === "numerical" ? "Numerical" : "MCQ"}</Badge>
-                    <Badge variant="secondary" className="capitalize">{question.difficulty}</Badge>
-                    <span className="text-xs text-muted-foreground">{question.chapter} › {question.topic}</span>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-4">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <span className="text-base sm:text-lg font-semibold">Q{globalIdx}</span>
+                    <Badge variant="outline" className="text-xs">{question.type === "numerical" ? "Numerical" : "MCQ"}</Badge>
+                    <Badge variant="secondary" className="capitalize text-xs">{question.difficulty}</Badge>
+                    <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:inline">{question.chapter} › {question.topic}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusIcon(state?.status || "pending")}
                     <span className="text-xs text-muted-foreground capitalize">{state?.status || "pending"}</span>
                   </div>
                 </div>
+                {/* Mobile chapter/topic */}
+                <p className="text-[10px] text-muted-foreground mb-3 sm:hidden">{question.chapter} › {question.topic}</p>
                 
                 {/* Question Text */}
                 <p className="text-base mb-4">{state?.data?.questionText || question.questionText}</p>
@@ -367,28 +371,29 @@ const ReviewExam = () => {
                 )}
                 
                 {/* Actions */}
-                <div className="flex items-center gap-2 pt-4 border-t">
+                <div className="flex flex-wrap items-center gap-2 pt-4 border-t">
                   {!isDeleted && (
                     <>
-                      <Button variant="outline" size="sm" onClick={() => handleEditQuestion(state?.data || question)}>
-                        <Edit2 className="mr-2 h-4 w-4" />
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm" onClick={() => handleEditQuestion(state?.data || question)}>
+                        <Edit2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                         Edit
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeleteQuestion(question.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" />
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm" onClick={() => handleDeleteQuestion(question.id)}>
+                        <Trash2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                         Delete
                       </Button>
                       {state?.status === "pending" && (
-                        <Button variant="ghost" size="sm" onClick={() => handleMarkReviewed(question.id)}>
-                          <CheckCircle2 className="mr-2 h-4 w-4" />
-                          Mark Reviewed
+                        <Button variant="ghost" size="sm" className="text-xs sm:text-sm" onClick={() => handleMarkReviewed(question.id)}>
+                          <CheckCircle2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:inline">Mark Reviewed</span>
+                          <span className="sm:hidden">Reviewed</span>
                         </Button>
                       )}
                     </>
                   )}
                   {creationMethod === "ai" && isDeleted && (
-                    <Button size="sm" onClick={() => handleRegenerateClick(question.id)}>
-                      <RefreshCw className="mr-2 h-4 w-4" />
+                    <Button size="sm" className="text-xs sm:text-sm" onClick={() => handleRegenerateClick(question.id)}>
+                      <RefreshCw className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Regenerate
                     </Button>
                   )}

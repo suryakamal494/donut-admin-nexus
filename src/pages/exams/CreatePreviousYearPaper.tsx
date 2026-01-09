@@ -104,14 +104,14 @@ const CreatePreviousYearPaper = () => {
       />
 
       {/* Stepper */}
-      <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+      <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
         <div className="flex items-center justify-between max-w-2xl mx-auto">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all",
+                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all",
                     currentStep === step.number
                       ? "bg-primary text-primary-foreground shadow-lg"
                       : currentStep > step.number
@@ -119,18 +119,25 @@ const CreatePreviousYearPaper = () => {
                       : "bg-muted text-muted-foreground"
                   )}
                 >
-                  <step.icon className="w-5 h-5" />
+                  <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <span className={cn(
-                  "text-sm mt-2 font-medium",
-                  currentStep >= step.number ? "text-foreground" : "text-muted-foreground"
+                  "text-xs sm:text-sm mt-2 font-medium text-center",
+                  currentStep >= step.number ? "text-foreground" : "text-muted-foreground",
+                  "hidden sm:block"
                 )}>
                   {step.title}
+                </span>
+                <span className={cn(
+                  "text-[10px] mt-1.5 font-medium sm:hidden",
+                  currentStep >= step.number ? "text-foreground" : "text-muted-foreground"
+                )}>
+                  Step {step.number}
                 </span>
               </div>
               {index < steps.length - 1 && (
                 <div className={cn(
-                  "w-24 h-1 mx-4 rounded-full",
+                  "w-8 sm:w-16 md:w-24 h-0.5 sm:h-1 mx-2 sm:mx-4 rounded-full",
                   currentStep > step.number ? "bg-success" : "bg-muted"
                 )} />
               )}
@@ -140,7 +147,7 @@ const CreatePreviousYearPaper = () => {
       </div>
 
       {/* Step Content */}
-      <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50 max-w-2xl mx-auto">
+      <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-soft border border-border/50 max-w-2xl mx-auto">
         {/* Step 1: Exam Configuration */}
         {currentStep === 1 && (
           <div className="space-y-6">
