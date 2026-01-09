@@ -493,9 +493,9 @@ const subjectNames: Record<string, string> = {
   "3": "Mathematics",
   "4": "Biology",
   "5": "History",
-  "6": "Hindi",
+  "6": "Computer Science",  // Swapped - CS uses ID 6
   "7": "English",
-  "8": "Computer Science",
+  "8": "Hindi",             // Swapped - Hindi uses ID 8 (matches hindiChapters data)
   "9": "Economics",
   "10": "Geography",
   "11": "Political Science",

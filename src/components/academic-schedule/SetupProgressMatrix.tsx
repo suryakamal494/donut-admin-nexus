@@ -82,12 +82,12 @@ export function SetupProgressMatrix({
               
               <div className="flex items-center gap-2">
                 {/* Subject Dots */}
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1 max-w-[140px] sm:max-w-none">
                   {classItem.subjects.map((subject) => (
                     <div
                       key={subject.subjectId}
                       className={cn(
-                        "w-5 h-5 rounded-full flex items-center justify-center transition-colors",
+                        "w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-colors shrink-0",
                         subject.isComplete 
                           ? "bg-emerald-100 text-emerald-600" 
                           : "bg-muted-foreground/10 text-muted-foreground/40"
@@ -95,9 +95,9 @@ export function SetupProgressMatrix({
                       title={`${subject.subjectName}: ${subject.isComplete ? "Configured" : "Not configured"}`}
                     >
                       {subject.isComplete ? (
-                        <Check className="w-3 h-3" />
+                        <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       ) : (
-                        <Circle className="w-2 h-2" />
+                        <Circle className="w-1.5 h-1.5 sm:w-2 sm:h-2" />
                       )}
                     </div>
                   ))}
