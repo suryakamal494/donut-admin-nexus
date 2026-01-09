@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/tooltip";
 import { blockTypeConfig, type BlockType, type LessonPlanBlock } from "./types";
 import { cn } from "@/lib/utils";
-import { BlockPopover } from "./BlockPopover";
-import { QuizPopover } from "./QuizPopover";
+import { BlockDialog } from "./BlockDialog";
+import { QuizDialog } from "./QuizDialog";
 
 interface WorkspaceToolbarProps {
   onBlockClick: (type: BlockType) => void;
@@ -65,55 +65,62 @@ export const WorkspaceToolbar = ({
       </Button>
     );
 
-    // When popover is open, don't show tooltip
-    if (isActive) {
-      if (type === 'quiz') {
-        return (
-          <QuizPopover
-            key={type}
+    // Render Dialog when active
+    if (type === 'quiz') {
+      return (
+        <div key={type}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {buttonContent}
+            </TooltipTrigger>
+            <TooltipContent 
+              side="bottom" 
+              sideOffset={8}
+              className="z-[200] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
+            >
+              <p className="font-medium mb-1">{config.label}</p>
+              <p className="text-xs text-muted-foreground">
+                {config.tooltip}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+          <QuizDialog
             open={isActive}
             onOpenChange={(open) => !open && onBlockClick(type)}
             onAddBlock={onAddBlock}
             chapter={chapter}
             subject={subject}
-          >
+          />
+        </div>
+      );
+    }
+    
+    return (
+      <div key={type}>
+        <Tooltip>
+          <TooltipTrigger asChild>
             {buttonContent}
-          </QuizPopover>
-        );
-      }
-      
-      return (
-        <BlockPopover
-          key={type}
+          </TooltipTrigger>
+          <TooltipContent 
+            side="bottom" 
+            sideOffset={8}
+            className="z-[200] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
+          >
+            <p className="font-medium mb-1">{config.label}</p>
+            <p className="text-xs text-muted-foreground">
+              {config.tooltip}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+        <BlockDialog
           type={type}
           open={isActive}
           onOpenChange={(open) => !open && onBlockClick(type)}
           onAddBlock={onAddBlock}
           chapter={chapter}
           subject={subject}
-        >
-          {buttonContent}
-        </BlockPopover>
-      );
-    }
-
-    // When popover is closed, show tooltip
-    return (
-      <Tooltip key={type}>
-        <TooltipTrigger asChild>
-          {buttonContent}
-        </TooltipTrigger>
-        <TooltipContent 
-          side="bottom" 
-          sideOffset={8}
-          className="z-[200] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
-        >
-          <p className="font-medium mb-1">{config.label}</p>
-          <p className="text-xs text-muted-foreground">
-            {config.tooltip}
-          </p>
-        </TooltipContent>
-      </Tooltip>
+        />
+      </div>
     );
   };
 
