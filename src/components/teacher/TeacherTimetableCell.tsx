@@ -43,11 +43,11 @@ export const TeacherTimetableCell = ({
   if (!slot) {
     return (
       <div className={cn(
-        "min-h-[90px] flex items-center justify-center",
+        "min-h-[110px] flex items-center justify-center",
         "bg-muted/20 rounded-md",
         isToday && "bg-primary/5"
       )}>
-        <span className="text-black/40 text-xs">—</span>
+        <span className="text-black text-xs">—</span>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export const TeacherTimetableCell = ({
       onClick={onCellClick}
       className={cn(
         // Base styles - Taller design for full content
-        "min-h-[90px] px-3 py-2.5 rounded-md cursor-pointer transition-all duration-150",
+        "min-h-[110px] px-3 py-2.5 rounded-md cursor-pointer transition-all duration-150",
         "flex flex-col justify-start group relative",
         
         // Status-based backgrounds
@@ -76,9 +76,6 @@ export const TeacherTimetableCell = ({
         
         // Live state - Prominent
         isLive && "ring-2 ring-primary ring-offset-1 bg-primary/10 border-primary/30",
-        
-        // Past state
-        isPast && "opacity-60",
         
         // Hover effects
         !isPast && "hover:shadow-sm"
@@ -122,25 +119,25 @@ export const TeacherTimetableCell = ({
       {/* Room Badge - Separate row */}
       {slot.room && (
         <div className="mb-1">
-          <span className="text-[10px] font-semibold text-black bg-gray-100 px-1.5 py-0.5 rounded">
+          <span className="text-[10px] font-semibold text-black bg-white border border-black px-1.5 py-0.5 rounded">
             {slot.room}
           </span>
         </div>
       )}
 
-      {/* Chapter/Topic - Full display, BLACK text */}
+      {/* Chapter/Topic - Full display, BLACK text, NO TRUNCATION */}
       <div className="flex-1">
         {slot.topic && (
-          <p className="text-[12px] leading-snug font-medium text-black line-clamp-2">
+          <p className="text-[12px] leading-snug font-medium text-black">
             {slot.topic}
           </p>
         )}
       </div>
 
-      {/* Add Plan Button - Always visible for tiles without lesson plan */}
-      {!hasLessonPlan && !isPast && (
+      {/* Add Plan Button - Show on ALL future tiles */}
+      {!isPast && (
         <div className={cn(
-          "flex items-center gap-1 text-[12px] font-bold mt-1",
+          "flex items-center gap-1 text-[12px] font-bold mt-1.5",
           "text-green-600 group-hover:text-green-700 transition-colors"
         )}>
           <Plus className="w-3.5 h-3.5" />
