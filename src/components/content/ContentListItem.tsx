@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Eye, Edit, Download, Trash2, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContentTypeIcon, getContentTypeLabel } from "./ContentTypeIcon";
@@ -15,7 +16,7 @@ interface ContentListItemProps {
   className?: string;
 }
 
-export const ContentListItem = ({ content, onPreview, onEdit, onDelete, className }: ContentListItemProps) => {
+export const ContentListItem = memo(function ContentListItem({ content, onPreview, onEdit, onDelete, className }: ContentListItemProps) {
   const meta = content.duration 
     ? `${content.duration} min` 
     : content.size || "-";
@@ -98,4 +99,4 @@ export const ContentListItem = ({ content, onPreview, onEdit, onDelete, classNam
       </div>
     </div>
   );
-};
+});

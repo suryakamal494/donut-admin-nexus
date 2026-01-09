@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Eye, Edit, BarChart3, Users, Award, Trash2, Clock, HelpCircle, FileText, Building2, Calendar, Sparkles, FileUp, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,7 @@ const patternLabels = {
   neet: "NEET",
 };
 
-export const GrandTestCard = ({ 
+export const GrandTestCard = memo(function GrandTestCard({ 
   test, 
   onView, 
   onEdit, 
@@ -38,7 +39,7 @@ export const GrandTestCard = ({
   onAudience,
   onPublishRanks,
   onDelete 
-}: GrandTestCardProps) => {
+}: GrandTestCardProps) {
   const status = statusConfig[test.status];
   const pattern = examPatternConfig[test.pattern];
   
@@ -222,4 +223,4 @@ export const GrandTestCard = ({
       </div>
     </div>
   );
-};
+});

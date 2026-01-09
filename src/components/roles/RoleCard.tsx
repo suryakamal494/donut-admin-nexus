@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Shield, Crown, BookOpen, FileText, Building2, Edit, Trash2, Users, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,7 @@ interface RoleCardProps {
   onDelete: (role: SuperAdminRole) => void;
 }
 
-const RoleCard = ({ role, onEdit, onDelete }: RoleCardProps) => {
+const RoleCard = memo(function RoleCard({ role, onEdit, onDelete }: RoleCardProps) {
   const { permissions } = role;
   
   // Get icon based on role type
@@ -116,6 +117,6 @@ const RoleCard = ({ role, onEdit, onDelete }: RoleCardProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default RoleCard;

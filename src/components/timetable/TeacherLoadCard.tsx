@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { TeacherLoad, TeacherConstraint } from "@/data/timetableData";
 import { Progress } from "@/components/ui/progress";
@@ -19,7 +20,7 @@ interface TeacherLoadCardProps {
   currentDay?: string; // Current day being viewed
 }
 
-export const TeacherLoadCard = ({ 
+export const TeacherLoadCard = memo(function TeacherLoadCard({ 
   teacher, 
   constraint,
   isSelected, 
@@ -30,7 +31,7 @@ export const TeacherLoadCard = ({
   onDragEnd,
   currentDayPeriods = 0,
   currentDay,
-}: TeacherLoadCardProps) => {
+}: TeacherLoadCardProps) {
   const percentage = Math.round((teacher.assignedPeriods / teacher.periodsPerWeek) * 100);
   const remaining = teacher.periodsPerWeek - teacher.assignedPeriods;
   const isOverloaded = percentage > 100;
@@ -261,4 +262,4 @@ export const TeacherLoadCard = ({
       </div>
     </div>
   );
-};
+});

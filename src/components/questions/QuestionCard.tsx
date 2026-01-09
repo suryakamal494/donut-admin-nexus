@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Lock, Building2, Eye, Edit, Trash2, ChevronDown, ChevronUp, Clock, Award, Calendar, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,14 +30,14 @@ interface QuestionCardProps {
   showParagraphBadge?: boolean;
 }
 
-export const QuestionCard = ({ 
+export const QuestionCard = memo(function QuestionCard({ 
   question, 
   mode = "superadmin",
   onView, 
   onEdit, 
   onDelete,
   showParagraphBadge = true 
-}: QuestionCardProps) => {
+}: QuestionCardProps) {
   const [showSolution, setShowSolution] = useState(false);
 
   const difficultyStyle = difficultyConfig[question.difficulty];
@@ -354,4 +354,4 @@ export const QuestionCard = ({
       </div>
     </div>
   );
-};
+});
