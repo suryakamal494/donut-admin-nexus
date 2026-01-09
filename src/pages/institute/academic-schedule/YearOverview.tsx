@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarRange, BookOpen, Clock, TrendingUp, ChevronRight, Layers } from "lucide-react";
@@ -36,7 +35,8 @@ const BATCH_OPTIONS = [
   { id: "jee-11", name: "JEE Class 11", classId: "6" },
 ];
 
-export default function YearOverview() {
+// Content component for use in tabs
+export function YearOverviewContent() {
   const [selectedBatch, setSelectedBatch] = useState("batch-9a");
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
@@ -114,16 +114,7 @@ export default function YearOverview() {
   const displayWeeks = 12; // Show 12 weeks
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <PageHeader
-        title="Academic Year Overview"
-        description="Chapter distribution across the academic year"
-        breadcrumbs={[
-          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
-          { label: "Year Overview" },
-        ]}
-      />
-
+    <div className="space-y-4">
       {/* Controls */}
       <Card className="p-3 md:p-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -383,6 +374,23 @@ export default function YearOverview() {
           </Card>
         ))}
       </div>
+    </div>
+  );
+}
+
+// Full page component for direct URL access
+export default function YearOverview() {
+  return (
+    <div className="space-y-4 md:space-y-6">
+      <PageHeader
+        title="Academic Year Overview"
+        description="Chapter distribution across the academic year"
+        breadcrumbs={[
+          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
+          { label: "Year Overview" },
+        ]}
+      />
+      <YearOverviewContent />
     </div>
   );
 }

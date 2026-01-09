@@ -67,9 +67,7 @@ const navItems: NavItem[] = [
     subItems: [
       { title: "Setup", icon: Settings, href: "/institute/academic-schedule/setup" },
       { title: "Weekly Plans", icon: Calendar, href: "/institute/academic-schedule/plans" },
-      { title: "Year Overview", icon: TrendingUp, href: "/institute/academic-schedule/year-view" },
-      { title: "Teaching View", icon: Eye, href: "/institute/academic-schedule/teaching-view" },
-      { title: "Section Alignment", icon: Users, href: "/institute/academic-schedule/alignment" },
+      { title: "Academic Views", icon: TrendingUp, href: "/institute/academic-schedule/views" },
       { title: "Progress", icon: TrendingUp, href: "/institute/academic-schedule/progress" },
       { title: "Pending", icon: Clock, href: "/institute/academic-schedule/pending" },
     ]

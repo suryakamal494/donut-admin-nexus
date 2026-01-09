@@ -74,6 +74,7 @@ import AcademicScheduleTeachingView from "./pages/institute/academic-schedule/Te
 import AcademicScheduleYearOverview from "./pages/institute/academic-schedule/YearOverview";
 import AcademicScheduleSectionAlignment from "./pages/institute/academic-schedule/SectionAlignment";
 import AcademicScheduleChapterDetail from "./pages/institute/academic-schedule/ChapterDetail";
+import AcademicViews from "./pages/institute/academic-schedule/AcademicViews";
 import TeacherAcademicProgress from "./pages/teacher/AcademicProgress";
 
 // Teacher Panel Pages
@@ -171,6 +172,7 @@ const App = () => (
             <Route path="roles" element={<InstituteRoles />} />
             <Route path="academic-schedule/setup" element={<AcademicScheduleSetup />} />
             <Route path="academic-schedule/plans" element={<AcademicScheduleWeeklyPlans />} />
+            <Route path="academic-schedule/views" element={<AcademicViews />} />
             <Route path="academic-schedule/year-view" element={<AcademicScheduleYearOverview />} />
             <Route path="academic-schedule/teaching-view" element={<AcademicScheduleTeachingView />} />
             <Route path="academic-schedule/alignment" element={<AcademicScheduleSectionAlignment />} />
