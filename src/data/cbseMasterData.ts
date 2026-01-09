@@ -487,15 +487,54 @@ export interface ClassSubject {
   name: string;
 }
 
+// Unified subject ID mapping - shorthand codes for consistency across the platform
+// Maps numeric IDs from chapter data to shorthand codes used in schedules
+const numericToShorthand: Record<string, string> = {
+  "1": "phy",
+  "2": "che",
+  "3": "mat",
+  "4": "bio",
+  "5": "his",
+  "6": "cs",
+  "7": "eng",
+  "8": "hin",
+  "9": "eco",
+  "10": "geo",
+  "11": "pol",
+  "12": "san",
+  "13": "sst",
+  "14": "sci",
+  "15": "acc",
+  "16": "bus",
+};
+
 const subjectNames: Record<string, string> = {
+  // Shorthand codes (primary - used everywhere)
+  "phy": "Physics",
+  "che": "Chemistry",
+  "mat": "Mathematics",
+  "bio": "Biology",
+  "his": "History",
+  "cs": "Computer Science",
+  "eng": "English",
+  "hin": "Hindi",
+  "eco": "Economics",
+  "geo": "Geography",
+  "pol": "Political Science",
+  "san": "Sanskrit",
+  "sst": "Social Studies",
+  "sci": "Science",
+  "acc": "Accountancy",
+  "bus": "Business Studies",
+  // Legacy numeric IDs (for backward compatibility)
   "1": "Physics",
   "2": "Chemistry",
   "3": "Mathematics",
   "4": "Biology",
   "5": "History",
-  "6": "Computer Science",  // Swapped - CS uses ID 6
+  "6": "Computer Science",
   "7": "English",
-  "8": "Hindi",             // Swapped - Hindi uses ID 8 (matches hindiChapters data)
+  "8": "Hindi",
   "9": "Economics",
   "10": "Geography",
   "11": "Political Science",
@@ -507,16 +546,20 @@ const subjectNames: Record<string, string> = {
 };
 
 export const getSubjectsByClass = (classId: string): ClassSubject[] => {
-  const subjectIds = [...new Set(
+  const numericSubjectIds = [...new Set(
     allCBSEChapters
       .filter(ch => ch.classId === classId)
       .map(ch => ch.subjectId)
   )];
   
-  return subjectIds.map(id => ({
-    id,
-    name: subjectNames[id] || `Subject ${id}`,
-  })).sort((a, b) => a.name.localeCompare(b.name));
+  // Convert numeric IDs to shorthand codes for consistency
+  return numericSubjectIds.map(numericId => {
+    const shorthandId = numericToShorthand[numericId] || numericId;
+    return {
+      id: shorthandId,
+      name: subjectNames[shorthandId] || subjectNames[numericId] || `Subject ${numericId}`,
+    };
+  }).sort((a, b) => a.name.localeCompare(b.name));
 };
 
 // Summary stats
