@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layers, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,26 +8,21 @@ import {
   CourseContentPanel,
   CourseManageDialog
 } from "@/components/parameters";
-import { courses, getChapterCountForCourse } from "@/data/masterData";
+import { CourseStats } from "@/components/parameters/courses";
+import { useCourses } from "@/hooks/useCourses";
 
 const Courses = () => {
   const navigate = useNavigate();
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
-  const [showManageDialog, setShowManageDialog] = useState(false);
-
-  const handleCourseSelect = (courseId: string) => {
-    setSelectedCourseId(courseId);
-    setSelectedSubjectId(null);
-  };
-
-  const handleSubjectSelect = (subjectId: string) => {
-    setSelectedSubjectId(subjectId);
-  };
-
-  const selectedCourse = selectedCourseId 
-    ? courses.find(c => c.id === selectedCourseId)
-    : null;
+  const { 
+    selectedCourseId, 
+    selectedSubjectId, 
+    selectedCourse,
+    showManageDialog, 
+    setShowManageDialog,
+    stats,
+    handleCourseSelect,
+    handleSubjectSelect,
+  } = useCourses();
 
   return (
     <div className="space-y-4 md:space-y-6 animate-fade-in">
@@ -67,32 +61,13 @@ const Courses = () => {
       />
 
       {/* Course Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
-          <p className="text-xl md:text-2xl font-bold text-primary">{courses.length}</p>
-          <p className="text-xs md:text-sm text-muted-foreground">Total Courses</p>
-        </div>
-        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
-          <p className="text-xl md:text-2xl font-bold text-primary">
-            {courses.filter(c => c.status === 'published').length}
-          </p>
-          <p className="text-xs md:text-sm text-muted-foreground">Published</p>
-        </div>
-        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
-          <p className="text-xl md:text-2xl font-bold text-primary">
-            {courses.filter(c => c.courseType === 'competitive').length}
-          </p>
-          <p className="text-xs md:text-sm text-muted-foreground">Competitive</p>
-        </div>
-        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
-          <p className="text-xl md:text-2xl font-bold text-primary">
-            {selectedCourse ? getChapterCountForCourse(selectedCourse.id) : "—"}
-          </p>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            {selectedCourse ? `${selectedCourse.name} Chapters` : "Select a Course"}
-          </p>
-        </div>
-      </div>
+      <CourseStats
+        totalCourses={stats.totalCourses}
+        publishedCount={stats.publishedCount}
+        competitiveCount={stats.competitiveCount}
+        selectedChapterCount={stats.selectedChapterCount}
+        selectedCourseName={selectedCourse?.name}
+      />
 
       {/* Three-Panel Layout */}
       <div className="bg-card rounded-xl sm:rounded-2xl shadow-soft border border-border/50 overflow-hidden">
