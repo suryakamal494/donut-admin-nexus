@@ -66,7 +66,8 @@ export const WorkspaceToolbar = ({
                   </TooltipTrigger>
                   <TooltipContent 
                     side="bottom" 
-                    className="max-w-[240px] text-center p-3"
+                    sideOffset={8}
+                    className="z-[100] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
                   >
                     <p className="font-medium mb-1">{config.label}</p>
                     <p className="text-xs text-muted-foreground">
@@ -107,7 +108,8 @@ export const WorkspaceToolbar = ({
             </TooltipTrigger>
             <TooltipContent 
               side="bottom" 
-              className="max-w-[240px] text-center p-3"
+              sideOffset={8}
+              className="z-[100] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
             >
               <p className="font-medium mb-1">AI Assist</p>
               <p className="text-xs text-muted-foreground">
