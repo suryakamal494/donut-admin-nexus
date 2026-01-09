@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExamBlockForm } from "@/components/timetable/ExamBlockForm";
 import { ExamBlockList } from "@/components/timetable/ExamBlockList";
 import { ExamYearlyCalendar } from "@/components/timetable/ExamYearlyCalendar";
-import { ExamBlock } from "@/types/examBlock";
-import { examBlocks as initialBlocks } from "@/data/examBlockData";
+import { ExamTypeManager } from "@/components/timetable/ExamTypeManager";
+import { ExamBlock, ExamType } from "@/types/examBlock";
+import { examBlocks as initialBlocks, defaultExamTypes } from "@/data/examBlockData";
 import { Plus, List, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,6 +14,12 @@ const ExamSchedule = () => {
   const [activeTab, setActiveTab] = useState("list");
   const [blocks, setBlocks] = useState<ExamBlock[]>(initialBlocks);
   const [editingBlock, setEditingBlock] = useState<ExamBlock | null>(null);
+  const [examTypes, setExamTypes] = useState<ExamType[]>(defaultExamTypes);
+
+  // Get list of exam type IDs currently in use
+  const usedTypeIds = useMemo(() => {
+    return [...new Set(blocks.map(b => b.examTypeId))];
+  }, [blocks]);
 
   const handleSaveBlock = (block: ExamBlock) => {
     if (editingBlock) {
@@ -42,6 +49,19 @@ const ExamSchedule = () => {
     ));
   };
 
+  // Exam type handlers
+  const handleAddType = (type: ExamType) => {
+    setExamTypes(prev => [...prev, type]);
+  };
+
+  const handleUpdateType = (type: ExamType) => {
+    setExamTypes(prev => prev.map(t => t.id === type.id ? type : t));
+  };
+
+  const handleDeleteType = (typeId: string) => {
+    setExamTypes(prev => prev.filter(t => t.id !== typeId));
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <PageHeader
@@ -51,6 +71,15 @@ const ExamSchedule = () => {
           { label: "Timetable", href: "/institute/timetable" },
           { label: "Exam Schedule" },
         ]}
+        actions={
+          <ExamTypeManager 
+            examTypes={examTypes}
+            onAddType={handleAddType}
+            onUpdateType={handleUpdateType}
+            onDeleteType={handleDeleteType}
+            usedTypeIds={usedTypeIds}
+          />
+        }
       />
 
       <Tabs value={activeTab} onValueChange={(v) => {
@@ -82,12 +111,14 @@ const ExamSchedule = () => {
             onDelete={handleDeleteBlock}
             onToggleActive={handleToggleActive}
             onCreateNew={() => setActiveTab("create")}
+            examTypes={examTypes}
           />
         </TabsContent>
 
         <TabsContent value="yearly" className="mt-4 sm:mt-6">
           <ExamYearlyCalendar 
             blocks={blocks} 
+            examTypes={examTypes}
             onEdit={handleEditBlock}
           />
         </TabsContent>
