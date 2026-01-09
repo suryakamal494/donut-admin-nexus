@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { InfoTooltip, HolidayCalendarDialog, PeriodTypeManager, AcademicTimelineEditor, TeacherConstraintsManager, FacilityManager } from "@/components/timetable";
+import { InfoTooltip, HolidayCalendarDialog, PeriodTypeManager, TeacherConstraintsManager, FacilityManager } from "@/components/timetable";
 import { Holiday } from "@/components/timetable/HolidayCalendarDialog";
 import { BreakConfig } from "@/data/timetableData";
 import { 
@@ -26,10 +26,6 @@ import {
   TeacherLoad, 
   PeriodType, 
   defaultPeriodTypes,
-  AcademicTerm,
-  BatchExamSchedule,
-  academicTerms as defaultTerms,
-  batchExamSchedules as defaultSchedules,
   academicHolidays,
   TeacherConstraint,
   Facility,
@@ -77,10 +73,6 @@ const TimetableSetup = () => {
   const [holidays, setHolidays] = useState<Holiday[]>(academicHolidays);
   const [holidayDialogOpen, setHolidayDialogOpen] = useState(false);
 
-  // Academic timeline state
-  const [terms, setTerms] = useState<AcademicTerm[]>(defaultTerms);
-  const [examSchedules, setExamSchedules] = useState<BatchExamSchedule[]>(defaultSchedules);
-
   // Teacher load states
   const [teacherLoadData, setTeacherLoadData] = useState<TeacherLoad[]>(teacherLoads);
   const [editingTeacher, setEditingTeacher] = useState<string | null>(null);
@@ -98,8 +90,6 @@ const TimetableSetup = () => {
         return periodTypes.length > 0 ? 'complete' : 'empty';
       case 'holidays':
         return holidays.length > 0 ? 'complete' : 'partial';
-      case 'academic-timeline':
-        return terms.length > 0 ? (examSchedules.length > 0 ? 'complete' : 'partial') : 'empty';
       case 'teacher-load':
         return teacherLoadData.length > 0 ? 'complete' : 'empty';
       case 'teacher-constraints':
@@ -211,7 +201,6 @@ const TimetableSetup = () => {
     { id: 'period-structure', label: 'Period Structure', icon: Clock },
     { id: 'period-types', label: 'Period Types', icon: Layers },
     { id: 'holidays', label: 'Holidays', icon: CalendarDays },
-    { id: 'academic-timeline', label: 'Academic Timeline', icon: FileEdit },
     { id: 'teacher-load', label: 'Teacher Load', icon: User },
   ];
 
@@ -646,35 +635,7 @@ const TimetableSetup = () => {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: Academic Timeline */}
-        <TabsContent value="academic-timeline">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <FileEdit className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    Academic Timeline
-                    <InfoTooltip content="Define academic terms and exam schedules. Exam periods will be highlighted in the timetable." />
-                  </CardTitle>
-                  <CardDescription>Configure terms and exam schedules for each batch</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <AcademicTimelineEditor
-                terms={terms}
-                examSchedules={examSchedules}
-                onUpdateTerms={setTerms}
-                onUpdateSchedules={setExamSchedules}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 5: Teacher Load */}
+        {/* Tab 4: Teacher Load */}
         <TabsContent value="teacher-load">
           <Card>
             <CardHeader>
