@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Users, GraduationCap, BookOpen, ChevronRight, Calendar } from "lucide-react";
+import { Plus, Users, GraduationCap, BookOpen, ChevronRight, Calendar, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,79 +73,76 @@ const Batches = () => {
         }
       />
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Quick Stats - Compact */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <BookOpen className="h-6 w-6 text-primary" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">{totalBatches}</p>
-              <p className="text-sm text-muted-foreground">Total Batches</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-xl font-bold text-foreground">{totalBatches}</p>
+              <p className="text-xs text-muted-foreground truncate">Batches</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 border-emerald-500/20">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <Users className="h-6 w-6 text-emerald-600" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">{totalStudents}</p>
-              <p className="text-sm text-muted-foreground">Total Students</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-xl font-bold text-foreground">{totalStudents}</p>
+              <p className="text-xs text-muted-foreground truncate">Students</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-              <GraduationCap className="h-6 w-6 text-amber-600" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">{Object.keys(batchesByClass).length}</p>
-              <p className="text-sm text-muted-foreground">Active Classes</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-xl font-bold text-foreground">{Object.keys(batchesByClass).length}</p>
+              <p className="text-xs text-muted-foreground truncate">Classes</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Class Filter Chips - Sticky */}
-      <div className="sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur-sm border-b border-border/50">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex items-center gap-2">
+      <div className="sticky top-0 z-10 -mx-4 px-4 py-2.5 bg-background/95 backdrop-blur-sm border-b border-border/50">
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => handleChipClick(null)}
+            className={cn(
+              "px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
+              "border border-border/50 hover:border-primary/50",
+              selectedClass === null
+                ? "bg-primary text-primary-foreground border-primary shadow-md"
+                : "bg-muted/50 text-muted-foreground hover:bg-muted"
+            )}
+          >
+            All
+            <span className="ml-1 text-xs opacity-80">({totalBatches})</span>
+          </button>
+          {classChips.map((chip) => (
             <button
-              onClick={() => handleChipClick(null)}
+              key={chip.id}
+              onClick={() => handleChipClick(chip.id)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0",
+                "px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                 "border border-border/50 hover:border-primary/50",
-                selectedClass === null
+                selectedClass === chip.id
                   ? "bg-primary text-primary-foreground border-primary shadow-md"
                   : "bg-muted/50 text-muted-foreground hover:bg-muted"
               )}
             >
-              All
-              <span className="ml-1.5 text-xs opacity-80">({totalBatches})</span>
+              {chip.name.replace('Class ', '')}
+              <span className="ml-1 text-xs opacity-80">({chip.count})</span>
             </button>
-            {classChips.map((chip) => (
-              <button
-                key={chip.id}
-                onClick={() => handleChipClick(chip.id)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0",
-                  "border border-border/50 hover:border-primary/50",
-                  selectedClass === chip.id
-                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                )}
-              >
-                {chip.name}
-                <span className="ml-1.5 text-xs opacity-80">({chip.count})</span>
-              </button>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" className="invisible" />
-        </ScrollArea>
+          ))}
+        </div>
       </div>
 
       {/* Batches Grouped by Class */}

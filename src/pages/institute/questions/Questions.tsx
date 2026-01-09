@@ -211,7 +211,7 @@ const Questions = () => {
           </Tabs>
         </div>
 
-        <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground flex-shrink-0">
           <div className="flex items-center gap-1.5">
             <Lock className="h-4 w-4" />
             <span>Global = View only</span>

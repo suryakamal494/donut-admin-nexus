@@ -14,7 +14,7 @@ export const ClassPanelView = ({ selectedClassId, onSelectClass }: ClassPanelVie
   };
 
   return (
-    <div className="bg-card rounded-xl border shadow-sm overflow-hidden w-[160px] lg:w-[180px]">
+    <div className="bg-card rounded-xl border shadow-sm overflow-hidden w-full lg:w-[180px]">
       <div className="p-3 border-b border-border/50 bg-muted/30">
         <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
           <GraduationCap className="w-4 h-4 text-primary" />

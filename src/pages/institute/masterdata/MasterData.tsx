@@ -151,7 +151,7 @@ const MasterData = () => {
       {/* Dynamic Panel Layout */}
       {selectedTrack.hasClasses ? (
         // 3-Panel Layout for Curriculum (CBSE)
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[auto_auto_1fr] gap-3 sm:gap-4 items-start">
+        <div className="grid grid-cols-2 lg:grid-cols-[180px_200px_1fr] gap-3 sm:gap-4 items-start">
           <ClassPanelView
             selectedClassId={selectedClassId}
             onSelectClass={handleSelectClass}
@@ -161,7 +161,7 @@ const MasterData = () => {
             selectedSubjectId={selectedSubjectId}
             onSelectSubject={handleSelectSubject}
           />
-          <div className="md:col-span-2 lg:col-span-1">
+          <div className="col-span-2 lg:col-span-1">
             <ContentPanelView
               selectedClassId={selectedClassId}
               selectedSubjectId={selectedSubjectId}
@@ -170,7 +170,7 @@ const MasterData = () => {
         </div>
       ) : (
         // 2-Panel Layout for Course (JEE Mains) - No class selection
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3 sm:gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-3 sm:gap-4 items-start">
           <SubjectPanelView
             selectedClassId={null}
             selectedSubjectId={selectedSubjectId}

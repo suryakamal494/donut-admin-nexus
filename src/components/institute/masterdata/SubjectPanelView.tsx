@@ -126,7 +126,7 @@ export const SubjectPanelView = ({
   const isDisabled = trackType === "curriculum" && !selectedClassId;
 
   return (
-    <div className="bg-card rounded-xl border shadow-sm overflow-hidden w-[180px] lg:w-[200px]">
+    <div className="bg-card rounded-xl border shadow-sm overflow-hidden w-full lg:w-[200px]">
       <div className="p-3 border-b border-border/50 bg-muted/30">
         <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
           <Folder className="w-4 h-4 text-primary" />
