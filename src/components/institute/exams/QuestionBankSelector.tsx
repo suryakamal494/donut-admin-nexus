@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Search, X, Check, ChevronDown, ChevronUp, Eye, Trash2, List, Grid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { mockQuestions, Question, difficultyConfig, questionTypeLabels, cognitiv
 import { getChaptersByClassAndSubject } from "@/data/cbseMasterData";
 import { courseOwnedChapters, courseChapterMappings } from "@/data/masterData";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getSubjectColor, getSubjectIcon } from "@/components/subject/SubjectBadge";
 
 interface QuestionBankSelectorProps {
   selectedCourse: string;
@@ -56,6 +57,16 @@ export const QuestionBankSelector = ({
   const [showPreview, setShowPreview] = useState(false);
   const [chaptersExpanded, setChaptersExpanded] = useState(true);
   const [compactView, setCompactView] = useState(false);
+  
+  // Refs for scroll navigation to subject sections
+  const mobileSubjectRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const desktopSubjectRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Scroll to subject section
+  const scrollToSubject = (subject: string, isMobile: boolean) => {
+    const refs = isMobile ? mobileSubjectRefs : desktopSubjectRefs;
+    refs.current[subject]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Get chapters based on course type
   const getChaptersForSubject = (subjectId: string): ChapterWithSource[] => {
@@ -496,32 +507,55 @@ export const QuestionBankSelector = ({
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap mt-2">
-                    {Object.entries(selectedBySubject).map(([subject, questions]) => (
-                      <Badge key={subject} variant="secondary" className="text-xs">
-                        {subject}: {questions.length}
-                      </Badge>
-                    ))}
+                    {Object.entries(selectedBySubject).map(([subject, questions]) => {
+                      const subjectColor = getSubjectColor(subject);
+                      const SubjectIcon = getSubjectIcon(subject);
+                      return (
+                        <button
+                          key={subject}
+                          onClick={() => scrollToSubject(subject, true)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5",
+                            "cursor-pointer hover:scale-105 transition-all shadow-sm border",
+                            subjectColor.bg, subjectColor.text
+                          )}
+                        >
+                          <SubjectIcon className="w-3 h-3" />
+                          {subject}: {questions.length}
+                        </button>
+                      );
+                    })}
                   </div>
                 </SheetHeader>
                 <ScrollArea className="h-[calc(100%-80px)] mt-4 -mx-6 px-6">
-                  {Object.entries(selectedBySubject).map(([subject, questions]) => (
-                    <Collapsible key={subject} defaultOpen={questions.length <= 10} className="mb-4">
-                      <CollapsibleTrigger className="w-full flex items-center justify-between p-2 bg-muted/50 rounded-lg hover:bg-muted">
-                        <h4 className="font-medium flex items-center gap-2 text-sm">
-                          {subject}
-                          <Badge variant="secondary">{questions.length}</Badge>
-                        </h4>
-                        <ChevronDown className="w-4 h-4" />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="space-y-2 mt-2">
-                          {questions.map((q, idx) => (
-                            <PreviewQuestionCard key={q.id} q={q} index={idx} />
-                          ))}
+                {Object.entries(selectedBySubject).map(([subject, questions]) => {
+                    const subjectColor = getSubjectColor(subject);
+                    const SubjectIcon = getSubjectIcon(subject);
+                    return (
+                      <Collapsible key={subject} defaultOpen={questions.length <= 10} className="mb-4">
+                        <div ref={(el) => (mobileSubjectRefs.current[subject] = el)}>
+                          <CollapsibleTrigger className={cn(
+                            "w-full flex items-center justify-between p-2.5 rounded-lg hover:opacity-90 transition-opacity border",
+                            subjectColor.bg, subjectColor.text
+                          )}>
+                            <h4 className="font-medium flex items-center gap-2 text-sm">
+                              <SubjectIcon className="w-4 h-4" />
+                              {subject}
+                              <Badge variant="secondary" className="bg-background/80 text-foreground">{questions.length}</Badge>
+                            </h4>
+                            <ChevronDown className="w-4 h-4" />
+                          </CollapsibleTrigger>
                         </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ))}
+                        <CollapsibleContent>
+                          <div className="space-y-2 mt-2">
+                            {questions.map((q, idx) => (
+                              <PreviewQuestionCard key={q.id} q={q} index={idx} />
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    );
+                  })}
                 </ScrollArea>
               </SheetContent>
             </Sheet>
@@ -536,12 +570,23 @@ export const QuestionBankSelector = ({
                     <Check className="w-5 h-5 text-success" />
                     <span className="font-medium">{selectedQuestionIds.length} Questions Selected</span>
                   </div>
-                  <div className="flex gap-2">
-                    {Object.entries(selectedBySubject).map(([subject, questions]) => (
-                      <Badge key={subject} variant="secondary">
-                        {subject}: {questions.length}
-                      </Badge>
-                    ))}
+                  <div className="flex gap-2 flex-wrap">
+                    {Object.entries(selectedBySubject).map(([subject, questions]) => {
+                      const subjectColor = getSubjectColor(subject);
+                      const SubjectIcon = getSubjectIcon(subject);
+                      return (
+                        <span
+                          key={subject}
+                          className={cn(
+                            "px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm border",
+                            subjectColor.bg, subjectColor.text
+                          )}
+                        >
+                          <SubjectIcon className="w-3 h-3" />
+                          {subject}: {questions.length}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -572,32 +617,55 @@ export const QuestionBankSelector = ({
                           </div>
                         </div>
                         <div className="flex gap-2 flex-wrap mt-2">
-                          {Object.entries(selectedBySubject).map(([subject, questions]) => (
-                            <Badge key={subject} variant="secondary" className="text-xs">
-                              {subject}: {questions.length}
-                            </Badge>
-                          ))}
+                          {Object.entries(selectedBySubject).map(([subject, questions]) => {
+                            const subjectColor = getSubjectColor(subject);
+                            const SubjectIcon = getSubjectIcon(subject);
+                            return (
+                              <button
+                                key={subject}
+                                onClick={() => scrollToSubject(subject, false)}
+                                className={cn(
+                                  "px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5",
+                                  "cursor-pointer hover:scale-105 transition-all shadow-sm border",
+                                  subjectColor.bg, subjectColor.text
+                                )}
+                              >
+                                <SubjectIcon className="w-3 h-3" />
+                                {subject}: {questions.length}
+                              </button>
+                            );
+                          })}
                         </div>
                       </SheetHeader>
                       <ScrollArea className="h-[calc(100vh-120px)] mt-4 -mx-6 px-6">
-                        {Object.entries(selectedBySubject).map(([subject, questions]) => (
-                          <Collapsible key={subject} defaultOpen={questions.length <= 10} className="mb-4">
-                            <CollapsibleTrigger className="w-full flex items-center justify-between p-2 bg-muted/50 rounded-lg hover:bg-muted">
-                              <h4 className="font-medium flex items-center gap-2 text-sm">
-                                {subject}
-                                <Badge variant="secondary">{questions.length}</Badge>
-                              </h4>
-                              <ChevronDown className="w-4 h-4" />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="space-y-2 mt-2">
-                                {questions.map((q, idx) => (
-                                  <PreviewQuestionCard key={q.id} q={q} index={idx} />
-                                ))}
+                        {Object.entries(selectedBySubject).map(([subject, questions]) => {
+                          const subjectColor = getSubjectColor(subject);
+                          const SubjectIcon = getSubjectIcon(subject);
+                          return (
+                            <Collapsible key={subject} defaultOpen={questions.length <= 10} className="mb-4">
+                              <div ref={(el) => (desktopSubjectRefs.current[subject] = el)}>
+                                <CollapsibleTrigger className={cn(
+                                  "w-full flex items-center justify-between p-2.5 rounded-lg hover:opacity-90 transition-opacity border",
+                                  subjectColor.bg, subjectColor.text
+                                )}>
+                                  <h4 className="font-medium flex items-center gap-2 text-sm">
+                                    <SubjectIcon className="w-4 h-4" />
+                                    {subject}
+                                    <Badge variant="secondary" className="bg-background/80 text-foreground">{questions.length}</Badge>
+                                  </h4>
+                                  <ChevronDown className="w-4 h-4" />
+                                </CollapsibleTrigger>
                               </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        ))}
+                              <CollapsibleContent>
+                                <div className="space-y-2 mt-2">
+                                  {questions.map((q, idx) => (
+                                    <PreviewQuestionCard key={q.id} q={q} index={idx} />
+                                  ))}
+                                </div>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          );
+                        })}
                       </ScrollArea>
                     </SheetContent>
                   </Sheet>
