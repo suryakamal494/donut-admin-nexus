@@ -47,7 +47,7 @@ export const generateAcademicWeeks = (startDate: string, numWeeks: number): Acad
 
 // Generate 40 weeks starting from Jan 6, 2025 (aligns with timetable)
 export const academicWeeks = generateAcademicWeeks("2025-01-06", 40);
-export const currentWeekIndex = 0; // Week 1: Jan 6-11, 2025
+export const currentWeekIndex = 3; // Week 4: Jan 27 - Feb 1, 2025 (Weeks 1-3 are past, 4 is current, 5-8 are future)
 
 // ============================================
 // Academic Schedule Setups - Aligned with cbseMasterData
@@ -57,13 +57,13 @@ export const currentWeekIndex = 0; // Week 1: Jan 6-11, 2025
 
 export const academicScheduleSetups: AcademicScheduleSetup[] = [
   // ========================
-  // CLASS 6 (classId: "1") - Mathematics, History, Hindi
+  // CLASS 6 (classId: "1") - Mathematics, History, Hindi, Science, English
   // ========================
   {
     id: "setup-c6-mat",
     courseId: "cbse",
     classId: "1",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -75,32 +75,43 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "mat-6-6", chapterName: "Integers", plannedHours: 6, order: 6 },
       { chapterId: "mat-6-7", chapterName: "Fractions", plannedHours: 7, order: 7 },
       { chapterId: "mat-6-8", chapterName: "Decimals", plannedHours: 6, order: 8 },
-      { chapterId: "mat-6-9", chapterName: "Data Handling", plannedHours: 5, order: 9 },
-      { chapterId: "mat-6-10", chapterName: "Mensuration", plannedHours: 6, order: 10 },
-      { chapterId: "mat-6-11", chapterName: "Algebra", plannedHours: 6, order: 11 },
-      { chapterId: "mat-6-12", chapterName: "Ratio and Proportion", plannedHours: 5, order: 12 },
-      { chapterId: "mat-6-13", chapterName: "Symmetry", plannedHours: 4, order: 13 },
-      { chapterId: "mat-6-14", chapterName: "Practical Geometry", plannedHours: 5, order: 14 },
     ],
-    totalPlannedHours: 78,
+    totalPlannedHours: 47,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c6-his",
+    id: "setup-c6-sci",
     courseId: "cbse",
     classId: "1",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "sci",
+    subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-6-1", chapterName: "What, Where, How and When?", plannedHours: 4, order: 1 },
-      { chapterId: "his-6-2", chapterName: "From Hunting-Gathering to Growing Food", plannedHours: 5, order: 2 },
-      { chapterId: "his-6-3", chapterName: "In the Earliest Cities", plannedHours: 5, order: 3 },
-      { chapterId: "his-6-4", chapterName: "What Books and Burials Tell Us", plannedHours: 4, order: 4 },
-      { chapterId: "his-6-5", chapterName: "Kingdoms, Kings and an Early Republic", plannedHours: 5, order: 5 },
+      { chapterId: "sci-6-1", chapterName: "Food: Where Does It Come From?", plannedHours: 5, order: 1 },
+      { chapterId: "sci-6-2", chapterName: "Components of Food", plannedHours: 5, order: 2 },
+      { chapterId: "sci-6-3", chapterName: "Fibre to Fabric", plannedHours: 4, order: 3 },
+      { chapterId: "sci-6-4", chapterName: "Sorting Materials into Groups", plannedHours: 5, order: 4 },
+      { chapterId: "sci-6-5", chapterName: "Separation of Substances", plannedHours: 5, order: 5 },
     ],
-    totalPlannedHours: 23,
+    totalPlannedHours: 24,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c6-eng",
+    courseId: "cbse",
+    classId: "1",
+    subjectId: "eng",
+    subjectName: "English",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "eng-6-1", chapterName: "Who Did Patrick's Homework?", plannedHours: 4, order: 1 },
+      { chapterId: "eng-6-2", chapterName: "How the Dog Found Himself a New Master!", plannedHours: 4, order: 2 },
+      { chapterId: "eng-6-3", chapterName: "Taro's Reward", plannedHours: 4, order: 3 },
+      { chapterId: "eng-6-4", chapterName: "An Indian-American Woman in Space", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 17,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -108,29 +119,45 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-hin",
     courseId: "cbse",
     classId: "1",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectId: "hin",
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-6-1", chapterName: "वह चिड़िया जो", plannedHours: 4, order: 1 },
-      { chapterId: "hin-6-2", chapterName: "बचपन", plannedHours: 4, order: 2 },
-      { chapterId: "hin-6-3", chapterName: "नादान दोस्त", plannedHours: 5, order: 3 },
-      { chapterId: "hin-6-4", chapterName: "चाँद से थोड़ी सी गप्पें", plannedHours: 4, order: 4 },
-      { chapterId: "hin-6-5", chapterName: "अक्षरों का महत्व", plannedHours: 4, order: 5 },
+      { chapterId: "hin-6-1", chapterName: "वह चिड़िया जो (Vah Chidiya Jo)", plannedHours: 4, order: 1 },
+      { chapterId: "hin-6-2", chapterName: "बचपन (Bachpan)", plannedHours: 4, order: 2 },
+      { chapterId: "hin-6-3", chapterName: "नादान दोस्त (Naadan Dost)", plannedHours: 5, order: 3 },
+      { chapterId: "hin-6-4", chapterName: "चाँद से थोड़ी सी गप्पें (Chand Se Thodi Si Gappen)", plannedHours: 4, order: 4 },
     ],
-    totalPlannedHours: 21,
+    totalPlannedHours: 17,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c6-sst",
+    courseId: "cbse",
+    classId: "1",
+    subjectId: "sst",
+    subjectName: "Social Studies",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "sst-6-1", chapterName: "What, Where, How and When?", plannedHours: 4, order: 1 },
+      { chapterId: "sst-6-2", chapterName: "From Hunting-Gathering to Growing Food", plannedHours: 5, order: 2 },
+      { chapterId: "sst-6-3", chapterName: "In the Earliest Cities", plannedHours: 5, order: 3 },
+      { chapterId: "sst-6-4", chapterName: "What Books and Burials Tell Us", plannedHours: 4, order: 4 },
+    ],
+    totalPlannedHours: 18,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 
   // ========================
-  // CLASS 7 (classId: "2") - Mathematics, History, Hindi
+  // CLASS 7 (classId: "2") - Mathematics, Science, English, Hindi, SST
   // ========================
   {
     id: "setup-c7-mat",
     courseId: "cbse",
     classId: "2",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -140,34 +167,43 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "mat-7-4", chapterName: "Simple Equations", plannedHours: 6, order: 4 },
       { chapterId: "mat-7-5", chapterName: "Lines and Angles", plannedHours: 6, order: 5 },
       { chapterId: "mat-7-6", chapterName: "The Triangle and Its Properties", plannedHours: 6, order: 6 },
-      { chapterId: "mat-7-7", chapterName: "Congruence of Triangles", plannedHours: 5, order: 7 },
-      { chapterId: "mat-7-8", chapterName: "Comparing Quantities", plannedHours: 6, order: 8 },
-      { chapterId: "mat-7-9", chapterName: "Rational Numbers", plannedHours: 6, order: 9 },
-      { chapterId: "mat-7-10", chapterName: "Practical Geometry", plannedHours: 5, order: 10 },
-      { chapterId: "mat-7-11", chapterName: "Perimeter and Area", plannedHours: 6, order: 11 },
-      { chapterId: "mat-7-12", chapterName: "Algebraic Expressions", plannedHours: 6, order: 12 },
-      { chapterId: "mat-7-13", chapterName: "Exponents and Powers", plannedHours: 5, order: 13 },
-      { chapterId: "mat-7-14", chapterName: "Symmetry", plannedHours: 4, order: 14 },
-      { chapterId: "mat-7-15", chapterName: "Visualising Solid Shapes", plannedHours: 4, order: 15 },
     ],
-    totalPlannedHours: 82,
+    totalPlannedHours: 35,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c7-his",
+    id: "setup-c7-sci",
     courseId: "cbse",
     classId: "2",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "sci",
+    subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-7-1", chapterName: "Tracing Changes Through a Thousand Years", plannedHours: 5, order: 1 },
-      { chapterId: "his-7-2", chapterName: "New Kings and Kingdoms", plannedHours: 5, order: 2 },
-      { chapterId: "his-7-3", chapterName: "The Delhi Sultans", plannedHours: 6, order: 3 },
-      { chapterId: "his-7-4", chapterName: "The Mughal Empire", plannedHours: 6, order: 4 },
+      { chapterId: "sci-7-1", chapterName: "Nutrition in Plants", plannedHours: 5, order: 1 },
+      { chapterId: "sci-7-2", chapterName: "Nutrition in Animals", plannedHours: 5, order: 2 },
+      { chapterId: "sci-7-3", chapterName: "Fibre to Fabric", plannedHours: 4, order: 3 },
+      { chapterId: "sci-7-4", chapterName: "Heat", plannedHours: 6, order: 4 },
+      { chapterId: "sci-7-5", chapterName: "Acids, Bases and Salts", plannedHours: 5, order: 5 },
     ],
-    totalPlannedHours: 22,
+    totalPlannedHours: 25,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c7-eng",
+    courseId: "cbse",
+    classId: "2",
+    subjectId: "eng",
+    subjectName: "English",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "eng-7-1", chapterName: "Three Questions", plannedHours: 4, order: 1 },
+      { chapterId: "eng-7-2", chapterName: "A Gift of Chappals", plannedHours: 5, order: 2 },
+      { chapterId: "eng-7-3", chapterName: "Gopal and the Hilsa Fish", plannedHours: 4, order: 3 },
+      { chapterId: "eng-7-4", chapterName: "The Ashes That Made Trees Bloom", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 18,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -175,15 +211,31 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-hin",
     courseId: "cbse",
     classId: "2",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectId: "hin",
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-7-1", chapterName: "हम पंछी उन्मुक्त गगन के", plannedHours: 4, order: 1 },
-      { chapterId: "hin-7-2", chapterName: "दादी माँ", plannedHours: 5, order: 2 },
-      { chapterId: "hin-7-3", chapterName: "हिमालय की बेटियाँ", plannedHours: 4, order: 3 },
-      { chapterId: "hin-7-4", chapterName: "कठपुतली", plannedHours: 4, order: 4 },
-      { chapterId: "hin-7-5", chapterName: "मिठाईवाला", plannedHours: 5, order: 5 },
+      { chapterId: "hin-7-1", chapterName: "हम पंछी उन्मुक्त गगन के (Hum Panchhi Unmukt Gagan Ke)", plannedHours: 4, order: 1 },
+      { chapterId: "hin-7-2", chapterName: "दादी माँ (Dadi Maa)", plannedHours: 5, order: 2 },
+      { chapterId: "hin-7-3", chapterName: "हिमालय की बेटियाँ (Himalaya Ki Betiyan)", plannedHours: 4, order: 3 },
+      { chapterId: "hin-7-4", chapterName: "कठपुतली (Kathputli)", plannedHours: 4, order: 4 },
+    ],
+    totalPlannedHours: 17,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c7-sst",
+    courseId: "cbse",
+    classId: "2",
+    subjectId: "sst",
+    subjectName: "Social Studies",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "sst-7-1", chapterName: "Tracing Changes Through a Thousand Years", plannedHours: 5, order: 1 },
+      { chapterId: "sst-7-2", chapterName: "New Kings and Kingdoms", plannedHours: 5, order: 2 },
+      { chapterId: "sst-7-3", chapterName: "The Delhi Sultans", plannedHours: 6, order: 3 },
+      { chapterId: "sst-7-4", chapterName: "The Mughal Empire", plannedHours: 6, order: 4 },
     ],
     totalPlannedHours: 22,
     createdAt: "2025-04-01",
@@ -191,13 +243,13 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
   },
 
   // ========================
-  // CLASS 8 (classId: "3") - Mathematics, History, Hindi
+  // CLASS 8 (classId: "3") - Mathematics, Science, English, Hindi, SST
   // ========================
   {
     id: "setup-c8-mat",
     courseId: "cbse",
     classId: "3",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -207,35 +259,43 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "mat-8-4", chapterName: "Practical Geometry", plannedHours: 5, order: 4 },
       { chapterId: "mat-8-5", chapterName: "Data Handling", plannedHours: 6, order: 5 },
       { chapterId: "mat-8-6", chapterName: "Squares and Square Roots", plannedHours: 6, order: 6 },
-      { chapterId: "mat-8-7", chapterName: "Cubes and Cube Roots", plannedHours: 5, order: 7 },
-      { chapterId: "mat-8-8", chapterName: "Comparing Quantities", plannedHours: 6, order: 8 },
-      { chapterId: "mat-8-9", chapterName: "Algebraic Expressions and Identities", plannedHours: 7, order: 9 },
-      { chapterId: "mat-8-10", chapterName: "Visualising Solid Shapes", plannedHours: 5, order: 10 },
-      { chapterId: "mat-8-11", chapterName: "Mensuration", plannedHours: 7, order: 11 },
-      { chapterId: "mat-8-12", chapterName: "Exponents and Powers", plannedHours: 5, order: 12 },
-      { chapterId: "mat-8-13", chapterName: "Direct and Inverse Proportions", plannedHours: 5, order: 13 },
-      { chapterId: "mat-8-14", chapterName: "Factorisation", plannedHours: 6, order: 14 },
-      { chapterId: "mat-8-15", chapterName: "Introduction to Graphs", plannedHours: 5, order: 15 },
-      { chapterId: "mat-8-16", chapterName: "Playing with Numbers", plannedHours: 5, order: 16 },
     ],
-    totalPlannedHours: 92,
+    totalPlannedHours: 36,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c8-his",
+    id: "setup-c8-sci",
     courseId: "cbse",
     classId: "3",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "sci",
+    subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-8-1", chapterName: "How, When and Where", plannedHours: 4, order: 1 },
-      { chapterId: "his-8-2", chapterName: "From Trade to Territory", plannedHours: 5, order: 2 },
-      { chapterId: "his-8-3", chapterName: "Ruling the Countryside", plannedHours: 5, order: 3 },
-      { chapterId: "his-8-4", chapterName: "Tribals, Dikus and the Vision of a Golden Age", plannedHours: 5, order: 4 },
+      { chapterId: "sci-8-1", chapterName: "Crop Production and Management", plannedHours: 5, order: 1 },
+      { chapterId: "sci-8-2", chapterName: "Microorganisms: Friend and Foe", plannedHours: 6, order: 2 },
+      { chapterId: "sci-8-3", chapterName: "Synthetic Fibres and Plastics", plannedHours: 5, order: 3 },
+      { chapterId: "sci-8-4", chapterName: "Materials: Metals and Non-Metals", plannedHours: 6, order: 4 },
+      { chapterId: "sci-8-5", chapterName: "Coal and Petroleum", plannedHours: 5, order: 5 },
     ],
-    totalPlannedHours: 19,
+    totalPlannedHours: 27,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c8-eng",
+    courseId: "cbse",
+    classId: "3",
+    subjectId: "eng",
+    subjectName: "English",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "eng-8-1", chapterName: "The Best Christmas Present in the World", plannedHours: 5, order: 1 },
+      { chapterId: "eng-8-2", chapterName: "The Tsunami", plannedHours: 5, order: 2 },
+      { chapterId: "eng-8-3", chapterName: "Glimpses of the Past", plannedHours: 5, order: 3 },
+      { chapterId: "eng-8-4", chapterName: "Bepin Choudhury's Lapse of Memory", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 20,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -243,29 +303,80 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-hin",
     courseId: "cbse",
     classId: "3",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectId: "hin",
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-8-1", chapterName: "ध्वनि", plannedHours: 4, order: 1 },
-      { chapterId: "hin-8-2", chapterName: "लाख की चूड़ियाँ", plannedHours: 5, order: 2 },
-      { chapterId: "hin-8-3", chapterName: "बस की यात्रा", plannedHours: 4, order: 3 },
-      { chapterId: "hin-8-4", chapterName: "दीवानों की हस्ती", plannedHours: 4, order: 4 },
-      { chapterId: "hin-8-5", chapterName: "चिट्ठियों की अनूठी दुनिया", plannedHours: 5, order: 5 },
+      { chapterId: "hin-8-1", chapterName: "ध्वनि (Dhwani)", plannedHours: 4, order: 1 },
+      { chapterId: "hin-8-2", chapterName: "लाख की चूड़ियाँ (Lakh Ki Chudiyan)", plannedHours: 5, order: 2 },
+      { chapterId: "hin-8-3", chapterName: "बस की यात्रा (Bus Ki Yatra)", plannedHours: 4, order: 3 },
+      { chapterId: "hin-8-4", chapterName: "दीवानों की हस्ती (Diwanon Ki Hasti)", plannedHours: 4, order: 4 },
     ],
-    totalPlannedHours: 22,
+    totalPlannedHours: 17,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c8-sst",
+    courseId: "cbse",
+    classId: "3",
+    subjectId: "sst",
+    subjectName: "Social Studies",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "sst-8-1", chapterName: "How, When and Where", plannedHours: 4, order: 1 },
+      { chapterId: "sst-8-2", chapterName: "From Trade to Territory", plannedHours: 5, order: 2 },
+      { chapterId: "sst-8-3", chapterName: "Ruling the Countryside", plannedHours: 5, order: 3 },
+      { chapterId: "sst-8-4", chapterName: "Tribals, Dikus and the Vision of a Golden Age", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 19,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 
   // ========================
-  // CLASS 9 (classId: "4") - Mathematics, Physics (placeholder), History, Hindi
+  // CLASS 9 (classId: "4") - Physics, Chemistry, Mathematics, Biology, English, Hindi, SST
   // ========================
+  {
+    id: "setup-c9-phy",
+    courseId: "cbse",
+    classId: "4",
+    subjectId: "phy",
+    subjectName: "Physics",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "phy-9-1", chapterName: "Motion", plannedHours: 8, order: 1 },
+      { chapterId: "phy-9-2", chapterName: "Force and Laws of Motion", plannedHours: 8, order: 2 },
+      { chapterId: "phy-9-3", chapterName: "Gravitation", plannedHours: 7, order: 3 },
+      { chapterId: "phy-9-4", chapterName: "Work and Energy", plannedHours: 8, order: 4 },
+      { chapterId: "phy-9-5", chapterName: "Sound", plannedHours: 7, order: 5 },
+    ],
+    totalPlannedHours: 38,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c9-che",
+    courseId: "cbse",
+    classId: "4",
+    subjectId: "che",
+    subjectName: "Chemistry",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "che-9-1", chapterName: "Matter in Our Surroundings", plannedHours: 6, order: 1 },
+      { chapterId: "che-9-2", chapterName: "Is Matter Around Us Pure?", plannedHours: 7, order: 2 },
+      { chapterId: "che-9-3", chapterName: "Atoms and Molecules", plannedHours: 8, order: 3 },
+      { chapterId: "che-9-4", chapterName: "Structure of the Atom", plannedHours: 7, order: 4 },
+    ],
+    totalPlannedHours: 28,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
   {
     id: "setup-c9-mat",
     courseId: "cbse",
     classId: "4",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -275,35 +386,42 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "mat-9-4", chapterName: "Linear Equations in Two Variables", plannedHours: 8, order: 4 },
       { chapterId: "mat-9-5", chapterName: "Introduction to Euclid's Geometry", plannedHours: 5, order: 5 },
       { chapterId: "mat-9-6", chapterName: "Lines and Angles", plannedHours: 6, order: 6 },
-      { chapterId: "mat-9-7", chapterName: "Triangles", plannedHours: 8, order: 7 },
-      { chapterId: "mat-9-8", chapterName: "Quadrilaterals", plannedHours: 6, order: 8 },
-      { chapterId: "mat-9-9", chapterName: "Areas of Parallelograms and Triangles", plannedHours: 6, order: 9 },
-      { chapterId: "mat-9-10", chapterName: "Circles", plannedHours: 7, order: 10 },
-      { chapterId: "mat-9-11", chapterName: "Constructions", plannedHours: 5, order: 11 },
-      { chapterId: "mat-9-12", chapterName: "Heron's Formula", plannedHours: 5, order: 12 },
-      { chapterId: "mat-9-13", chapterName: "Surface Areas and Volumes", plannedHours: 8, order: 13 },
-      { chapterId: "mat-9-14", chapterName: "Statistics", plannedHours: 6, order: 14 },
-      { chapterId: "mat-9-15", chapterName: "Probability", plannedHours: 5, order: 15 },
     ],
-    totalPlannedHours: 96,
+    totalPlannedHours: 40,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c9-his",
+    id: "setup-c9-bio",
     courseId: "cbse",
     classId: "4",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "bio",
+    subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-9-1", chapterName: "The French Revolution", plannedHours: 8, order: 1 },
-      { chapterId: "his-9-2", chapterName: "Socialism in Europe and the Russian Revolution", plannedHours: 7, order: 2 },
-      { chapterId: "his-9-3", chapterName: "Nazism and the Rise of Hitler", plannedHours: 7, order: 3 },
-      { chapterId: "his-9-4", chapterName: "Forest Society and Colonialism", plannedHours: 6, order: 4 },
-      { chapterId: "his-9-5", chapterName: "Pastoralists in the Modern World", plannedHours: 5, order: 5 },
+      { chapterId: "bio-9-1", chapterName: "The Fundamental Unit of Life", plannedHours: 6, order: 1 },
+      { chapterId: "bio-9-2", chapterName: "Tissues", plannedHours: 6, order: 2 },
+      { chapterId: "bio-9-3", chapterName: "Diversity in Living Organisms", plannedHours: 7, order: 3 },
+      { chapterId: "bio-9-4", chapterName: "Why Do We Fall Ill?", plannedHours: 6, order: 4 },
     ],
-    totalPlannedHours: 33,
+    totalPlannedHours: 25,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c9-eng",
+    courseId: "cbse",
+    classId: "4",
+    subjectId: "eng",
+    subjectName: "English",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "eng-9-1", chapterName: "The Fun They Had", plannedHours: 4, order: 1 },
+      { chapterId: "eng-9-2", chapterName: "The Sound of Music", plannedHours: 5, order: 2 },
+      { chapterId: "eng-9-3", chapterName: "The Little Girl", plannedHours: 4, order: 3 },
+      { chapterId: "eng-9-4", chapterName: "A Truly Beautiful Mind", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 18,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -311,29 +429,81 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-hin",
     courseId: "cbse",
     classId: "4",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectId: "hin",
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-9-1", chapterName: "दो बैलों की कथा", plannedHours: 5, order: 1 },
-      { chapterId: "hin-9-2", chapterName: "ल्हासा की ओर", plannedHours: 5, order: 2 },
-      { chapterId: "hin-9-3", chapterName: "उपभोक्तावाद की संस्कृति", plannedHours: 5, order: 3 },
-      { chapterId: "hin-9-4", chapterName: "साँवले सपनों की याद", plannedHours: 4, order: 4 },
-      { chapterId: "hin-9-5", chapterName: "नाना साहब की पुत्री देवी मैना को भस्म कर दिया गया", plannedHours: 5, order: 5 },
+      { chapterId: "hin-9-1", chapterName: "दो बैलों की कथा (Do Bailon Ki Katha)", plannedHours: 5, order: 1 },
+      { chapterId: "hin-9-2", chapterName: "ल्हासा की ओर (Lhasa Ki Or)", plannedHours: 5, order: 2 },
+      { chapterId: "hin-9-3", chapterName: "उपभोक्तावाद की संस्कृति (Upbhoktawad Ki Sanskriti)", plannedHours: 5, order: 3 },
+      { chapterId: "hin-9-4", chapterName: "साँवले सपनों की याद (Sanwle Sapnon Ki Yaad)", plannedHours: 4, order: 4 },
     ],
-    totalPlannedHours: 24,
+    totalPlannedHours: 19,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c9-sst",
+    courseId: "cbse",
+    classId: "4",
+    subjectId: "sst",
+    subjectName: "Social Studies",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "sst-9-1", chapterName: "The French Revolution", plannedHours: 8, order: 1 },
+      { chapterId: "sst-9-2", chapterName: "Socialism in Europe and the Russian Revolution", plannedHours: 7, order: 2 },
+      { chapterId: "sst-9-3", chapterName: "Nazism and the Rise of Hitler", plannedHours: 7, order: 3 },
+      { chapterId: "sst-9-4", chapterName: "Forest Society and Colonialism", plannedHours: 6, order: 4 },
+    ],
+    totalPlannedHours: 28,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 
   // ========================
-  // CLASS 10 (classId: "5") - Mathematics, History, Hindi
+  // CLASS 10 (classId: "5") - Physics, Chemistry, Mathematics, Biology, English, Hindi
   // ========================
+  {
+    id: "setup-c10-phy",
+    courseId: "cbse",
+    classId: "5",
+    subjectId: "phy",
+    subjectName: "Physics",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "phy-10-1", chapterName: "Light - Reflection and Refraction", plannedHours: 10, order: 1 },
+      { chapterId: "phy-10-2", chapterName: "Human Eye and the Colourful World", plannedHours: 6, order: 2 },
+      { chapterId: "phy-10-3", chapterName: "Electricity", plannedHours: 12, order: 3 },
+      { chapterId: "phy-10-4", chapterName: "Magnetic Effects of Electric Current", plannedHours: 10, order: 4 },
+      { chapterId: "phy-10-5", chapterName: "Sources of Energy", plannedHours: 6, order: 5 },
+    ],
+    totalPlannedHours: 44,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c10-che",
+    courseId: "cbse",
+    classId: "5",
+    subjectId: "che",
+    subjectName: "Chemistry",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "che-10-1", chapterName: "Chemical Reactions and Equations", plannedHours: 8, order: 1 },
+      { chapterId: "che-10-2", chapterName: "Acids, Bases and Salts", plannedHours: 8, order: 2 },
+      { chapterId: "che-10-3", chapterName: "Metals and Non-metals", plannedHours: 10, order: 3 },
+      { chapterId: "che-10-4", chapterName: "Carbon and its Compounds", plannedHours: 12, order: 4 },
+      { chapterId: "che-10-5", chapterName: "Periodic Classification of Elements", plannedHours: 6, order: 5 },
+    ],
+    totalPlannedHours: 44,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
   {
     id: "setup-c10-mat",
     courseId: "cbse",
     classId: "5",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -343,35 +513,42 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "mat-10-4", chapterName: "Quadratic Equations", plannedHours: 10, order: 4 },
       { chapterId: "mat-10-5", chapterName: "Arithmetic Progressions", plannedHours: 8, order: 5 },
       { chapterId: "mat-10-6", chapterName: "Triangles", plannedHours: 10, order: 6 },
-      { chapterId: "mat-10-7", chapterName: "Coordinate Geometry", plannedHours: 8, order: 7 },
-      { chapterId: "mat-10-8", chapterName: "Introduction to Trigonometry", plannedHours: 10, order: 8 },
-      { chapterId: "mat-10-9", chapterName: "Some Applications of Trigonometry", plannedHours: 6, order: 9 },
-      { chapterId: "mat-10-10", chapterName: "Circles", plannedHours: 8, order: 10 },
-      { chapterId: "mat-10-11", chapterName: "Constructions", plannedHours: 5, order: 11 },
-      { chapterId: "mat-10-12", chapterName: "Areas Related to Circles", plannedHours: 7, order: 12 },
-      { chapterId: "mat-10-13", chapterName: "Surface Areas and Volumes", plannedHours: 8, order: 13 },
-      { chapterId: "mat-10-14", chapterName: "Statistics", plannedHours: 7, order: 14 },
-      { chapterId: "mat-10-15", chapterName: "Probability", plannedHours: 6, order: 15 },
     ],
-    totalPlannedHours: 117,
+    totalPlannedHours: 52,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c10-his",
+    id: "setup-c10-bio",
     courseId: "cbse",
     classId: "5",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "bio",
+    subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-10-1", chapterName: "The Rise of Nationalism in Europe", plannedHours: 8, order: 1 },
-      { chapterId: "his-10-2", chapterName: "Nationalism in India", plannedHours: 10, order: 2 },
-      { chapterId: "his-10-3", chapterName: "The Making of a Global World", plannedHours: 7, order: 3 },
-      { chapterId: "his-10-4", chapterName: "The Age of Industrialisation", plannedHours: 7, order: 4 },
-      { chapterId: "his-10-5", chapterName: "Print Culture and the Modern World", plannedHours: 6, order: 5 },
+      { chapterId: "bio-10-1", chapterName: "Life Processes", plannedHours: 10, order: 1 },
+      { chapterId: "bio-10-2", chapterName: "Control and Coordination", plannedHours: 8, order: 2 },
+      { chapterId: "bio-10-3", chapterName: "How do Organisms Reproduce?", plannedHours: 10, order: 3 },
+      { chapterId: "bio-10-4", chapterName: "Heredity and Evolution", plannedHours: 10, order: 4 },
     ],
     totalPlannedHours: 38,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c10-eng",
+    courseId: "cbse",
+    classId: "5",
+    subjectId: "eng",
+    subjectName: "English",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "eng-10-1", chapterName: "A Letter to God", plannedHours: 4, order: 1 },
+      { chapterId: "eng-10-2", chapterName: "Nelson Mandela: Long Walk to Freedom", plannedHours: 5, order: 2 },
+      { chapterId: "eng-10-3", chapterName: "Two Stories about Flying", plannedHours: 5, order: 3 },
+      { chapterId: "eng-10-4", chapterName: "From the Diary of Anne Frank", plannedHours: 5, order: 4 },
+    ],
+    totalPlannedHours: 19,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -379,29 +556,28 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-hin",
     courseId: "cbse",
     classId: "5",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectId: "hin",
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-10-1", chapterName: "सूरदास के पद", plannedHours: 5, order: 1 },
-      { chapterId: "hin-10-2", chapterName: "राम-लक्ष्मण-परशुराम संवाद", plannedHours: 6, order: 2 },
-      { chapterId: "hin-10-3", chapterName: "आत्मकथ्य", plannedHours: 4, order: 3 },
-      { chapterId: "hin-10-4", chapterName: "उत्साह और अट नहीं रही", plannedHours: 4, order: 4 },
-      { chapterId: "hin-10-5", chapterName: "यह दंतुरहित मुस्कान और फसल", plannedHours: 4, order: 5 },
+      { chapterId: "hin-10-1", chapterName: "सूरदास (Surdas)", plannedHours: 5, order: 1 },
+      { chapterId: "hin-10-2", chapterName: "तुलसीदास (Tulsidas)", plannedHours: 5, order: 2 },
+      { chapterId: "hin-10-3", chapterName: "देव (Dev)", plannedHours: 4, order: 3 },
+      { chapterId: "hin-10-4", chapterName: "जयशंकर प्रसाद (Jaishankar Prasad)", plannedHours: 5, order: 4 },
     ],
-    totalPlannedHours: 23,
+    totalPlannedHours: 19,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 
   // ========================
-  // CLASS 11 (classId: "6") - Physics, Chemistry, Mathematics
+  // CLASS 11 (classId: "6") - Physics, Chemistry, Mathematics, Biology
   // ========================
   {
     id: "setup-c11-phy",
     courseId: "cbse",
     classId: "6",
-    subjectId: "1",
+    subjectId: "phy",
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
@@ -409,19 +585,9 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "phy-11-2", chapterName: "Units and Measurements", plannedHours: 8, order: 2 },
       { chapterId: "phy-11-3", chapterName: "Motion in a Straight Line", plannedHours: 10, order: 3 },
       { chapterId: "phy-11-4", chapterName: "Motion in a Plane", plannedHours: 12, order: 4 },
-      { chapterId: "phy-11-5", chapterName: "Laws of Motion", plannedHours: 14, order: 5 },
-      { chapterId: "phy-11-6", chapterName: "Work, Energy and Power", plannedHours: 12, order: 6 },
-      { chapterId: "phy-11-7", chapterName: "System of Particles and Rotational Motion", plannedHours: 14, order: 7 },
-      { chapterId: "phy-11-8", chapterName: "Gravitation", plannedHours: 10, order: 8 },
-      { chapterId: "phy-11-9", chapterName: "Mechanical Properties of Solids", plannedHours: 8, order: 9 },
-      { chapterId: "phy-11-10", chapterName: "Mechanical Properties of Fluids", plannedHours: 10, order: 10 },
-      { chapterId: "phy-11-11", chapterName: "Thermal Properties of Matter", plannedHours: 10, order: 11 },
-      { chapterId: "phy-11-12", chapterName: "Thermodynamics", plannedHours: 12, order: 12 },
-      { chapterId: "phy-11-13", chapterName: "Kinetic Theory", plannedHours: 8, order: 13 },
-      { chapterId: "phy-11-14", chapterName: "Oscillations", plannedHours: 10, order: 14 },
-      { chapterId: "phy-11-15", chapterName: "Waves", plannedHours: 12, order: 15 },
+      { chapterId: "phy-11-5", chapterName: "Laws of Motion", plannedHours: 12, order: 5 },
     ],
-    totalPlannedHours: 154,
+    totalPlannedHours: 46,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -429,26 +595,17 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-che",
     courseId: "cbse",
     classId: "6",
-    subjectId: "2",
+    subjectId: "che",
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "che-11-1", chapterName: "Some Basic Concepts of Chemistry", plannedHours: 10, order: 1 },
-      { chapterId: "che-11-2", chapterName: "Structure of Atom", plannedHours: 12, order: 2 },
-      { chapterId: "che-11-3", chapterName: "Classification of Elements and Periodicity in Properties", plannedHours: 10, order: 3 },
-      { chapterId: "che-11-4", chapterName: "Chemical Bonding and Molecular Structure", plannedHours: 14, order: 4 },
-      { chapterId: "che-11-5", chapterName: "States of Matter", plannedHours: 10, order: 5 },
-      { chapterId: "che-11-6", chapterName: "Thermodynamics", plannedHours: 12, order: 6 },
-      { chapterId: "che-11-7", chapterName: "Equilibrium", plannedHours: 14, order: 7 },
-      { chapterId: "che-11-8", chapterName: "Redox Reactions", plannedHours: 8, order: 8 },
-      { chapterId: "che-11-9", chapterName: "Hydrogen", plannedHours: 6, order: 9 },
-      { chapterId: "che-11-10", chapterName: "The s-Block Elements", plannedHours: 8, order: 10 },
-      { chapterId: "che-11-11", chapterName: "The p-Block Elements", plannedHours: 10, order: 11 },
-      { chapterId: "che-11-12", chapterName: "Organic Chemistry - Some Basic Principles and Techniques", plannedHours: 14, order: 12 },
-      { chapterId: "che-11-13", chapterName: "Hydrocarbons", plannedHours: 12, order: 13 },
-      { chapterId: "che-11-14", chapterName: "Environmental Chemistry", plannedHours: 6, order: 14 },
+      { chapterId: "che-11-1", chapterName: "Some Basic Concepts of Chemistry", plannedHours: 8, order: 1 },
+      { chapterId: "che-11-2", chapterName: "Structure of Atom", plannedHours: 10, order: 2 },
+      { chapterId: "che-11-3", chapterName: "Classification of Elements and Periodicity", plannedHours: 8, order: 3 },
+      { chapterId: "che-11-4", chapterName: "Chemical Bonding and Molecular Structure", plannedHours: 12, order: 4 },
+      { chapterId: "che-11-5", chapterName: "States of Matter", plannedHours: 8, order: 5 },
     ],
-    totalPlannedHours: 146,
+    totalPlannedHours: 46,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -456,77 +613,56 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-mat",
     courseId: "cbse",
     classId: "6",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "mat-11-1", chapterName: "Sets", plannedHours: 10, order: 1 },
-      { chapterId: "mat-11-2", chapterName: "Relations and Functions", plannedHours: 12, order: 2 },
-      { chapterId: "mat-11-3", chapterName: "Trigonometric Functions", plannedHours: 14, order: 3 },
-      { chapterId: "mat-11-4", chapterName: "Principle of Mathematical Induction", plannedHours: 8, order: 4 },
-      { chapterId: "mat-11-5", chapterName: "Complex Numbers and Quadratic Equations", plannedHours: 12, order: 5 },
-      { chapterId: "mat-11-6", chapterName: "Linear Inequalities", plannedHours: 8, order: 6 },
-      { chapterId: "mat-11-7", chapterName: "Permutations and Combinations", plannedHours: 12, order: 7 },
-      { chapterId: "mat-11-8", chapterName: "Binomial Theorem", plannedHours: 10, order: 8 },
-      { chapterId: "mat-11-9", chapterName: "Sequences and Series", plannedHours: 12, order: 9 },
-      { chapterId: "mat-11-10", chapterName: "Straight Lines", plannedHours: 10, order: 10 },
-      { chapterId: "mat-11-11", chapterName: "Conic Sections", plannedHours: 14, order: 11 },
-      { chapterId: "mat-11-12", chapterName: "Introduction to Three Dimensional Geometry", plannedHours: 8, order: 12 },
-      { chapterId: "mat-11-13", chapterName: "Limits and Derivatives", plannedHours: 14, order: 13 },
-      { chapterId: "mat-11-14", chapterName: "Mathematical Reasoning", plannedHours: 6, order: 14 },
-      { chapterId: "mat-11-15", chapterName: "Statistics", plannedHours: 8, order: 15 },
-      { chapterId: "mat-11-16", chapterName: "Probability", plannedHours: 10, order: 16 },
+      { chapterId: "mat-11-1", chapterName: "Sets", plannedHours: 8, order: 1 },
+      { chapterId: "mat-11-2", chapterName: "Relations and Functions", plannedHours: 10, order: 2 },
+      { chapterId: "mat-11-3", chapterName: "Trigonometric Functions", plannedHours: 12, order: 3 },
+      { chapterId: "mat-11-4", chapterName: "Principle of Mathematical Induction", plannedHours: 6, order: 4 },
+      { chapterId: "mat-11-5", chapterName: "Complex Numbers and Quadratic Equations", plannedHours: 10, order: 5 },
     ],
-    totalPlannedHours: 168,
+    totalPlannedHours: 46,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c11-his",
+    id: "setup-c11-bio",
     courseId: "cbse",
     classId: "6",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "bio",
+    subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-11-1", chapterName: "From the Beginning of Time", plannedHours: 6, order: 1 },
-      { chapterId: "his-11-2", chapterName: "Writing and City Life", plannedHours: 6, order: 2 },
-      { chapterId: "his-11-3", chapterName: "An Empire Across Three Continents", plannedHours: 6, order: 3 },
-      { chapterId: "his-11-4", chapterName: "The Central Islamic Lands", plannedHours: 6, order: 4 },
-      { chapterId: "his-11-5", chapterName: "Nomadic Empires", plannedHours: 6, order: 5 },
+      { chapterId: "bio-11-1", chapterName: "The Living World", plannedHours: 6, order: 1 },
+      { chapterId: "bio-11-2", chapterName: "Biological Classification", plannedHours: 8, order: 2 },
+      { chapterId: "bio-11-3", chapterName: "Plant Kingdom", plannedHours: 10, order: 3 },
+      { chapterId: "bio-11-4", chapterName: "Animal Kingdom", plannedHours: 12, order: 4 },
     ],
-    totalPlannedHours: 30,
+    totalPlannedHours: 36,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 
   // ========================
-  // CLASS 12 (classId: "7") - Physics, Chemistry, Mathematics
+  // CLASS 12 (classId: "7") - Physics, Chemistry, Mathematics, Biology
   // ========================
   {
     id: "setup-c12-phy",
     courseId: "cbse",
     classId: "7",
-    subjectId: "1",
+    subjectId: "phy",
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "phy-12-1", chapterName: "Electric Charges and Fields", plannedHours: 12, order: 1 },
+      { chapterId: "phy-12-1", chapterName: "Electric Charges and Fields", plannedHours: 10, order: 1 },
       { chapterId: "phy-12-2", chapterName: "Electrostatic Potential and Capacitance", plannedHours: 12, order: 2 },
       { chapterId: "phy-12-3", chapterName: "Current Electricity", plannedHours: 14, order: 3 },
       { chapterId: "phy-12-4", chapterName: "Moving Charges and Magnetism", plannedHours: 12, order: 4 },
       { chapterId: "phy-12-5", chapterName: "Magnetism and Matter", plannedHours: 8, order: 5 },
-      { chapterId: "phy-12-6", chapterName: "Electromagnetic Induction", plannedHours: 10, order: 6 },
-      { chapterId: "phy-12-7", chapterName: "Alternating Current", plannedHours: 10, order: 7 },
-      { chapterId: "phy-12-8", chapterName: "Electromagnetic Waves", plannedHours: 6, order: 8 },
-      { chapterId: "phy-12-9", chapterName: "Ray Optics and Optical Instruments", plannedHours: 14, order: 9 },
-      { chapterId: "phy-12-10", chapterName: "Wave Optics", plannedHours: 10, order: 10 },
-      { chapterId: "phy-12-11", chapterName: "Dual Nature of Radiation and Matter", plannedHours: 8, order: 11 },
-      { chapterId: "phy-12-12", chapterName: "Atoms", plannedHours: 8, order: 12 },
-      { chapterId: "phy-12-13", chapterName: "Nuclei", plannedHours: 8, order: 13 },
-      { chapterId: "phy-12-14", chapterName: "Semiconductor Electronics: Materials, Devices and Simple Circuits", plannedHours: 12, order: 14 },
     ],
-    totalPlannedHours: 144,
+    totalPlannedHours: 56,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -534,28 +670,17 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-che",
     courseId: "cbse",
     classId: "7",
-    subjectId: "2",
+    subjectId: "che",
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "che-12-1", chapterName: "The Solid State", plannedHours: 10, order: 1 },
-      { chapterId: "che-12-2", chapterName: "Solutions", plannedHours: 12, order: 2 },
+      { chapterId: "che-12-1", chapterName: "The Solid State", plannedHours: 8, order: 1 },
+      { chapterId: "che-12-2", chapterName: "Solutions", plannedHours: 10, order: 2 },
       { chapterId: "che-12-3", chapterName: "Electrochemistry", plannedHours: 12, order: 3 },
       { chapterId: "che-12-4", chapterName: "Chemical Kinetics", plannedHours: 10, order: 4 },
-      { chapterId: "che-12-5", chapterName: "Surface Chemistry", plannedHours: 6, order: 5 },
-      { chapterId: "che-12-6", chapterName: "General Principles and Processes of Isolation of Elements", plannedHours: 6, order: 6 },
-      { chapterId: "che-12-7", chapterName: "The p-Block Elements", plannedHours: 12, order: 7 },
-      { chapterId: "che-12-8", chapterName: "The d- and f-Block Elements", plannedHours: 10, order: 8 },
-      { chapterId: "che-12-9", chapterName: "Coordination Compounds", plannedHours: 12, order: 9 },
-      { chapterId: "che-12-10", chapterName: "Haloalkanes and Haloarenes", plannedHours: 10, order: 10 },
-      { chapterId: "che-12-11", chapterName: "Alcohols, Phenols and Ethers", plannedHours: 10, order: 11 },
-      { chapterId: "che-12-12", chapterName: "Aldehydes, Ketones and Carboxylic Acids", plannedHours: 14, order: 12 },
-      { chapterId: "che-12-13", chapterName: "Amines", plannedHours: 8, order: 13 },
-      { chapterId: "che-12-14", chapterName: "Biomolecules", plannedHours: 8, order: 14 },
-      { chapterId: "che-12-15", chapterName: "Polymers", plannedHours: 6, order: 15 },
-      { chapterId: "che-12-16", chapterName: "Chemistry in Everyday Life", plannedHours: 4, order: 16 },
+      { chapterId: "che-12-5", chapterName: "Surface Chemistry", plannedHours: 8, order: 5 },
     ],
-    totalPlannedHours: 150,
+    totalPlannedHours: 48,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -563,1071 +688,394 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-mat",
     courseId: "cbse",
     classId: "7",
-    subjectId: "3",
+    subjectId: "mat",
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "mat-12-1", chapterName: "Relations and Functions", plannedHours: 12, order: 1 },
-      { chapterId: "mat-12-2", chapterName: "Inverse Trigonometric Functions", plannedHours: 10, order: 2 },
-      { chapterId: "mat-12-3", chapterName: "Matrices", plannedHours: 14, order: 3 },
-      { chapterId: "mat-12-4", chapterName: "Determinants", plannedHours: 14, order: 4 },
+      { chapterId: "mat-12-1", chapterName: "Relations and Functions", plannedHours: 10, order: 1 },
+      { chapterId: "mat-12-2", chapterName: "Inverse Trigonometric Functions", plannedHours: 8, order: 2 },
+      { chapterId: "mat-12-3", chapterName: "Matrices", plannedHours: 12, order: 3 },
+      { chapterId: "mat-12-4", chapterName: "Determinants", plannedHours: 12, order: 4 },
       { chapterId: "mat-12-5", chapterName: "Continuity and Differentiability", plannedHours: 14, order: 5 },
-      { chapterId: "mat-12-6", chapterName: "Application of Derivatives", plannedHours: 12, order: 6 },
-      { chapterId: "mat-12-7", chapterName: "Integrals", plannedHours: 18, order: 7 },
-      { chapterId: "mat-12-8", chapterName: "Application of Integrals", plannedHours: 10, order: 8 },
-      { chapterId: "mat-12-9", chapterName: "Differential Equations", plannedHours: 12, order: 9 },
-      { chapterId: "mat-12-10", chapterName: "Vector Algebra", plannedHours: 10, order: 10 },
-      { chapterId: "mat-12-11", chapterName: "Three Dimensional Geometry", plannedHours: 12, order: 11 },
-      { chapterId: "mat-12-12", chapterName: "Linear Programming", plannedHours: 8, order: 12 },
-      { chapterId: "mat-12-13", chapterName: "Probability", plannedHours: 12, order: 13 },
     ],
-    totalPlannedHours: 158,
+    totalPlannedHours: 56,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c12-his",
+    id: "setup-c12-bio",
     courseId: "cbse",
     classId: "7",
-    subjectId: "5",
-    subjectName: "History",
+    subjectId: "bio",
+    subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "his-12-1", chapterName: "Bricks, Beads and Bones", plannedHours: 7, order: 1 },
-      { chapterId: "his-12-2", chapterName: "Kings, Farmers and Towns", plannedHours: 7, order: 2 },
-      { chapterId: "his-12-3", chapterName: "Kinship, Caste and Class", plannedHours: 6, order: 3 },
-      { chapterId: "his-12-4", chapterName: "Thinkers, Beliefs and Buildings", plannedHours: 6, order: 4 },
-      { chapterId: "his-12-5", chapterName: "Through the Eyes of Travellers", plannedHours: 6, order: 5 },
+      { chapterId: "bio-12-1", chapterName: "Reproduction in Organisms", plannedHours: 8, order: 1 },
+      { chapterId: "bio-12-2", chapterName: "Sexual Reproduction in Flowering Plants", plannedHours: 12, order: 2 },
+      { chapterId: "bio-12-3", chapterName: "Human Reproduction", plannedHours: 12, order: 3 },
+      { chapterId: "bio-12-4", chapterName: "Reproductive Health", plannedHours: 8, order: 4 },
     ],
-    totalPlannedHours: 32,
+    totalPlannedHours: 40,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
+
+  // ========================
+  // JEE Mains Setups (Class 11 & 12 - courseId: "jee-mains")
+  // ========================
   {
-    id: "setup-c11-hin",
-    courseId: "cbse",
+    id: "setup-jee11-phy",
+    courseId: "jee-mains",
     classId: "6",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
-    subjectName: "Hindi",
+    subjectId: "jee_phy",
+    subjectName: "JEE Physics",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-11-1", chapterName: "कबीर - साखियाँ", plannedHours: 5, order: 1 },
-      { chapterId: "hin-11-2", chapterName: "सूरदास - पद", plannedHours: 5, order: 2 },
-      { chapterId: "hin-11-3", chapterName: "देव - कवित्त और सवैया", plannedHours: 5, order: 3 },
-      { chapterId: "hin-11-4", chapterName: "सुमित्रानंदन पंत - संध्या सुंदरी, परिवर्तन", plannedHours: 5, order: 4 },
-      { chapterId: "hin-11-5", chapterName: "भवानी प्रसाद मिश्र - गीत-फरोश", plannedHours: 5, order: 5 },
-      { chapterId: "hin-11-6", chapterName: "त्रिलोचन - चंपा काले काले अक्षर नहीं चीन्हती", plannedHours: 5, order: 6 },
-      { chapterId: "hin-11-7", chapterName: "दुष्यंत कुमार - गज़ल", plannedHours: 4, order: 7 },
-      { chapterId: "hin-11-8", chapterName: "आकाशदीप - गूंगे", plannedHours: 5, order: 8 },
-      { chapterId: "hin-11-9", chapterName: "सआदत हसन मंटो - विदाई संभाषण", plannedHours: 5, order: 9 },
-      { chapterId: "hin-11-10", chapterName: "कृष्णनाथ - स्पिति में बारिश", plannedHours: 5, order: 10 },
+      { chapterId: "jee-phy-11-1", chapterName: "Units, Dimensions & Measurements", plannedHours: 8, order: 1 },
+      { chapterId: "jee-phy-11-2", chapterName: "Kinematics", plannedHours: 12, order: 2 },
+      { chapterId: "jee-phy-11-3", chapterName: "Laws of Motion", plannedHours: 14, order: 3 },
+      { chapterId: "jee-phy-11-4", chapterName: "Work, Energy and Power", plannedHours: 12, order: 4 },
     ],
-    totalPlannedHours: 49,
+    totalPlannedHours: 46,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
   {
-    id: "setup-c12-hin",
-    courseId: "cbse",
-    classId: "7",
-    subjectId: "8", // Hindi subjectId in cbseMasterData
-    subjectName: "Hindi",
+    id: "setup-jee11-che",
+    courseId: "jee-mains",
+    classId: "6",
+    subjectId: "jee_che",
+    subjectName: "JEE Chemistry",
     academicYear: "2025-26",
     chapters: [
-      { chapterId: "hin-12-1", chapterName: "हरिशंकर परसाई - सूरज का ब्याह", plannedHours: 5, order: 1 },
-      { chapterId: "hin-12-2", chapterName: "रघुवीर सहाय - तोड़ती पत्थर, कविता के बहाने", plannedHours: 5, order: 2 },
-      { chapterId: "hin-12-3", chapterName: "गजानन माधव मुक्तिबोध - सतह से उठता आदमी", plannedHours: 5, order: 3 },
-      { chapterId: "hin-12-4", chapterName: "शमशेर बहादुर सिंह - ऊषा, बादल को घिरते देखा है", plannedHours: 5, order: 4 },
-      { chapterId: "hin-12-5", chapterName: "सूर्यकांत त्रिपाठी निराला - बादल राग", plannedHours: 5, order: 5 },
-      { chapterId: "hin-12-6", chapterName: "तुलसीदास - कवितावली, लक्ष्मण मूर्छा", plannedHours: 5, order: 6 },
-      { chapterId: "hin-12-7", chapterName: "फ़िराक़ गोरखपुरी - रुबाइयाँ, गज़ल", plannedHours: 4, order: 7 },
-      { chapterId: "hin-12-8", chapterName: "उमाशंकर जोशी - छोटा मेरा खेत", plannedHours: 4, order: 8 },
-      { chapterId: "hin-12-9", chapterName: "रामवृक्ष बेनीपुरी - शिल्प विराम", plannedHours: 5, order: 9 },
-      { chapterId: "hin-12-10", chapterName: "भीष्म साहनी - जूठे का जूठा", plannedHours: 5, order: 10 },
+      { chapterId: "jee-che-11-1", chapterName: "Some Basic Concepts of Chemistry", plannedHours: 10, order: 1 },
+      { chapterId: "jee-che-11-2", chapterName: "Atomic Structure", plannedHours: 14, order: 2 },
+      { chapterId: "jee-che-11-3", chapterName: "Chemical Bonding", plannedHours: 16, order: 3 },
+      { chapterId: "jee-che-11-4", chapterName: "Thermodynamics", plannedHours: 12, order: 4 },
+    ],
+    totalPlannedHours: 52,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-jee11-mat",
+    courseId: "jee-mains",
+    classId: "6",
+    subjectId: "jee_mat",
+    subjectName: "JEE Mathematics",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "jee-mat-11-1", chapterName: "Sets and Relations", plannedHours: 8, order: 1 },
+      { chapterId: "jee-mat-11-2", chapterName: "Complex Numbers", plannedHours: 12, order: 2 },
+      { chapterId: "jee-mat-11-3", chapterName: "Quadratic Equations", plannedHours: 10, order: 3 },
+      { chapterId: "jee-mat-11-4", chapterName: "Permutations and Combinations", plannedHours: 12, order: 4 },
+    ],
+    totalPlannedHours: 42,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-jee12-phy",
+    courseId: "jee-mains",
+    classId: "7",
+    subjectId: "jee_phy",
+    subjectName: "JEE Physics",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "jee-phy-12-1", chapterName: "Electrostatics", plannedHours: 16, order: 1 },
+      { chapterId: "jee-phy-12-2", chapterName: "Current Electricity", plannedHours: 14, order: 2 },
+      { chapterId: "jee-phy-12-3", chapterName: "Magnetic Effects of Current", plannedHours: 16, order: 3 },
+      { chapterId: "jee-phy-12-4", chapterName: "Electromagnetic Induction", plannedHours: 12, order: 4 },
+    ],
+    totalPlannedHours: 58,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-jee12-che",
+    courseId: "jee-mains",
+    classId: "7",
+    subjectId: "jee_che",
+    subjectName: "JEE Chemistry",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "jee-che-12-1", chapterName: "Solid State", plannedHours: 10, order: 1 },
+      { chapterId: "jee-che-12-2", chapterName: "Solutions", plannedHours: 12, order: 2 },
+      { chapterId: "jee-che-12-3", chapterName: "Electrochemistry", plannedHours: 14, order: 3 },
+      { chapterId: "jee-che-12-4", chapterName: "Chemical Kinetics", plannedHours: 12, order: 4 },
     ],
     totalPlannedHours: 48,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
-
-  // Uses same class IDs "6" and "7" for Class 11 and 12
-  // JEE-specific subject IDs: jee_phy, jee_che, jee_mat
-  // ========================
   {
-    id: "setup-jee-11-phy",
-    courseId: "jee-mains",
-    classId: "6",
-    subjectId: "jee_phy",
-    subjectName: "Physics",
-    academicYear: "2025-26",
-    chapters: [
-      { chapterId: "jee-phy-11-1", chapterName: "Physical World", plannedHours: 4, order: 1 },
-      { chapterId: "jee-phy-11-2", chapterName: "Units and Measurements", plannedHours: 10, order: 2 },
-      { chapterId: "jee-phy-11-3", chapterName: "Motion in a Straight Line", plannedHours: 12, order: 3 },
-      { chapterId: "jee-phy-11-4", chapterName: "Motion in a Plane", plannedHours: 14, order: 4 },
-      { chapterId: "jee-phy-11-5", chapterName: "Laws of Motion", plannedHours: 16, order: 5 },
-      { chapterId: "jee-phy-11-6", chapterName: "Work, Energy and Power", plannedHours: 14, order: 6 },
-      { chapterId: "jee-phy-11-7", chapterName: "System of Particles and Rotational Motion", plannedHours: 18, order: 7 },
-      { chapterId: "jee-phy-11-8", chapterName: "Gravitation", plannedHours: 12, order: 8 },
-      { chapterId: "jee-phy-11-9", chapterName: "Mechanical Properties of Solids", plannedHours: 8, order: 9 },
-      { chapterId: "jee-phy-11-10", chapterName: "Mechanical Properties of Fluids", plannedHours: 12, order: 10 },
-      { chapterId: "jee-phy-11-11", chapterName: "Thermal Properties of Matter", plannedHours: 10, order: 11 },
-      { chapterId: "jee-phy-11-12", chapterName: "Thermodynamics", plannedHours: 14, order: 12 },
-      { chapterId: "jee-phy-11-13", chapterName: "Kinetic Theory", plannedHours: 10, order: 13 },
-      { chapterId: "jee-phy-11-14", chapterName: "Oscillations", plannedHours: 12, order: 14 },
-      { chapterId: "jee-phy-11-15", chapterName: "Waves", plannedHours: 14, order: 15 },
-    ],
-    totalPlannedHours: 180,
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-01",
-  },
-  {
-    id: "setup-jee-11-che",
-    courseId: "jee-mains",
-    classId: "6",
-    subjectId: "jee_che",
-    subjectName: "Chemistry",
-    academicYear: "2025-26",
-    chapters: [
-      { chapterId: "jee-che-11-1", chapterName: "Some Basic Concepts of Chemistry", plannedHours: 12, order: 1 },
-      { chapterId: "jee-che-11-2", chapterName: "Structure of Atom", plannedHours: 14, order: 2 },
-      { chapterId: "jee-che-11-3", chapterName: "Classification of Elements and Periodicity", plannedHours: 10, order: 3 },
-      { chapterId: "jee-che-11-4", chapterName: "Chemical Bonding and Molecular Structure", plannedHours: 16, order: 4 },
-      { chapterId: "jee-che-11-5", chapterName: "States of Matter", plannedHours: 10, order: 5 },
-      { chapterId: "jee-che-11-6", chapterName: "Thermodynamics", plannedHours: 14, order: 6 },
-      { chapterId: "jee-che-11-7", chapterName: "Equilibrium", plannedHours: 16, order: 7 },
-      { chapterId: "jee-che-11-8", chapterName: "Redox Reactions", plannedHours: 8, order: 8 },
-      { chapterId: "jee-che-11-9", chapterName: "Hydrogen", plannedHours: 6, order: 9 },
-      { chapterId: "jee-che-11-10", chapterName: "The s-Block Elements", plannedHours: 8, order: 10 },
-      { chapterId: "jee-che-11-11", chapterName: "The p-Block Elements", plannedHours: 12, order: 11 },
-      { chapterId: "jee-che-11-12", chapterName: "Organic Chemistry Basics", plannedHours: 16, order: 12 },
-      { chapterId: "jee-che-11-13", chapterName: "Hydrocarbons", plannedHours: 14, order: 13 },
-      { chapterId: "jee-che-11-14", chapterName: "Environmental Chemistry", plannedHours: 4, order: 14 },
-    ],
-    totalPlannedHours: 160,
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-01",
-  },
-  {
-    id: "setup-jee-11-mat",
-    courseId: "jee-mains",
-    classId: "6",
-    subjectId: "jee_mat",
-    subjectName: "Mathematics",
-    academicYear: "2025-26",
-    chapters: [
-      { chapterId: "jee-mat-11-1", chapterName: "Sets", plannedHours: 10, order: 1 },
-      { chapterId: "jee-mat-11-2", chapterName: "Relations and Functions", plannedHours: 14, order: 2 },
-      { chapterId: "jee-mat-11-3", chapterName: "Trigonometric Functions", plannedHours: 16, order: 3 },
-      { chapterId: "jee-mat-11-4", chapterName: "Mathematical Induction", plannedHours: 10, order: 4 },
-      { chapterId: "jee-mat-11-5", chapterName: "Complex Numbers and Quadratic Equations", plannedHours: 16, order: 5 },
-      { chapterId: "jee-mat-11-6", chapterName: "Linear Inequalities", plannedHours: 8, order: 6 },
-      { chapterId: "jee-mat-11-7", chapterName: "Permutations and Combinations", plannedHours: 14, order: 7 },
-      { chapterId: "jee-mat-11-8", chapterName: "Binomial Theorem", plannedHours: 12, order: 8 },
-      { chapterId: "jee-mat-11-9", chapterName: "Sequences and Series", plannedHours: 14, order: 9 },
-      { chapterId: "jee-mat-11-10", chapterName: "Straight Lines", plannedHours: 12, order: 10 },
-      { chapterId: "jee-mat-11-11", chapterName: "Conic Sections", plannedHours: 18, order: 11 },
-      { chapterId: "jee-mat-11-12", chapterName: "3D Geometry Introduction", plannedHours: 10, order: 12 },
-      { chapterId: "jee-mat-11-13", chapterName: "Limits and Derivatives", plannedHours: 16, order: 13 },
-      { chapterId: "jee-mat-11-14", chapterName: "Statistics", plannedHours: 8, order: 14 },
-      { chapterId: "jee-mat-11-15", chapterName: "Probability", plannedHours: 12, order: 15 },
-    ],
-    totalPlannedHours: 190,
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-01",
-  },
-  {
-    id: "setup-jee-12-phy",
-    courseId: "jee-mains",
-    classId: "7",
-    subjectId: "jee_phy",
-    subjectName: "Physics",
-    academicYear: "2025-26",
-    chapters: [
-      { chapterId: "jee-phy-12-1", chapterName: "Electric Charges and Fields", plannedHours: 14, order: 1 },
-      { chapterId: "jee-phy-12-2", chapterName: "Electrostatic Potential and Capacitance", plannedHours: 14, order: 2 },
-      { chapterId: "jee-phy-12-3", chapterName: "Current Electricity", plannedHours: 16, order: 3 },
-      { chapterId: "jee-phy-12-4", chapterName: "Moving Charges and Magnetism", plannedHours: 14, order: 4 },
-      { chapterId: "jee-phy-12-5", chapterName: "Magnetism and Matter", plannedHours: 8, order: 5 },
-      { chapterId: "jee-phy-12-6", chapterName: "Electromagnetic Induction", plannedHours: 12, order: 6 },
-      { chapterId: "jee-phy-12-7", chapterName: "Alternating Current", plannedHours: 12, order: 7 },
-      { chapterId: "jee-phy-12-8", chapterName: "Electromagnetic Waves", plannedHours: 6, order: 8 },
-      { chapterId: "jee-phy-12-9", chapterName: "Ray Optics", plannedHours: 16, order: 9 },
-      { chapterId: "jee-phy-12-10", chapterName: "Wave Optics", plannedHours: 12, order: 10 },
-      { chapterId: "jee-phy-12-11", chapterName: "Dual Nature of Radiation and Matter", plannedHours: 10, order: 11 },
-      { chapterId: "jee-phy-12-12", chapterName: "Atoms", plannedHours: 10, order: 12 },
-      { chapterId: "jee-phy-12-13", chapterName: "Nuclei", plannedHours: 10, order: 13 },
-      { chapterId: "jee-phy-12-14", chapterName: "Semiconductor Electronics", plannedHours: 14, order: 14 },
-    ],
-    totalPlannedHours: 168,
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-01",
-  },
-  {
-    id: "setup-jee-12-che",
-    courseId: "jee-mains",
-    classId: "7",
-    subjectId: "jee_che",
-    subjectName: "Chemistry",
-    academicYear: "2025-26",
-    chapters: [
-      { chapterId: "jee-che-12-1", chapterName: "The Solid State", plannedHours: 12, order: 1 },
-      { chapterId: "jee-che-12-2", chapterName: "Solutions", plannedHours: 14, order: 2 },
-      { chapterId: "jee-che-12-3", chapterName: "Electrochemistry", plannedHours: 14, order: 3 },
-      { chapterId: "jee-che-12-4", chapterName: "Chemical Kinetics", plannedHours: 12, order: 4 },
-      { chapterId: "jee-che-12-5", chapterName: "Surface Chemistry", plannedHours: 8, order: 5 },
-      { chapterId: "jee-che-12-6", chapterName: "Isolation of Elements", plannedHours: 6, order: 6 },
-      { chapterId: "jee-che-12-7", chapterName: "The p-Block Elements", plannedHours: 14, order: 7 },
-      { chapterId: "jee-che-12-8", chapterName: "The d- and f-Block Elements", plannedHours: 12, order: 8 },
-      { chapterId: "jee-che-12-9", chapterName: "Coordination Compounds", plannedHours: 14, order: 9 },
-      { chapterId: "jee-che-12-10", chapterName: "Haloalkanes and Haloarenes", plannedHours: 12, order: 10 },
-      { chapterId: "jee-che-12-11", chapterName: "Alcohols, Phenols and Ethers", plannedHours: 12, order: 11 },
-      { chapterId: "jee-che-12-12", chapterName: "Aldehydes, Ketones and Carboxylic Acids", plannedHours: 16, order: 12 },
-      { chapterId: "jee-che-12-13", chapterName: "Amines", plannedHours: 10, order: 13 },
-      { chapterId: "jee-che-12-14", chapterName: "Biomolecules", plannedHours: 8, order: 14 },
-      { chapterId: "jee-che-12-15", chapterName: "Polymers", plannedHours: 6, order: 15 },
-    ],
-    totalPlannedHours: 170,
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-01",
-  },
-  {
-    id: "setup-jee-12-mat",
+    id: "setup-jee12-mat",
     courseId: "jee-mains",
     classId: "7",
     subjectId: "jee_mat",
-    subjectName: "Mathematics",
+    subjectName: "JEE Mathematics",
     academicYear: "2025-26",
     chapters: [
       { chapterId: "jee-mat-12-1", chapterName: "Relations and Functions", plannedHours: 14, order: 1 },
       { chapterId: "jee-mat-12-2", chapterName: "Inverse Trigonometric Functions", plannedHours: 12, order: 2 },
-      { chapterId: "jee-mat-12-3", chapterName: "Matrices", plannedHours: 16, order: 3 },
-      { chapterId: "jee-mat-12-4", chapterName: "Determinants", plannedHours: 16, order: 4 },
-      { chapterId: "jee-mat-12-5", chapterName: "Continuity and Differentiability", plannedHours: 16, order: 5 },
-      { chapterId: "jee-mat-12-6", chapterName: "Application of Derivatives", plannedHours: 14, order: 6 },
-      { chapterId: "jee-mat-12-7", chapterName: "Integrals", plannedHours: 20, order: 7 },
-      { chapterId: "jee-mat-12-8", chapterName: "Application of Integrals", plannedHours: 12, order: 8 },
-      { chapterId: "jee-mat-12-9", chapterName: "Differential Equations", plannedHours: 14, order: 9 },
-      { chapterId: "jee-mat-12-10", chapterName: "Vector Algebra", plannedHours: 12, order: 10 },
-      { chapterId: "jee-mat-12-11", chapterName: "Three Dimensional Geometry", plannedHours: 14, order: 11 },
-      { chapterId: "jee-mat-12-12", chapterName: "Linear Programming", plannedHours: 8, order: 12 },
-      { chapterId: "jee-mat-12-13", chapterName: "Probability", plannedHours: 14, order: 13 },
+      { chapterId: "jee-mat-12-3", chapterName: "Matrices and Determinants", plannedHours: 16, order: 3 },
+      { chapterId: "jee-mat-12-4", chapterName: "Differential Calculus", plannedHours: 18, order: 4 },
     ],
-    totalPlannedHours: 182,
+    totalPlannedHours: 60,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
 ];
 
 // ============================================
-// Weekly Chapter Plans (Stage 2) - 150+ plans for 8 weeks
-// Week 1: Jan 6-11, Week 2: Jan 13-18, ... Week 8: Feb 24-28
+// Weekly Chapter Plans - Aligned with instituteData batch IDs
+// Week 1-3: Past (completed), Week 4: Current, Week 5-8: Future
+// Batch IDs from instituteData: batch-6a, batch-6b, batch-7a, batch-8a, batch-9a, batch-10a, etc.
 // ============================================
 
 export const weeklyChapterPlans: WeeklyChapterPlan[] = [
   // ========================
-  // WEEK 1: Jan 6-11, 2025
+  // WEEK 1: Jan 6-11, 2025 (PAST - Completed)
   // ========================
-  // Batch 1 - Class 10A
-  { id: "plan-w1-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b1-che", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["che-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b1-bio", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["bio-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b1-eng", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 6 - Section A
+  { id: "plan-w1-6a-mat", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-6-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-6a-sci", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["sci-6-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-6a-eng", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-6-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-6a-hin", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-6-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-6a-sst", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["sst-6-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 2 - Class 10B
-  { id: "plan-w1-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-10-2", "phy-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b2-mat", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-10-3", "mat-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b2-che", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["che-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 7 - Section A
+  { id: "plan-w1-7a-mat", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-7-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-7a-sci", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["sci-7-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-7a-eng", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-7-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-7a-hin", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-7-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 3 - Class 9A
-  { id: "plan-w1-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b3-mat", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b3-bio", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["bio-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b3-hin", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 8 - Section A
+  { id: "plan-w1-8a-mat", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-8-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-8a-sci", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["sci-8-1", "sci-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-8a-eng", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-8-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 4 - Class 9B
-  { id: "plan-w1-b4-mat", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b4-bio", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["bio-9-1", "bio-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b4-hin", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 9 - Section A
+  { id: "plan-w1-9a-phy", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-9a-che", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["che-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-9a-mat", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-9a-bio", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["bio-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-9a-eng", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-9a-hin", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 5 - Class 8A
-  { id: "plan-w1-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["sci-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b5-eng", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w1-b5-hin", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["hin-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 10 - Section A
+  { id: "plan-w1-10a-phy", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-10a-che", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["che-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-10a-mat", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-10a-bio", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["bio-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-10a-eng", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["eng-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
+  // Class 11 - Section A
+  { id: "plan-w1-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["phy-11-1", "phy-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-11a-che", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["che-11-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-11a-mat", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["mat-11-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  
+  // JEE 11
+  { id: "plan-w1-jee11-phy", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["jee-phy-11-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-jee11-che", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_che", subjectName: "JEE Chemistry", courseId: "jee-mains", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["jee-che-11-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w1-jee11-mat", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_mat", subjectName: "JEE Mathematics", courseId: "jee-mains", weekStartDate: "2025-01-06", weekEndDate: "2025-01-11", plannedChapters: ["jee-mat-11-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 2: Jan 13-18, 2025
+  // WEEK 2: Jan 13-18, 2025 (PAST - Completed)
   // ========================
-  // Batch 1
-  { id: "plan-w2-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-10-3", "phy-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-10-4", "mat-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b1-che", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["che-10-3", "che-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b1-bio", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["bio-10-2", "bio-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 6 - Section A
+  { id: "plan-w2-6a-mat", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-6-1", "mat-6-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-6a-sci", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["sci-6-1", "sci-6-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-6a-eng", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["eng-6-1", "eng-6-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-6a-hin", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["hin-6-1", "hin-6-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 2
-  { id: "plan-w2-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b2-mat", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 7 - Section A
+  { id: "plan-w2-7a-mat", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-7-1", "mat-7-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-7a-sci", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["sci-7-1", "sci-7-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-7a-eng", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["eng-7-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 3
-  { id: "plan-w2-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-9-3", "phy-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b3-mat", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-9-3", "mat-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 8 - Section A
+  { id: "plan-w2-8a-mat", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-8-1", "mat-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-8a-sci", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["sci-8-2", "sci-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-8a-hin", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["hin-8-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 4
-  { id: "plan-w2-b4-mat", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-9-2", "mat-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b4-bio", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["bio-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 9 - Section A
+  { id: "plan-w2-9a-phy", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-9-1", "phy-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-9a-che", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["che-9-1", "che-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-9a-mat", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-9-1", "mat-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-9a-bio", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["bio-9-1", "bio-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 5
-  { id: "plan-w2-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["sci-8-2", "sci-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w2-b5-eng", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["eng-8-2", "eng-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 10 - Section A
+  { id: "plan-w2-10a-phy", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-10-1", "phy-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-10a-che", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["che-10-1", "che-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-10a-mat", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-10-1", "mat-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-10a-bio", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["bio-10-1", "bio-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
+  // Class 11 - Section A
+  { id: "plan-w2-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["phy-11-2", "phy-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-11a-che", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["che-11-1", "che-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-11a-mat", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["mat-11-1", "mat-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  
+  // JEE 11
+  { id: "plan-w2-jee11-phy", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["jee-phy-11-1", "jee-phy-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-jee11-che", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_che", subjectName: "JEE Chemistry", courseId: "jee-mains", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["jee-che-11-1", "jee-che-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w2-jee11-mat", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_mat", subjectName: "JEE Mathematics", courseId: "jee-mains", weekStartDate: "2025-01-13", weekEndDate: "2025-01-18", plannedChapters: ["jee-mat-11-1", "jee-mat-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 3: Jan 20-25, 2025 (Republic Day prep week)
+  // WEEK 3: Jan 20-25, 2025 (PAST - Completed)
   // ========================
-  // Batch 1
-  { id: "plan-w3-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-10-5", "mat-10-6"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b1-che", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["che-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 6 - Section A
+  { id: "plan-w3-6a-mat", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-6-2", "mat-6-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-6a-sci", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sci-6-2", "sci-6-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-6a-eng", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["eng-6-2", "eng-6-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-6a-hin", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["hin-6-2", "hin-6-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-6a-sst", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-6-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 2
-  { id: "plan-w3-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-10-3", "phy-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b2-mat", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-10-4", "mat-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 7 - Section A
+  { id: "plan-w3-7a-mat", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-7-2", "mat-7-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-7a-sci", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sci-7-2", "sci-7-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-7a-eng", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["eng-7-2", "eng-7-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-7a-hin", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["hin-7-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-7a-sst", batchId: "batch-7a", batchName: "Class 7 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-7-1", "sst-7-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 3
-  { id: "plan-w3-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b3-mat", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-9-4", "mat-9-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b3-sst", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 8 - Section A
+  { id: "plan-w3-8a-mat", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-8-2", "mat-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-8a-sci", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sci-8-3", "sci-8-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-8a-eng", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["eng-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-8a-hin", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["hin-8-1", "hin-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-8a-sst", batchId: "batch-8a", batchName: "Class 8 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-8-1", "sst-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 5
-  { id: "plan-w3-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sci-8-3", "sci-8-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w3-b5-sst", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-8-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 9 - Section A
+  { id: "plan-w3-9a-phy", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-9-2", "phy-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-che", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["che-9-2", "che-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-mat", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-9-2", "mat-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-bio", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["bio-9-2", "bio-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-eng", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["eng-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-hin", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["hin-9-1", "hin-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-9a-sst", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["sst-9-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
+  // Class 10 - Section A
+  { id: "plan-w3-10a-phy", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-10-2", "phy-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-10a-che", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["che-10-2", "che-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-10a-mat", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-10-2", "mat-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-10a-bio", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["bio-10-2", "bio-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-10a-eng", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["eng-10-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-10a-hin", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["hin-10-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  
+  // Class 11 - Section A
+  { id: "plan-w3-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["phy-11-3", "phy-11-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-11a-che", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["che-11-2", "che-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-11a-mat", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["mat-11-2", "mat-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-11a-bio", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["bio-11-1", "bio-11-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  
+  // JEE 11
+  { id: "plan-w3-jee11-phy", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["jee-phy-11-2", "jee-phy-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-jee11-che", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_che", subjectName: "JEE Chemistry", courseId: "jee-mains", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["jee-che-11-2", "jee-che-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w3-jee11-mat", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_mat", subjectName: "JEE Mathematics", courseId: "jee-mains", weekStartDate: "2025-01-20", weekEndDate: "2025-01-25", plannedChapters: ["jee-mat-11-2", "jee-mat-11-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 4: Jan 27 - Feb 1, 2025
+  // WEEK 4: Jan 27 - Feb 1, 2025 (CURRENT - Partially Planned)
   // ========================
-  // Batch 1
-  { id: "plan-w4-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-10-4", "phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-10-6"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b1-che", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["che-10-4", "che-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b1-bio", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["bio-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 6 - Section A (partial)
+  { id: "plan-w4-6a-mat", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-6-3", "mat-6-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-6a-sci", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["sci-6-3", "sci-6-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-6a-eng", batchId: "batch-6a", batchName: "Class 6 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["eng-6-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // hin and sst not planned for week 4
   
-  // Batch 2
-  { id: "plan-w4-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b2-che", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["che-10-2", "che-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 9 - Section A (mostly planned)
+  { id: "plan-w4-9a-phy", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-9-3", "phy-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-9a-che", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["che-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-9a-mat", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-9-3", "mat-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-9a-bio", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["bio-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // eng, hin, sst not planned for week 4
   
-  // Batch 3
-  { id: "plan-w4-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-9-4", "phy-9-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b3-bio", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["bio-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 10 - Section A (mostly planned)
+  { id: "plan-w4-10a-phy", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-10a-che", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["che-10-3", "che-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-10a-mat", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-10-3", "mat-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-10a-bio", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["bio-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 4
-  { id: "plan-w4-b4-mat", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b4-hin", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["hin-9-1", "hin-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 11 - Section A (partial)
+  { id: "plan-w4-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["phy-11-4", "phy-11-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-11a-mat", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["mat-11-3", "mat-11-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 5
-  { id: "plan-w4-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["sci-8-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w4-b5-eng", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["eng-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
+  // JEE 11 (partial)
+  { id: "plan-w4-jee11-phy", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["jee-phy-11-3", "jee-phy-11-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w4-jee11-mat", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_mat", subjectName: "JEE Mathematics", courseId: "jee-mains", weekStartDate: "2025-01-27", weekEndDate: "2025-02-01", plannedChapters: ["jee-mat-11-3", "jee-mat-11-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 5: Feb 3-8, 2025 (Unit Tests week)
+  // WEEK 5: Feb 3-8, 2025 (FUTURE - Sparse Plans)
   // ========================
-  // Batch 1
-  { id: "plan-w5-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["mat-10-6", "mat-10-7"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b1-che", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["che-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 10 - Section A (some plans)
+  { id: "plan-w5-10a-phy", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["phy-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  { id: "plan-w5-10a-mat", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["mat-10-4", "mat-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 2
-  { id: "plan-w5-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["phy-10-4", "phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b2-mat", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["mat-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // Class 11 - Section A (some plans)
+  { id: "plan-w5-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["phy-11-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
   
-  // Batch 3
-  { id: "plan-w5-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["phy-9-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b3-mat", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["mat-9-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b3-bio", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["bio-9-3", "bio-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 5
-  { id: "plan-w5-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["sci-8-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w5-b5-hin", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["hin-8-2", "hin-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
+  // JEE 11 (some plans)
+  { id: "plan-w5-jee11-phy", batchId: "jee-11", batchName: "JEE 11", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-02-03", weekEndDate: "2025-02-08", plannedChapters: ["jee-phy-11-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 6: Feb 10-15, 2025
+  // WEEK 6: Feb 10-15, 2025 (FUTURE - Very Sparse)
   // ========================
-  // Batch 1
-  { id: "plan-w6-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w6-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["mat-10-7", "mat-10-8"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w6-b1-bio", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["bio-10-3", "bio-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 2
-  { id: "plan-w6-b2-phy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w6-b2-eng", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "eng", subjectName: "English", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["eng-10-2", "eng-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 3
-  { id: "plan-w6-b3-sst", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["sst-9-2", "sst-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w6-b3-hin", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["hin-9-3", "hin-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 4
-  { id: "plan-w6-b4-bio", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["bio-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 5
-  { id: "plan-w6-b5-sst", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sst", subjectName: "Social Studies", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["sst-8-2", "sst-8-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
+  // Class 11 - Section A (minimal)
+  { id: "plan-w6-11a-phy", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-10", weekEndDate: "2025-02-15", plannedChapters: ["phy-11-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 7: Feb 17-22, 2025
+  // WEEK 7: Feb 17-22, 2025 (FUTURE - Minimal)
   // ========================
-  // Batch 1
-  { id: "plan-w7-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["mat-10-8"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w7-b1-bio", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["bio-10-4", "bio-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w7-b1-cs", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "cs", subjectName: "Computer Science", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["cs-10-3", "cs-10-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 3
-  { id: "plan-w7-b3-bio", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["bio-9-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 4
-  { id: "plan-w7-b4-mat", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["mat-9-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w7-b4-hin", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "hin", subjectName: "Hindi", courseId: "cbse", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["hin-9-2"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
+  // JEE 12 (only one plan)
+  { id: "plan-w7-jee12-phy", batchId: "jee-12", batchName: "JEE 12", subjectId: "jee_phy", subjectName: "JEE Physics", courseId: "jee-mains", weekStartDate: "2025-02-17", weekEndDate: "2025-02-22", plannedChapters: ["jee-phy-12-1"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+
   // ========================
-  // WEEK 8: Feb 24-28, 2025 (Month-end revision)
+  // WEEK 8: Feb 24 - Mar 1, 2025 (FUTURE - Empty)
   // ========================
-  // Batch 1
-  { id: "plan-w8-b1-phy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-24", weekEndDate: "2025-02-28", plannedChapters: ["phy-10-3", "phy-10-4", "phy-10-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  { id: "plan-w8-b1-mat", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", courseId: "cbse", weekStartDate: "2025-02-24", weekEndDate: "2025-02-28", plannedChapters: ["mat-10-4", "mat-10-5", "mat-10-6"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 2
-  { id: "plan-w8-b2-che", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "che", subjectName: "Chemistry", courseId: "cbse", weekStartDate: "2025-02-24", weekEndDate: "2025-02-28", plannedChapters: ["che-10-1", "che-10-2", "che-10-3"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 3
-  { id: "plan-w8-b3-phy", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", courseId: "cbse", weekStartDate: "2025-02-24", weekEndDate: "2025-02-28", plannedChapters: ["phy-9-3", "phy-9-4", "phy-9-5"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
-  
-  // Batch 5
-  { id: "plan-w8-b5-sci", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", courseId: "cbse", weekStartDate: "2025-02-24", weekEndDate: "2025-02-28", plannedChapters: ["sci-8-1", "sci-8-2", "sci-8-3", "sci-8-4"], granularity: "weekly", createdAt: "2025-01-01", updatedAt: "2025-01-01" },
+  // No plans for week 8 - users need to add them
 ];
 
 // ============================================
-// Teaching Confirmations (Stage 3) - 200+ entries
-// 5 weeks of confirmed data: Jan 6 - Feb 7, 2025
-// Aligned with timetable teacher-batch-subject mappings
+// Teaching Confirmations (Simplified for brevity)
 // ============================================
 
-// Helper function to generate confirmations programmatically
-const generateConfirmations = (): TeachingConfirmation[] => {
-  const confirmations: TeachingConfirmation[] = [];
-  let confId = 1;
-  
-  // Teacher-Batch-Subject mappings (from timetable)
-  const mappings = [
-    { teacherId: "teacher-1", teacherName: "Dr. Rajesh Kumar", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", dailyPeriods: 2 },
-    { teacherId: "teacher-1", teacherName: "Dr. Rajesh Kumar", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", dailyPeriods: 1 },
-    { teacherId: "teacher-1", teacherName: "Dr. Rajesh Kumar", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", dailyPeriods: 1 },
-    { teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", dailyPeriods: 2 },
-    { teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", dailyPeriods: 1 },
-    { teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", dailyPeriods: 1 },
-    { teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", dailyPeriods: 1 },
-    { teacherId: "teacher-3", teacherName: "Mr. Suresh Verma", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", dailyPeriods: 1 },
-    { teacherId: "teacher-3", teacherName: "Mr. Suresh Verma", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "che", subjectName: "Chemistry", dailyPeriods: 1 },
-    { teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", dailyPeriods: 1 },
-    { teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", dailyPeriods: 1 },
-    { teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "bio", subjectName: "Biology", dailyPeriods: 1 },
-    { teacherId: "teacher-5", teacherName: "Mr. Vikram Singh", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "eng", subjectName: "English", dailyPeriods: 1 },
-    { teacherId: "teacher-5", teacherName: "Mr. Vikram Singh", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "eng", subjectName: "English", dailyPeriods: 1 },
-    { teacherId: "teacher-5", teacherName: "Mr. Vikram Singh", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", dailyPeriods: 1 },
-    { teacherId: "teacher-6", teacherName: "Mrs. Kavita Nair", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", dailyPeriods: 1 },
-    { teacherId: "teacher-6", teacherName: "Mrs. Kavita Nair", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "hin", subjectName: "Hindi", dailyPeriods: 1 },
-    { teacherId: "teacher-6", teacherName: "Mrs. Kavita Nair", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "hin", subjectName: "Hindi", dailyPeriods: 1 },
-    { teacherId: "teacher-7", teacherName: "Mr. Arun Mehta", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "sst", subjectName: "Social Studies", dailyPeriods: 1 },
-    { teacherId: "teacher-7", teacherName: "Mr. Arun Mehta", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sst", subjectName: "Social Studies", dailyPeriods: 1 },
-    { teacherId: "teacher-8", teacherName: "Dr. Sneha Reddy", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "cs", subjectName: "Computer Science", dailyPeriods: 1 },
-    { teacherId: "teacher-8", teacherName: "Dr. Sneha Reddy", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "cs", subjectName: "Computer Science", dailyPeriods: 1 },
-    { teacherId: "teacher-9", teacherName: "Mr. Rahul Saxena", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "eco", subjectName: "Economics", dailyPeriods: 1 },
-    { teacherId: "teacher-9", teacherName: "Mr. Rahul Saxena", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "eco", subjectName: "Economics", dailyPeriods: 1 },
-    { teacherId: "teacher-10", teacherName: "Mrs. Geeta Iyer", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", dailyPeriods: 1 },
-  ];
-  
-  // Chapter mappings per subject
-  const chaptersBySubject: Record<string, { id: string; name: string }[]> = {
-    "phy-batch-1": [
-      { id: "phy-10-3", name: "Electricity" },
-      { id: "phy-10-4", name: "Magnetic Effects of Electric Current" },
-    ],
-    "phy-batch-2": [
-      { id: "phy-10-2", name: "Human Eye and Colourful World" },
-      { id: "phy-10-3", name: "Electricity" },
-    ],
-    "phy-batch-3": [
-      { id: "phy-9-3", name: "Gravitation" },
-      { id: "phy-9-4", name: "Work and Energy" },
-    ],
-    "mat-batch-1": [
-      { id: "mat-10-4", name: "Quadratic Equations" },
-      { id: "mat-10-5", name: "Arithmetic Progressions" },
-    ],
-    "mat-batch-2": [
-      { id: "mat-10-3", name: "Pair of Linear Equations" },
-      { id: "mat-10-4", name: "Quadratic Equations" },
-    ],
-    "mat-batch-3": [
-      { id: "mat-9-3", name: "Coordinate Geometry" },
-      { id: "mat-9-4", name: "Linear Equations" },
-    ],
-    "mat-batch-4": [
-      { id: "mat-9-2", name: "Polynomials" },
-      { id: "mat-9-3", name: "Coordinate Geometry" },
-    ],
-    "che-batch-1": [
-      { id: "che-10-3", name: "Metals and Non-metals" },
-      { id: "che-10-4", name: "Carbon and its Compounds" },
-    ],
-    "che-batch-2": [
-      { id: "che-10-2", name: "Acids, Bases and Salts" },
-      { id: "che-10-3", name: "Metals and Non-metals" },
-    ],
-    "bio-batch-1": [
-      { id: "bio-10-2", name: "Control and Coordination" },
-      { id: "bio-10-3", name: "How do Organisms Reproduce?" },
-    ],
-    "bio-batch-3": [
-      { id: "bio-9-2", name: "Tissues" },
-      { id: "bio-9-3", name: "Diversity in Living Organisms" },
-    ],
-    "bio-batch-4": [
-      { id: "bio-9-1", name: "The Fundamental Unit of Life" },
-      { id: "bio-9-2", name: "Tissues" },
-    ],
-    "eng-batch-1": [
-      { id: "eng-10-3", name: "Two Stories about Flying" },
-      { id: "eng-10-4", name: "From the Diary of Anne Frank" },
-    ],
-    "eng-batch-2": [
-      { id: "eng-10-1", name: "A Letter to God" },
-      { id: "eng-10-2", name: "Nelson Mandela" },
-    ],
-    "eng-batch-5": [
-      { id: "eng-8-2", name: "The Tsunami" },
-      { id: "eng-8-3", name: "Glimpses of the Past" },
-    ],
-    "hin-batch-3": [
-      { id: "hin-9-2", name: "ल्हासा की ओर" },
-      { id: "hin-9-3", name: "उपभोक्तावाद की संस्कृति" },
-    ],
-    "hin-batch-4": [
-      { id: "hin-9-1", name: "दो बैलों की कथा" },
-      { id: "hin-9-2", name: "ल्हासा की ओर" },
-    ],
-    "hin-batch-5": [
-      { id: "hin-8-2", name: "लाख की चूड़ियाँ" },
-      { id: "hin-8-3", name: "बस की यात्रा" },
-    ],
-    "sst-batch-3": [
-      { id: "sst-9-1", name: "The French Revolution" },
-      { id: "sst-9-2", name: "Socialism in Europe" },
-    ],
-    "sst-batch-5": [
-      { id: "sst-8-1", name: "How, When and Where" },
-      { id: "sst-8-2", name: "From Trade to Territory" },
-    ],
-    "cs-batch-1": [
-      { id: "cs-10-1", name: "Computer Networks" },
-      { id: "cs-10-2", name: "HTML Basics" },
-    ],
-    "cs-batch-2": [
-      { id: "cs-10-1", name: "Computer Networks" },
-      { id: "cs-10-2", name: "HTML Basics" },
-    ],
-    "eco-batch-1": [
-      { id: "eco-10-1", name: "Development" },
-      { id: "eco-10-2", name: "Sectors of Indian Economy" },
-    ],
-    "eco-batch-2": [
-      { id: "eco-10-1", name: "Development" },
-      { id: "eco-10-2", name: "Sectors of Indian Economy" },
-    ],
-    "sci-batch-5": [
-      { id: "sci-8-2", name: "Microorganisms" },
-      { id: "sci-8-3", name: "Synthetic Fibres and Plastics" },
-    ],
-  };
-  
-  // No-teach reasons for realistic data
-  const noTeachReasons: { reason: NoTeachReason; note: string }[] = [
-    { reason: "teacher_absent", note: "Medical leave" },
-    { reason: "teacher_absent", note: "Personal emergency" },
-    { reason: "student_event", note: "Annual Day preparations" },
-    { reason: "student_event", note: "Sports Day practice" },
-    { reason: "exam", note: "Unit test scheduled" },
-    { reason: "holiday", note: "School closed" },
-    { reason: "cancelled", note: "Power outage" },
-    { reason: "cancelled", note: "Building maintenance" },
-  ];
-  
-  // Generate dates: Jan 6 - Feb 7 (weekdays only, Mon-Sat)
-  const workingDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const startDate = new Date('2025-01-06');
-  const endDate = new Date('2025-02-07');
-  
-  const allDates: string[] = [];
-  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
-    if (workingDays.includes(dayName)) {
-      // Skip holidays
-      const dateStr = d.toISOString().split('T')[0];
-      if (dateStr !== '2025-01-14' && dateStr !== '2025-01-26') { // Makar Sankranti, Republic Day
-        allDates.push(dateStr);
-      }
-    }
-  }
-  
-  // Generate confirmations for each mapping
-  mappings.forEach(mapping => {
-    const chapterKey = `${mapping.subjectId}-${mapping.batchId}`;
-    const chapters = chaptersBySubject[chapterKey] || [{ id: "default", name: "General Class" }];
-    let chapterIndex = 0;
-    
-    allDates.forEach((date, dateIndex) => {
-      // Simulate realistic patterns
-      const random = Math.random();
-      
-      // 85% taught, 10% not taught, 5% skipped (pending for recent dates)
-      if (random < 0.85) {
-        // Taught
-        const chapter = chapters[chapterIndex % chapters.length];
-        // Progress chapter every 5-7 days
-        if (dateIndex > 0 && dateIndex % 6 === 0) {
-          chapterIndex++;
-        }
-        
-        confirmations.push({
-          id: `conf-${confId++}`,
-          batchId: mapping.batchId,
-          batchName: mapping.batchName,
-          subjectId: mapping.subjectId,
-          subjectName: mapping.subjectName,
-          teacherId: mapping.teacherId,
-          teacherName: mapping.teacherName,
-          date,
-          didTeach: true,
-          chapterId: chapter.id,
-          chapterName: chapter.name,
-          periodsCount: mapping.dailyPeriods,
-          confirmedAt: `${date}T16:00:00Z`,
-          confirmedBy: "teacher",
-        });
-      } else if (random < 0.95) {
-        // Not taught
-        const reasonData = noTeachReasons[Math.floor(Math.random() * noTeachReasons.length)];
-        
-        confirmations.push({
-          id: `conf-${confId++}`,
-          batchId: mapping.batchId,
-          batchName: mapping.batchName,
-          subjectId: mapping.subjectId,
-          subjectName: mapping.subjectName,
-          teacherId: mapping.teacherId,
-          teacherName: mapping.teacherName,
-          date,
-          didTeach: false,
-          noTeachReason: reasonData.reason,
-          noTeachNote: reasonData.note,
-          periodsCount: mapping.dailyPeriods,
-          confirmedAt: `${date}T16:00:00Z`,
-          confirmedBy: "teacher",
-        });
-      }
-      // else: pending (no confirmation generated)
-    });
-  });
-  
-  return confirmations;
-};
-
-export const teachingConfirmations: TeachingConfirmation[] = generateConfirmations();
+export const teachingConfirmations: TeachingConfirmation[] = [
+  { id: "conf-w1-1", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", date: "2025-01-06", teacherId: "teacher-1", teacherName: "Dr. Sharma", didTeach: true, chapterId: "phy-9-1", chapterName: "Motion", periodsCount: 2, confirmedAt: "2025-01-06", confirmedBy: "teacher" },
+  { id: "conf-w1-2", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", date: "2025-01-07", teacherId: "teacher-2", teacherName: "Prof. Verma", didTeach: true, chapterId: "mat-9-1", chapterName: "Number Systems", periodsCount: 2, confirmedAt: "2025-01-07", confirmedBy: "teacher" },
+  { id: "conf-w1-3", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", date: "2025-01-08", teacherId: "teacher-1", teacherName: "Dr. Sharma", didTeach: true, chapterId: "phy-10-1", chapterName: "Light - Reflection and Refraction", periodsCount: 2, confirmedAt: "2025-01-08", confirmedBy: "teacher" },
+];
 
 // ============================================
-// Progress Data - Per Subject
+// Subject Progress Data (Simplified)
 // ============================================
 
 export const subjectProgressData: SubjectProgress[] = [
-  // Batch 1 - Class 10A
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "phy", subjectName: "Physics",
-    totalPlannedHours: 50, totalActualHours: 32,
-    chaptersCompleted: 3, totalChapters: 5,
-    currentChapter: "phy-10-4", currentChapterName: "Magnetic Effects of Electric Current",
-    overallStatus: "in_progress", percentComplete: 64, lostDays: 2,
-    lostDaysReasons: [{ reason: "student_event", count: 1 }, { reason: "holiday", count: 1 }],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "mat", subjectName: "Mathematics",
-    totalPlannedHours: 72, totalActualHours: 42,
-    chaptersCompleted: 4, totalChapters: 8,
-    currentChapter: "mat-10-5", currentChapterName: "Arithmetic Progressions",
-    overallStatus: "in_progress", percentComplete: 58, lostDays: 3,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 2 }, { reason: "exam", count: 1 }],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "che", subjectName: "Chemistry",
-    totalPlannedHours: 54, totalActualHours: 40,
-    chaptersCompleted: 3, totalChapters: 5,
-    currentChapter: "che-10-4", currentChapterName: "Carbon and its Compounds",
-    overallStatus: "ahead", percentComplete: 74, lostDays: 0,
-    lostDaysReasons: [],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "bio", subjectName: "Biology",
-    totalPlannedHours: 54, totalActualHours: 28,
-    chaptersCompleted: 2, totalChapters: 5,
-    currentChapter: "bio-10-3", currentChapterName: "How do Organisms Reproduce?",
-    overallStatus: "lagging", percentComplete: 52, lostDays: 4,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 3 }, { reason: "cancelled", count: 1 }],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "eng", subjectName: "English",
-    totalPlannedHours: 34, totalActualHours: 22,
-    chaptersCompleted: 3, totalChapters: 5,
-    currentChapter: "eng-10-4", currentChapterName: "From the Diary of Anne Frank",
-    overallStatus: "in_progress", percentComplete: 65, lostDays: 1,
-    lostDaysReasons: [{ reason: "student_event", count: 1 }],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "cs", subjectName: "Computer Science",
-    totalPlannedHours: 38, totalActualHours: 20,
-    chaptersCompleted: 2, totalChapters: 4,
-    currentChapter: "cs-10-3", currentChapterName: "CSS Styling",
-    overallStatus: "in_progress", percentComplete: 53, lostDays: 2,
-    lostDaysReasons: [{ reason: "holiday", count: 2 }],
-  },
-  {
-    batchId: "batch-1", batchName: "Class 10 - Section A",
-    subjectId: "eco", subjectName: "Economics",
-    totalPlannedHours: 28, totalActualHours: 18,
-    chaptersCompleted: 2, totalChapters: 4,
-    currentChapter: "eco-10-3", currentChapterName: "Money and Credit",
-    overallStatus: "ahead", percentComplete: 64, lostDays: 0,
-    lostDaysReasons: [],
-  },
-  
-  // Batch 2 - Class 10B
-  {
-    batchId: "batch-2", batchName: "Class 10 - Section B",
-    subjectId: "phy", subjectName: "Physics",
-    totalPlannedHours: 50, totalActualHours: 22,
-    chaptersCompleted: 2, totalChapters: 5,
-    currentChapter: "phy-10-3", currentChapterName: "Electricity",
-    overallStatus: "lagging", percentComplete: 44, lostDays: 5,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 3 }, { reason: "holiday", count: 2 }],
-  },
-  {
-    batchId: "batch-2", batchName: "Class 10 - Section B",
-    subjectId: "mat", subjectName: "Mathematics",
-    totalPlannedHours: 42, totalActualHours: 26,
-    chaptersCompleted: 3, totalChapters: 5,
-    currentChapter: "mat-10-4", currentChapterName: "Quadratic Equations",
-    overallStatus: "in_progress", percentComplete: 62, lostDays: 2,
-    lostDaysReasons: [{ reason: "exam", count: 2 }],
-  },
-  {
-    batchId: "batch-2", batchName: "Class 10 - Section B",
-    subjectId: "che", subjectName: "Chemistry",
-    totalPlannedHours: 32, totalActualHours: 18,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "che-10-3", currentChapterName: "Metals and Non-metals",
-    overallStatus: "in_progress", percentComplete: 56, lostDays: 3,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 1 }, { reason: "cancelled", count: 2 }],
-  },
-  
-  // Batch 3 - Class 9A
-  {
-    batchId: "batch-3", batchName: "Class 9 - Section A",
-    subjectId: "phy", subjectName: "Physics",
-    totalPlannedHours: 58, totalActualHours: 48,
-    chaptersCompleted: 4, totalChapters: 5,
-    currentChapter: "phy-9-5", currentChapterName: "Sound",
-    overallStatus: "ahead", percentComplete: 83, lostDays: 1,
-    lostDaysReasons: [{ reason: "holiday", count: 1 }],
-  },
-  {
-    batchId: "batch-3", batchName: "Class 9 - Section A",
-    subjectId: "mat", subjectName: "Mathematics",
-    totalPlannedHours: 42, totalActualHours: 32,
-    chaptersCompleted: 4, totalChapters: 5,
-    currentChapter: "mat-9-5", currentChapterName: "Introduction to Euclid's Geometry",
-    overallStatus: "ahead", percentComplete: 76, lostDays: 0,
-    lostDaysReasons: [],
-  },
-  {
-    batchId: "batch-3", batchName: "Class 9 - Section A",
-    subjectId: "bio", subjectName: "Biology",
-    totalPlannedHours: 38, totalActualHours: 24,
-    chaptersCompleted: 3, totalChapters: 4,
-    currentChapter: "bio-9-4", currentChapterName: "Why Do We Fall Ill",
-    overallStatus: "in_progress", percentComplete: 63, lostDays: 2,
-    lostDaysReasons: [{ reason: "student_event", count: 2 }],
-  },
-  {
-    batchId: "batch-3", batchName: "Class 9 - Section A",
-    subjectId: "hin", subjectName: "Hindi",
-    totalPlannedHours: 24, totalActualHours: 16,
-    chaptersCompleted: 3, totalChapters: 4,
-    currentChapter: "hin-9-4", currentChapterName: "साँवले सपनों की याद",
-    overallStatus: "in_progress", percentComplete: 67, lostDays: 1,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 1 }],
-  },
-  {
-    batchId: "batch-3", batchName: "Class 9 - Section A",
-    subjectId: "sst", subjectName: "Social Studies",
-    totalPlannedHours: 30, totalActualHours: 18,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "sst-9-3", currentChapterName: "Nazism and the Rise of Hitler",
-    overallStatus: "in_progress", percentComplete: 60, lostDays: 2,
-    lostDaysReasons: [{ reason: "holiday", count: 1 }, { reason: "student_event", count: 1 }],
-  },
-  
-  // Batch 4 - Class 9B
-  {
-    batchId: "batch-4", batchName: "Class 9 - Section B",
-    subjectId: "mat", subjectName: "Mathematics",
-    totalPlannedHours: 26, totalActualHours: 14,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "mat-9-3", currentChapterName: "Coordinate Geometry",
-    overallStatus: "lagging", percentComplete: 54, lostDays: 4,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 2 }, { reason: "exam", count: 2 }],
-  },
-  {
-    batchId: "batch-4", batchName: "Class 9 - Section B",
-    subjectId: "bio", subjectName: "Biology",
-    totalPlannedHours: 18, totalActualHours: 12,
-    chaptersCompleted: 2, totalChapters: 2,
-    currentChapter: "bio-9-2", currentChapterName: "Tissues",
-    overallStatus: "ahead", percentComplete: 67, lostDays: 1,
-    lostDaysReasons: [{ reason: "cancelled", count: 1 }],
-  },
-  {
-    batchId: "batch-4", batchName: "Class 9 - Section B",
-    subjectId: "hin", subjectName: "Hindi",
-    totalPlannedHours: 12, totalActualHours: 8,
-    chaptersCompleted: 1, totalChapters: 2,
-    currentChapter: "hin-9-2", currentChapterName: "ल्हासा की ओर",
-    overallStatus: "in_progress", percentComplete: 67, lostDays: 1,
-    lostDaysReasons: [{ reason: "student_event", count: 1 }],
-  },
-  
-  // Batch 5 - Class 8A
-  {
-    batchId: "batch-5", batchName: "Class 8 - Section A",
-    subjectId: "sci", subjectName: "Science",
-    totalPlannedHours: 30, totalActualHours: 22,
-    chaptersCompleted: 3, totalChapters: 4,
-    currentChapter: "sci-8-4", currentChapterName: "Materials: Metals and Non-Metals",
-    overallStatus: "ahead", percentComplete: 73, lostDays: 1,
-    lostDaysReasons: [{ reason: "holiday", count: 1 }],
-  },
-  {
-    batchId: "batch-5", batchName: "Class 8 - Section A",
-    subjectId: "eng", subjectName: "English",
-    totalPlannedHours: 20, totalActualHours: 14,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "eng-8-3", currentChapterName: "Glimpses of the Past",
-    overallStatus: "in_progress", percentComplete: 70, lostDays: 1,
-    lostDaysReasons: [{ reason: "student_event", count: 1 }],
-  },
-  {
-    batchId: "batch-5", batchName: "Class 8 - Section A",
-    subjectId: "hin", subjectName: "Hindi",
-    totalPlannedHours: 16, totalActualHours: 10,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "hin-8-3", currentChapterName: "बस की यात्रा",
-    overallStatus: "in_progress", percentComplete: 63, lostDays: 2,
-    lostDaysReasons: [{ reason: "teacher_absent", count: 2 }],
-  },
-  {
-    batchId: "batch-5", batchName: "Class 8 - Section A",
-    subjectId: "sst", subjectName: "Social Studies",
-    totalPlannedHours: 22, totalActualHours: 14,
-    chaptersCompleted: 2, totalChapters: 3,
-    currentChapter: "sst-8-3", currentChapterName: "Ruling the Countryside",
-    overallStatus: "in_progress", percentComplete: 64, lostDays: 2,
-    lostDaysReasons: [{ reason: "holiday", count: 1 }, { reason: "exam", count: 1 }],
-  },
+  { batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", totalPlannedHours: 38, totalActualHours: 16, chaptersCompleted: 2, totalChapters: 5, currentChapter: "phy-9-3", currentChapterName: "Gravitation", overallStatus: "on_track", percentComplete: 42, lostDays: 1, lostDaysReasons: [{ reason: "holiday", count: 1 }] },
+  { batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "che", subjectName: "Chemistry", totalPlannedHours: 28, totalActualHours: 14, chaptersCompleted: 2, totalChapters: 4, currentChapter: "che-9-3", currentChapterName: "Atoms and Molecules", overallStatus: "on_track", percentComplete: 50, lostDays: 0, lostDaysReasons: [] },
+  { batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "mat", subjectName: "Mathematics", totalPlannedHours: 40, totalActualHours: 15, chaptersCompleted: 2, totalChapters: 6, currentChapter: "mat-9-3", currentChapterName: "Coordinate Geometry", overallStatus: "lagging", percentComplete: 38, lostDays: 2, lostDaysReasons: [{ reason: "teacher_absent", count: 2 }] },
+  { batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", totalPlannedHours: 44, totalActualHours: 22, chaptersCompleted: 2, totalChapters: 5, currentChapter: "phy-10-3", currentChapterName: "Electricity", overallStatus: "on_track", percentComplete: 50, lostDays: 0, lostDaysReasons: [] },
+  { batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", totalPlannedHours: 52, totalActualHours: 18, chaptersCompleted: 2, totalChapters: 6, currentChapter: "mat-10-3", currentChapterName: "Pair of Linear Equations", overallStatus: "lagging", percentComplete: 35, lostDays: 1, lostDaysReasons: [{ reason: "exam", count: 1 }] },
 ];
 
 // ============================================
-// Batch Progress Summaries - All 8 batches
+// Batch Progress Summaries
 // ============================================
 
 export const batchProgressSummaries: BatchProgressSummary[] = [
-  {
-    batchId: "batch-1",
-    batchName: "Class 10 - Section A",
-    className: "Class 10",
-    subjects: subjectProgressData.filter(s => s.batchId === "batch-1"),
-    overallProgress: 61,
-    status: "on_track",
-  },
-  {
-    batchId: "batch-2",
-    batchName: "Class 10 - Section B",
-    className: "Class 10",
-    subjects: subjectProgressData.filter(s => s.batchId === "batch-2"),
-    overallProgress: 54,
-    status: "lagging",
-  },
-  {
-    batchId: "batch-3",
-    batchName: "Class 9 - Section A",
-    className: "Class 9",
-    subjects: subjectProgressData.filter(s => s.batchId === "batch-3"),
-    overallProgress: 70,
-    status: "ahead",
-  },
-  {
-    batchId: "batch-4",
-    batchName: "Class 9 - Section B",
-    className: "Class 9",
-    subjects: subjectProgressData.filter(s => s.batchId === "batch-4"),
-    overallProgress: 63,
-    status: "on_track",
-  },
-  {
-    batchId: "batch-5",
-    batchName: "Class 8 - Section A",
-    className: "Class 8",
-    subjects: subjectProgressData.filter(s => s.batchId === "batch-5"),
-    overallProgress: 68,
-    status: "on_track",
-  },
-  {
-    batchId: "batch-6",
-    batchName: "Class 11 - Section A (JEE)",
-    className: "Class 11",
-    subjects: [
-      {
-        batchId: "batch-6", batchName: "Class 11 - Section A (JEE)",
-        subjectId: "phy", subjectName: "Physics",
-        totalPlannedHours: 54, totalActualHours: 38,
-        chaptersCompleted: 3, totalChapters: 5,
-        currentChapter: "phy-11-4", currentChapterName: "Motion in a Plane",
-        overallStatus: "in_progress", percentComplete: 70, lostDays: 2,
-        lostDaysReasons: [{ reason: "exam", count: 2 }],
-      },
-      {
-        batchId: "batch-6", batchName: "Class 11 - Section A (JEE)",
-        subjectId: "mat", subjectName: "Mathematics",
-        totalPlannedHours: 40, totalActualHours: 32,
-        chaptersCompleted: 3, totalChapters: 4,
-        currentChapter: "mat-11-4", currentChapterName: "Principle of Mathematical Induction",
-        overallStatus: "ahead", percentComplete: 80, lostDays: 0,
-        lostDaysReasons: [],
-      },
-    ],
-    overallProgress: 75,
-    status: "ahead",
-  },
-  {
-    batchId: "batch-7",
-    batchName: "Class 11 - Section B (JEE)",
-    className: "Class 11",
-    subjects: [
-      {
-        batchId: "batch-7", batchName: "Class 11 - Section B (JEE)",
-        subjectId: "phy", subjectName: "Physics",
-        totalPlannedHours: 38, totalActualHours: 24,
-        chaptersCompleted: 2, totalChapters: 4,
-        currentChapter: "phy-11-3", currentChapterName: "Motion in a Straight Line",
-        overallStatus: "in_progress", percentComplete: 63, lostDays: 3,
-        lostDaysReasons: [{ reason: "teacher_absent", count: 2 }, { reason: "holiday", count: 1 }],
-      },
-      {
-        batchId: "batch-7", batchName: "Class 11 - Section B (JEE)",
-        subjectId: "che", subjectName: "Chemistry",
-        totalPlannedHours: 32, totalActualHours: 22,
-        chaptersCompleted: 2, totalChapters: 3,
-        currentChapter: "che-11-3", currentChapterName: "Classification of Elements",
-        overallStatus: "in_progress", percentComplete: 69, lostDays: 1,
-        lostDaysReasons: [{ reason: "exam", count: 1 }],
-      },
-    ],
-    overallProgress: 66,
-    status: "on_track",
-  },
-  {
-    batchId: "batch-8",
-    batchName: "Class 12 - Section A (JEE)",
-    className: "Class 12",
-    subjects: [
-      {
-        batchId: "batch-8", batchName: "Class 12 - Section A (JEE)",
-        subjectId: "phy", subjectName: "Physics",
-        totalPlannedHours: 54, totalActualHours: 30,
-        chaptersCompleted: 2, totalChapters: 4,
-        currentChapter: "phy-12-3", currentChapterName: "Current Electricity",
-        overallStatus: "lagging", percentComplete: 56, lostDays: 5,
-        lostDaysReasons: [{ reason: "teacher_absent", count: 3 }, { reason: "exam", count: 2 }],
-      },
-      {
-        batchId: "batch-8", batchName: "Class 12 - Section A (JEE)",
-        subjectId: "mat", subjectName: "Mathematics",
-        totalPlannedHours: 44, totalActualHours: 34,
-        chaptersCompleted: 3, totalChapters: 4,
-        currentChapter: "mat-12-4", currentChapterName: "Determinants",
-        overallStatus: "in_progress", percentComplete: 77, lostDays: 1,
-        lostDaysReasons: [{ reason: "holiday", count: 1 }],
-      },
-      {
-        batchId: "batch-8", batchName: "Class 12 - Section A (JEE)",
-        subjectId: "che", subjectName: "Chemistry",
-        totalPlannedHours: 30, totalActualHours: 22,
-        chaptersCompleted: 2, totalChapters: 3,
-        currentChapter: "che-12-3", currentChapterName: "Electrochemistry",
-        overallStatus: "in_progress", percentComplete: 73, lostDays: 1,
-        lostDaysReasons: [{ reason: "student_event", count: 1 }],
-      },
-    ],
-    overallProgress: 69,
-    status: "on_track",
-  },
+  { batchId: "batch-6a", batchName: "Class 6 - Section A", className: "Class 6", subjects: [], overallProgress: 72, status: "on_track" },
+  { batchId: "batch-7a", batchName: "Class 7 - Section A", className: "Class 7", subjects: [], overallProgress: 65, status: "lagging" },
+  { batchId: "batch-8a", batchName: "Class 8 - Section A", className: "Class 8", subjects: [], overallProgress: 70, status: "on_track" },
+  { batchId: "batch-9a", batchName: "Class 9 - Section A", className: "Class 9", subjects: [], overallProgress: 68, status: "on_track" },
+  { batchId: "batch-10a", batchName: "Class 10 - Section A", className: "Class 10", subjects: [], overallProgress: 62, status: "lagging" },
+  { batchId: "batch-11a", batchName: "Class 11 - Section A", className: "Class 11", subjects: [], overallProgress: 58, status: "on_track" },
+  { batchId: "jee-11", batchName: "JEE 11", className: "Class 11", subjects: [], overallProgress: 55, status: "on_track" },
 ];
 
 // ============================================
-// Pending Confirmations - 20+ entries across teachers
-// Recent dates (last 3-5 days from Feb 7, 2025)
+// Pending Confirmations
 // ============================================
 
 export const pendingConfirmations: PendingConfirmation[] = [
-  // Feb 7, 2025 - Most recent (0-1 days overdue)
-  { id: "pending-1", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "eco", subjectName: "Economics", teacherId: "teacher-9", teacherName: "Mr. Rahul Saxena", date: "2025-02-07", expectedPeriods: 1, daysOverdue: 0 },
-  { id: "pending-2", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "cs", subjectName: "Computer Science", teacherId: "teacher-8", teacherName: "Dr. Sneha Reddy", date: "2025-02-07", expectedPeriods: 1, daysOverdue: 0 },
-  
-  // Feb 6, 2025 (1 day overdue)
-  { id: "pending-3", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", date: "2025-02-06", expectedPeriods: 2, daysOverdue: 1 },
-  { id: "pending-4", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "sst", subjectName: "Social Studies", teacherId: "teacher-7", teacherName: "Mr. Arun Mehta", date: "2025-02-06", expectedPeriods: 1, daysOverdue: 1 },
-  { id: "pending-5", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "bio", subjectName: "Biology", teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", date: "2025-02-06", expectedPeriods: 1, daysOverdue: 1 },
-  
-  // Feb 5, 2025 (2 days overdue)
-  { id: "pending-6", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "phy", subjectName: "Physics", teacherId: "teacher-1", teacherName: "Dr. Rajesh Kumar", date: "2025-02-05", expectedPeriods: 1, daysOverdue: 2 },
-  { id: "pending-7", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "eng", subjectName: "English", teacherId: "teacher-5", teacherName: "Mr. Vikram Singh", date: "2025-02-05", expectedPeriods: 1, daysOverdue: 2 },
-  { id: "pending-8", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "bio", subjectName: "Biology", teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", date: "2025-02-05", expectedPeriods: 1, daysOverdue: 2 },
-  
-  // Feb 4, 2025 (3 days overdue)
-  { id: "pending-9", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "hin", subjectName: "Hindi", teacherId: "teacher-6", teacherName: "Mrs. Kavita Nair", date: "2025-02-04", expectedPeriods: 1, daysOverdue: 3 },
-  { id: "pending-10", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "mat", subjectName: "Mathematics", teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", date: "2025-02-04", expectedPeriods: 1, daysOverdue: 3 },
-  { id: "pending-11", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "mat", subjectName: "Mathematics", teacherId: "teacher-2", teacherName: "Mrs. Priya Sharma", date: "2025-02-04", expectedPeriods: 1, daysOverdue: 3 },
-  { id: "pending-12", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sci", subjectName: "Science", teacherId: "teacher-10", teacherName: "Mrs. Geeta Iyer", date: "2025-02-04", expectedPeriods: 1, daysOverdue: 3 },
-  
-  // Feb 3, 2025 (4 days overdue - critical)
-  { id: "pending-13", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "che", subjectName: "Chemistry", teacherId: "teacher-3", teacherName: "Mr. Suresh Verma", date: "2025-02-03", expectedPeriods: 1, daysOverdue: 4 },
-  { id: "pending-14", batchId: "batch-3", batchName: "Class 9 - Section A", subjectId: "bio", subjectName: "Biology", teacherId: "teacher-4", teacherName: "Ms. Anjali Gupta", date: "2025-02-03", expectedPeriods: 1, daysOverdue: 4 },
-  { id: "pending-15", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "eng", subjectName: "English", teacherId: "teacher-5", teacherName: "Mr. Vikram Singh", date: "2025-02-03", expectedPeriods: 1, daysOverdue: 4 },
-  
-  // Jan 31, 2025 (5+ days overdue - very critical)
-  { id: "pending-16", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "phy", subjectName: "Physics", teacherId: "teacher-1", teacherName: "Dr. Rajesh Kumar", date: "2025-01-31", expectedPeriods: 2, daysOverdue: 5 },
-  { id: "pending-17", batchId: "batch-4", batchName: "Class 9 - Section B", subjectId: "hin", subjectName: "Hindi", teacherId: "teacher-6", teacherName: "Mrs. Kavita Nair", date: "2025-01-31", expectedPeriods: 1, daysOverdue: 5 },
-  { id: "pending-18", batchId: "batch-5", batchName: "Class 8 - Section A", subjectId: "sst", subjectName: "Social Studies", teacherId: "teacher-7", teacherName: "Mr. Arun Mehta", date: "2025-01-30", expectedPeriods: 1, daysOverdue: 6 },
-  
-  // Additional pending for variety
-  { id: "pending-19", batchId: "batch-2", batchName: "Class 10 - Section B", subjectId: "eco", subjectName: "Economics", teacherId: "teacher-9", teacherName: "Mr. Rahul Saxena", date: "2025-01-30", expectedPeriods: 1, daysOverdue: 6 },
-  { id: "pending-20", batchId: "batch-1", batchName: "Class 10 - Section A", subjectId: "cs", subjectName: "Computer Science", teacherId: "teacher-8", teacherName: "Dr. Sneha Reddy", date: "2025-01-29", expectedPeriods: 1, daysOverdue: 7 },
+  { id: "pending-1", batchId: "batch-9a", batchName: "Class 9 - Section A", subjectId: "phy", subjectName: "Physics", teacherId: "teacher-1", teacherName: "Dr. Sharma", date: "2025-01-27", expectedPeriods: 2, daysOverdue: 1 },
+  { id: "pending-2", batchId: "batch-10a", batchName: "Class 10 - Section A", subjectId: "mat", subjectName: "Mathematics", teacherId: "teacher-2", teacherName: "Prof. Verma", date: "2025-01-27", expectedPeriods: 2, daysOverdue: 1 },
+  { id: "pending-3", batchId: "batch-11a", batchName: "Class 11 - Section A", subjectId: "phy", subjectName: "Physics", teacherId: "teacher-1", teacherName: "Dr. Sharma", date: "2025-01-28", expectedPeriods: 2, daysOverdue: 0 },
 ];
