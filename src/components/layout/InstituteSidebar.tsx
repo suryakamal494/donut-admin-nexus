@@ -319,26 +319,12 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 overflow-y-auto">
-        <div className="space-y-1">
+      <nav className="flex-1 py-4 px-3 overflow-y-auto scroll-smooth">
+        <div className="space-y-1 pb-4">
           {navItems.map(item => renderNavItem(item))}
         </div>
       </nav>
 
-      {/* Help Card */}
-      {!collapsed && (
-        <div className="p-4">
-          <div className="rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 p-4 border border-primary/20">
-            <h4 className="font-semibold text-sm text-foreground mb-1">Need Help?</h4>
-            <p className="text-xs text-muted-foreground mb-3">
-              Get assistance with platform features
-            </p>
-            <button className="w-full py-2 rounded-lg text-sm font-medium gradient-button">
-              Contact Support
-            </button>
-          </div>
-        </div>
-      )}
     </aside>
   );
 };
