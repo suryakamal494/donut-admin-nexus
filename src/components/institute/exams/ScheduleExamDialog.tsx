@@ -86,13 +86,13 @@ const ScheduleExamDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-primary" />
             Schedule Exam
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="line-clamp-1">
             Set the date and time for "{exam.name}"
           </DialogDescription>
         </DialogHeader>
@@ -173,14 +173,14 @@ const ScheduleExamDialog = ({
           )}
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleCancel}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
             Cancel
           </Button>
           <Button 
             onClick={handleSave}
             disabled={!selectedDate || !selectedTime}
-            className="gradient-button"
+            className="gradient-button w-full sm:w-auto"
           >
             Schedule Exam
           </Button>

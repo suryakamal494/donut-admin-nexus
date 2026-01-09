@@ -77,22 +77,19 @@ const PYPView = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <PageHeader
         title={paper.name}
         description={
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
             <Badge variant="outline">{examTypeLabels[paper.examType]}</Badge>
             <Badge variant="secondary" className="flex items-center gap-1">
               <Lock className="h-3 w-3" />
               Read Only
             </Badge>
-            <span className="text-muted-foreground">|</span>
-            <span>{examData.totalQuestions} Questions</span>
-            <span className="text-muted-foreground">|</span>
-            <span>{examData.totalMarks} Marks</span>
-            <span className="text-muted-foreground">|</span>
-            <span>{examData.duration} mins</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">
+              {examData.totalQuestions} Qs • {examData.totalMarks} Marks • {examData.duration} mins
+            </span>
           </div>
         }
         breadcrumbs={[
@@ -102,9 +99,10 @@ const PYPView = () => {
           { label: paper.name },
         ]}
         actions={
-          <Button variant="outline" onClick={() => navigate("/institute/exams/previous-year-papers")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+          <Button variant="outline" onClick={() => navigate("/institute/exams/previous-year-papers")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Back to Papers</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         }
       />
@@ -152,41 +150,43 @@ const PYPView = () => {
 
       {/* Subject Tabs */}
       <Tabs value={activeSubject} onValueChange={handleSubjectChange}>
-        <TabsList className="w-full justify-start h-auto p-1 bg-muted/50">
-          {subjects.map((subject) => {
-            const stats = getSubjectStats(subject);
-            return (
-              <TabsTrigger
-                key={subject}
-                value={subject}
-                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                {subject}
-                <Badge variant="secondary" className="text-xs">
-                  {stats.total}
-                </Badge>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 flex-nowrap min-w-max">
+            {subjects.map((subject) => {
+              const stats = getSubjectStats(subject);
+              return (
+                <TabsTrigger
+                  key={subject}
+                  value={subject}
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <span className="text-xs sm:text-sm">{subject}</span>
+                  <Badge variant="secondary" className="text-xs px-1.5 sm:px-2">
+                    {stats.total}
+                  </Badge>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </div>
       </Tabs>
 
       {/* Quick Navigation */}
       <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <span className="text-sm font-medium">Quick Navigation</span>
             <span className="text-xs text-muted-foreground">
               Showing {(currentPage - 1) * QUESTIONS_PER_PAGE + 1}-{Math.min(currentPage * QUESTIONS_PER_PAGE, subjectQuestions.length)} of {subjectQuestions.length}
             </span>
           </div>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 max-h-[120px] sm:max-h-[150px] overflow-y-auto">
             {subjectQuestions.map((q, idx) => (
               <button
                 key={q.id}
                 onClick={() => setCurrentPage(Math.floor(idx / QUESTIONS_PER_PAGE) + 1)}
                 className={cn(
-                  "w-8 h-8 text-xs font-medium rounded border transition-colors",
+                  "w-7 h-7 sm:w-8 sm:h-8 text-xs font-medium rounded border transition-colors",
                   getQuickNavColor(q.id, idx)
                 )}
               >
@@ -293,25 +293,27 @@ const PYPView = () => {
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <Button
           variant="outline"
           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
           disabled={currentPage === 1}
+          className="w-full sm:w-auto gap-1.5"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" />
           Previous
         </Button>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground order-first sm:order-none">
           Page {currentPage} of {totalPages}
         </span>
         <Button
           variant="outline"
           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
           disabled={currentPage === totalPages}
+          className="w-full sm:w-auto gap-1.5"
         >
           Next
-          <ChevronRight className="ml-2 h-4 w-4" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
