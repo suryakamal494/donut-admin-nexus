@@ -98,42 +98,46 @@ const Exams = () => {
         breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Exams" }]}
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
-          <TabsTrigger 
-            value="previous-year" 
-            className="flex items-center gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg h-full"
-          >
-            <FileText className="w-4 h-4" />
-            Previous Year Papers
-          </TabsTrigger>
-          <TabsTrigger 
-            value="grand-tests" 
-            className="flex items-center gap-2 data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg h-full"
-          >
-            <Trophy className="w-4 h-4" />
-            Grand Tests
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="grid w-max sm:w-full max-w-md grid-cols-2 h-10 sm:h-12 p-1 bg-muted/50 rounded-xl">
+            <TabsTrigger 
+              value="previous-year" 
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg h-full whitespace-nowrap px-3 sm:px-4"
+            >
+              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Previous Year Papers</span>
+              <span className="sm:hidden">PYP</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="grand-tests" 
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg h-full whitespace-nowrap px-3 sm:px-4"
+            >
+              <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Grand Tests</span>
+              <span className="sm:hidden">Tests</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Previous Year Papers Tab */}
-        <TabsContent value="previous-year" className="space-y-6">
+        <TabsContent value="previous-year" className="space-y-4 sm:space-y-6">
           {/* Filters & Actions */}
-          <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50">
-            <div className="flex flex-col md:flex-row gap-4 justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                <div className="relative flex-1 max-w-md">
+          <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-soft border border-border/50">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input 
                     placeholder="Search papers..." 
                     value={pypSearchQuery} 
                     onChange={(e) => setPypSearchQuery(e.target.value)} 
-                    className="pl-10" 
+                    className="pl-10 h-9 text-sm" 
                   />
                 </div>
                 <Select value={pypExamFilter} onValueChange={setPypExamFilter}>
-                  <SelectTrigger className="w-40">
-                    <Filter className="w-4 h-4 mr-2" />
+                  <SelectTrigger className="w-full sm:w-36 h-9 text-xs sm:text-sm">
+                    <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                     <SelectValue placeholder="Exam Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -145,16 +149,17 @@ const Exams = () => {
                 </Select>
               </div>
               <Link to="/superadmin/exams/previous-year/create">
-                <Button className="gradient-button gap-2 w-full sm:w-auto">
-                  <Plus className="w-4 h-4" />
-                  Create Previous Year Paper
+                <Button size="sm" className="gradient-button gap-1.5 sm:gap-2 w-full text-xs sm:text-sm h-9">
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Create Previous Year Paper</span>
+                  <span className="sm:hidden">Create PYP</span>
                 </Button>
               </Link>
             </div>
           </div>
 
           {/* Papers Grouped by Exam Type */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {Object.entries(filteredGroupedPapers).map(([examType, yearGroups]) => (
               <YearAccordion
                 key={examType}
@@ -167,10 +172,10 @@ const Exams = () => {
             ))}
             
             {Object.keys(filteredGroupedPapers).length === 0 && (
-              <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
-                <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                <h3 className="font-semibold text-lg mb-1">No Papers Found</h3>
-                <p className="text-muted-foreground text-sm">
+              <div className="text-center py-8 sm:py-12 bg-card rounded-2xl border border-border/50">
+                <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3" />
+                <h3 className="font-semibold text-base sm:text-lg mb-1">No Papers Found</h3>
+                <p className="text-muted-foreground text-xs sm:text-sm">
                   {pypExamFilter !== "all" 
                     ? `No ${examTypeLabels[pypExamFilter]} papers available` 
                     : "Start by creating your first Previous Year Paper"}
@@ -181,23 +186,23 @@ const Exams = () => {
         </TabsContent>
 
         {/* Grand Tests Tab */}
-        <TabsContent value="grand-tests" className="space-y-6">
+        <TabsContent value="grand-tests" className="space-y-4 sm:space-y-6">
           {/* Filters & Actions */}
-          <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50">
-            <div className="flex flex-col md:flex-row gap-4 justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                <div className="relative flex-1 max-w-md">
+          <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-soft border border-border/50">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input 
                     placeholder="Search grand tests..." 
                     value={gtSearchQuery} 
                     onChange={(e) => setGtSearchQuery(e.target.value)} 
-                    className="pl-10" 
+                    className="pl-10 h-9 text-sm" 
                   />
                 </div>
                 <Select value={gtStatusFilter} onValueChange={setGtStatusFilter}>
-                  <SelectTrigger className="w-40">
-                    <Filter className="w-4 h-4 mr-2" />
+                  <SelectTrigger className="w-full sm:w-36 h-9 text-xs sm:text-sm">
+                    <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -210,16 +215,17 @@ const Exams = () => {
                 </Select>
               </div>
               <Link to="/superadmin/exams/grand-test/create">
-                <Button className="gradient-button gap-2 w-full sm:w-auto">
-                  <Plus className="w-4 h-4" />
-                  Create Grand Test
+                <Button size="sm" className="gradient-button gap-1.5 sm:gap-2 w-full text-xs sm:text-sm h-9">
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Create Grand Test</span>
+                  <span className="sm:hidden">Create Test</span>
                 </Button>
               </Link>
             </div>
           </div>
 
           {/* Grand Tests Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredGrandTests.map((test) => (
               <GrandTestCard
                 key={test.id}
@@ -236,10 +242,10 @@ const Exams = () => {
           </div>
 
           {filteredGrandTests.length === 0 && (
-            <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
-              <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-semibold text-lg mb-1">No Grand Tests Found</h3>
-              <p className="text-muted-foreground text-sm">
+            <div className="text-center py-8 sm:py-12 bg-card rounded-2xl border border-border/50">
+              <Trophy className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="font-semibold text-base sm:text-lg mb-1">No Grand Tests Found</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">
                 {gtStatusFilter !== "all" 
                   ? `No ${gtStatusFilter} grand tests available` 
                   : "Start by creating your first Grand Test"}

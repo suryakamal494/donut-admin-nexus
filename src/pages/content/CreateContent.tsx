@@ -75,49 +75,49 @@ const CreateContent = () => {
         ]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Content Type Selection */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Content Type</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Content Type</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {contentTypes.map((type) => (
                 <button
                   key={type.id}
                   onClick={() => setSelectedType(type.id)}
                   className={cn(
-                    "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
+                    "p-3 sm:p-4 rounded-xl border flex flex-col items-center gap-1.5 sm:gap-2 transition-all",
                     selectedType === type.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                   )}
                 >
-                  <type.icon className={cn("w-6 h-6", selectedType === type.id ? "text-primary" : "text-muted-foreground")} />
-                  <span className="text-sm font-medium">{type.label}</span>
-                  <span className="text-xs text-muted-foreground">{type.description}</span>
+                  <type.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", selectedType === type.id ? "text-primary" : "text-muted-foreground")} />
+                  <span className="text-xs sm:text-sm font-medium">{type.label}</span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground text-center">{type.description}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Upload Area */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
               {selectedType === "iframe" ? "Enter URL" : "Upload File"}
             </h3>
             {selectedType === "iframe" ? (
               <div className="space-y-2">
-                <Label>External URL</Label>
-                <Input placeholder="https://www.youtube.com/embed/..." />
-                <p className="text-xs text-muted-foreground">
+                <Label className="text-sm">External URL</Label>
+                <Input placeholder="https://www.youtube.com/embed/..." className="h-9 text-sm" />
+                <p className="text-[10px] sm:text-xs text-muted-foreground">
                   Paste an embed URL from YouTube, Vimeo, Google Slides, or any other service
                 </p>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                <Upload className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <p className="font-medium text-lg">Drag & drop your file here</p>
-                <p className="text-sm text-muted-foreground mt-1">or click to browse</p>
-                <Button variant="outline" className="mt-4">Select File</Button>
-                <p className="text-xs text-muted-foreground mt-4">
+              <div className="border-2 border-dashed border-border rounded-xl p-6 sm:p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                <Upload className="w-10 h-10 sm:w-16 sm:h-16 mx-auto text-muted-foreground mb-3 sm:mb-4" />
+                <p className="font-medium text-sm sm:text-lg">Drag & drop your file here</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">or click to browse</p>
+                <Button variant="outline" size="sm" className="mt-3 sm:mt-4 text-xs sm:text-sm">Select File</Button>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">
                   Supported formats: {selectedTypeData?.accept || "Any"}
                 </p>
               </div>
@@ -125,31 +125,31 @@ const CreateContent = () => {
           </div>
 
           {/* Content Details */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Content Details</h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Title *</Label>
-                <Input placeholder="Enter content title" />
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Content Details</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Title *</Label>
+                <Input placeholder="Enter content title" className="h-9 text-sm" />
               </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea placeholder="Describe what this content covers..." className="min-h-24" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Description</Label>
+                <Textarea placeholder="Describe what this content covers..." className="min-h-20 sm:min-h-24 text-sm" />
               </div>
-              <div className="space-y-2">
-                <Label>Learning Objectives</Label>
-                <Textarea placeholder="What will students learn from this content?" className="min-h-20" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Learning Objectives</Label>
+                <Textarea placeholder="What will students learn from this content?" className="min-h-16 sm:min-h-20 text-sm" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Source Type & Classification */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Classification</h3>
-            <div className="space-y-4">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Classification</h3>
+            <div className="space-y-3 sm:space-y-4">
               <SourceTypeSelector 
                 value={sourceType} 
                 onChange={handleSourceTypeChange} 
@@ -243,7 +243,7 @@ const CreateContent = () => {
           </div>
 
           {/* Visibility */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
             <VisibilitySelector
               visibleInCurriculum={visibleInCurriculum}
               visibleInCourses={visibleInCourses}
@@ -252,7 +252,7 @@ const CreateContent = () => {
             />
           </div>
 
-          <Button className="w-full gradient-button" onClick={handleSubmit}>
+          <Button className="w-full gradient-button text-sm" onClick={handleSubmit}>
             Save Content
           </Button>
         </div>

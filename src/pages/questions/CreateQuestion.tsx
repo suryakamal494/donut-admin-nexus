@@ -75,21 +75,21 @@ const CreateQuestion = () => {
         ]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Main Form */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Question Details</h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Question Type</Label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Question Details</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Question Type</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 sm:gap-2">
                   {questionTypes.map((type) => (
                     <button
                       key={type.id}
                       onClick={() => setQuestionType(type.id)}
                       className={cn(
-                        "p-3 rounded-xl border text-sm font-medium transition-all",
+                        "p-2 sm:p-3 rounded-lg sm:rounded-xl border text-xs sm:text-sm font-medium transition-all",
                         questionType === type.id ? "border-primary bg-primary/5 text-primary" : "border-border hover:border-primary/50"
                       )}
                     >
@@ -98,48 +98,48 @@ const CreateQuestion = () => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Question Text</Label>
-                <Textarea placeholder="Enter your question..." className="min-h-32" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Question Text</Label>
+                <Textarea placeholder="Enter your question..." className="min-h-24 sm:min-h-32 text-sm" />
               </div>
               {(questionType === "mcq" || questionType === "multiple") && (
-                <div className="space-y-2">
-                  <Label>Options</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label className="text-sm">Options</Label>
                   {options.map((_, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-sm font-medium">
+                    <div key={index} className="flex items-center gap-2 sm:gap-3">
+                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
                         {String.fromCharCode(65 + index)}
                       </span>
-                      <Input placeholder={`Option ${index + 1}`} className="flex-1" />
-                      <input type={questionType === "multiple" ? "checkbox" : "radio"} name="correct" className="w-5 h-5" />
+                      <Input placeholder={`Option ${index + 1}`} className="flex-1 h-9 text-sm" />
+                      <input type={questionType === "multiple" ? "checkbox" : "radio"} name="correct" className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   ))}
                 </div>
               )}
               {questionType === "numerical" && (
-                <div className="space-y-2">
-                  <Label>Correct Answer</Label>
-                  <Input type="number" placeholder="Enter numerical answer" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label className="text-sm">Correct Answer</Label>
+                  <Input type="number" placeholder="Enter numerical answer" className="h-9 text-sm" />
                 </div>
               )}
-              <div className="space-y-2">
-                <Label>Solution (Optional)</Label>
-                <Textarea placeholder="Explain the solution..." className="min-h-24" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Solution (Optional)</Label>
+                <Textarea placeholder="Explain the solution..." className="min-h-20 sm:min-h-24 text-sm" />
               </div>
-              <div className="space-y-2">
-                <Label>Hint (Optional)</Label>
-                <Input placeholder="Provide a hint for students" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Hint (Optional)</Label>
+                <Input placeholder="Provide a hint for students" className="h-9 text-sm" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Source Type & Classification */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Classification</h3>
-            <div className="space-y-4">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Classification</h3>
+            <div className="space-y-3 sm:space-y-4">
               <SourceTypeSelector 
                 value={sourceType} 
                 onChange={handleSourceTypeChange} 
@@ -233,21 +233,21 @@ const CreateQuestion = () => {
           </div>
 
           {/* Marking */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Marking</h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Marks</Label>
-                <Input type="number" defaultValue="4" />
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Marking</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Marks</Label>
+                <Input type="number" defaultValue="4" className="h-9 text-sm" />
               </div>
-              <div className="space-y-2">
-                <Label>Negative Marks</Label>
-                <Input type="number" defaultValue="1" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-sm">Negative Marks</Label>
+                <Input type="number" defaultValue="1" className="h-9 text-sm" />
               </div>
             </div>
           </div>
 
-          <Button className="w-full gradient-button" onClick={handleSubmit}>Save Question</Button>
+          <Button className="w-full gradient-button text-sm" onClick={handleSubmit}>Save Question</Button>
         </div>
       </div>
     </div>
