@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { preloadRoute } from "@/lib/route-preloader";
 import { X, ClipboardList as ClipboardListIcon } from "lucide-react";
 import {
   LayoutDashboard,
@@ -123,6 +124,11 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
     );
   };
 
+  // Preload handler for hover/focus
+  const handlePreload = useCallback((href: string) => {
+    preloadRoute(href);
+  }, []);
+
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon;
     const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -138,6 +144,8 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
             <TooltipTrigger asChild>
               <button
                 onClick={() => navigate(item.subItems![0].href)}
+                onMouseEnter={() => handlePreload(item.subItems![0].href)}
+                onFocus={() => handlePreload(item.subItems![0].href)}
                 className={cn(
                   "w-full h-10 flex items-center justify-center rounded-xl transition-all duration-200",
                   parentActive
@@ -155,6 +163,8 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
                   <button
                     key={sub.href}
                     onClick={() => navigate(sub.href)}
+                    onMouseEnter={() => handlePreload(sub.href)}
+                    onFocus={() => handlePreload(sub.href)}
                     className={cn(
                       "block w-full text-left px-2 py-1 rounded text-sm",
                       isActive(sub.href) ? "bg-primary/10 text-primary" : "hover:bg-muted"
@@ -206,6 +216,8 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
                 <button
                   key={sub.href}
                   onClick={() => navigate(sub.href)}
+                  onMouseEnter={() => handlePreload(sub.href)}
+                  onFocus={() => handlePreload(sub.href)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
                     subActive
@@ -229,6 +241,8 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
     const linkContent = (
       <button
         onClick={() => navigate(item.href)}
+        onMouseEnter={() => handlePreload(item.href)}
+        onFocus={() => handlePreload(item.href)}
         className={cn(
           "w-full flex items-center rounded-xl transition-all duration-200 group",
           collapsed ? "h-10 justify-center" : "gap-3 px-3 py-2.5",

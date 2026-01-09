@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
+import LazyErrorBoundary from "@/components/ui/lazy-error-boundary";
+import { DelayedFallback } from "@/components/ui/delayed-fallback";
 
 // Layouts - Keep these as regular imports (small, always needed)
 import AdminLayout from "./components/layout/AdminLayout";
@@ -105,9 +107,21 @@ const TeacherProfile = lazy(() => import("./pages/teacher/Profile"));
 
 const queryClient = new QueryClient();
 
-// Suspense wrapper component for cleaner routes
+// Suspense wrapper component with error boundary and delayed fallback
 function LazyPage({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>;
+  return (
+    <LazyErrorBoundary>
+      <Suspense
+        fallback={
+          <DelayedFallback delay={150}>
+            <PageSkeleton />
+          </DelayedFallback>
+        }
+      >
+        {children}
+      </Suspense>
+    </LazyErrorBoundary>
+  );
 }
 
 const App = () => (
