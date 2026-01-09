@@ -50,15 +50,16 @@ const Parameters = () => {
           { label: "Curriculum" }
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-2"
+              className="gap-1.5 sm:gap-2 h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
               onClick={() => setShowCurriculumDialog(true)}
             >
-              <FolderTree className="w-4 h-4" />
-              Manage Curriculums
+              <FolderTree className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Manage Curriculums</span>
+              <span className="sm:hidden">Manage</span>
             </Button>
             <QuickAddMenu 
               onAddClass={() => setShowAddClassDialog(true)}
@@ -85,17 +86,17 @@ const Parameters = () => {
       />
 
       {/* Curriculum Tabs */}
-      <div className="bg-card rounded-xl p-3 border border-border/50 shadow-soft">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 overflow-x-auto">
-            <span className="text-sm font-medium text-muted-foreground shrink-0">Curriculum:</span>
+      <div className="bg-card rounded-lg sm:rounded-xl p-2.5 sm:p-3 border border-border/50 shadow-soft">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-1 sm:pb-0">
+            <span className="text-xs sm:text-sm font-medium text-muted-foreground shrink-0">Curriculum:</span>
             <CurriculumTabs 
               selectedCurriculumId={selectedCurriculumId}
               onSelectCurriculum={handleCurriculumChange}
               onAddCurriculum={() => setShowCurriculumDialog(true)}
             />
           </div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground shrink-0">
             <span><strong className="text-foreground">{masterDataStats.totalCurriculums}</strong> Curriculums</span>
             <span><strong className="text-foreground">{masterDataStats.publishedCourses}</strong> Courses</span>
           </div>
@@ -123,8 +124,8 @@ const Parameters = () => {
       </div>
 
       {/* Three-Panel Layout */}
-      <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[160px_200px_1fr] h-auto lg:h-[calc(100vh-480px)] lg:min-h-[400px]">
+      <div className="bg-card rounded-xl sm:rounded-2xl shadow-soft border border-border/50 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[140px_180px_1fr] xl:grid-cols-[160px_200px_1fr] h-auto lg:h-[calc(100vh-480px)] lg:min-h-[400px]">
           <ClassPanel 
             selectedClassId={selectedClassId}
             onSelectClass={handleClassSelect}

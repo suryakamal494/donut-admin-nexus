@@ -396,19 +396,20 @@ const CourseBuilder = () => {
           { label: "Course Builder" }
         ]}
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate("/superadmin/parameters")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => navigate("/superadmin/parameters")}>
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
             {selectedCourseId && (
               <>
-                <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={!isDirty}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Draft
+                <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={handleSaveDraft} disabled={!isDirty}>
+                  <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Save Draft</span>
+                  <span className="sm:hidden">Save</span>
                 </Button>
-                <Button size="sm" onClick={handlePublish}>
-                  <Send className="w-4 h-4 mr-2" />
+                <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={handlePublish}>
+                  <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Publish
                 </Button>
               </>
@@ -418,19 +419,19 @@ const CourseBuilder = () => {
       />
 
       {/* Course Selector */}
-      <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
-          <Label className="text-sm font-medium shrink-0">Course:</Label>
+      <div className="bg-card rounded-lg sm:rounded-xl p-2.5 sm:p-3 md:p-4 border border-border/50 shadow-soft">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
+          <Label className="text-xs sm:text-sm font-medium shrink-0">Course:</Label>
           <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
-            <SelectTrigger className="w-full sm:w-[280px]">
+            <SelectTrigger className="w-full sm:w-[220px] md:w-[280px] h-8 sm:h-9 text-xs sm:text-sm">
               <SelectValue placeholder="Select or create a course" />
             </SelectTrigger>
             <SelectContent>
               {courses.filter(c => c.isActive).map((course) => (
                 <SelectItem key={course.id} value={course.id}>
                   <div className="flex items-center gap-2">
-                    <span>{course.name}</span>
-                    <Badge variant={course.status === "published" ? "default" : "secondary"} className="text-xs">
+                    <span className="text-xs sm:text-sm">{course.name}</span>
+                    <Badge variant={course.status === "published" ? "default" : "secondary"} className="text-[10px] sm:text-xs">
                       {course.status}
                     </Badge>
                   </div>
@@ -441,18 +442,19 @@ const CourseBuilder = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            className="gap-2"
+            className="gap-1.5 sm:gap-2 h-8 sm:h-9 text-xs sm:text-sm"
             onClick={() => setShowCreateCourseDialog(true)}
           >
-            <Plus className="w-4 h-4" />
-            New Course
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">New Course</span>
+            <span className="sm:hidden">New</span>
           </Button>
           
           {selectedCourse && (
-            <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+            <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-muted-foreground">
               <span>Type: <strong className="text-foreground capitalize">{selectedCourse.courseType}</strong></span>
               <span>Chapters: <strong className="text-foreground">{currentCourseChapters.length}</strong></span>
-              {isDirty && <Badge variant="outline" className="text-amber-600 border-amber-300">Unsaved</Badge>}
+              {isDirty && <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] sm:text-xs">Unsaved</Badge>}
             </div>
           )}
         </div>
@@ -460,19 +462,19 @@ const CourseBuilder = () => {
 
       {/* Main Workspace */}
       {selectedCourseId ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-auto lg:h-[calc(100vh-380px)] lg:min-h-[500px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 h-auto lg:h-[calc(100vh-380px)] lg:min-h-[450px]">
           {/* Left Panel: Source (Curriculum Tree) */}
-          <div className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-border/50 space-y-3">
+          <div className="bg-card rounded-lg sm:rounded-xl border border-border/50 shadow-soft overflow-hidden flex flex-col">
+            <div className="p-3 sm:p-4 border-b border-border/50 space-y-2 sm:space-y-3">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold">Source: Curriculum Tree</h3>
+                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                <h3 className="font-semibold text-sm sm:text-base">Source: Curriculum Tree</h3>
               </div>
               
               {/* Filters */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <Select value={sourceCurriculumId} onValueChange={setSourceCurriculumId}>
-                  <SelectTrigger className="h-9">
+                  <SelectTrigger className="h-8 sm:h-9 text-xs sm:text-sm">
                     <SelectValue placeholder="Curriculum" />
                   </SelectTrigger>
                   <SelectContent>
@@ -483,7 +485,7 @@ const CourseBuilder = () => {
                 </Select>
                 
                 <Select value={sourceClassId} onValueChange={(v) => { setSourceClassId(v); setSourceSubjectId(""); setSelectedChapterIds(new Set()); }}>
-                  <SelectTrigger className="h-9">
+                  <SelectTrigger className="h-8 sm:h-9 text-xs sm:text-sm">
                     <SelectValue placeholder="Class" />
                   </SelectTrigger>
                   <SelectContent>
@@ -494,7 +496,7 @@ const CourseBuilder = () => {
                 </Select>
                 
                 <Select value={sourceSubjectId} onValueChange={(v) => { setSourceSubjectId(v); setSelectedChapterIds(new Set()); }}>
-                  <SelectTrigger className="h-9">
+                  <SelectTrigger className="h-8 sm:h-9 text-xs sm:text-sm">
                     <SelectValue placeholder="Subject" />
                   </SelectTrigger>
                   <SelectContent>
@@ -506,46 +508,46 @@ const CourseBuilder = () => {
               </div>
               
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                 <Input 
                   placeholder="Search chapters..." 
-                  className="pl-9 h-9"
+                  className="pl-8 sm:pl-9 h-8 sm:h-9 text-xs sm:text-sm"
                   value={sourceSearchQuery}
                   onChange={(e) => setSourceSearchQuery(e.target.value)}
                 />
               </div>
               
               {availableChapters.length > 0 && (
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleSelectAll} className="h-7 text-xs">
-                    <CheckSquare className="w-3 h-3 mr-1" />
+                <div className="flex gap-1.5 sm:gap-2">
+                  <Button variant="ghost" size="sm" onClick={handleSelectAll} className="h-6 sm:h-7 text-[10px] sm:text-xs px-1.5 sm:px-2">
+                    <CheckSquare className="w-3 h-3 mr-0.5 sm:mr-1" />
                     Select All
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={handleClearSelection} className="h-7 text-xs">
-                    <XSquare className="w-3 h-3 mr-1" />
+                  <Button variant="ghost" size="sm" onClick={handleClearSelection} className="h-6 sm:h-7 text-[10px] sm:text-xs px-1.5 sm:px-2">
+                    <XSquare className="w-3 h-3 mr-0.5 sm:mr-1" />
                     Clear
                   </Button>
                 </div>
               )}
             </div>
             
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-3 sm:p-4">
               {!sourceClassId || !sourceSubjectId ? (
-                <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-                  <BookOpen className="w-10 h-10 mb-2 opacity-30" />
-                  <p className="text-sm">Select a class and subject to view chapters</p>
+                <div className="flex flex-col items-center justify-center h-32 sm:h-40 text-center text-muted-foreground">
+                  <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 mb-2 opacity-30" />
+                  <p className="text-xs sm:text-sm">Select a class and subject to view chapters</p>
                 </div>
               ) : availableChapters.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  <p className="text-sm">No chapters found</p>
+                <div className="text-center text-muted-foreground py-6 sm:py-8">
+                  <p className="text-xs sm:text-sm">No chapters found</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   {availableChapters.map((chapter) => (
                     <label
                       key={chapter.id}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
+                        "flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border cursor-pointer transition-colors",
                         selectedChapterIds.has(chapter.id)
                           ? "bg-primary/5 border-primary/30"
                           : "bg-background border-border/50 hover:bg-accent/30"
@@ -554,23 +556,24 @@ const CourseBuilder = () => {
                       <Checkbox
                         checked={selectedChapterIds.has(chapter.id)}
                         onCheckedChange={() => handleChapterToggle(chapter.id)}
+                        className="h-4 w-4 sm:h-5 sm:w-5"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{chapter.name}</p>
+                        <p className="text-xs sm:text-sm font-medium truncate">{chapter.name}</p>
                         {chapter.nameHindi && (
-                          <p className="text-xs text-muted-foreground truncate">{chapter.nameHindi}</p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{chapter.nameHindi}</p>
                         )}
                       </div>
-                      <span className="text-xs text-muted-foreground">Ch. {chapter.order}</span>
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">Ch. {chapter.order}</span>
                     </label>
                   ))}
                 </div>
               )}
             </ScrollArea>
             
-            <div className="p-4 border-t border-border/50 space-y-2">
+            <div className="p-3 sm:p-4 border-t border-border/50 space-y-1.5 sm:space-y-2">
               <Button 
-                className="w-full" 
+                className="w-full h-8 sm:h-9 text-xs sm:text-sm" 
                 disabled={selectedChapterIds.size === 0}
                 onClick={handleAddSelectedChapters}
               >
@@ -578,45 +581,46 @@ const CourseBuilder = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="w-full gap-2"
+                className="w-full gap-1.5 sm:gap-2 h-8 sm:h-9 text-xs sm:text-sm"
                 onClick={() => setShowCreateChapterDialog(true)}
               >
-                <Plus className="w-4 h-4" />
-                Create Course-Only Chapter
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Create Course-Only Chapter</span>
+                <span className="sm:hidden">Create Custom Chapter</span>
               </Button>
             </div>
           </div>
 
           {/* Right Panel: Course Content */}
-          <div className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-border/50">
+          <div className="bg-card rounded-lg sm:rounded-xl border border-border/50 shadow-soft overflow-hidden flex flex-col">
+            <div className="p-3 sm:p-4 border-b border-border/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-primary" />
-                  <h3 className="font-semibold">{selectedCourse?.name}</h3>
+                  <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                  <h3 className="font-semibold text-sm sm:text-base truncate max-w-[150px] sm:max-w-none">{selectedCourse?.name}</h3>
                 </div>
-                <Badge variant="outline">
+                <Badge variant="outline" className="text-[10px] sm:text-xs shrink-0">
                   {currentCourseChapters.length} Chapters
                 </Badge>
               </div>
             </div>
             
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-3 sm:p-4">
               {Object.keys(courseContentBySubject).length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-                  <Layers className="w-10 h-10 mb-2 opacity-30" />
-                  <p className="text-sm">No chapters added yet</p>
-                  <p className="text-xs">Select chapters from the left panel to add them</p>
+                <div className="flex flex-col items-center justify-center h-32 sm:h-40 text-center text-muted-foreground">
+                  <Layers className="w-8 h-8 sm:w-10 sm:h-10 mb-2 opacity-30" />
+                  <p className="text-xs sm:text-sm">No chapters added yet</p>
+                  <p className="text-[10px] sm:text-xs">Select chapters from the left panel to add them</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {Object.entries(courseContentBySubject).map(([subjectId, chapters]) => (
-                    <div key={subjectId} className="space-y-2">
-                      <div className="flex items-center gap-2 py-2 border-b border-border/30">
-                        <span className="text-sm font-semibold text-foreground">
+                    <div key={subjectId} className="space-y-1.5 sm:space-y-2">
+                      <div className="flex items-center gap-2 py-1.5 sm:py-2 border-b border-border/30">
+                        <span className="text-xs sm:text-sm font-semibold text-foreground">
                           {getSubjectName(subjectId)}
                         </span>
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs">
                           {chapters.length}
                         </Badge>
                       </div>
@@ -652,14 +656,14 @@ const CourseBuilder = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-card rounded-xl border border-border/50 shadow-soft p-12 text-center">
-          <Layers className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
-          <h3 className="text-lg font-semibold mb-2">Select a Course to Begin</h3>
-          <p className="text-muted-foreground mb-4">
+        <div className="bg-card rounded-lg sm:rounded-xl border border-border/50 shadow-soft p-8 sm:p-12 text-center">
+          <Layers className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-muted-foreground/30" />
+          <h3 className="text-base sm:text-lg font-semibold mb-1.5 sm:mb-2">Select a Course to Begin</h3>
+          <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 px-4">
             Choose an existing course from the dropdown above or create a new one
           </p>
-          <Button onClick={() => setShowCreateCourseDialog(true)}>
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={() => setShowCreateCourseDialog(true)} className="h-8 sm:h-9 text-xs sm:text-sm">
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
             Create New Course
           </Button>
         </div>
@@ -675,35 +679,37 @@ const CourseBuilder = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="courseName">Course Name *</Label>
+          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="courseName" className="text-xs sm:text-sm">Course Name *</Label>
                 <Input
                   id="courseName"
                   placeholder="e.g., IIT-JEE Mains"
+                  className="h-8 sm:h-9 text-xs sm:text-sm"
                   value={newCourse.name}
                   onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="courseCode">Code *</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="courseCode" className="text-xs sm:text-sm">Code *</Label>
                 <Input
                   id="courseCode"
                   placeholder="e.g., JEEM"
+                  className="h-8 sm:h-9 text-xs sm:text-sm"
                   value={newCourse.code}
                   onChange={(e) => setNewCourse({ ...newCourse, code: e.target.value })}
                 />
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="courseType">Course Type</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="courseType" className="text-xs sm:text-sm">Course Type</Label>
               <Select 
                 value={newCourse.courseType} 
                 onValueChange={(v) => setNewCourse({ ...newCourse, courseType: v as Course["courseType"] })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-8 sm:h-9 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -715,52 +721,55 @@ const CourseBuilder = () => {
               </Select>
             </div>
             
-            <div className="space-y-2">
-              <Label>Allowed Curriculums *</Label>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-xs sm:text-sm">Allowed Curriculums *</Label>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {getActiveCurriculums().map((curr) => (
-                  <label key={curr.id} className="flex items-center gap-2 px-3 py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
+                  <label key={curr.id} className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
                     <Checkbox
                       checked={newCourse.allowedCurriculums.includes(curr.id)}
                       onCheckedChange={() => toggleCurriculumSelection(curr.id)}
+                      className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                     />
-                    <span className="text-sm">{curr.code}</span>
+                    <span className="text-xs sm:text-sm">{curr.code}</span>
                   </label>
                 ))}
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label>Allowed Classes *</Label>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-xs sm:text-sm">Allowed Classes *</Label>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {classes.map((cls) => (
-                  <label key={cls.id} className="flex items-center gap-2 px-3 py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
+                  <label key={cls.id} className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border cursor-pointer hover:bg-accent/30 transition-colors">
                     <Checkbox
                       checked={newCourse.allowedClasses.includes(cls.id)}
                       onCheckedChange={() => toggleClassSelection(cls.id)}
+                      className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                     />
-                    <span className="text-sm">{cls.name}</span>
+                    <span className="text-xs sm:text-sm">{cls.name}</span>
                   </label>
                 ))}
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="courseDesc">Description</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="courseDesc" className="text-xs sm:text-sm">Description</Label>
               <Textarea
                 id="courseDesc"
                 placeholder="Brief description of the course..."
+                className="text-xs sm:text-sm min-h-[60px] sm:min-h-[80px]"
                 value={newCourse.description}
                 onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
               />
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateCourseDialog(false)}>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowCreateCourseDialog(false)} className="h-8 sm:h-9 text-xs sm:text-sm">
               Cancel
             </Button>
-            <Button onClick={handleCreateCourse}>Create Course</Button>
+            <Button onClick={handleCreateCourse} className="h-8 sm:h-9 text-xs sm:text-sm">Create Course</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -775,24 +784,25 @@ const CourseBuilder = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="chapterName">Chapter Name *</Label>
+          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="chapterName" className="text-xs sm:text-sm">Chapter Name *</Label>
               <Input
                 id="chapterName"
                 placeholder="e.g., Advanced Mechanics - Problem Solving"
+                className="h-8 sm:h-9 text-xs sm:text-sm"
                 value={newChapter.name}
                 onChange={(e) => setNewChapter({ ...newChapter, name: e.target.value })}
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="chapterSubject">Subject *</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="chapterSubject" className="text-xs sm:text-sm">Subject *</Label>
               <Select 
                 value={newChapter.subjectId} 
                 onValueChange={(v) => setNewChapter({ ...newChapter, subjectId: v })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-8 sm:h-9 text-xs sm:text-sm">
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
                 <SelectContent>
@@ -804,11 +814,11 @@ const CourseBuilder = () => {
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateChapterDialog(false)}>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowCreateChapterDialog(false)} className="h-8 sm:h-9 text-xs sm:text-sm">
               Cancel
             </Button>
-            <Button onClick={handleCreateChapter}>Create Chapter</Button>
+            <Button onClick={handleCreateChapter} className="h-8 sm:h-9 text-xs sm:text-sm">Create Chapter</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
