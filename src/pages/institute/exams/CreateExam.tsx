@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp, Monitor, MonitorPlay, Users, Calendar, SkipForward } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, FileText, CheckCircle2, Info, Sparkles, FileUp, Monitor, MonitorPlay, Users, Calendar, SkipForward, Library } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,10 +19,11 @@ import { getSubjectsByClass } from "@/data/cbseMasterData";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { QuestionBankSelector } from "@/components/institute/exams";
 
 type PatternType = "custom" | "jee_main" | "jee_advanced" | "neet";
 type UIType = "platform" | "real_exam";
-type CreationMethod = "ai" | "pdf";
+type CreationMethod = "ai" | "pdf" | "questionBank";
 
 // Cognitive Types
 const cognitiveTypes = [
@@ -91,7 +92,31 @@ const CreateExam = () => {
   const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>();
   const [scheduleTime, setScheduleTime] = useState("");
-
+  
+  // Question Bank Selection
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
+  
+  // Auto-scroll refs
+  const classSelectRef = useRef<HTMLDivElement>(null);
+  const subjectSelectRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll when class appears
+  useEffect(() => {
+    if (isCBSE && selectedCourse && classSelectRef.current) {
+      setTimeout(() => {
+        classSelectRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  }, [selectedCourse, isCBSE]);
+  
+  // Auto-scroll when subjects appear
+  useEffect(() => {
+    if (availableSubjects.length > 0 && subjectSelectRef.current) {
+      setTimeout(() => {
+        subjectSelectRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  }, [availableSubjects.length, selectedClassId]);
   // Group batches by class
   const batchesByClass = batches.reduce((acc, batch) => {
     if (!acc[batch.className]) {
@@ -208,7 +233,11 @@ const CreateExam = () => {
   const canProceedStep1 = examName && selectedCourse && selectedSubjects.length > 0 && (!isCBSE || selectedClassId);
   const canProceedStep2 = pattern && uiType;
   const canProceedStep3Custom = totalQuestions > 0 && duration > 0;
-  const canProceedCreation = creationMethod === "ai" ? selectedCognitiveTypes.length > 0 : uploadedFile;
+  const canProceedCreation = creationMethod === "ai" 
+    ? selectedCognitiveTypes.length > 0 
+    : creationMethod === "questionBank" 
+      ? selectedQuestionIds.length > 0 
+      : uploadedFile;
 
   const getStepContent = () => {
     if (processComplete) {
@@ -286,7 +315,7 @@ const CreateExam = () => {
 
             {/* Class Selection (only for CBSE) */}
             {isCBSE && selectedCourse && (
-              <div className="space-y-2">
+              <div className="space-y-2" ref={classSelectRef}>
                 <Label>Class *</Label>
                 <Select value={selectedClassId} onValueChange={handleClassChange}>
                   <SelectTrigger>
@@ -303,7 +332,7 @@ const CreateExam = () => {
 
             {/* Subject Selection */}
             {availableSubjects.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3" ref={subjectSelectRef}>
                 <Label>Subjects *</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {availableSubjects.map((subject) => (
@@ -568,22 +597,22 @@ const CreateExam = () => {
             <p className="text-muted-foreground text-sm">Choose your preferred method</p>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <button
               onClick={() => setCreationMethod("ai")}
               className={cn(
-                "p-6 rounded-xl border-2 text-center transition-all",
+                "p-4 sm:p-6 rounded-xl border-2 text-center transition-all",
                 creationMethod === "ai"
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50"
               )}
             >
               <Sparkles className={cn(
-                "w-12 h-12 mx-auto mb-3",
+                "w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3",
                 creationMethod === "ai" ? "text-primary" : "text-muted-foreground"
               )} />
-              <h4 className="font-semibold mb-1">Generate using AI</h4>
-              <p className="text-sm text-muted-foreground">
+              <h4 className="font-semibold text-sm sm:text-base mb-1">Generate using AI</h4>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                 AI will create questions based on your specifications
               </p>
             </button>
@@ -591,19 +620,38 @@ const CreateExam = () => {
             <button
               onClick={() => setCreationMethod("pdf")}
               className={cn(
-                "p-6 rounded-xl border-2 text-center transition-all",
+                "p-4 sm:p-6 rounded-xl border-2 text-center transition-all",
                 creationMethod === "pdf"
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50"
               )}
             >
               <FileUp className={cn(
-                "w-12 h-12 mx-auto mb-3",
+                "w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3",
                 creationMethod === "pdf" ? "text-primary" : "text-muted-foreground"
               )} />
-              <h4 className="font-semibold mb-1">Upload PDF</h4>
-              <p className="text-sm text-muted-foreground">
+              <h4 className="font-semibold text-sm sm:text-base mb-1">Upload PDF</h4>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                 Upload a question paper PDF and we'll extract questions
+              </p>
+            </button>
+            
+            <button
+              onClick={() => setCreationMethod("questionBank")}
+              className={cn(
+                "p-4 sm:p-6 rounded-xl border-2 text-center transition-all",
+                creationMethod === "questionBank"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              )}
+            >
+              <Library className={cn(
+                "w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3",
+                creationMethod === "questionBank" ? "text-primary" : "text-muted-foreground"
+              )} />
+              <h4 className="font-semibold text-sm sm:text-base mb-1">Select from Bank</h4>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
+                Choose questions from your approved question pool
               </p>
             </button>
           </div>
@@ -746,6 +794,19 @@ const CreateExam = () => {
                   </div>
                 )}
               </label>
+            </div>
+          )}
+
+          {creationMethod === "questionBank" && (
+            <div className="p-4 rounded-xl bg-muted/30 border">
+              <QuestionBankSelector
+                selectedCourse={selectedCourse}
+                selectedClassId={selectedClassId}
+                selectedSubjects={selectedSubjects}
+                isCBSE={isCBSE}
+                selectedQuestionIds={selectedQuestionIds}
+                onSelectionChange={setSelectedQuestionIds}
+              />
             </div>
           )}
           
@@ -942,7 +1003,12 @@ const CreateExam = () => {
       )}
 
       {/* Step Content */}
-      <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50 max-w-2xl mx-auto">
+      <div className={cn(
+        "bg-card rounded-2xl p-4 sm:p-8 shadow-soft border border-border/50 mx-auto transition-all",
+        creationMethod === "questionBank" && (currentStep === (pattern === "custom" ? 4 : 3)) 
+          ? "max-w-5xl" 
+          : "max-w-2xl"
+      )}>
         {getStepContent()}
       </div>
     </div>
