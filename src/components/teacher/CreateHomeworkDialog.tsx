@@ -56,11 +56,11 @@ export const CreateHomeworkDialog = ({
     : null;
 
   const [formData, setFormData] = useState({
-    title: linkedPlan ? `Homework: ${linkedPlan.topic}` : "",
+    title: linkedPlan ? `Homework: ${linkedPlan.topics?.[0] || linkedPlan.title}` : "",
     description: "",
     subject: linkedPlan?.subject || "Physics",
     batchId: linkedPlan?.batchId || "batch-10a",
-    topic: linkedPlan?.topic || "",
+    topic: linkedPlan?.topics?.[0] || "",
     chapter: linkedPlan?.chapter || "",
     dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     homeworkType: "practice",
