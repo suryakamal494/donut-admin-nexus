@@ -524,7 +524,7 @@ const TimetableSetup = () => {
                       Auto-Generate
                     </Button>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                     {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(period => {
                       const mapping = timeMapping.find(t => t.period === period) || { startTime: '', endTime: '' };
                       const isAfterBreak = breaks.some(b => b.afterPeriod === period - 1);
@@ -534,31 +534,31 @@ const TimetableSetup = () => {
                         <div 
                           key={period} 
                           className={cn(
-                            "p-3 rounded-xl border space-y-2",
+                            "p-3 rounded-xl border space-y-2 min-w-0",
                             isAfterBreak && "ring-2 ring-amber-200 bg-amber-50/50 dark:ring-amber-800 dark:bg-amber-950/20"
                           )}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">Period {period}</span>
+                          <div className="flex items-center justify-between gap-1 min-w-0">
+                            <span className="text-sm font-medium shrink-0">P{period}</span>
                             {isAfterBreak && breakBefore && (
-                              <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 border-amber-200 truncate">
                                 After {breakBefore.name.split(' ')[0]}
                               </Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <Input
                               type="time"
                               value={mapping.startTime}
                               onChange={(e) => updateTimeMapping(period, 'startTime', e.target.value)}
-                              className="text-xs h-8"
+                              className="text-xs h-8 px-1.5"
                             />
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-muted-foreground shrink-0">-</span>
                             <Input
                               type="time"
                               value={mapping.endTime}
                               onChange={(e) => updateTimeMapping(period, 'endTime', e.target.value)}
-                              className="text-xs h-8"
+                              className="text-xs h-8 px-1.5"
                             />
                           </div>
                         </div>
