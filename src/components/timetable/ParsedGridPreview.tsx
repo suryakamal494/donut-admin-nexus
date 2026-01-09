@@ -99,9 +99,9 @@ export const ParsedGridPreview = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+      <CardContent className="p-3 sm:p-6">
+        <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+          <table className="w-full min-w-[600px] border-collapse text-sm">
             <thead>
               <tr>
                 <th className="border border-border/50 bg-muted/30 p-2 text-left font-semibold w-16">

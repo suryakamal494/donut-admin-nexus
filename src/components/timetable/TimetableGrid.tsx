@@ -216,14 +216,14 @@ export const TimetableGrid = ({
 
   return (
     <TooltipProvider>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px] border-collapse">
+      <div className="overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0">
+        <table className="w-full min-w-[700px] lg:min-w-[800px] border-collapse">
           <thead>
             <tr className="bg-muted/40">
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground border-b border-r border-border w-[100px]">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  Period
+              <th className="p-2 sm:p-3 text-left text-xs sm:text-sm font-medium text-muted-foreground border-b border-r border-border w-[60px] sm:w-[100px]">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Period</span>
                 </div>
               </th>
               {workingDays.map((day, dayIndex) => {
@@ -303,17 +303,17 @@ export const TimetableGrid = ({
                     shouldAvoidPeriod(period) && "bg-orange-50/50 dark:bg-orange-950/10"
                   )}
                 >
-                  <td className="p-3 text-sm font-medium text-muted-foreground border-r border-border">
+                  <td className="p-2 sm:p-3 text-xs sm:text-sm font-medium text-muted-foreground border-r border-border">
                     <div className="flex flex-col">
                       <span>P{period}</span>
                       {useTimeMapping && (
-                        <span className="text-xs text-muted-foreground/70">
+                        <span className="text-[10px] sm:text-xs text-muted-foreground/70 hidden sm:block">
                           {getTimeForPeriod(period)}
                         </span>
                       )}
                     </div>
                     {shouldAvoidPeriod(period) && (
-                      <Badge variant="outline" className="text-xs mt-1 bg-orange-100 text-orange-700 border-orange-200">
+                      <Badge variant="outline" className="text-[10px] sm:text-xs mt-1 bg-orange-100 text-orange-700 border-orange-200 hidden sm:inline-flex">
                         Avoid
                       </Badge>
                     )}

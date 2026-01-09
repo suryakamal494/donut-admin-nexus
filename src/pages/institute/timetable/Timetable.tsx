@@ -535,6 +535,25 @@ const Timetable = () => {
 
   return (
     <div className="space-y-3">
+      {/* Mobile Guidance Notice */}
+      <div className="block md:hidden p-3 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+        <div className="flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Best on larger screens</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              For full editing with drag-and-drop, use a tablet or desktop. 
+              <button 
+                onClick={() => navigate('/institute/timetable/view')}
+                className="underline ml-1 font-medium"
+              >
+                View Timetable →
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Compact Header */}
       <PageHeader
         title="Timetable Workspace"
@@ -553,38 +572,38 @@ const Timetable = () => {
       />
 
       {/* Compact All-in-One Toolbar */}
-      <Card className="p-2.5 bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <Card className="p-2 sm:p-2.5 bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3">
           {/* Week Selector */}
-          <div className="flex items-center gap-1 bg-background rounded-lg border p-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToPreviousWeek}>
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-background rounded-lg border p-0.5">
+            <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-7 sm:w-7" onClick={goToPreviousWeek}>
+              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
-            <div className="px-2 py-1 min-w-[140px] text-center">
-              <p className="text-xs font-semibold">
+            <div className="px-1.5 sm:px-2 py-1 min-w-[100px] sm:min-w-[140px] text-center">
+              <p className="text-[10px] sm:text-xs font-semibold">
                 {format(currentWeekStart, 'MMM d')} – {format(weekEndDate, 'MMM d')}
               </p>
             </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToNextWeek}>
-              <ChevronRight className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-7 sm:w-7" onClick={goToNextWeek}>
+              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </div>
-          <Button variant="outline" size="sm" className="h-7 text-xs hidden sm:flex" onClick={goToCurrentWeek}>
+          <Button variant="outline" size="sm" className="h-6 sm:h-7 text-[10px] sm:text-xs hidden md:flex" onClick={goToCurrentWeek}>
             Today
           </Button>
 
           {/* Divider */}
-          <div className="h-5 w-px bg-border hidden sm:block" />
+          <div className="h-4 sm:h-5 w-px bg-border hidden sm:block" />
 
           {/* View Mode Toggle */}
-          <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as 'teacher' | 'batch'); setSelectedBatchId(null); }} className="h-7">
-            <TabsList className="h-7 p-0.5">
-              <TabsTrigger value="teacher" className="h-6 px-2 text-xs gap-1">
-                <User className="w-3 h-3" />
+          <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as 'teacher' | 'batch'); setSelectedBatchId(null); }} className="h-6 sm:h-7">
+            <TabsList className="h-6 sm:h-7 p-0.5">
+              <TabsTrigger value="teacher" className="h-5 sm:h-6 px-1.5 sm:px-2 text-[10px] sm:text-xs gap-0.5 sm:gap-1">
+                <User className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span className="hidden sm:inline">Teacher</span>
               </TabsTrigger>
-              <TabsTrigger value="batch" className="h-6 px-2 text-xs gap-1">
-                <BookOpen className="w-3 h-3" />
+              <TabsTrigger value="batch" className="h-5 sm:h-6 px-1.5 sm:px-2 text-[10px] sm:text-xs gap-0.5 sm:gap-1">
+                <BookOpen className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span className="hidden sm:inline">Batch</span>
               </TabsTrigger>
             </TabsList>
@@ -603,13 +622,14 @@ const Timetable = () => {
               >
                 {conflictCount > 0 ? (
                   <>
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    {conflictCount} Conflict{conflictCount !== 1 ? 's' : ''}
+                    <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    {conflictCount}
+                    <span className="hidden sm:inline"> Conflict{conflictCount !== 1 ? 's' : ''}</span>
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">No Conflicts</span>
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span className="hidden md:inline">No Conflicts</span>
                   </>
                 )}
               </Button>
@@ -620,23 +640,23 @@ const Timetable = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-7 text-xs gap-1 border-primary/30 hover:border-primary hover:bg-primary/5" 
+            className="h-6 sm:h-7 text-[10px] sm:text-xs gap-1 border-primary/30 hover:border-primary hover:bg-primary/5" 
             onClick={() => navigate("/institute/timetable/upload")}
           >
-            <Upload className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Upload</span>
+            <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden md:inline">Upload</span>
           </Button>
 
           {/* Copy Week */}
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-7 text-xs gap-1" 
+            className="h-6 sm:h-7 text-[10px] sm:text-xs gap-1 hidden sm:flex" 
             onClick={() => setCopyWeekDialogOpen(true)}
             disabled={entries.length === 0}
           >
-            <Copy className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Copy Week</span>
+            <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden md:inline">Copy Week</span>
           </Button>
 
           {/* Spacer */}
@@ -647,7 +667,7 @@ const Timetable = () => {
             <Badge 
               variant={saveStatus === 'published' ? 'default' : 'secondary'} 
               className={cn(
-                "text-xs h-6",
+                "text-[10px] sm:text-xs h-5 sm:h-6",
                 saveStatus === 'published' && "bg-green-100 text-green-700 hover:bg-green-100"
               )}
             >
@@ -656,20 +676,20 @@ const Timetable = () => {
           )}
 
           {/* Save/Publish Buttons */}
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={handleSaveDraft}>
-            <Save className="w-3 h-3 mr-1" />
+          <Button variant="outline" size="sm" className="h-6 sm:h-7 text-[10px] sm:text-xs px-2 sm:px-3" onClick={handleSaveDraft}>
+            <Save className="w-3 h-3 sm:mr-1" />
             <span className="hidden sm:inline">Save</span>
           </Button>
-          <Button size="sm" className="h-7 text-xs" onClick={handlePublish}>
-            <Send className="w-3 h-3 mr-1" />
+          <Button size="sm" className="h-6 sm:h-7 text-[10px] sm:text-xs px-2 sm:px-3" onClick={handlePublish}>
+            <Send className="w-3 h-3 sm:mr-1" />
             <span className="hidden sm:inline">Publish</span>
           </Button>
 
           {/* Settings Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7" title="Timetable settings">
-                <Settings className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-7 sm:w-7" title="Timetable settings">
+                <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
