@@ -52,7 +52,7 @@ export const currentWeekIndex = 0; // Week 1: Jan 6-11, 2025
 // ============================================
 // Academic Schedule Setups - Aligned with cbseMasterData
 // Class IDs: "1"=6, "2"=7, "3"=8, "4"=9, "5"=10, "6"=11, "7"=12
-// Subject IDs: "1"=Physics, "2"=Chemistry, "3"=Math, "4"=Biology, "5"=History, "6"=Hindi
+// Subject IDs: "1"=Physics, "2"=Chemistry, "3"=Math, "4"=Biology, "5"=History, "8"=Hindi (matches cbseMasterData)
 // ============================================
 
 export const academicScheduleSetups: AcademicScheduleSetup[] = [
@@ -108,7 +108,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-hin",
     courseId: "cbse",
     classId: "1",
-    subjectId: "6",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -116,8 +116,9 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "hin-6-2", chapterName: "बचपन", plannedHours: 4, order: 2 },
       { chapterId: "hin-6-3", chapterName: "नादान दोस्त", plannedHours: 5, order: 3 },
       { chapterId: "hin-6-4", chapterName: "चाँद से थोड़ी सी गप्पें", plannedHours: 4, order: 4 },
+      { chapterId: "hin-6-5", chapterName: "अक्षरों का महत्व", plannedHours: 4, order: 5 },
     ],
-    totalPlannedHours: 17,
+    totalPlannedHours: 21,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -170,6 +171,24 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
+  {
+    id: "setup-c7-hin",
+    courseId: "cbse",
+    classId: "2",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectName: "Hindi",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "hin-7-1", chapterName: "हम पंछी उन्मुक्त गगन के", plannedHours: 4, order: 1 },
+      { chapterId: "hin-7-2", chapterName: "दादी माँ", plannedHours: 5, order: 2 },
+      { chapterId: "hin-7-3", chapterName: "हिमालय की बेटियाँ", plannedHours: 4, order: 3 },
+      { chapterId: "hin-7-4", chapterName: "कठपुतली", plannedHours: 4, order: 4 },
+      { chapterId: "hin-7-5", chapterName: "मिठाईवाला", plannedHours: 5, order: 5 },
+    ],
+    totalPlannedHours: 22,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
 
   // ========================
   // CLASS 8 (classId: "3") - Mathematics, History, Hindi
@@ -217,6 +236,24 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
       { chapterId: "his-8-4", chapterName: "Tribals, Dikus and the Vision of a Golden Age", plannedHours: 5, order: 4 },
     ],
     totalPlannedHours: 19,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c8-hin",
+    courseId: "cbse",
+    classId: "3",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectName: "Hindi",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "hin-8-1", chapterName: "ध्वनि", plannedHours: 4, order: 1 },
+      { chapterId: "hin-8-2", chapterName: "लाख की चूड़ियाँ", plannedHours: 5, order: 2 },
+      { chapterId: "hin-8-3", chapterName: "बस की यात्रा", plannedHours: 4, order: 3 },
+      { chapterId: "hin-8-4", chapterName: "दीवानों की हस्ती", plannedHours: 4, order: 4 },
+      { chapterId: "hin-8-5", chapterName: "चिट्ठियों की अनूठी दुनिया", plannedHours: 5, order: 5 },
+    ],
+    totalPlannedHours: 22,
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
@@ -274,7 +311,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-hin",
     courseId: "cbse",
     classId: "4",
-    subjectId: "6",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -342,7 +379,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-hin",
     courseId: "cbse",
     classId: "5",
-    subjectId: "6",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -566,9 +603,53 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     createdAt: "2025-04-01",
     updatedAt: "2025-04-01",
   },
+  {
+    id: "setup-c11-hin",
+    courseId: "cbse",
+    classId: "6",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectName: "Hindi",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "hin-11-1", chapterName: "कबीर - साखियाँ", plannedHours: 5, order: 1 },
+      { chapterId: "hin-11-2", chapterName: "सूरदास - पद", plannedHours: 5, order: 2 },
+      { chapterId: "hin-11-3", chapterName: "देव - कवित्त और सवैया", plannedHours: 5, order: 3 },
+      { chapterId: "hin-11-4", chapterName: "सुमित्रानंदन पंत - संध्या सुंदरी, परिवर्तन", plannedHours: 5, order: 4 },
+      { chapterId: "hin-11-5", chapterName: "भवानी प्रसाद मिश्र - गीत-फरोश", plannedHours: 5, order: 5 },
+      { chapterId: "hin-11-6", chapterName: "त्रिलोचन - चंपा काले काले अक्षर नहीं चीन्हती", plannedHours: 5, order: 6 },
+      { chapterId: "hin-11-7", chapterName: "दुष्यंत कुमार - गज़ल", plannedHours: 4, order: 7 },
+      { chapterId: "hin-11-8", chapterName: "आकाशदीप - गूंगे", plannedHours: 5, order: 8 },
+      { chapterId: "hin-11-9", chapterName: "सआदत हसन मंटो - विदाई संभाषण", plannedHours: 5, order: 9 },
+      { chapterId: "hin-11-10", chapterName: "कृष्णनाथ - स्पिति में बारिश", plannedHours: 5, order: 10 },
+    ],
+    totalPlannedHours: 49,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
+  {
+    id: "setup-c12-hin",
+    courseId: "cbse",
+    classId: "7",
+    subjectId: "8", // Hindi subjectId in cbseMasterData
+    subjectName: "Hindi",
+    academicYear: "2025-26",
+    chapters: [
+      { chapterId: "hin-12-1", chapterName: "हरिशंकर परसाई - सूरज का ब्याह", plannedHours: 5, order: 1 },
+      { chapterId: "hin-12-2", chapterName: "रघुवीर सहाय - तोड़ती पत्थर, कविता के बहाने", plannedHours: 5, order: 2 },
+      { chapterId: "hin-12-3", chapterName: "गजानन माधव मुक्तिबोध - सतह से उठता आदमी", plannedHours: 5, order: 3 },
+      { chapterId: "hin-12-4", chapterName: "शमशेर बहादुर सिंह - ऊषा, बादल को घिरते देखा है", plannedHours: 5, order: 4 },
+      { chapterId: "hin-12-5", chapterName: "सूर्यकांत त्रिपाठी निराला - बादल राग", plannedHours: 5, order: 5 },
+      { chapterId: "hin-12-6", chapterName: "तुलसीदास - कवितावली, लक्ष्मण मूर्छा", plannedHours: 5, order: 6 },
+      { chapterId: "hin-12-7", chapterName: "फ़िराक़ गोरखपुरी - रुबाइयाँ, गज़ल", plannedHours: 4, order: 7 },
+      { chapterId: "hin-12-8", chapterName: "उमाशंकर जोशी - छोटा मेरा खेत", plannedHours: 4, order: 8 },
+      { chapterId: "hin-12-9", chapterName: "रामवृक्ष बेनीपुरी - शिल्प विराम", plannedHours: 5, order: 9 },
+      { chapterId: "hin-12-10", chapterName: "भीष्म साहनी - जूठे का जूठा", plannedHours: 5, order: 10 },
+    ],
+    totalPlannedHours: 48,
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-01",
+  },
 
-  // ========================
-  // JEE MAINS SETUPS (courseId: "jee-mains")
   // Uses same class IDs "6" and "7" for Class 11 and 12
   // JEE-specific subject IDs: jee_phy, jee_che, jee_mat
   // ========================
