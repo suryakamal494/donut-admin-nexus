@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,15 +27,15 @@ import {
 } from "@/components/ui/tooltip";
 
 const SUBJECT_COLORS: Record<string, string> = {
-  // Numeric IDs from getSubjectsByClass
+  // Numeric IDs from getSubjectsByClass (aligned with cbseMasterData)
   "1": "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",     // Physics
   "2": "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200", // Chemistry
   "3": "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",   // Mathematics
   "4": "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",       // Biology
   "5": "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",       // History
-  "6": "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",               // Hindi
+  "8": "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",               // Hindi (subjectId = 8 in cbseMasterData)
   "7": "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",   // English
-  "8": "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",           // Computer Science
+  "6": "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",           // Other
   // JEE subjects
   jee_phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
   jee_mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
@@ -44,8 +44,8 @@ const SUBJECT_COLORS: Record<string, string> = {
 
 export default function Setup() {
   const [selectedTrack, setSelectedTrack] = useState<"cbse" | "jee">("cbse");
-  const [selectedClass, setSelectedClass] = useState<string>("5");
-  const [selectedSubject, setSelectedSubject] = useState<string>("1");
+  const [selectedClass, setSelectedClass] = useState<string>("1"); // Start with Class 6
+  const [selectedSubject, setSelectedSubject] = useState<string>("3"); // Math exists for all classes
 
   // Get classes for the selected track
   const classes = useMemo(() => {
@@ -85,6 +85,19 @@ export default function Setup() {
       s => s.classId === selectedClass && s.subjectId === selectedSubject
     );
   }, [selectedClass, selectedSubject]);
+
+  // Reset selected subject when class or track changes to first available subject
+  useEffect(() => {
+    if (subjects.length > 0) {
+      // Check if current subject exists for new class
+      const subjectExists = subjects.some(s => s.id === selectedSubject);
+      if (!subjectExists) {
+        // Default to Math (3) if available, otherwise first subject
+        const mathSubject = subjects.find(s => s.id === "3");
+        setSelectedSubject(mathSubject ? mathSubject.id : subjects[0].id);
+      }
+    }
+  }, [selectedClass, selectedTrack, subjects]);
 
   // Build progress matrix data
   const progressMatrix = useMemo(() => {
