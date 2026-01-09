@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { currentTeacher } from "@/data/teacherData";
+import { currentTeacher, teacherLessonPlans, type LessonPlan } from "@/data/teacherData";
 import {
   WorkspaceHeader,
   WorkspaceContextBar,
@@ -15,38 +15,101 @@ import {
   type WorkspaceContext,
 } from "@/components/teacher/lesson-workspace";
 
+// Convert data layer block to workspace block format
+const convertToWorkspaceBlock = (block: LessonPlan['blocks'][0]): LessonPlanBlock => {
+  return {
+    id: block.id,
+    type: block.type as BlockType,
+    title: block.title,
+    content: block.content,
+    duration: block.duration,
+    source: block.source || 'custom',
+    sourceId: block.sourceId,
+    sourceType: block.sourceType,
+    questions: block.questions,
+    embedUrl: block.embedUrl,
+    linkType: block.linkType as LessonPlanBlock['linkType'],
+    aiGenerated: block.aiGenerated,
+  };
+};
+
 const LessonPlanCanvas = () => {
   const navigate = useNavigate();
   const { planId } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const isNew = planId === "create";
+  
+  // Get planId from route param, or check for cloneFrom in query
+  const cloneFromId = searchParams.get('cloneFrom');
+  const isNew = planId === 'new' || (!planId && !cloneFromId);
 
-  // Context from URL (from timetable)
+  // Load existing lesson plan if planId is provided (and not "new")
+  const existingPlan = (planId && planId !== 'new')
+    ? teacherLessonPlans.find(p => p.id === planId)
+    : cloneFromId 
+      ? teacherLessonPlans.find(p => p.id === cloneFromId)
+      : null;
+
+  // Context from URL (from timetable) or from existing plan
   const contextBatch = searchParams.get('batch');
   const contextBatchName = searchParams.get('batchName');
   const contextDate = searchParams.get('date');
   const contextClassName = searchParams.get('className');
   const contextChapter = searchParams.get('chapter');
 
-  // Workspace context
+  // Workspace context - prefer existing plan data if available
   const [context, setContext] = useState<WorkspaceContext>({
-    className: contextClassName || "Class 10",
-    subject: currentTeacher.subjects[0] || "Physics",
-    chapter: contextChapter || "",
-    scheduledDate: contextDate || new Date().toISOString().split('T')[0],
-    batchName: contextBatchName || "10A",
-    batchId: contextBatch || "batch-10a",
-    isFromTimetable: !!contextBatch,
+    className: existingPlan?.className || contextClassName || "Class 10",
+    subject: existingPlan?.subject || currentTeacher.subjects[0] || "Physics",
+    chapter: existingPlan?.chapter || contextChapter || "",
+    scheduledDate: existingPlan?.scheduledDate || contextDate || new Date().toISOString().split('T')[0],
+    batchName: existingPlan?.batchName || contextBatchName || "10A",
+    batchId: existingPlan?.batchId || contextBatch || "batch-10a",
+    isFromTimetable: !!contextBatch || !!existingPlan,
   });
 
-  const [blocks, setBlocks] = useState<LessonPlanBlock[]>([]);
-  const [status, setStatus] = useState<'draft' | 'ready' | 'completed'>('draft');
+  // Initialize blocks from existing plan or empty
+  const [blocks, setBlocks] = useState<LessonPlanBlock[]>(() => {
+    if (existingPlan) {
+      return existingPlan.blocks.map(convertToWorkspaceBlock);
+    }
+    return [];
+  });
+
+  const [planTitle, setPlanTitle] = useState(
+    cloneFromId && existingPlan 
+      ? `${existingPlan.title} (Copy)` 
+      : existingPlan?.title || ""
+  );
+  const [topics, setTopics] = useState<string[]>(existingPlan?.topics || []);
+  const [status, setStatus] = useState<'draft' | 'ready' | 'used'>(
+    cloneFromId ? 'draft' : (existingPlan?.status || 'draft')
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeBlockType, setActiveBlockType] = useState<BlockType | null>(null);
   const [showAIDialog, setShowAIDialog] = useState(false);
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = useState(existingPlan?.topics?.[0] || '');
+
+  // Update blocks when existing plan changes (e.g., navigation)
+  useEffect(() => {
+    if (existingPlan) {
+      setBlocks(existingPlan.blocks.map(convertToWorkspaceBlock));
+      setPlanTitle(cloneFromId ? `${existingPlan.title} (Copy)` : existingPlan.title);
+      setTopics(existingPlan.topics || []);
+      setStatus(cloneFromId ? 'draft' : existingPlan.status);
+      setTopic(existingPlan.topics?.[0] || '');
+      setContext({
+        className: existingPlan.className,
+        subject: existingPlan.subject,
+        chapter: existingPlan.chapter,
+        scheduledDate: existingPlan.scheduledDate,
+        batchName: existingPlan.batchName,
+        batchId: existingPlan.batchId,
+        isFromTimetable: true,
+      });
+    }
+  }, [existingPlan?.id, cloneFromId]);
 
   const totalDuration = blocks.reduce((sum, b) => sum + (b.duration || 0), 0);
 
@@ -149,9 +212,10 @@ const LessonPlanCanvas = () => {
         onBack={() => navigate("/teacher/lesson-plans")}
         onSave={handleSave}
         onStartClass={() => toast({ title: "Starting class..." })}
+        planTitle={planTitle}
       />
 
-      <WorkspaceContextBar context={context} />
+      <WorkspaceContextBar context={context} onContextChange={(updates) => setContext(prev => ({ ...prev, ...updates }))} />
 
       <WorkspaceToolbar
         onBlockClick={handleBlockClick}

@@ -12,12 +12,13 @@ interface WorkspaceHeaderProps {
   isNew: boolean;
   subject: string;
   batchName: string;
-  status: 'draft' | 'ready' | 'completed';
+  status: 'draft' | 'ready' | 'completed' | 'used';
   isSaving: boolean;
   onBack: () => void;
   onSave: () => void;
   onStartClass: () => void;
   onClone?: () => void;
+  planTitle?: string;
 }
 
 export const WorkspaceHeader = ({
@@ -30,6 +31,7 @@ export const WorkspaceHeader = ({
   onSave,
   onStartClass,
   onClone,
+  planTitle,
 }: WorkspaceHeaderProps) => {
   return (
     <div className="flex items-center justify-between gap-4">
@@ -46,7 +48,7 @@ export const WorkspaceHeader = ({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
-              {isNew ? "New Lesson" : "Edit Lesson"}
+              {isNew ? "New Lesson" : (planTitle || "Edit Lesson")}
             </h1>
             <Badge 
               variant="secondary" 
@@ -55,6 +57,8 @@ export const WorkspaceHeader = ({
                   ? 'bg-amber-100 text-amber-700' 
                   : status === 'ready'
                   ? 'bg-emerald-100 text-emerald-700'
+                  : status === 'used'
+                  ? 'bg-blue-100 text-blue-700'
                   : 'bg-slate-100 text-slate-700'
               }`}
             >

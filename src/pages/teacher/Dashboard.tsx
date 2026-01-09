@@ -134,7 +134,7 @@ const TeacherDashboard = () => {
         {/* Quick Action FAB - Desktop */}
         <Button 
           className="hidden sm:flex gradient-button h-11"
-          onClick={() => navigate("/teacher/lesson-plans/create")}
+          onClick={() => navigate("/teacher/lesson-plans/new")}
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Lesson Plan
@@ -331,7 +331,7 @@ const TeacherDashboard = () => {
         <Button 
           size="lg"
           className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
-          onClick={() => navigate("/teacher/lesson-plans/create")}
+          onClick={() => navigate("/teacher/lesson-plans/new")}
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -471,7 +471,7 @@ const ClassCard = ({ slot, index, isSelected, onSelect, onConfirm }: ClassCardPr
                 className="border-dashed h-7 sm:h-8 px-2 sm:px-2.5 cursor-pointer hover:bg-muted"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate("/teacher/lesson-plans/create");
+                  navigate("/teacher/lesson-plans/new");
                 }}
               >
                 <Plus className="w-3 h-3 sm:mr-1" />

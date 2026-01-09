@@ -127,7 +127,7 @@ const TeacherSchedule = () => {
         period: periodNumber.toString(),
         className: slot.className,
       });
-      navigate(`/teacher/lesson-plans/create?${params.toString()}`);
+      navigate(`/teacher/lesson-plans/new?${params.toString()}`);
     }
   };
 

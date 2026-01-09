@@ -224,6 +224,7 @@ const App = () => (
             <Route path="dashboard" element={<TeacherDashboard />} />
             <Route path="schedule" element={<TeacherSchedule />} />
             <Route path="lesson-plans" element={<LessonPlans />} />
+            <Route path="lesson-plans/new" element={<LazyPage><LessonPlanCanvas /></LazyPage>} />
             <Route path="lesson-plans/:planId" element={<LazyPage><LessonPlanCanvas /></LazyPage>} />
             <Route path="academic-progress" element={<TeacherAcademicProgress />} />
             <Route path="assessments" element={<TeacherAssessments />} />
