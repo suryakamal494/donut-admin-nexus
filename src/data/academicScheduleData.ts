@@ -1070,7 +1070,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 72, totalActualHours: 42,
     chaptersCompleted: 4, totalChapters: 8,
     currentChapter: "mat-10-5", currentChapterName: "Arithmetic Progressions",
-    overallStatus: "on_track", percentComplete: 58, lostDays: 3,
+    overallStatus: "in_progress", percentComplete: 58, lostDays: 3,
     lostDaysReasons: [{ reason: "teacher_absent", count: 2 }, { reason: "exam", count: 1 }],
   },
   {
@@ -1097,7 +1097,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 34, totalActualHours: 22,
     chaptersCompleted: 3, totalChapters: 5,
     currentChapter: "eng-10-4", currentChapterName: "From the Diary of Anne Frank",
-    overallStatus: "on_track", percentComplete: 65, lostDays: 1,
+    overallStatus: "in_progress", percentComplete: 65, lostDays: 1,
     lostDaysReasons: [{ reason: "student_event", count: 1 }],
   },
   {
@@ -1106,7 +1106,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 38, totalActualHours: 20,
     chaptersCompleted: 2, totalChapters: 4,
     currentChapter: "cs-10-3", currentChapterName: "CSS Styling",
-    overallStatus: "on_track", percentComplete: 53, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 53, lostDays: 2,
     lostDaysReasons: [{ reason: "holiday", count: 2 }],
   },
   {
@@ -1135,7 +1135,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 42, totalActualHours: 26,
     chaptersCompleted: 3, totalChapters: 5,
     currentChapter: "mat-10-4", currentChapterName: "Quadratic Equations",
-    overallStatus: "on_track", percentComplete: 62, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 62, lostDays: 2,
     lostDaysReasons: [{ reason: "exam", count: 2 }],
   },
   {
@@ -1144,7 +1144,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 32, totalActualHours: 18,
     chaptersCompleted: 2, totalChapters: 3,
     currentChapter: "che-10-3", currentChapterName: "Metals and Non-metals",
-    overallStatus: "on_track", percentComplete: 56, lostDays: 3,
+    overallStatus: "in_progress", percentComplete: 56, lostDays: 3,
     lostDaysReasons: [{ reason: "teacher_absent", count: 1 }, { reason: "cancelled", count: 2 }],
   },
   
@@ -1173,7 +1173,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 38, totalActualHours: 24,
     chaptersCompleted: 3, totalChapters: 4,
     currentChapter: "bio-9-4", currentChapterName: "Why Do We Fall Ill",
-    overallStatus: "on_track", percentComplete: 63, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 63, lostDays: 2,
     lostDaysReasons: [{ reason: "student_event", count: 2 }],
   },
   {
@@ -1182,7 +1182,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 24, totalActualHours: 16,
     chaptersCompleted: 3, totalChapters: 4,
     currentChapter: "hin-9-4", currentChapterName: "साँवले सपनों की याद",
-    overallStatus: "on_track", percentComplete: 67, lostDays: 1,
+    overallStatus: "in_progress", percentComplete: 67, lostDays: 1,
     lostDaysReasons: [{ reason: "teacher_absent", count: 1 }],
   },
   {
@@ -1191,7 +1191,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 30, totalActualHours: 18,
     chaptersCompleted: 2, totalChapters: 3,
     currentChapter: "sst-9-3", currentChapterName: "Nazism and the Rise of Hitler",
-    overallStatus: "on_track", percentComplete: 60, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 60, lostDays: 2,
     lostDaysReasons: [{ reason: "holiday", count: 1 }, { reason: "student_event", count: 1 }],
   },
   
@@ -1220,7 +1220,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 12, totalActualHours: 8,
     chaptersCompleted: 1, totalChapters: 2,
     currentChapter: "hin-9-2", currentChapterName: "ल्हासा की ओर",
-    overallStatus: "on_track", percentComplete: 67, lostDays: 1,
+    overallStatus: "in_progress", percentComplete: 67, lostDays: 1,
     lostDaysReasons: [{ reason: "student_event", count: 1 }],
   },
   
@@ -1240,7 +1240,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 20, totalActualHours: 14,
     chaptersCompleted: 2, totalChapters: 3,
     currentChapter: "eng-8-3", currentChapterName: "Glimpses of the Past",
-    overallStatus: "on_track", percentComplete: 70, lostDays: 1,
+    overallStatus: "in_progress", percentComplete: 70, lostDays: 1,
     lostDaysReasons: [{ reason: "student_event", count: 1 }],
   },
   {
@@ -1249,7 +1249,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 16, totalActualHours: 10,
     chaptersCompleted: 2, totalChapters: 3,
     currentChapter: "hin-8-3", currentChapterName: "बस की यात्रा",
-    overallStatus: "on_track", percentComplete: 63, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 63, lostDays: 2,
     lostDaysReasons: [{ reason: "teacher_absent", count: 2 }],
   },
   {
@@ -1258,7 +1258,7 @@ export const subjectProgressData: SubjectProgress[] = [
     totalPlannedHours: 22, totalActualHours: 14,
     chaptersCompleted: 2, totalChapters: 3,
     currentChapter: "sst-8-3", currentChapterName: "Ruling the Countryside",
-    overallStatus: "on_track", percentComplete: 64, lostDays: 2,
+    overallStatus: "in_progress", percentComplete: 64, lostDays: 2,
     lostDaysReasons: [{ reason: "holiday", count: 1 }, { reason: "exam", count: 1 }],
   },
 ];
@@ -1319,7 +1319,7 @@ export const batchProgressSummaries: BatchProgressSummary[] = [
         totalPlannedHours: 54, totalActualHours: 38,
         chaptersCompleted: 3, totalChapters: 5,
         currentChapter: "phy-11-4", currentChapterName: "Motion in a Plane",
-        overallStatus: "on_track", percentComplete: 70, lostDays: 2,
+        overallStatus: "in_progress", percentComplete: 70, lostDays: 2,
         lostDaysReasons: [{ reason: "exam", count: 2 }],
       },
       {
@@ -1346,7 +1346,7 @@ export const batchProgressSummaries: BatchProgressSummary[] = [
         totalPlannedHours: 38, totalActualHours: 24,
         chaptersCompleted: 2, totalChapters: 4,
         currentChapter: "phy-11-3", currentChapterName: "Motion in a Straight Line",
-        overallStatus: "on_track", percentComplete: 63, lostDays: 3,
+        overallStatus: "in_progress", percentComplete: 63, lostDays: 3,
         lostDaysReasons: [{ reason: "teacher_absent", count: 2 }, { reason: "holiday", count: 1 }],
       },
       {
@@ -1355,7 +1355,7 @@ export const batchProgressSummaries: BatchProgressSummary[] = [
         totalPlannedHours: 32, totalActualHours: 22,
         chaptersCompleted: 2, totalChapters: 3,
         currentChapter: "che-11-3", currentChapterName: "Classification of Elements",
-        overallStatus: "on_track", percentComplete: 69, lostDays: 1,
+        overallStatus: "in_progress", percentComplete: 69, lostDays: 1,
         lostDaysReasons: [{ reason: "exam", count: 1 }],
       },
     ],
@@ -1382,7 +1382,7 @@ export const batchProgressSummaries: BatchProgressSummary[] = [
         totalPlannedHours: 44, totalActualHours: 34,
         chaptersCompleted: 3, totalChapters: 4,
         currentChapter: "mat-12-4", currentChapterName: "Determinants",
-        overallStatus: "on_track", percentComplete: 77, lostDays: 1,
+        overallStatus: "in_progress", percentComplete: 77, lostDays: 1,
         lostDaysReasons: [{ reason: "holiday", count: 1 }],
       },
       {
@@ -1391,7 +1391,7 @@ export const batchProgressSummaries: BatchProgressSummary[] = [
         totalPlannedHours: 30, totalActualHours: 22,
         chaptersCompleted: 2, totalChapters: 3,
         currentChapter: "che-12-3", currentChapterName: "Electrochemistry",
-        overallStatus: "on_track", percentComplete: 73, lostDays: 1,
+        overallStatus: "in_progress", percentComplete: 73, lostDays: 1,
         lostDaysReasons: [{ reason: "student_event", count: 1 }],
       },
     ],
