@@ -106,7 +106,7 @@ export default function Setup() {
         subjects: classSubjects.map(s => {
           // Check if any setup exists for this class + subject combination
           const hasSetup = academicScheduleSetups.some(
-            setup => setup.classId.includes(`class-${cls.name}`) && setup.subjectId === s.id
+            setup => setup.classId?.includes(`class-${cls.name}`) && setup.subjectId === s.id
           );
           return {
             subjectId: s.id,
