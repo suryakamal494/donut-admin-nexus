@@ -127,8 +127,8 @@ export const SubjectPanelView = ({
   const isDisabled = trackType === "curriculum" && !selectedClassId;
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden">
-      <div className="p-3 border-b border-border/50 bg-muted/30">
+    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden min-h-0">
+      <div className="p-3 border-b border-border/50 bg-muted/30 shrink-0">
         <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
           <Folder className="w-4 h-4 text-primary" />
           Subjects
@@ -141,7 +141,7 @@ export const SubjectPanelView = ({
           </p>
         )}
       </div>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="p-2 space-y-1">
           {displaySubjects.map((subject) => {
             const chapterCount = trackType === "course"
