@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GitCompareArrows, BookOpen, AlertTriangle, CheckCircle2, Clock, TrendingUp, Users } from "lucide-react";
+import { GitCompareArrows, BookOpen, AlertTriangle, CheckCircle2, TrendingUp, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { weeklyChapterPlans, academicScheduleSetups, currentWeekIndex } from "@/data/academicScheduleData";
 import { Progress } from "@/components/ui/progress";
@@ -51,7 +51,8 @@ const SECTION_DATA: Record<string, { name: string; classId: string }> = {
   "batch-12b": { name: "Section B", classId: "7" },
 };
 
-export default function SectionAlignment() {
+// Content component for use in tabs
+export function SectionAlignmentContent() {
   const [selectedClass, setSelectedClass] = useState("4"); // Class 9
   const [selectedSubject, setSelectedSubject] = useState("mat");
 
@@ -143,16 +144,7 @@ export default function SectionAlignment() {
   const isAligned = currentChapters.length <= 1;
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <PageHeader
-        title="Section Alignment"
-        description="Compare academic progress across sections"
-        breadcrumbs={[
-          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
-          { label: "Section Alignment" },
-        ]}
-      />
-
+    <div className="space-y-4">
       {/* Class Selector */}
       <Card className="p-3 md:p-4">
         <div className="space-y-3">
@@ -365,7 +357,6 @@ export default function SectionAlignment() {
         </h3>
         <div className="space-y-3">
           {sectionComparison.map(section => {
-            const colors = SUBJECT_COLORS[selectedSubject] || { solid: "bg-gray-500" };
             return (
               <div key={section.sectionId} className="flex items-center gap-3">
                 <span className="text-sm w-24 shrink-0">{section.sectionName}</span>
@@ -391,6 +382,23 @@ export default function SectionAlignment() {
           })}
         </div>
       </Card>
+    </div>
+  );
+}
+
+// Full page component for direct URL access
+export default function SectionAlignment() {
+  return (
+    <div className="space-y-4 md:space-y-6">
+      <PageHeader
+        title="Section Alignment"
+        description="Compare academic progress across sections"
+        breadcrumbs={[
+          { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
+          { label: "Section Alignment" },
+        ]}
+      />
+      <SectionAlignmentContent />
     </div>
   );
 }

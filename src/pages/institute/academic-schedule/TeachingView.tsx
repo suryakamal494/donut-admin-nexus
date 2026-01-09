@@ -37,7 +37,8 @@ const BATCH_OPTIONS = [
   { id: "batch-11a", name: "Class 11 - Section A", classId: "6" },
 ];
 
-export default function TeachingView() {
+// Content component for use in tabs
+export function TeachingViewContent() {
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(currentWeekIndex);
   const [selectedBatch, setSelectedBatch] = useState("batch-1");
 
@@ -133,19 +134,7 @@ export default function TeachingView() {
   const isCurrentWeek = selectedWeekIndex === currentWeekIndex;
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Condensed Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <PageHeader
-          title="Weekly Teaching Plan"
-          description="Timetable view with chapter overlays"
-          breadcrumbs={[
-            { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
-            { label: "Teaching View" },
-          ]}
-        />
-      </div>
-
+    <div className="space-y-4">
       {/* Controls Bar */}
       <Card className="p-3 md:p-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -378,6 +367,26 @@ export default function TeachingView() {
           </Button>
         </Card>
       )}
+    </div>
+  );
+}
+
+// Full page component for direct URL access
+export default function TeachingView() {
+  return (
+    <div className="space-y-4 md:space-y-6">
+      {/* Condensed Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Weekly Teaching Plan"
+          description="Timetable view with chapter overlays"
+          breadcrumbs={[
+            { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
+            { label: "Teaching View" },
+          ]}
+        />
+      </div>
+      <TeachingViewContent />
     </div>
   );
 }
