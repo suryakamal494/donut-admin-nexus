@@ -56,8 +56,11 @@ export default function Setup() {
         { id: "3", name: "Class 8" },
         { id: "4", name: "Class 9" },
         { id: "5", name: "Class 10" },
+        { id: "6", name: "Class 11" },
+        { id: "7", name: "Class 12" },
       ];
     }
+    // JEE uses same class IDs but only 11-12
     return [
       { id: "6", name: "Class 11" },
       { id: "7", name: "Class 12" },
@@ -92,6 +95,8 @@ export default function Setup() {
           { id: "3", name: "8" },
           { id: "4", name: "9" },
           { id: "5", name: "10" },
+          { id: "6", name: "11" },
+          { id: "7", name: "12" },
         ]
       : [{ id: "6", name: "11" }, { id: "7", name: "12" }];
 
@@ -105,8 +110,9 @@ export default function Setup() {
         className: `Class ${cls.name}`,
         subjects: classSubjects.map(s => {
           // Check if any setup exists for this class + subject combination
+          // Now uses aligned class IDs
           const hasSetup = academicScheduleSetups.some(
-            setup => setup.classId?.includes(`class-${cls.name}`) && setup.subjectId === s.id
+            setup => setup.classId === cls.id && setup.subjectId === s.id
           );
           return {
             subjectId: s.id,
