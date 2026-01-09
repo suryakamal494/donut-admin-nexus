@@ -74,44 +74,44 @@ const RoleCard = ({ role, onEdit, onDelete }: RoleCardProps) => {
   const scopeSummary = getScopeSummary();
 
   return (
-    <div className="bg-card rounded-2xl p-5 shadow-soft border border-border/50 hover-lift transition-all">
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+    <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-soft border border-border/50 hover-lift transition-all">
+      <div className="flex items-start justify-between mb-2 sm:mb-3">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center">
           {getIcon()}
         </div>
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(role)}>
-            <Edit className="w-4 h-4" />
+        <div className="flex gap-0.5 sm:gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => onEdit(role)}>
+            <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Button>
           {role.isSystem ? (
-            <Button variant="ghost" size="icon" disabled className="opacity-50">
-              <Lock className="w-4 h-4" />
+            <Button variant="ghost" size="icon" disabled className="opacity-50 h-8 w-8 sm:h-9 sm:w-9">
+              <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Button>
           ) : (
-            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onDelete(role)}>
-              <Trash2 className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive h-8 w-8 sm:h-9 sm:w-9" onClick={() => onDelete(role)}>
+              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Button>
           )}
         </div>
       </div>
       
-      <h3 className="font-semibold text-lg">{role.name}</h3>
-      <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{role.description}</p>
+      <h3 className="font-semibold text-base sm:text-lg">{role.name}</h3>
+      <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-1">{role.description}</p>
       
-      <p className="text-sm text-primary/80 mt-2 font-medium">{getPermissionSummary()}</p>
+      <p className="text-xs sm:text-sm text-primary/80 mt-2 font-medium">{getPermissionSummary()}</p>
       
       {scopeSummary && (
         <div className="mt-2 flex flex-wrap gap-1">
           {scopeSummary.map((scope, idx) => (
-            <Badge key={idx} variant="secondary" className="text-xs">
+            <Badge key={idx} variant="secondary" className="text-[10px] sm:text-xs">
               {scope}
             </Badge>
           ))}
         </div>
       )}
       
-      <div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-2 text-sm text-muted-foreground">
-        <Users className="w-4 h-4" />
+      <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-border/50 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+        <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         <span>{role.memberCount} member{role.memberCount !== 1 ? "s" : ""}</span>
       </div>
     </div>

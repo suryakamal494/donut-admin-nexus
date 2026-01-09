@@ -120,25 +120,25 @@ const Roles = () => {
         ]}
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <TabsList className="grid w-full sm:w-auto grid-cols-2">
-            <TabsTrigger value="roles" className="gap-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <TabsList className="grid w-full sm:w-auto grid-cols-2 h-9 sm:h-10">
+            <TabsTrigger value="roles" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
               Role Types
             </TabsTrigger>
-            <TabsTrigger value="members" className="gap-2">
+            <TabsTrigger value="members" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
               Team Members
             </TabsTrigger>
           </TabsList>
           
           {activeTab === "roles" ? (
-            <Button className="gradient-button gap-2" onClick={handleCreateRole}>
-              <Plus className="w-4 h-4" />
+            <Button className="gradient-button gap-1.5 sm:gap-2 h-9 sm:h-10 text-xs sm:text-sm" onClick={handleCreateRole}>
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Create Role
             </Button>
           ) : (
-            <Button className="gradient-button gap-2" onClick={handleAddMember}>
-              <UserPlus className="w-4 h-4" />
+            <Button className="gradient-button gap-1.5 sm:gap-2 h-9 sm:h-10 text-xs sm:text-sm" onClick={handleAddMember}>
+              <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Add Member
             </Button>
           )}
