@@ -153,6 +153,7 @@ const App = () => (
             <Route path="questions/edit/:questionId" element={<InstituteCreateQuestion />} />
             <Route path="content" element={<InstituteContent />} />
             <Route path="content/create" element={<InstituteCreateContent />} />
+            <Route path="content/edit/:contentId" element={<InstituteCreateContent />} />
             <Route path="content/ai-generate" element={<InstituteAIContentGenerator />} />
             <Route path="exams" element={<InstituteExams />} />
             <Route path="exams/create" element={<InstituteCreateExam />} />

@@ -149,12 +149,12 @@ const InstituteAIContentGenerator = () => {
   };
 
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center mb-8">
+    <div className="flex items-center justify-center mb-6 sm:mb-8">
       {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center">
           <div
             className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all",
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base transition-all",
               currentStep >= step
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground"
@@ -165,7 +165,7 @@ const InstituteAIContentGenerator = () => {
           {step < 3 && (
             <div
               className={cn(
-                "w-16 md:w-24 h-1 mx-2",
+                "w-8 sm:w-16 md:w-24 h-1 mx-1 sm:mx-2",
                 currentStep > step ? "bg-primary" : "bg-muted"
               )}
             />
@@ -371,14 +371,14 @@ const InstituteAIContentGenerator = () => {
         </div>
       </div>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={() => setCurrentStep(1)} className="gap-2">
+      <div className="flex flex-col-reverse sm:flex-row justify-between gap-3">
+        <Button variant="outline" onClick={() => setCurrentStep(1)} className="gap-2 w-full sm:w-auto">
           <ChevronLeft className="w-4 h-4" /> Back
         </Button>
         <Button
           onClick={handleGenerate}
           disabled={!canProceedStep2 || isGenerating}
-          className="gradient-button gap-2"
+          className="gradient-button gap-2 w-full sm:w-auto"
         >
           {isGenerating ? (
             <>

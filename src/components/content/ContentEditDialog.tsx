@@ -122,7 +122,7 @@ export const ContentEditDialog = ({ content, open, onOpenChange, onSave }: Conte
               Classification
             </h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Class</Label>
                 <Select 
@@ -266,7 +266,7 @@ export const ContentEditDialog = ({ content, open, onOpenChange, onSave }: Conte
               <RadioGroup
                 value={formData.visibility}
                 onValueChange={(v) => handleChange("visibility", v)}
-                className="flex gap-4"
+                className="flex flex-wrap gap-3 sm:gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="public" id="public" />
