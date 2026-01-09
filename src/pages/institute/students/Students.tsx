@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -218,7 +218,7 @@ const StudentRow = React.memo(({
 ));
 StudentRow.displayName = "StudentRow";
 
-import React from "react";
+
 
 const Students = () => {
   const navigate = useNavigate();
