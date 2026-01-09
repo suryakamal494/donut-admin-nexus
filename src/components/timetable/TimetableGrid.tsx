@@ -2,11 +2,13 @@ import { cn } from "@/lib/utils";
 import { TimetableEntry, PeriodStructure, subjectColors, TeacherLoad } from "@/data/timetableData";
 import { InfoTooltip } from "./InfoTooltip";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, AlertTriangle, Clock, GripVertical, CalendarOff, Building2, UserCheck } from "lucide-react";
+import { Plus, AlertTriangle, Clock, GripVertical, CalendarOff, Building2, UserCheck, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { DragEvent, useState } from "react";
 import { Holiday } from "./HolidayCalendarDialog";
 import { format, parseISO, getDay, startOfWeek, addDays, isWithinInterval, startOfMonth, endOfMonth } from "date-fns";
+import { ExamBlock } from "@/types/examBlock";
+import { isSlotBlocked, BlockCheckResult } from "@/lib/examBlockUtils";
 
 export interface DragData {
   type: 'teacher' | 'entry';
@@ -30,6 +32,7 @@ interface TimetableGridProps {
   draggedEntry?: TimetableEntry | null;
   holidays?: Holiday[];
   weekStartDate?: Date;
+  examBlocks?: ExamBlock[];
 }
 
 // Map day names to day indices (0 = Sunday)
@@ -59,6 +62,7 @@ export const TimetableGrid = ({
   draggedEntry,
   holidays = [],
   weekStartDate,
+  examBlocks = [],
 }: TimetableGridProps) => {
   const { workingDays, periodsPerDay, breaks, timeMapping, useTimeMapping } = periodStructure;
   const [dragOverCell, setDragOverCell] = useState<{ day: string; period: number } | null>(null);
@@ -330,7 +334,38 @@ export const TimetableGrid = ({
                     const isOver = dragOverCell?.day === day && dragOverCell?.period === period;
                     const isBeingDragged = draggedEntry?.id === entry?.id;
                     const isValidDrop = isValidDropTarget(day, period, dayIndex);
-                    const isBlocked = isTeacherOff || isDayHoliday;
+                    
+                    // Check for exam blocks
+                    const dayDate = weekStartDate ? addDays(weekStartDate, dayIndex) : null;
+                    const examBlockCheck: BlockCheckResult = dayDate && examBlocks.length > 0
+                      ? isSlotBlocked(dayDate, period, selectedBatchId || null, examBlocks)
+                      : { blocked: false };
+                    
+                    const isBlocked = isTeacherOff || isDayHoliday || examBlockCheck.blocked;
+
+                    // Render exam-blocked cell
+                    if (examBlockCheck.blocked) {
+                      return (
+                        <td
+                          key={`${day}-${period}`}
+                          className="p-2 text-center border-r border-border last:border-r-0 bg-red-50/80 dark:bg-red-950/30"
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="p-2 flex flex-col items-center justify-center text-red-600 dark:text-red-400 cursor-help">
+                                <Lock className="w-4 h-4 mb-1" />
+                                <span className="text-xs font-medium truncate max-w-[80px]">{examBlockCheck.blockName}</span>
+                                <span className="text-[10px] opacity-70">Exam</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              <p className="text-xs font-medium">{examBlockCheck.blockName}</p>
+                              <p className="text-xs text-muted-foreground">This slot is blocked for an exam</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                      );
+                    }
 
                     // Render holiday-blocked cell
                     if (isDayHoliday) {

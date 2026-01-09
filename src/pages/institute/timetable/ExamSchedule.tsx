@@ -3,28 +3,27 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExamBlockForm } from "@/components/timetable/ExamBlockForm";
 import { ExamBlockList } from "@/components/timetable/ExamBlockList";
+import { ExamYearlyCalendar } from "@/components/timetable/ExamYearlyCalendar";
 import { ExamBlock } from "@/types/examBlock";
 import { examBlocks as initialBlocks } from "@/data/examBlockData";
-import { Plus, Calendar } from "lucide-react";
+import { Plus, List, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 
 const ExamSchedule = () => {
-  const [activeTab, setActiveTab] = useState("view");
+  const [activeTab, setActiveTab] = useState("list");
   const [blocks, setBlocks] = useState<ExamBlock[]>(initialBlocks);
   const [editingBlock, setEditingBlock] = useState<ExamBlock | null>(null);
 
   const handleSaveBlock = (block: ExamBlock) => {
     if (editingBlock) {
-      // Update existing exam
       setBlocks(prev => prev.map(b => b.id === block.id ? block : b));
       toast.success("Exam updated successfully");
       setEditingBlock(null);
     } else {
-      // Add new exam
       setBlocks(prev => [...prev, { ...block, id: `block-${Date.now()}`, createdAt: new Date().toISOString() }]);
       toast.success("Exam created successfully");
     }
-    setActiveTab("view");
+    setActiveTab("list");
   };
 
   const handleEditBlock = (block: ExamBlock) => {
@@ -55,23 +54,28 @@ const ExamSchedule = () => {
       />
 
       <Tabs value={activeTab} onValueChange={(v) => {
-        if (v === "view") setEditingBlock(null);
+        if (v !== "create") setEditingBlock(null);
         setActiveTab(v);
       }}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="view" className="gap-2">
-            <Calendar className="w-4 h-4" />
-            <span className="hidden sm:inline">View Schedule</span>
-            <span className="sm:hidden">View</span>
+        <TabsList className="grid w-full max-w-lg grid-cols-3">
+          <TabsTrigger value="list" className="gap-2">
+            <List className="w-4 h-4" />
+            <span className="hidden sm:inline">Schedule List</span>
+            <span className="sm:hidden">List</span>
+          </TabsTrigger>
+          <TabsTrigger value="yearly" className="gap-2">
+            <CalendarDays className="w-4 h-4" />
+            <span className="hidden sm:inline">Yearly Calendar</span>
+            <span className="sm:hidden">Calendar</span>
           </TabsTrigger>
           <TabsTrigger value="create" className="gap-2">
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">{editingBlock ? "Edit Exam Schedule" : "Create Exam Schedule"}</span>
+            <span className="hidden sm:inline">{editingBlock ? "Edit Exam" : "Create"}</span>
             <span className="sm:hidden">{editingBlock ? "Edit" : "Create"}</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="view" className="mt-4 sm:mt-6">
+        <TabsContent value="list" className="mt-4 sm:mt-6">
           <ExamBlockList
             blocks={blocks}
             onEdit={handleEditBlock}
@@ -81,13 +85,20 @@ const ExamSchedule = () => {
           />
         </TabsContent>
 
+        <TabsContent value="yearly" className="mt-4 sm:mt-6">
+          <ExamYearlyCalendar 
+            blocks={blocks} 
+            onEdit={handleEditBlock}
+          />
+        </TabsContent>
+
         <TabsContent value="create" className="mt-4 sm:mt-6">
           <ExamBlockForm
             existingBlock={editingBlock}
             onSave={handleSaveBlock}
             onCancel={() => {
               setEditingBlock(null);
-              setActiveTab("view");
+              setActiveTab("list");
             }}
           />
         </TabsContent>
