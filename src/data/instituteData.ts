@@ -561,16 +561,49 @@ export const teachers: Teacher[] = [
   },
 ];
 
-// Sample Students
+// Sample Students - Expanded dataset for scalability testing
 export const students: Student[] = [
-  { id: "student-1", name: "Aarav Patel", username: "aarav.patel", rollNumber: "001", batchId: "batch-1", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
-  { id: "student-2", name: "Diya Sharma", username: "diya.sharma", rollNumber: "002", batchId: "batch-1", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
-  { id: "student-3", name: "Arjun Singh", username: "arjun.singh", rollNumber: "003", batchId: "batch-1", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
-  { id: "student-4", name: "Ananya Gupta", username: "ananya.gupta", rollNumber: "004", batchId: "batch-1", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
-  { id: "student-5", name: "Vihaan Kumar", username: "vihaan.kumar", rollNumber: "005", batchId: "batch-2", batchName: "Section B", className: "Class 10", status: "active", createdAt: "2024-04-01" },
-  { id: "student-6", name: "Ishaan Reddy", username: "ishaan.reddy", rollNumber: "001", batchId: "batch-3", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
-  { id: "student-7", name: "Saanvi Joshi", username: "saanvi.joshi", rollNumber: "002", batchId: "batch-3", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
-  { id: "student-8", name: "Reyansh Mehta", username: "reyansh.mehta", rollNumber: "001", batchId: "batch-5", batchName: "Section A", className: "Class 8", status: "active", createdAt: "2024-04-01" },
+  // Class 10 - Section A (batch-10a)
+  { id: "student-1", name: "Aarav Patel", username: "aarav.patel", rollNumber: "001", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-2", name: "Diya Sharma", username: "diya.sharma", rollNumber: "002", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-3", name: "Arjun Singh", username: "arjun.singh", rollNumber: "003", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-4", name: "Ananya Gupta", username: "ananya.gupta", rollNumber: "004", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-5", name: "Kavya Nair", username: "kavya.nair", rollNumber: "005", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-6", name: "Rohan Desai", username: "rohan.desai", rollNumber: "006", batchId: "batch-10a", batchName: "Section A", className: "Class 10", status: "inactive", createdAt: "2024-04-01" },
+  
+  // Class 10 - Section B (batch-10b)
+  { id: "student-7", name: "Vihaan Kumar", username: "vihaan.kumar", rollNumber: "001", batchId: "batch-10b", batchName: "Section B", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-8", name: "Aanya Mehta", username: "aanya.mehta", rollNumber: "002", batchId: "batch-10b", batchName: "Section B", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-9", name: "Advait Rao", username: "advait.rao", rollNumber: "003", batchId: "batch-10b", batchName: "Section B", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  { id: "student-10", name: "Myra Kapoor", username: "myra.kapoor", rollNumber: "004", batchId: "batch-10b", batchName: "Section B", className: "Class 10", status: "active", createdAt: "2024-04-01" },
+  
+  // Class 9 - Section A (batch-9a)
+  { id: "student-11", name: "Ishaan Reddy", username: "ishaan.reddy", rollNumber: "001", batchId: "batch-9a", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  { id: "student-12", name: "Saanvi Joshi", username: "saanvi.joshi", rollNumber: "002", batchId: "batch-9a", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  { id: "student-13", name: "Vivaan Malhotra", username: "vivaan.malhotra", rollNumber: "003", batchId: "batch-9a", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  { id: "student-14", name: "Anika Saxena", username: "anika.saxena", rollNumber: "004", batchId: "batch-9a", batchName: "Section A", className: "Class 9", status: "inactive", createdAt: "2024-04-01" },
+  { id: "student-15", name: "Dhruv Pandey", username: "dhruv.pandey", rollNumber: "005", batchId: "batch-9a", batchName: "Section A", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  
+  // Class 9 - Section B (batch-9b)
+  { id: "student-16", name: "Kiara Bhat", username: "kiara.bhat", rollNumber: "001", batchId: "batch-9b", batchName: "Section B", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  { id: "student-17", name: "Reyansh Menon", username: "reyansh.menon", rollNumber: "002", batchId: "batch-9b", batchName: "Section B", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  { id: "student-18", name: "Tara Kulkarni", username: "tara.kulkarni", rollNumber: "003", batchId: "batch-9b", batchName: "Section B", className: "Class 9", status: "active", createdAt: "2024-04-01" },
+  
+  // Class 8 - Section A (batch-8a)
+  { id: "student-19", name: "Reyansh Mehta", username: "reyansh.mehta", rollNumber: "001", batchId: "batch-8a", batchName: "Section A", className: "Class 8", status: "active", createdAt: "2024-04-01" },
+  { id: "student-20", name: "Zara Shah", username: "zara.shah", rollNumber: "002", batchId: "batch-8a", batchName: "Section A", className: "Class 8", status: "active", createdAt: "2024-04-01" },
+  { id: "student-21", name: "Aadhya Pillai", username: "aadhya.pillai", rollNumber: "003", batchId: "batch-8a", batchName: "Section A", className: "Class 8", status: "active", createdAt: "2024-04-01" },
+  { id: "student-22", name: "Kabir Chatterjee", username: "kabir.chatterjee", rollNumber: "004", batchId: "batch-8a", batchName: "Section A", className: "Class 8", status: "active", createdAt: "2024-04-01" },
+  
+  // Class 11 - Section A (batch-11a)
+  { id: "student-23", name: "Arnav Bhatt", username: "arnav.bhatt", rollNumber: "001", batchId: "batch-11a", batchName: "Section A", className: "Class 11", status: "active", createdAt: "2024-04-01" },
+  { id: "student-24", name: "Ira Shetty", username: "ira.shetty", rollNumber: "002", batchId: "batch-11a", batchName: "Section A", className: "Class 11", status: "active", createdAt: "2024-04-01" },
+  { id: "student-25", name: "Yash Bansal", username: "yash.bansal", rollNumber: "003", batchId: "batch-11a", batchName: "Section A", className: "Class 11", status: "active", createdAt: "2024-04-01" },
+  
+  // Class 12 - Section A (batch-12a)
+  { id: "student-26", name: "Riya Verma", username: "riya.verma", rollNumber: "001", batchId: "batch-12a", batchName: "Section A", className: "Class 12", status: "active", createdAt: "2024-04-01" },
+  { id: "student-27", name: "Ayaan Khanna", username: "ayaan.khanna", rollNumber: "002", batchId: "batch-12a", batchName: "Section A", className: "Class 12", status: "active", createdAt: "2024-04-01" },
+  { id: "student-28", name: "Navya Iyer", username: "navya.iyer", rollNumber: "003", batchId: "batch-12a", batchName: "Section A", className: "Class 12", status: "inactive", createdAt: "2024-04-01" },
 ];
 
 // Sample Timetable for Class 10 Section A

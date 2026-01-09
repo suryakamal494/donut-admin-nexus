@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import {
   ChevronLeft,
   User,
@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
-import { batches } from "@/data/instituteData";
+import { batches, students } from "@/data/instituteData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +65,11 @@ const generateUsername = (name: string) => {
 const AddStudent = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { studentId } = useParams();
   const preselectedBatchId = searchParams.get("batchId");
+
+  const isEditMode = !!studentId;
+  const existingStudent = studentId ? students.find(s => s.id === studentId) : null;
 
   const [activeTab, setActiveTab] = useState("manual");
   const [selectedBatchId, setSelectedBatchId] = useState(preselectedBatchId || "");
@@ -84,14 +88,25 @@ const AddStudent = () => {
 
   const selectedBatch = batches.find((b) => b.id === selectedBatchId);
 
+  // Pre-populate form in edit mode
+  useEffect(() => {
+    if (existingStudent) {
+      setName(existingStudent.name);
+      setRollNumber(existingStudent.rollNumber);
+      setUsername(existingStudent.username);
+      setSelectedBatchId(existingStudent.batchId);
+      setPassword(""); // Keep empty for edit mode
+    }
+  }, [existingStudent]);
+
   const handleNameChange = (value: string) => {
     setName(value);
-    if (!username || username === generateUsername(name)) {
+    if (!isEditMode && (!username || username === generateUsername(name))) {
       setUsername(generateUsername(value));
     }
   };
 
-  const handleManualAdd = () => {
+  const handleSubmit = () => {
     if (!selectedBatchId) {
       toast.error("Please select a batch");
       return;
@@ -101,7 +116,11 @@ const AddStudent = () => {
       return;
     }
 
-    toast.success(`${name} added to ${selectedBatch?.className} - ${selectedBatch?.name}`);
+    if (isEditMode) {
+      toast.success(`${name} updated successfully`);
+    } else {
+      toast.success(`${name} added to ${selectedBatch?.className} - ${selectedBatch?.name}`);
+    }
     navigate("/institute/students");
   };
 
@@ -170,14 +189,18 @@ const AddStudent = () => {
   const invalidCount = parsedStudents.filter((s) => !s.isValid).length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <PageHeader
-        title="Add Students"
-        description="Add students one by one or upload multiple students at once using copy-paste."
+        title={isEditMode ? "Edit Student" : "Add Students"}
+        description={isEditMode 
+          ? "Update student information."
+          : "Add students one by one or upload multiple students at once using copy-paste."
+        }
         actions={
           <Button variant="outline" onClick={() => navigate("/institute/students")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
-            Back to Students
+            <span className="hidden sm:inline">Back to Students</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         }
       />
@@ -187,7 +210,7 @@ const AddStudent = () => {
         <CardHeader className="pb-4">
           <CardTitle className="text-lg">Select Batch</CardTitle>
           <CardDescription>
-            Choose which batch these students will be added to
+            {isEditMode ? "The batch this student belongs to" : "Choose which batch these students will be added to"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -206,251 +229,360 @@ const AddStudent = () => {
         </CardContent>
       </Card>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="manual" className="gap-2">
-            <User className="h-4 w-4" />
-            Add One by One
-          </TabsTrigger>
-          <TabsTrigger value="bulk" className="gap-2">
-            <ClipboardPaste className="h-4 w-4" />
-            Bulk Add (Copy-Paste)
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Manual Add */}
-        <TabsContent value="manual" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Student Details</CardTitle>
-              <CardDescription>
-                Enter the student's information. Username and password are auto-generated.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g., Aarav Patel"
-                    value={name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="rollNumber">Roll Number</Label>
-                  <Input
-                    id="rollNumber"
-                    placeholder="e.g., 001"
-                    value={rollNumber}
-                    onChange={(e) => setRollNumber(e.target.value)}
-                  />
-                </div>
+      {isEditMode ? (
+        // Edit Mode - Only show manual form
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Student Details</CardTitle>
+            <CardDescription>
+              Update the student's information below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Aarav Patel"
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="rollNumber">Roll Number</Label>
+                <Input
+                  id="rollNumber"
+                  placeholder="e.g., 001"
+                  value={rollNumber}
+                  onChange={(e) => setRollNumber(e.target.value)}
+                />
+              </div>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    placeholder="Auto-generated from name"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-full"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="Auto-generated from name"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password (leave blank to keep current)</Label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Leave blank to keep current"
+                    />
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
-                      onClick={() => setPassword(generatePassword())}
+                      className="absolute right-0 top-0 h-full"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      <RefreshCw className="h-4 w-4" />
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setPassword(generatePassword())}
+                    className="shrink-0"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-end pt-4">
-                <Button
-                  onClick={handleManualAdd}
-                  disabled={!selectedBatchId || !name.trim()}
-                  className="bg-gradient-to-r from-primary to-primary/80"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Student
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/institute/students")}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={!selectedBatchId || !name.trim()}
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80"
+              >
+                Save Changes
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        // Add Mode - Show tabs
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="manual" className="gap-2">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Add One by One</span>
+              <span className="sm:hidden">Manual</span>
+            </TabsTrigger>
+            <TabsTrigger value="bulk" className="gap-2">
+              <ClipboardPaste className="h-4 w-4" />
+              <span className="hidden sm:inline">Bulk Add (Copy-Paste)</span>
+              <span className="sm:hidden">Bulk</span>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Bulk Add */}
-        <TabsContent value="bulk" className="mt-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Paste Student Data</CardTitle>
-              <CardDescription>
-                Copy rows from Excel, Google Sheets, or any table. Each row: Name, Roll Number (optional), Username (optional)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm font-medium mb-2">Expected Format:</p>
-                <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-background p-3 rounded border">
+          {/* Manual Add */}
+          <TabsContent value="manual" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Student Details</CardTitle>
+                <CardDescription>
+                  Enter the student's information. Username and password are auto-generated.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      placeholder="e.g., Aarav Patel"
+                      value={name}
+                      onChange={(e) => handleNameChange(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="rollNumber">Roll Number</Label>
+                    <Input
+                      id="rollNumber"
+                      placeholder="e.g., 001"
+                      value={rollNumber}
+                      onChange={(e) => setRollNumber(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      placeholder="Auto-generated from name"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <div className="relative flex-1">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setPassword(generatePassword())}
+                        className="shrink-0"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!selectedBatchId || !name.trim()}
+                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Student
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Bulk Add */}
+          <TabsContent value="bulk" className="mt-6 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Paste Student Data</CardTitle>
+                <CardDescription>
+                  Copy rows from Excel, Google Sheets, or any table. Each row: Name, Roll Number (optional), Username (optional)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm font-medium mb-2">Expected Format:</p>
+                  <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-background p-3 rounded border overflow-x-auto">
 {`Name    Roll Number    Username
 Aarav Patel    001    aarav.patel
 Diya Sharma    002    
 Arjun Singh`}
-                </pre>
-                <p className="text-xs text-muted-foreground mt-2">
-                  💡 Roll number and username are optional - they'll be auto-generated if empty
-                </p>
-              </div>
+                  </pre>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    💡 Roll number and username are optional - they'll be auto-generated if empty
+                  </p>
+                </div>
 
-              <Textarea
-                placeholder="Paste your data here...
+                <Textarea
+                  placeholder="Paste your data here...
 
 Example:
 Aarav Patel	001
 Diya Sharma	002
 Arjun Singh	003"
-                value={pasteData}
-                onChange={(e) => setPasteData(e.target.value)}
-                className="min-h-[150px] font-mono text-sm"
-              />
+                  value={pasteData}
+                  onChange={(e) => setPasteData(e.target.value)}
+                  className="min-h-[150px] font-mono text-sm"
+                />
 
-              <div className="flex items-center gap-3">
-                <Button onClick={handleParse}>
-                  <Check className="h-4 w-4 mr-2" />
-                  Parse Data
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setPasteData("");
-                    setParsedStudents([]);
-                  }}
-                >
-                  Clear
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Parsed Preview */}
-          {parsedStudents.length > 0 && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">Preview</CardTitle>
-                    <CardDescription>
-                      Review the parsed data before adding
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {validCount > 0 && (
-                      <Badge className="bg-emerald-100 text-emerald-700">
-                        {validCount} valid
-                      </Badge>
-                    )}
-                    {invalidCount > 0 && (
-                      <Badge variant="destructive">{invalidCount} with errors</Badge>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[30px]">Status</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Roll No.</TableHead>
-                      <TableHead>Username</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {parsedStudents.map((student, index) => (
-                      <TableRow
-                        key={index}
-                        className={cn(!student.isValid && "bg-destructive/5")}
-                      >
-                        <TableCell>
-                          {student.isValid ? (
-                            <Check className="h-4 w-4 text-emerald-600" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 text-destructive" />
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {student.name || "-"}
-                        </TableCell>
-                        <TableCell>{student.rollNumber}</TableCell>
-                        <TableCell className="text-muted-foreground">
-                          @{student.username}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveRow(index)}
-                          >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-
-                <div className="flex justify-end mt-6">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <Button onClick={handleParse} className="w-full sm:w-auto">
+                    <Check className="h-4 w-4 mr-2" />
+                    Parse Data
+                  </Button>
                   <Button
-                    onClick={handleBulkUpload}
-                    disabled={validCount === 0 || !selectedBatchId || isProcessing}
-                    className="bg-gradient-to-r from-primary to-primary/80"
+                    variant="ghost"
+                    onClick={() => {
+                      setPasteData("");
+                      setParsedStudents([]);
+                    }}
+                    className="w-full sm:w-auto"
                   >
-                    {isProcessing ? (
-                      <>Processing...</>
-                    ) : (
-                      <>
-                        <Users className="h-4 w-4 mr-2" />
-                        Add {validCount} Student{validCount !== 1 ? "s" : ""}
-                      </>
-                    )}
+                    Clear
                   </Button>
                 </div>
               </CardContent>
             </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+
+            {/* Parsed Preview */}
+            {parsedStudents.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-lg">Preview</CardTitle>
+                      <CardDescription>
+                        Review the parsed data before adding
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {validCount > 0 && (
+                        <Badge className="bg-emerald-100 text-emerald-700">
+                          {validCount} valid
+                        </Badge>
+                      )}
+                      {invalidCount > 0 && (
+                        <Badge variant="destructive">{invalidCount} with errors</Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto -mx-4 sm:mx-0">
+                    <Table className="min-w-[450px]">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[30px]">Status</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Roll No.</TableHead>
+                          <TableHead className="hidden sm:table-cell">Username</TableHead>
+                          <TableHead className="w-[50px]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {parsedStudents.map((student, index) => (
+                          <TableRow
+                            key={index}
+                            className={cn(!student.isValid && "bg-destructive/5")}
+                          >
+                            <TableCell>
+                              {student.isValid ? (
+                                <Check className="h-4 w-4 text-emerald-600" />
+                              ) : (
+                                <AlertCircle className="h-4 w-4 text-destructive" />
+                              )}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {student.name || "-"}
+                              <span className="text-xs text-muted-foreground sm:hidden block">
+                                @{student.username}
+                              </span>
+                            </TableCell>
+                            <TableCell>{student.rollNumber}</TableCell>
+                            <TableCell className="text-muted-foreground hidden sm:table-cell">
+                              @{student.username}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveRow(index)}
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className="flex justify-end mt-6">
+                    <Button
+                      onClick={handleBulkUpload}
+                      disabled={validCount === 0 || !selectedBatchId || isProcessing}
+                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80"
+                    >
+                      {isProcessing ? (
+                        <>Processing...</>
+                      ) : (
+                        <>
+                          <Users className="h-4 w-4 mr-2" />
+                          Add {validCount} Student{validCount !== 1 ? "s" : ""}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };
