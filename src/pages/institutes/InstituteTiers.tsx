@@ -81,50 +81,50 @@ const InstituteTiers = () => {
           <div
             key={tier.id}
             className={cn(
-              "relative bg-card rounded-2xl p-6 shadow-soft border-2 transition-all hover-lift",
+              "relative bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-soft border-2 transition-all hover-lift",
               index === 1 ? "border-primary md:scale-105" : "border-border/50"
             )}
           >
             {index === 1 && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 gradient-button rounded-full text-xs font-semibold">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1 gradient-button rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap">
                 Most Popular
               </div>
             )}
-            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-4", `bg-${tier.color}/10`)}>
-              <span className={cn("text-2xl font-bold", `text-${tier.color}`)}>{tier.name[0]}</span>
+            <div className={cn("w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4", `bg-${tier.color}/10`)}>
+              <span className={cn("text-xl sm:text-2xl font-bold", `text-${tier.color}`)}>{tier.name[0]}</span>
             </div>
-            <h3 className="text-2xl font-bold">{tier.name}</h3>
-            <div className="mt-2">
-              <span className="text-3xl font-bold gradient-text">₹{tier.price.toLocaleString()}</span>
-              <span className="text-muted-foreground">/{tier.billingCycle}</span>
+            <h3 className="text-xl sm:text-2xl font-bold">{tier.name}</h3>
+            <div className="mt-1.5 sm:mt-2">
+              <span className="text-2xl sm:text-3xl font-bold gradient-text">₹{tier.price.toLocaleString()}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground">/{tier.billingCycle}</span>
             </div>
-            <div className="mt-4 text-sm text-muted-foreground">
+            <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
               <p>Up to {tier.maxStudents === -1 ? "Unlimited" : tier.maxStudents.toLocaleString()} students</p>
               <p>Up to {tier.maxTeachers === -1 ? "Unlimited" : tier.maxTeachers} teachers</p>
             </div>
-            <div className="mt-6 space-y-2">
+            <div className="mt-4 sm:mt-6 space-y-1.5 sm:space-y-2">
               {tier.features.slice(0, 5).map((feature) => (
-                <div key={feature.id} className="flex items-center gap-3">
+                <div key={feature.id} className="flex items-center gap-2 sm:gap-3">
                   {feature.included ? (
-                    <Check className="w-4 h-4 text-success flex-shrink-0" />
+                    <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success flex-shrink-0" />
                   ) : (
-                    <X className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
                   )}
-                  <span className={cn("text-sm", feature.included ? "text-foreground" : "text-muted-foreground")}>
+                  <span className={cn("text-xs sm:text-sm", feature.included ? "text-foreground" : "text-muted-foreground")}>
                     {feature.name}
                     {feature.value && feature.included && <span className="text-muted-foreground ml-1">({feature.value})</span>}
                   </span>
                 </div>
               ))}
-              <p className="text-xs text-muted-foreground mt-2">+ {tier.features.length - 5} more features</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-2">+ {tier.features.length - 5} more features</p>
             </div>
             <Button 
               variant={index === 1 ? "default" : "outline"} 
-              className={cn("w-full mt-6 group", index === 1 && "gradient-button")}
+              className={cn("w-full mt-4 sm:mt-6 group text-sm", index === 1 && "gradient-button")}
               onClick={() => navigate(`/superadmin/institutes/tiers/edit/${tier.id}`)}
             >
               Edit Tier
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         ))}

@@ -115,41 +115,41 @@ export const ContentCard = ({
         )}
       </div>
       
-      <div className="p-4 space-y-3">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-sm line-clamp-2 leading-tight">{content.title}</h3>
+          <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 leading-tight">{content.title}</h3>
           <ContentStatusBadge status={content.status} />
         </div>
         
-        <p className="text-xs text-muted-foreground line-clamp-2">{content.description}</p>
+        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">{content.description}</p>
         
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
           <SubjectBadge subject={content.subject} size="xs" />
-          <span className="text-xs text-muted-foreground">{content.className}</span>
-          <span className="text-xs text-muted-foreground">•</span>
-          <span className="text-xs text-muted-foreground">{meta}</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground">{content.className}</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground">•</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground">{meta}</span>
         </div>
         
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Eye className="w-3 h-3" />
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
+          <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
           <span>{content.viewCount.toLocaleString()}</span>
           {content.downloadCount > 0 && (
             <>
               <span>•</span>
-              <Download className="w-3 h-3" />
+              <Download className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               <span>{content.downloadCount.toLocaleString()}</span>
             </>
           )}
         </div>
         
-        <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+        <div className="flex items-center gap-1 sm:gap-2 pt-2 border-t border-border/50">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="flex-1 h-8 text-xs"
+            className="flex-1 h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
             onClick={() => onPreview(content)}
           >
-            <Eye className="w-3.5 h-3.5 mr-1.5" />
+            <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1.5" />
             Preview
           </Button>
           
@@ -157,18 +157,18 @@ export const ContentCard = ({
             <Button 
               variant="ghost" 
               size="sm"
-              className="h-8 text-xs"
+              className="h-7 sm:h-8 text-[10px] sm:text-xs px-1.5 sm:px-2"
               onClick={() => onEdit?.(content)}
             >
-              <Edit className="w-3.5 h-3.5 mr-1.5" />
+              <Edit className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1.5" />
               Edit
             </Button>
           )}
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                <MoreVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
