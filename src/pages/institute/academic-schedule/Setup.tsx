@@ -2,490 +2,372 @@ import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   BookOpen,
-  Clock,
   Save,
-  GripVertical,
   Check,
-  AlertCircle,
+  Clock,
+  GripVertical,
+  Plus,
+  Trash2,
+  Copy,
+  HelpCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-// Import real master data
-import { assignedTracks, availableClasses } from "@/data/instituteData";
-import { 
-  allCBSEChapters, 
-  getSubjectsByClass,
-  type CBSEChapter 
-} from "@/data/cbseMasterData";
-import { 
-  courseChapterMappings, 
-  courseOwnedChapters 
-} from "@/data/masterData";
-import { 
-  subjectMasterList, 
-  findSubject, 
-  getSubjectColor,
-  type SubjectInfo 
-} from "@/components/subject/SubjectBadge";
+import { SetupProgressMatrix } from "@/components/academic-schedule";
 import { academicScheduleSetups } from "@/data/academicScheduleData";
-import { ChapterHourAllocation } from "@/types/academicSchedule";
-import { toast } from "sonner";
+import { getSubjectsByClass } from "@/data/cbseMasterData";
+import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-// Map class IDs to internal IDs used in CBSE data
-const classIdMapping: Record<string, string> = {
-  "class-6": "1",
-  "class-7": "2", 
-  "class-8": "3",
-  "class-9": "4",
-  "class-10": "5",
-  "class-11": "6",
-  "class-12": "7",
+const SUBJECT_COLORS: Record<string, string> = {
+  phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
+  mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
+  che: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200",
+  bio: "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",
+  eng: "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",
+  cs: "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",
+  eco: "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",
+  hin: "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",
 };
 
-// Reverse mapping for display
-const internalToClassId: Record<string, string> = {
-  "1": "class-6",
-  "2": "class-7",
-  "3": "class-8",
-  "4": "class-9",
-  "5": "class-10",
-  "6": "class-11",
-  "7": "class-12",
-};
+export default function Setup() {
+  const [selectedTrack, setSelectedTrack] = useState<"cbse" | "jee">("cbse");
+  const [selectedClass, setSelectedClass] = useState<string>("5");
+  const [selectedSubject, setSelectedSubject] = useState<string>("1");
 
-// Subject ID to code mapping
-const subjectIdToCode: Record<string, string> = {
-  "1": "phy",
-  "2": "che",
-  "3": "mat",
-  "4": "bio",
-  "5": "his",
-  "6": "hin",
-};
-
-// JEE Mains subjects (Physics, Chemistry, Mathematics only)
-const jeeMainsSubjects = ["1", "2", "3"];
-
-export default function AcademicScheduleSetup() {
-  // Selection state
-  const [selectedTrack, setSelectedTrack] = useState<string>(assignedTracks[0]?.id || "cbse");
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [selectedSubject, setSelectedSubject] = useState<string>("");
-  
-  // Chapter allocation state
-  const [chapters, setChapters] = useState<ChapterHourAllocation[]>([]);
-  const [hasChanges, setHasChanges] = useState(false);
-
-  // Get current track config
-  const currentTrack = assignedTracks.find(t => t.id === selectedTrack);
-  const requiresClass = currentTrack?.hasClasses ?? true;
-
-  // Get available classes (for CBSE, all classes 6-12)
-  const availableClassList = useMemo(() => {
-    if (!requiresClass) return [];
-    return availableClasses;
-  }, [requiresClass]);
-
-  // Get subjects based on selection
-  const availableSubjects = useMemo(() => {
+  // Get classes for the selected track
+  const classes = useMemo(() => {
     if (selectedTrack === "cbse") {
-      if (!selectedClass) return [];
-      const internalClassId = classIdMapping[selectedClass];
-      if (!internalClassId) return [];
-      
-      // Get subjects that have chapters for this class
-      const subjectsWithData = getSubjectsByClass(internalClassId);
-      return subjectsWithData.map(s => {
-        const subjectInfo = findSubject(s.name);
-        return {
-          id: s.id,
-          name: s.name,
-          code: subjectIdToCode[s.id] || s.id,
-          info: subjectInfo,
-        };
-      });
-    } else if (selectedTrack === "jee-mains") {
-      // JEE Mains has fixed subjects: Physics, Chemistry, Mathematics
-      return jeeMainsSubjects.map(id => {
-        const names: Record<string, string> = { "1": "Physics", "2": "Chemistry", "3": "Mathematics" };
-        const codes: Record<string, string> = { "1": "phy", "2": "che", "3": "mat" };
-        const subjectInfo = findSubject(names[id]);
-        return {
-          id,
-          name: names[id],
-          code: codes[id],
-          info: subjectInfo,
-        };
-      });
+      return [
+        { id: "1", name: "Class 6" },
+        { id: "2", name: "Class 7" },
+        { id: "3", name: "Class 8" },
+        { id: "4", name: "Class 9" },
+        { id: "5", name: "Class 10" },
+      ];
     }
-    return [];
+    return [
+      { id: "6", name: "Class 11" },
+      { id: "7", name: "Class 12" },
+    ];
+  }, [selectedTrack]);
+
+  // Get subjects for the selected class
+  const subjects = useMemo(() => {
+    if (selectedTrack === "cbse") {
+      return getSubjectsByClass(selectedClass);
+    }
+    return [
+      { id: "jee_phy", name: "Physics" },
+      { id: "jee_mat", name: "Mathematics" },
+      { id: "jee_che", name: "Chemistry" },
+    ];
   }, [selectedTrack, selectedClass]);
 
-  // Get chapters for selected combination
-  const getChaptersForSelection = (): CBSEChapter[] => {
-    if (selectedTrack === "cbse") {
-      if (!selectedClass || !selectedSubject) return [];
-      const internalClassId = classIdMapping[selectedClass];
-      return allCBSEChapters.filter(
-        ch => ch.classId === internalClassId && ch.subjectId === selectedSubject
-      );
-    } else if (selectedTrack === "jee-mains") {
-      if (!selectedSubject) return [];
-      
-      // Get mapped chapters from CBSE (Class 11 & 12)
-      const mappedChapterIds = courseChapterMappings
-        .filter(m => m.courseId === "jee-mains")
-        .map(m => m.chapterId);
-      
-      const mappedChapters = allCBSEChapters.filter(
-        ch => mappedChapterIds.includes(ch.id) && ch.subjectId === selectedSubject
-      );
-      
-      // Get course-owned chapters
-      const ownedChapters = courseOwnedChapters.filter(
-        ch => ch.courseId === "jee-mains" && ch.subjectId === selectedSubject
-      );
-      
-      // Combine and convert to CBSEChapter format
-      const combined: CBSEChapter[] = [
-        ...mappedChapters,
-        ...ownedChapters.map(ch => ({
-          id: ch.id,
-          name: ch.name,
-          curriculumId: "jee-mains",
-          classId: "",
-          subjectId: ch.subjectId,
-          order: ch.order,
-          isCourseOwned: true,
-          courseId: ch.courseId,
-        })),
-      ];
-      
-      return combined.sort((a, b) => a.order - b.order);
-    }
-    return [];
-  };
-
-  // Check if setup exists for selected combination
-  const existingSetup = academicScheduleSetups.find(
-    s => s.courseId === selectedTrack && 
-         s.classId === selectedClass && 
-         s.subjectId === selectedSubject
-  );
-
-  // Handlers
-  const handleTrackChange = (value: string) => {
-    setSelectedTrack(value);
-    setSelectedClass("");
-    setSelectedSubject("");
-    setChapters([]);
-    setHasChanges(false);
-  };
-
-  const handleClassChange = (value: string) => {
-    setSelectedClass(value);
-    setSelectedSubject("");
-    setChapters([]);
-    setHasChanges(false);
-  };
-
-  const handleSubjectChange = (subjectId: string) => {
-    setSelectedSubject(subjectId);
-    
-    // Load existing setup or default chapters
-    const existing = academicScheduleSetups.find(
-      s => s.courseId === selectedTrack && 
-           s.classId === selectedClass && 
-           s.subjectId === subjectId
+  // Get current setup for selected class + subject
+  const currentSetup = useMemo(() => {
+    return academicScheduleSetups.find(
+      s => s.classId === selectedClass && s.subjectId === selectedSubject
     );
-    
-    if (existing) {
-      setChapters(existing.chapters);
-    } else {
-      // Load from master data with default hours
-      const rawChapters = getChaptersForSelection();
-      // Need to re-filter since selectedSubject wasn't updated yet
-      let filteredChapters: CBSEChapter[];
-      if (selectedTrack === "cbse") {
-        const internalClassId = classIdMapping[selectedClass];
-        filteredChapters = allCBSEChapters.filter(
-          ch => ch.classId === internalClassId && ch.subjectId === subjectId
-        );
-      } else {
-        const mappedChapterIds = courseChapterMappings
-          .filter(m => m.courseId === "jee-mains")
-          .map(m => m.chapterId);
-        
-        const mappedChapters = allCBSEChapters.filter(
-          ch => mappedChapterIds.includes(ch.id) && ch.subjectId === subjectId
-        );
-        
-        const ownedChapters = courseOwnedChapters.filter(
-          ch => ch.courseId === "jee-mains" && ch.subjectId === subjectId
-        );
-        
-        filteredChapters = [
-          ...mappedChapters,
-          ...ownedChapters.map(ch => ({
-            id: ch.id,
-            name: ch.name,
-            curriculumId: "jee-mains",
-            classId: "",
-            subjectId: ch.subjectId,
-            order: ch.order,
-            isCourseOwned: true,
-            courseId: ch.courseId,
-          })),
-        ].sort((a, b) => a.order - b.order);
-      }
-      
-      const defaultChapters: ChapterHourAllocation[] = filteredChapters.map((ch, idx) => ({
-        chapterId: ch.id,
-        chapterName: ch.name,
-        plannedHours: 8, // Default 8 hours per chapter
-        order: idx + 1,
-      }));
-      setChapters(defaultChapters);
-    }
-    setHasChanges(false);
-  };
+  }, [selectedClass, selectedSubject]);
 
-  const handleHoursChange = (index: number, hours: number) => {
-    const updated = [...chapters];
-    updated[index] = { ...updated[index], plannedHours: hours };
-    setChapters(updated);
-    setHasChanges(true);
-  };
+  // Build progress matrix data
+  const progressMatrix = useMemo(() => {
+    const trackClasses = selectedTrack === "cbse" 
+      ? [
+          { id: "1", name: "6" },
+          { id: "2", name: "7" },
+          { id: "3", name: "8" },
+          { id: "4", name: "9" },
+          { id: "5", name: "10" },
+        ]
+      : [{ id: "6", name: "11" }, { id: "7", name: "12" }];
 
-  const totalHours = chapters.reduce((sum, ch) => sum + ch.plannedHours, 0);
+    return trackClasses.map(cls => {
+      const classSubjects = selectedTrack === "cbse"
+        ? getSubjectsByClass(cls.id)
+        : [{ id: "jee_phy", name: "Physics" }, { id: "jee_mat", name: "Math" }, { id: "jee_che", name: "Chemistry" }];
 
-  const handleSave = () => {
-    toast.success("Academic schedule setup saved successfully!");
-    setHasChanges(false);
-  };
+      return {
+        classId: cls.id,
+        className: `Class ${cls.name}`,
+        subjects: classSubjects.map(s => {
+          const hasSetup = academicScheduleSetups.some(
+            setup => setup.classId === `class-${cls.name}` && setup.subjectId === s.id
+          );
+          return {
+            subjectId: s.id,
+            subjectName: s.name,
+            isComplete: hasSetup,
+          };
+        }),
+      };
+    });
+  }, [selectedTrack]);
 
-  const canSelectSubject = selectedTrack && (!requiresClass || selectedClass);
-  const selectedSubjectInfo = availableSubjects.find(s => s.id === selectedSubject);
+  // Calculate total hours for current setup
+  const totalPlannedHours = currentSetup?.chapters.reduce(
+    (sum, ch) => sum + ch.plannedHours, 0
+  ) || 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Syllabus Setup"
-        description="Define planned hours per chapter for the academic year"
+        description="Define planned hours per chapter for each class and subject"
         breadcrumbs={[
           { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
           { label: "Setup" },
         ]}
+        actions={
+          <Button className="gap-2">
+            <Save className="w-4 h-4" />
+            Save & Continue
+          </Button>
+        }
       />
 
-      {/* Compact Selection Card */}
-      <Card>
-        <CardContent className="pt-5 pb-4 space-y-4">
-          {/* Row 1: Track Tabs */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Track</span>
-            <Tabs value={selectedTrack} onValueChange={handleTrackChange}>
-              <TabsList className="h-9">
-                {assignedTracks.map((track) => (
-                  <TabsTrigger 
-                    key={track.id} 
-                    value={track.id}
-                    className="px-4 text-sm"
-                  >
-                    {track.name}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left Column - Progress Matrix */}
+        <div className="lg:col-span-1 space-y-4">
+          {/* Track Selector */}
+          <Card className="p-4">
+            <div className="flex gap-2">
+              <Button
+                variant={selectedTrack === "cbse" ? "default" : "outline"}
+                className="flex-1"
+                onClick={() => setSelectedTrack("cbse")}
+              >
+                CBSE
+              </Button>
+              <Button
+                variant={selectedTrack === "jee" ? "default" : "outline"}
+                className="flex-1"
+                onClick={() => setSelectedTrack("jee")}
+              >
+                JEE Mains
+              </Button>
+            </div>
+          </Card>
 
-          {/* Row 2: Class Chips (only for curriculum-based tracks) */}
-          {requiresClass && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Class</span>
-              <div className="flex flex-wrap gap-1.5">
-                {availableClassList.map((cls) => {
-                  const classNum = cls.name.replace("Class ", "");
-                  const isSelected = selectedClass === cls.id;
-                  return (
-                    <Button
-                      key={cls.id}
-                      variant={isSelected ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "h-8 min-w-[40px] px-3 font-medium transition-all",
-                        isSelected && "shadow-md"
-                      )}
-                      onClick={() => handleClassChange(cls.id)}
-                    >
-                      {classNum}
-                    </Button>
-                  );
-                })}
+          {/* Progress Matrix */}
+          <SetupProgressMatrix
+            trackName={selectedTrack === "cbse" ? "CBSE Curriculum" : "JEE Mains"}
+            classes={progressMatrix}
+            selectedClassId={selectedClass}
+            onSelectClass={setSelectedClass}
+          />
+
+          {/* Info Card */}
+          <Card className="p-4 bg-blue-50/50 border-blue-100">
+            <div className="flex gap-3">
+              <HelpCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-medium text-blue-900">How it works</p>
+                <p className="text-blue-700 mt-1">
+                  Define planned hours for each chapter. This helps track 
+                  actual teaching vs expected pace across batches.
+                </p>
               </div>
             </div>
-          )}
+          </Card>
+        </div>
 
-          {/* Row 3: Subject Cards */}
-          {canSelectSubject && availableSubjects.length > 0 && (
-            <div className="flex items-start gap-3">
-              <span className="text-sm font-medium text-muted-foreground min-w-[60px] pt-1.5">Subject</span>
+        {/* Right Column - Chapter Allocation */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Subject Selector */}
+          <Card className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-sm text-muted-foreground">
+                  Select Subject
+                </h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy from Previous
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Copy hours allocation from another class</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
               <div className="flex flex-wrap gap-2">
-                {availableSubjects.map((subject) => {
+                {subjects.map(subject => {
                   const isSelected = selectedSubject === subject.id;
-                  const Icon = subject.info?.icon || BookOpen;
-                  const colors = getSubjectColor(subject.code);
+                  const hasSetup = academicScheduleSetups.some(
+                    s => s.classId === selectedClass && s.subjectId === subject.id
+                  );
                   
                   return (
                     <button
                       key={subject.id}
-                      onClick={() => handleSubjectChange(subject.id)}
+                      onClick={() => setSelectedSubject(subject.id)}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium",
-                        isSelected 
-                          ? `${colors.bg} ${colors.text} border-transparent shadow-md scale-105` 
-                          : "bg-card border-border hover:border-primary/50 hover:bg-muted/50"
+                        "px-3 py-1.5 rounded-lg border text-sm font-medium transition-all flex items-center gap-1.5",
+                        isSelected
+                          ? "ring-2 ring-primary ring-offset-2"
+                          : "",
+                        SUBJECT_COLORS[subject.id] || "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       )}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{subject.name}</span>
+                      {subject.name}
+                      {hasSetup && (
+                        <Check className="w-3.5 h-3.5" />
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
-          )}
+          </Card>
 
-          {/* Empty state for subjects */}
-          {canSelectSubject && availableSubjects.length === 0 && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-muted-foreground min-w-[60px]">Subject</span>
-              <span className="text-sm text-muted-foreground italic">No subjects available for this selection</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Chapter Hour Allocation */}
-      {selectedSubject && chapters.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
+          {/* Chapter Allocation */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Chapter Hours Allocation
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    Total: {totalPlannedHours}h
+                  </span>
                 </div>
-                <div>
-                  <CardTitle className="text-lg">Chapter Hour Allocation</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedSubjectInfo?.name} • {chapters.length} chapters
+              </div>
+            </CardHeader>
+            <CardContent>
+              {currentSetup ? (
+                <div className="space-y-2">
+                  {currentSetup.chapters.map((chapter, index) => (
+                    <div
+                      key={chapter.chapterId}
+                      className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors group"
+                    >
+                      <GripVertical className="w-4 h-4 text-muted-foreground/50 cursor-grab shrink-0" />
+                      
+                      <Badge variant="outline" className="shrink-0 text-xs">
+                        Ch {index + 1}
+                      </Badge>
+                      
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {chapter.chapterName}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Input
+                          type="number"
+                          defaultValue={chapter.plannedHours}
+                          className="w-16 h-8 text-center text-sm"
+                          min={1}
+                          max={50}
+                        />
+                        <span className="text-xs text-muted-foreground">hrs</span>
+                        
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Add Chapter Button */}
+                  <Button variant="outline" className="w-full mt-3 gap-2 border-dashed">
+                    <Plus className="w-4 h-4" />
+                    Add Chapter
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <BookOpen className="w-12 h-12 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="font-medium text-muted-foreground">
+                    No chapters configured
                   </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Start by adding chapters from the curriculum
+                  </p>
+                  <Button variant="outline" className="mt-4 gap-2">
+                    <Plus className="w-4 h-4" />
+                    Import from Curriculum
+                  </Button>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {existingSetup && (
-                  <Badge variant="outline" className="gap-1.5 text-emerald-600 border-emerald-200 bg-emerald-50">
-                    <Check className="w-3.5 h-3.5" />
-                    Setup Complete
-                  </Badge>
-                )}
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/5 border border-primary/20">
-                  <Clock className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-primary">{totalHours} hours</span>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <Separator />
-          <CardContent className="pt-4">
-            <ScrollArea className="max-h-[500px]">
-              <div className="space-y-3">
-                {chapters.map((chapter, index) => (
-                  <div
-                    key={chapter.chapterId}
-                    className="flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <GripVertical className="w-4 h-4" />
-                      <span className="text-sm font-medium w-6">{index + 1}.</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{chapter.chapterName}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <Input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={chapter.plannedHours}
-                        onChange={(e) => handleHoursChange(index, parseInt(e.target.value) || 0)}
-                        className="w-20 text-center"
-                      />
-                      <span className="text-sm text-muted-foreground">hrs</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* Save Button */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {hasChanges ? (
-                  <>
-                    <AlertCircle className="w-4 h-4 text-amber-500" />
-                    <span>You have unsaved changes</span>
-                  </>
-                ) : (
-                  <span>All changes saved</span>
+          {/* Hours Distribution Preview */}
+          {currentSetup && (
+            <Card className="p-4">
+              <h4 className="text-sm font-medium mb-3">Hours Distribution</h4>
+              <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
+                {currentSetup.chapters.map((chapter, index) => {
+                  const widthPercent = (chapter.plannedHours / totalPlannedHours) * 100;
+                  const colors = [
+                    "bg-blue-500", "bg-purple-500", "bg-emerald-500", 
+                    "bg-orange-500", "bg-cyan-500", "bg-amber-500",
+                    "bg-red-500", "bg-green-500"
+                  ];
+                  
+                  return (
+                    <TooltipProvider key={chapter.chapterId}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={cn(colors[index % colors.length], "transition-all cursor-pointer hover:opacity-80")}
+                            style={{ width: `${widthPercent}%` }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="font-medium">{chapter.chapterName}</p>
+                          <p className="text-xs">{chapter.plannedHours} hours ({Math.round(widthPercent)}%)</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap gap-3 mt-3">
+                {currentSetup.chapters.slice(0, 4).map((chapter, index) => {
+                  const colors = ["bg-blue-500", "bg-purple-500", "bg-emerald-500", "bg-orange-500"];
+                  return (
+                    <div key={chapter.chapterId} className="flex items-center gap-1.5 text-xs">
+                      <div className={cn("w-2.5 h-2.5 rounded-full", colors[index])} />
+                      <span className="text-muted-foreground truncate max-w-[100px]">
+                        {chapter.chapterName.split(" ").slice(0, 2).join(" ")}
+                      </span>
+                    </div>
+                  );
+                })}
+                {currentSetup.chapters.length > 4 && (
+                  <span className="text-xs text-muted-foreground">
+                    +{currentSetup.chapters.length - 4} more
+                  </span>
                 )}
               </div>
-              <Button 
-                onClick={handleSave}
-                disabled={!hasChanges}
-                className="gradient-button gap-2"
-              >
-                <Save className="w-4 h-4" />
-                Save Setup
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty State */}
-      {!selectedSubject && (
-        <Card>
-          <CardContent className="py-16">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {!selectedTrack 
-                  ? "Select a Track" 
-                  : requiresClass && !selectedClass 
-                    ? "Select a Class" 
-                    : "Select a Subject"}
-              </h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                {!selectedTrack 
-                  ? "Choose a curriculum or course track to get started."
-                  : requiresClass && !selectedClass 
-                    ? "Select a class to view available subjects."
-                    : "Choose a subject to configure planned hours per chapter."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

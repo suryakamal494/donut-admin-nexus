@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/ui/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,83 +21,147 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
   BookOpen,
+  Calendar,
+  CheckCircle,
+  AlertCircle,
+  Filter,
   Plus,
-  Edit2,
   Check,
 } from "lucide-react";
-import { batches } from "@/data/instituteData";
+import { WeekNavigator, BatchPlanAccordion } from "@/components/academic-schedule";
 import { weeklyChapterPlans, academicWeeks, currentWeekIndex, academicScheduleSetups } from "@/data/academicScheduleData";
+import { batches } from "@/data/instituteData";
 import { WeeklyChapterPlan, ChapterHourAllocation } from "@/types/academicSchedule";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const subjects = [
-  { id: "all", name: "All Subjects" },
-  { id: "phy", name: "Physics" },
-  { id: "che", name: "Chemistry" },
-  { id: "mat", name: "Mathematics" },
+// Subject list for batch-subject combinations
+const subjectsList = [
+  { subjectId: "phy", subjectName: "Physics" },
+  { subjectId: "mat", subjectName: "Mathematics" },
+  { subjectId: "che", subjectName: "Chemistry" },
 ];
 
+// Get subjects for a batch (simplified)
+const getBatchSubjects = (batchId: string) => {
+  return subjectsList;
+};
+
 export default function WeeklyPlans() {
-  const [selectedBatch, setSelectedBatch] = useState<string>("all");
-  const [selectedSubject, setSelectedSubject] = useState<string>("all");
-  const [weekIndex, setWeekIndex] = useState(currentWeekIndex);
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState(currentWeekIndex);
+  const [classFilter, setClassFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<WeeklyChapterPlan | null>(null);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
 
-  const currentWeek = academicWeeks[weekIndex];
-  
-  // Filter plans by week, batch, and subject
-  const filteredPlans = weeklyChapterPlans.filter(plan => {
-    const weekMatch = plan.weekStartDate === currentWeek?.startDate;
-    const batchMatch = selectedBatch === "all" || plan.batchId === selectedBatch;
-    const subjectMatch = selectedSubject === "all" || plan.subjectId === selectedSubject;
-    return weekMatch && batchMatch && subjectMatch;
-  });
+  const selectedWeek = academicWeeks[selectedWeekIndex];
 
-  // Get batches for batch cards (when no filter applied)
-  const displayBatches = selectedBatch === "all" 
-    ? batches 
-    : batches.filter(b => b.id === selectedBatch);
+  // Filter plans for the selected week
+  const weekPlans = useMemo(() => {
+    if (!selectedWeek) return [];
+    return weeklyChapterPlans.filter(
+      plan => plan.weekStartDate === selectedWeek.startDate
+    );
+  }, [selectedWeek]);
 
-  const handlePrevWeek = () => {
-    if (weekIndex > 0) setWeekIndex(weekIndex - 1);
+  // Get all unique classes for filter
+  const classOptions = useMemo(() => {
+    const classes = [...new Set(batches.map(b => b.classId || b.className))];
+    return classes.sort();
+  }, []);
+
+  // Filter batches by class
+  const filteredBatches = useMemo(() => {
+    if (classFilter === "all") return batches;
+    return batches.filter(b => (b.classId || b.className) === classFilter);
+  }, [classFilter]);
+
+  // Build batch data with their subject plans
+  const batchPlansData = useMemo(() => {
+    return filteredBatches.map(batch => {
+      const batchSubjects = getBatchSubjects(batch.id);
+      
+      const subjects = batchSubjects.map(subject => {
+        const plan = weekPlans.find(
+          p => p.batchId === batch.id && p.subjectId === subject.subjectId
+        );
+        
+        // Get chapter names from setups
+        const chapterNames = plan?.plannedChapters.map(chapterId => {
+          const setup = academicScheduleSetups.find(s => s.subjectId === subject.subjectId);
+          const chapter = setup?.chapters.find(c => c.chapterId === chapterId);
+          return chapter?.chapterName || chapterId;
+        }) || [];
+
+        return {
+          subjectId: subject.subjectId,
+          subjectName: subject.subjectName,
+          chapters: plan?.plannedChapters || [],
+          chapterNames,
+          hasPlans: !!plan && plan.plannedChapters.length > 0,
+        };
+      });
+
+      return {
+        batchId: batch.id,
+        batchName: batch.name,
+        className: batch.className || `Class ${batch.classId}`,
+        subjects,
+        plannedCount: subjects.filter(s => s.hasPlans).length,
+        totalCount: subjects.length,
+      };
+    });
+  }, [filteredBatches, weekPlans]);
+
+  // Summary stats
+  const stats = useMemo(() => {
+    const totalBatches = batchPlansData.length;
+    const totalSubjects = batchPlansData.reduce((sum, b) => sum + b.totalCount, 0);
+    const plannedSubjects = batchPlansData.reduce((sum, b) => sum + b.plannedCount, 0);
+    const totalChapters = weekPlans.reduce((sum, p) => sum + p.plannedChapters.length, 0);
+    const missingPlans = totalSubjects - plannedSubjects;
+    
+    return { totalBatches, totalSubjects, plannedSubjects, totalChapters, missingPlans };
+  }, [batchPlansData, weekPlans]);
+
+  // Get chapters for the editing dialog
+  const getChaptersForSubject = (subjectId: string): ChapterHourAllocation[] => {
+    const setup = academicScheduleSetups.find(s => s.subjectId === subjectId);
+    return setup?.chapters || [];
   };
 
-  const handleNextWeek = () => {
-    if (weekIndex < academicWeeks.length - 1) setWeekIndex(weekIndex + 1);
+  const handleEditPlan = (batchId: string, subjectId: string) => {
+    const plan = weekPlans.find(p => p.batchId === batchId && p.subjectId === subjectId);
+    const batch = batches.find(b => b.id === batchId);
+    const batchSubjects = getBatchSubjects(batchId);
+    const subject = batchSubjects.find(s => s.subjectId === subjectId);
+    
+    if (plan) {
+      setEditingPlan(plan);
+      setSelectedChapters(plan.plannedChapters);
+    } else {
+      setEditingPlan({
+        id: "",
+        batchId,
+        batchName: batch?.name || "",
+        subjectId,
+        subjectName: subject?.subjectName || "",
+        courseId: "cbse",
+        weekStartDate: selectedWeek?.startDate || "",
+        weekEndDate: selectedWeek?.endDate || "",
+        plannedChapters: [],
+        granularity: "weekly",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      setSelectedChapters([]);
+    }
+    setIsDialogOpen(true);
   };
 
   const handleAddPlan = (batchId: string, subjectId: string) => {
-    // Get chapters from setup
-    const setup = academicScheduleSetups.find(s => s.subjectId === subjectId);
-    setSelectedChapters([]);
-    setEditingPlan({
-      id: "",
-      batchId,
-      batchName: batches.find(b => b.id === batchId)?.name || "",
-      subjectId,
-      subjectName: subjects.find(s => s.id === subjectId)?.name || "",
-      courseId: "cbse",
-      weekStartDate: currentWeek?.startDate || "",
-      weekEndDate: currentWeek?.endDate || "",
-      plannedChapters: [],
-      granularity: "weekly",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleEditPlan = (plan: WeeklyChapterPlan) => {
-    setEditingPlan(plan);
-    setSelectedChapters(plan.plannedChapters);
-    setIsDialogOpen(true);
+    handleEditPlan(batchId, subjectId);
   };
 
   const handleSavePlan = () => {
@@ -118,177 +182,143 @@ export default function WeeklyPlans() {
     );
   };
 
-  // Get chapters for the editing dialog
-  const getChaptersForSubject = (subjectId: string): ChapterHourAllocation[] => {
-    const setup = academicScheduleSetups.find(s => s.subjectId === subjectId);
-    return setup?.chapters || [];
-  };
-
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Weekly Plans"
-        description="Assign chapters to batches for each week"
+        title="Weekly Chapter Plans"
+        description="Map chapters to weeks for each batch and subject"
         breadcrumbs={[
           { label: "Syllabus Tracker", href: "/institute/academic-schedule/progress" },
           { label: "Weekly Plans" },
         ]}
       />
 
-      {/* Week Navigator & Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Week Navigator */}
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handlePrevWeek}
-                disabled={weekIndex === 0}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/5 border border-primary/20 min-w-[280px] justify-center">
-                <Calendar className="w-4 h-4 text-primary" />
-                <span className="font-semibold text-primary">
-                  {currentWeek?.label || "No week selected"}
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleNextWeek}
-                disabled={weekIndex >= academicWeeks.length - 1}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+      {/* Week Navigator */}
+      <WeekNavigator
+        weeks={academicWeeks}
+        currentWeekIndex={currentWeekIndex}
+        selectedWeekIndex={selectedWeekIndex}
+        onWeekChange={setSelectedWeekIndex}
+      />
+
+      {/* Summary Stats Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <BookOpen className="w-5 h-5 text-primary" />
             </div>
-
-            {/* Filters */}
-            <div className="flex items-center gap-3">
-              <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Batches" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Batches</SelectItem>
-                  {batches.map((batch) => (
-                    <SelectItem key={batch.id} value={batch.id}>
-                      {batch.className} - {batch.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="All Subjects" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subjects.map((subject) => (
-                    <SelectItem key={subject.id} value={subject.id}>
-                      {subject.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalBatches}</p>
+              <p className="text-xs text-muted-foreground">Batches</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Batch-Subject Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {displayBatches.map((batch) => {
-          const batchSubjects = selectedSubject === "all"
-            ? ["phy", "mat", "che"]
-            : [selectedSubject];
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+              <CheckCircle className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.plannedSubjects}</p>
+              <p className="text-xs text-muted-foreground">Plans Created</p>
+            </div>
+          </CardContent>
+        </Card>
 
-          return batchSubjects.map((subjectId) => {
-            const plan = weeklyChapterPlans.find(
-              p => p.batchId === batch.id && 
-                   p.subjectId === subjectId && 
-                   p.weekStartDate === currentWeek?.startDate
-            );
-            const subjectName = subjects.find(s => s.id === subjectId)?.name || subjectId;
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+              <AlertCircle className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.missingPlans}</p>
+              <p className="text-xs text-muted-foreground">Missing Plans</p>
+            </div>
+          </CardContent>
+        </Card>
 
-            return (
-              <Card 
-                key={`${batch.id}-${subjectId}`}
-                className={cn(
-                  "transition-all hover:shadow-md",
-                  plan && "border-primary/30 bg-primary/5"
-                )}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-base">
-                        {batch.className} - {batch.name}
-                      </CardTitle>
-                      <Badge variant="secondary" className="mt-1">
-                        {subjectName}
-                      </Badge>
-                    </div>
-                    {plan ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditPlan(plan)}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleAddPlan(batch.id, subjectId)}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {plan ? (
-                    <div className="space-y-2">
-                      {plan.plannedChapters.map((chapterId, idx) => {
-                        const setup = academicScheduleSetups.find(s => s.subjectId === subjectId);
-                        const chapter = setup?.chapters.find(c => c.chapterId === chapterId);
-                        return (
-                          <div
-                            key={chapterId}
-                            className="flex items-center gap-2 text-sm p-2 rounded bg-background border"
-                          >
-                            <BookOpen className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                            <span className="truncate">
-                              {chapter?.chapterName || chapterId}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4">
-                      <p className="text-sm text-muted-foreground">No chapters planned</p>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="mt-1"
-                        onClick={() => handleAddPlan(batch.id, subjectId)}
-                      >
-                        <Plus className="w-3.5 h-3.5 mr-1" />
-                        Add Plan
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          });
-        })}
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+              <Calendar className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalChapters}</p>
+              <p className="text-xs text-muted-foreground">Total Chapters</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Filter & Actions Row */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <Select value={classFilter} onValueChange={setClassFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by class" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Classes</SelectItem>
+              {classOptions.map(cls => (
+                <SelectItem key={cls} value={cls}>Class {cls}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button className="gap-2">
+          <Plus className="w-4 h-4" />
+          Bulk Add Plans
+        </Button>
+      </div>
+
+      {/* Batch Accordions */}
+      <div className="space-y-4">
+        {batchPlansData.length === 0 ? (
+          <Card className="p-8">
+            <div className="text-center text-muted-foreground">
+              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">No batches found</p>
+              <p className="text-sm mt-1">Adjust your filter to see batches</p>
+            </div>
+          </Card>
+        ) : (
+          batchPlansData.map((batch) => (
+            <BatchPlanAccordion
+              key={batch.batchId}
+              batchId={batch.batchId}
+              batchName={batch.batchName}
+              className={batch.className}
+              subjects={batch.subjects}
+              isExpanded={true}
+              onEditPlan={handleEditPlan}
+              onAddPlan={handleAddPlan}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Week Progress Legend */}
+      <Card className="p-4">
+        <div className="flex flex-wrap items-center gap-4 text-sm">
+          <span className="text-muted-foreground font-medium">Legend:</span>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-primary" />
+            <span>Current Week</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-muted" />
+            <span>Past Weeks</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-muted/50" />
+            <span>Future Weeks</span>
+          </div>
+        </div>
+      </Card>
 
       {/* Add/Edit Plan Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -310,7 +340,7 @@ export default function WeeklyPlans() {
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Week:</span>
-              <span className="font-medium">{currentWeek?.label}</span>
+              <span className="font-medium">{selectedWeek?.label}</span>
             </div>
 
             <div className="border-t pt-4">
@@ -341,7 +371,7 @@ export default function WeeklyPlans() {
                         </p>
                       </div>
                       {selectedChapters.includes(chapter.chapterId) && (
-                        <Check className="w-4 h-4 text-primary" />
+                        <Check className="w-4 h-4 text-primary shrink-0" />
                       )}
                     </div>
                   ))}
@@ -354,7 +384,7 @@ export default function WeeklyPlans() {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSavePlan} className="gradient-button">
+            <Button onClick={handleSavePlan}>
               Save Plan
             </Button>
           </DialogFooter>
