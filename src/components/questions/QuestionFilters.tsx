@@ -67,7 +67,7 @@ export const QuestionFilters = ({
   ];
 
   return (
-    <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50 space-y-4">
+    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-soft border border-border/50 space-y-3 sm:space-y-4">
       {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -90,10 +90,10 @@ export const QuestionFilters = ({
       </div>
 
       {/* Primary Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
         <Select value={selectedSubject} onValueChange={onSubjectChange}>
-          <SelectTrigger className="w-[160px]">
-            <Filter className="w-4 h-4 mr-2" />
+          <SelectTrigger className="w-full sm:w-[160px]">
+            <Filter className="w-4 h-4 mr-2 hidden sm:block" />
             <SelectValue placeholder="Subject" />
           </SelectTrigger>
           <SelectContent>
@@ -107,7 +107,7 @@ export const QuestionFilters = ({
         </Select>
 
         <Select value={selectedType} onValueChange={onTypeChange}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full sm:w-[160px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -121,7 +121,7 @@ export const QuestionFilters = ({
         </Select>
 
         <Select value={selectedDifficulty} onValueChange={onDifficultyChange}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="Difficulty" />
           </SelectTrigger>
           <SelectContent>
@@ -135,7 +135,7 @@ export const QuestionFilters = ({
         </Select>
 
         <Select value={selectedLanguage} onValueChange={onLanguageChange}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="Language" />
           </SelectTrigger>
           <SelectContent>
@@ -148,17 +148,17 @@ export const QuestionFilters = ({
           </SelectContent>
         </Select>
 
-        <Collapsible open={showMoreFilters} onOpenChange={setShowMoreFilters}>
+        <Collapsible open={showMoreFilters} onOpenChange={setShowMoreFilters} className="col-span-2 sm:col-span-1">
           <CollapsibleTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              More Filters
+            <Button variant="outline" className="gap-2 w-full sm:w-auto">
+              More
               <ChevronDown className={`w-4 h-4 transition-transform ${showMoreFilters ? 'rotate-180' : ''}`} />
             </Button>
           </CollapsibleTrigger>
         </Collapsible>
 
         {activeFilterCount > 0 && (
-          <Button variant="ghost" className="gap-2 text-muted-foreground" onClick={onClearFilters}>
+          <Button variant="ghost" className="gap-2 text-muted-foreground col-span-2 sm:col-span-1 w-full sm:w-auto" onClick={onClearFilters}>
             <X className="w-4 h-4" />
             Clear ({activeFilterCount})
           </Button>

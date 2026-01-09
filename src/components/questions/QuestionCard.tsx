@@ -277,34 +277,34 @@ export const QuestionCard = ({
       </Collapsible>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-border/50">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mt-4 pt-4 border-t border-border/50">
+        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
           <span className="flex items-center gap-1.5">
-            <Award className="w-4 h-4" />
+            <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             +{question.marks} / -{question.negativeMarks}
           </span>
           {question.timeRecommended && (
             <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {Math.floor(question.timeRecommended / 60)}:{(question.timeRecommended % 60).toString().padStart(2, '0')} min
             </span>
           )}
           {question.source && (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 hidden sm:flex">
               <ExternalLink className="w-4 h-4" />
               {question.source}
             </span>
           )}
           {!isInstituteMode && (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 hidden md:flex">
               <Calendar className="w-4 h-4" />
               {question.createdAt}
             </span>
           )}
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 self-end sm:self-auto">
           {onView && (
-            <Button variant="ghost" size="icon" onClick={() => onView(question)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => onView(question)}>
               <Eye className="w-4 h-4" />
             </Button>
           )}
@@ -316,7 +316,7 @@ export const QuestionCard = ({
                     variant="ghost" 
                     size="icon" 
                     disabled
-                    className="opacity-50 cursor-not-allowed"
+                    className="opacity-50 cursor-not-allowed h-8 w-8 sm:h-9 sm:w-9"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -324,7 +324,7 @@ export const QuestionCard = ({
                 <TooltipContent>Global questions cannot be edited</TooltipContent>
               </Tooltip>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => onEdit(question)}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => onEdit(question)}>
                 <Edit className="w-4 h-4" />
               </Button>
             )
@@ -336,7 +336,7 @@ export const QuestionCard = ({
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="text-destructive opacity-50 cursor-not-allowed"
+                    className="text-destructive opacity-50 cursor-not-allowed h-8 w-8 sm:h-9 sm:w-9"
                     disabled
                   >
                     <Trash2 className="w-4 h-4" />
@@ -345,7 +345,7 @@ export const QuestionCard = ({
                 <TooltipContent>Global questions cannot be deleted</TooltipContent>
               </Tooltip>
             ) : (
-              <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(question)}>
+              <Button variant="ghost" size="icon" className="text-destructive h-8 w-8 sm:h-9 sm:w-9" onClick={() => onDelete(question)}>
                 <Trash2 className="w-4 h-4" />
               </Button>
             )

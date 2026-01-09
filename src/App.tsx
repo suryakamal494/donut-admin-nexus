@@ -150,6 +150,7 @@ const App = () => (
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
             <Route path="questions/upload-pdf" element={<InstituteUploadPDF />} />
             <Route path="questions/create" element={<InstituteCreateQuestion />} />
+            <Route path="questions/edit/:questionId" element={<InstituteCreateQuestion />} />
             <Route path="content" element={<InstituteContent />} />
             <Route path="content/create" element={<InstituteCreateContent />} />
             <Route path="content/ai-generate" element={<InstituteAIContentGenerator />} />
