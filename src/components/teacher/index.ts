@@ -10,3 +10,4 @@ export { AssessmentCard } from "./AssessmentCard";
 export { CreateAssessmentDialog } from "./CreateAssessmentDialog";
 export { HomeworkCard } from "./HomeworkCard";
 export { CreateHomeworkDialog } from "./CreateHomeworkDialog";
+export { CurrentClassWidget } from "./CurrentClassWidget";
