@@ -149,46 +149,50 @@ const MasterData = () => {
       </div>
 
       {/* Dynamic Panel Layout */}
-      {selectedTrack.hasClasses ? (
-        // 3-Panel Layout for Curriculum (CBSE)
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[180px_200px_1fr] gap-3 sm:gap-4 min-h-[400px] lg:h-[calc(100vh-420px)]">
-          <ClassPanelView
-            selectedClassId={selectedClassId}
-            onSelectClass={handleSelectClass}
-          />
-          <SubjectPanelView
-            selectedClassId={selectedClassId}
-            selectedSubjectId={selectedSubjectId}
-            onSelectSubject={handleSelectSubject}
-          />
-          <div className="md:col-span-2 lg:col-span-1">
-            <ContentPanelView
+      <div className="flex flex-col min-h-0 flex-1">
+        {selectedTrack.hasClasses ? (
+          // 3-Panel Layout for Curriculum (CBSE)
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[180px_200px_1fr] gap-3 sm:gap-4 h-[50vh] sm:h-[55vh] lg:h-[calc(100vh-450px)] min-h-[300px] max-h-[600px]">
+            <ClassPanelView
+              selectedClassId={selectedClassId}
+              onSelectClass={handleSelectClass}
+            />
+            <SubjectPanelView
               selectedClassId={selectedClassId}
               selectedSubjectId={selectedSubjectId}
+              onSelectSubject={handleSelectSubject}
             />
+            <div className="md:col-span-2 lg:col-span-1 min-h-0">
+              <ContentPanelView
+                selectedClassId={selectedClassId}
+                selectedSubjectId={selectedSubjectId}
+              />
+            </div>
           </div>
-        </div>
-      ) : (
-        // 2-Panel Layout for Course (JEE Mains) - No class selection
-        <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-3 sm:gap-4 min-h-[400px] md:h-[calc(100vh-420px)]">
-          <SubjectPanelView
-            selectedClassId={null}
-            selectedSubjectId={selectedSubjectId}
-            onSelectSubject={handleSelectSubject}
-            trackId={selectedTrack.id}
-            trackType="course"
-          />
-          <ContentPanelView
-            selectedClassId={null}
-            selectedSubjectId={selectedSubjectId}
-            trackId={selectedTrack.id}
-            trackType="course"
-          />
-        </div>
-      )}
+        ) : (
+          // 2-Panel Layout for Course (JEE Mains) - No class selection
+          <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-3 sm:gap-4 h-[50vh] sm:h-[55vh] md:h-[calc(100vh-450px)] min-h-[300px] max-h-[600px]">
+            <SubjectPanelView
+              selectedClassId={null}
+              selectedSubjectId={selectedSubjectId}
+              onSelectSubject={handleSelectSubject}
+              trackId={selectedTrack.id}
+              trackType="course"
+            />
+            <div className="min-h-0">
+              <ContentPanelView
+                selectedClassId={null}
+                selectedSubjectId={selectedSubjectId}
+                trackId={selectedTrack.id}
+                trackType="course"
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
-      {/* Info Note */}
-      <div className="bg-muted/30 rounded-xl border border-dashed p-3 sm:p-4">
+      {/* Info Note - Outside the flex container */}
+      <div className="mt-4 bg-muted/30 rounded-xl border border-dashed p-3 sm:p-4">
         <p className="text-xs sm:text-sm text-muted-foreground">
           <strong className="text-foreground">Note:</strong> This is a read-only view of your assigned academic content. 
           {selectedTrack.type === "curriculum" 

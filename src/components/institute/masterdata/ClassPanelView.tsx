@@ -15,15 +15,15 @@ export const ClassPanelView = ({ selectedClassId, onSelectClass }: ClassPanelVie
   };
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden">
-      <div className="p-3 border-b border-border/50 bg-muted/30">
+    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden min-h-0">
+      <div className="p-3 border-b border-border/50 bg-muted/30 shrink-0">
         <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
           <GraduationCap className="w-4 h-4 text-primary" />
           Classes
         </h3>
         <p className="text-xs text-muted-foreground mt-0.5">{classes.length} classes</p>
       </div>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="p-2 space-y-1">
           {classes.map((cls) => {
             const chapterCount = getChapterCount(cls.id);
