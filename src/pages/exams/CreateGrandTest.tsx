@@ -186,14 +186,14 @@ const CreateGrandTest = () => {
       />
 
       {/* Stepper */}
-      <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+      <div className="bg-card rounded-2xl p-3 md:p-6 shadow-soft border border-border/50">
         <div className="flex items-center justify-between max-w-3xl mx-auto">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                    "w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all",
                     currentStep === step.number
                       ? "bg-primary text-primary-foreground shadow-lg"
                       : currentStep > step.number
@@ -204,7 +204,7 @@ const CreateGrandTest = () => {
                   <step.icon className="w-4 h-4" />
                 </div>
                 <span className={cn(
-                  "text-xs mt-2 font-medium text-center max-w-[80px]",
+                  "text-[10px] sm:text-xs mt-1 sm:mt-2 font-medium text-center max-w-[60px] sm:max-w-[80px]",
                   currentStep >= step.number ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {step.title}
@@ -212,7 +212,7 @@ const CreateGrandTest = () => {
               </div>
               {index < steps.length - 1 && (
                 <div className={cn(
-                  "w-16 h-1 mx-2 rounded-full",
+                  "w-8 sm:w-16 h-0.5 sm:h-1 mx-1 sm:mx-2 rounded-full",
                   currentStep > step.number ? "bg-success" : "bg-muted"
                 )} />
               )}
@@ -222,7 +222,7 @@ const CreateGrandTest = () => {
       </div>
 
       {/* Step Content */}
-      <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50 max-w-2xl mx-auto">
+      <div className="bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-soft border border-border/50 max-w-2xl mx-auto">
         {/* Step 1: Test Configuration */}
         {currentStep === 1 && (
           <div className="space-y-6">

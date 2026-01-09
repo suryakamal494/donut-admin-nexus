@@ -40,7 +40,7 @@ const Parameters = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <PageHeader
         title="Curriculum"
         description="Manage curriculum structure, classes, subjects and chapters"
@@ -86,16 +86,16 @@ const Parameters = () => {
 
       {/* Curriculum Tabs */}
       <div className="bg-card rounded-xl p-3 border border-border/50 shadow-soft">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground">Curriculum:</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 overflow-x-auto">
+            <span className="text-sm font-medium text-muted-foreground shrink-0">Curriculum:</span>
             <CurriculumTabs 
               selectedCurriculumId={selectedCurriculumId}
               onSelectCurriculum={handleCurriculumChange}
               onAddCurriculum={() => setShowCurriculumDialog(true)}
             />
           </div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
             <span><strong className="text-foreground">{masterDataStats.totalCurriculums}</strong> Curriculums</span>
             <span><strong className="text-foreground">{masterDataStats.publishedCourses}</strong> Courses</span>
           </div>
@@ -103,28 +103,28 @@ const Parameters = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-          <p className="text-2xl font-bold text-primary">{cbseDataStats.totalChapters}</p>
-          <p className="text-sm text-muted-foreground">Total Chapters</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
+          <p className="text-xl md:text-2xl font-bold text-primary">{cbseDataStats.totalChapters}</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Total Chapters</p>
         </div>
-        <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-          <p className="text-2xl font-bold text-primary">{cbseDataStats.totalTopics}</p>
-          <p className="text-sm text-muted-foreground">Total Topics</p>
+        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
+          <p className="text-xl md:text-2xl font-bold text-primary">{cbseDataStats.totalTopics}</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Total Topics</p>
         </div>
-        <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-          <p className="text-2xl font-bold text-primary">7</p>
-          <p className="text-sm text-muted-foreground">Classes</p>
+        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
+          <p className="text-xl md:text-2xl font-bold text-primary">7</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Classes</p>
         </div>
-        <div className="bg-card rounded-xl p-4 border border-border/50 shadow-soft">
-          <p className="text-2xl font-bold text-primary">5</p>
-          <p className="text-sm text-muted-foreground">Core Subjects</p>
+        <div className="bg-card rounded-xl p-3 md:p-4 border border-border/50 shadow-soft">
+          <p className="text-xl md:text-2xl font-bold text-primary">5</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Core Subjects</p>
         </div>
       </div>
 
       {/* Three-Panel Layout */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-[160px_200px_1fr] h-auto md:h-[calc(100vh-420px)] md:min-h-[400px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[160px_200px_1fr] h-auto lg:h-[calc(100vh-480px)] lg:min-h-[400px]">
           <ClassPanel 
             selectedClassId={selectedClassId}
             onSelectClass={handleClassSelect}

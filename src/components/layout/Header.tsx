@@ -1,4 +1,4 @@
-import { Bell, Search, User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { Bell, Search, User, LogOut, Settings, ChevronDown, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-const Header = () => {
+interface HeaderProps {
+  onMobileMenuClick?: () => void;
+}
+
+const Header = ({ onMobileMenuClick }: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,18 +23,28 @@ const Header = () => {
   };
 
   return (
-    <header className="h-16 bg-card/80 backdrop-blur-xl border-b border-border sticky top-0 z-30 px-6 flex items-center justify-between">
-      {/* Search Bar */}
-      <div className="relative w-96">
+    <header className="h-16 bg-card/80 backdrop-blur-xl border-b border-border sticky top-0 z-30 px-4 md:px-6 flex items-center justify-between gap-4">
+      {/* Mobile Menu Button */}
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="md:hidden shrink-0"
+        onClick={onMobileMenuClick}
+      >
+        <Menu className="w-5 h-5" />
+      </Button>
+
+      {/* Search Bar - Responsive */}
+      <div className="relative flex-1 max-w-96">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Search institutes, users, questions..."
-          className="pl-10 h-10 rounded-xl bg-muted/50 border-border/50 focus:bg-white focus:border-primary transition-all"
+          placeholder="Search..."
+          className="pl-10 h-10 rounded-xl bg-muted/50 border-border/50 focus:bg-white focus:border-primary transition-all w-full"
         />
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -68,15 +82,15 @@ const Header = () => {
         {/* Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 hover:bg-muted/50">
-              <div className="w-9 h-9 rounded-full gradient-button flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+            <Button variant="ghost" className="flex items-center gap-2 md:gap-3 hover:bg-muted/50 px-2 md:px-3">
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full gradient-button flex items-center justify-center">
+                <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <div className="text-left hidden md:block">
+              <div className="text-left hidden lg:block">
                 <p className="text-sm font-medium">Super Admin</p>
                 <p className="text-xs text-muted-foreground">admin@donutai.com</p>
               </div>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground hidden md:block" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">

@@ -17,7 +17,7 @@ const Users = () => {
   );
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <PageHeader
         title="Direct Users"
         description="Manage users registered directly on the platform"
@@ -25,7 +25,7 @@ const Users = () => {
         actions={<Button className="gradient-button gap-2"><Plus className="w-4 h-4" />Add User</Button>}
       />
 
-      <div className="bg-card rounded-2xl p-4 shadow-soft border border-border/50">
+      <div className="bg-card rounded-2xl p-3 md:p-4 shadow-soft border border-border/50">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search users..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
@@ -33,46 +33,53 @@ const Users = () => {
       </div>
 
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead>Name</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Class</TableHead>
-              <TableHead>Course</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow key={user.id} className="hover:bg-muted/20">
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>
-                  <div>
-                    <p className="text-sm">{user.email}</p>
-                    <p className="text-xs text-muted-foreground">{user.mobile}</p>
-                  </div>
-                </TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{user.class}</TableCell>
-                <TableCell>{user.course}</TableCell>
-                <TableCell><StatusBadge status={user.status} /></TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem><Eye className="w-4 h-4 mr-2" />View</DropdownMenuItem>
-                      <DropdownMenuItem><Edit className="w-4 h-4 mr-2" />Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive"><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table className="min-w-[600px]">
+            <TableHeader>
+              <TableRow className="bg-muted/30">
+                <TableHead>Name</TableHead>
+                <TableHead className="hidden sm:table-cell">Contact</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead className="hidden md:table-cell">Class</TableHead>
+                <TableHead className="hidden lg:table-cell">Course</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.map((user) => (
+                <TableRow key={user.id} className="hover:bg-muted/20">
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-xs text-muted-foreground sm:hidden">{user.email}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <div>
+                      <p className="text-sm">{user.email}</p>
+                      <p className="text-xs text-muted-foreground">{user.mobile}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell className="hidden md:table-cell">{user.class}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{user.course}</TableCell>
+                  <TableCell><StatusBadge status={user.status} /></TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem><Eye className="w-4 h-4 mr-2" />View</DropdownMenuItem>
+                        <DropdownMenuItem><Edit className="w-4 h-4 mr-2" />Edit</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive"><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
