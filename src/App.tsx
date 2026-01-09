@@ -70,6 +70,10 @@ import AcademicScheduleWeeklyPlans from "./pages/institute/academic-schedule/Wee
 import AcademicScheduleProgress from "./pages/institute/academic-schedule/Progress";
 import AcademicScheduleBatchProgress from "./pages/institute/academic-schedule/BatchProgress";
 import AcademicSchedulePending from "./pages/institute/academic-schedule/PendingConfirmations";
+import AcademicScheduleTeachingView from "./pages/institute/academic-schedule/TeachingView";
+import AcademicScheduleYearOverview from "./pages/institute/academic-schedule/YearOverview";
+import AcademicScheduleSectionAlignment from "./pages/institute/academic-schedule/SectionAlignment";
+import AcademicScheduleChapterDetail from "./pages/institute/academic-schedule/ChapterDetail";
 import TeacherAcademicProgress from "./pages/teacher/AcademicProgress";
 
 // Teacher Panel Pages
@@ -167,6 +171,10 @@ const App = () => (
             <Route path="roles" element={<InstituteRoles />} />
             <Route path="academic-schedule/setup" element={<AcademicScheduleSetup />} />
             <Route path="academic-schedule/plans" element={<AcademicScheduleWeeklyPlans />} />
+            <Route path="academic-schedule/year-view" element={<AcademicScheduleYearOverview />} />
+            <Route path="academic-schedule/teaching-view" element={<AcademicScheduleTeachingView />} />
+            <Route path="academic-schedule/alignment" element={<AcademicScheduleSectionAlignment />} />
+            <Route path="academic-schedule/chapter-detail" element={<AcademicScheduleChapterDetail />} />
             <Route path="academic-schedule/progress" element={<AcademicScheduleProgress />} />
             <Route path="academic-schedule/progress/:batchId" element={<AcademicScheduleBatchProgress />} />
             <Route path="academic-schedule/pending" element={<AcademicSchedulePending />} />
