@@ -71,7 +71,7 @@ const LessonPlans = () => {
 
   const handleClone = (plan: LessonPlan) => {
     toast.success(`Cloned "${plan.title}" - Opening in editor...`);
-    navigate(`/teacher/lesson-plans/create?cloneFrom=${plan.id}`);
+    navigate(`/teacher/lesson-plans/new?cloneFrom=${plan.id}`);
   };
 
   const handleDelete = (plan: LessonPlan) => {
@@ -170,7 +170,7 @@ const LessonPlans = () => {
           {/* Create Button */}
           <Button 
             className="gradient-button gap-2 h-10 shrink-0"
-            onClick={() => navigate("/teacher/lesson-plans/create")}
+            onClick={() => navigate("/teacher/lesson-plans/new")}
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">New Plan</span>
@@ -192,7 +192,7 @@ const LessonPlans = () => {
         {/* Create New Plan Card - Always visible */}
         <Card 
           className="border-dashed border-2 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-300 group min-h-[200px]"
-          onClick={() => navigate("/teacher/lesson-plans/create")}
+          onClick={() => navigate("/teacher/lesson-plans/new")}
         >
           <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[hsl(var(--donut-coral))] to-[hsl(var(--donut-pink))] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
@@ -222,7 +222,7 @@ const LessonPlans = () => {
           </p>
           <Button 
             className="gradient-button gap-2"
-            onClick={() => navigate("/teacher/lesson-plans/create")}
+            onClick={() => navigate("/teacher/lesson-plans/new")}
           >
             <Plus className="w-4 h-4" />
             Create New Plan

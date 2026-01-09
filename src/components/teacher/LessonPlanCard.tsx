@@ -92,12 +92,12 @@ export const LessonPlanCard = ({ plan, onClone, onDelete }: LessonPlanCardProps)
 
   const handleViewPlan = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/teacher/lesson-plans/create?planId=${plan.id}`);
+    navigate(`/teacher/lesson-plans/${plan.id}`);
   };
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/teacher/lesson-plans/create?planId=${plan.id}`);
+    navigate(`/teacher/lesson-plans/${plan.id}`);
   };
 
   const handleClone = (e: React.MouseEvent) => {
