@@ -662,7 +662,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "3 MCQ questions to check understanding",
         duration: 5,
         source: "library",
-        questions: ["q-1", "q-2", "q-3"],
+        questions: ["q-001", "q-004", "q-007"],
         questionCount: 3,
       },
       {
@@ -738,7 +738,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "Quick conceptual check using assertion-reasoning format",
         duration: 5,
         source: "library",
-        questions: ["q-ar-1"],
+        questions: ["q-007"],
         questionCount: 1,
       },
       {
@@ -797,7 +797,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "5 questions: 3 MCQ + 2 Numerical problems",
         duration: 12,
         source: "library",
-        questions: ["q-we-1", "q-we-2", "q-we-3", "q-we-4", "q-we-5"],
+        questions: ["q-001", "q-002", "q-003", "q-004", "q-005"],
         questionCount: 5,
       },
       {
@@ -868,7 +868,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "3 questions: 1 easy, 1 medium, 1 hard",
         duration: 6,
         source: "library",
-        questions: ["q-fr-1", "q-fr-2", "q-fr-3"],
+        questions: ["q-003", "q-001", "q-002"],
         questionCount: 3,
       },
       {
@@ -943,7 +943,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "Calculate centripetal force for given parameters",
         duration: 8,
         source: "library",
-        questions: ["q-cm-1"],
+        questions: ["q-004"],
         questionCount: 1,
       },
     ],
@@ -1001,7 +1001,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "3 questions: 2 MCQ + 1 Assertion-Reasoning",
         duration: 8,
         source: "library",
-        questions: ["q-lenz-1", "q-lenz-2", "q-lenz-3"],
+        questions: ["q-002", "q-008", "q-003"],
         questionCount: 3,
       },
       {
@@ -1069,7 +1069,7 @@ export const teacherLessonPlans: LessonPlan[] = [
         content: "4 questions on momentum conservation",
         duration: 12,
         source: "library",
-        questions: ["q-mom-1", "q-mom-2", "q-mom-3", "q-mom-4"],
+        questions: ["q-001", "q-005", "q-006", "q-007"],
         questionCount: 4,
       },
     ],
