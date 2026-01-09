@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -16,6 +17,7 @@ import {
 import { Plus, BookOpen, Play, HelpCircle, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkspaceBlock } from "./WorkspaceBlock";
+import { ContentPreviewDialog } from "./ContentPreviewDialog";
 import { blockTypeConfig, type LessonPlanBlock, type BlockType } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,7 @@ export const WorkspaceCanvas = ({
   onDeleteBlock,
   onAddBetween,
 }: WorkspaceCanvasProps) => {
+  const [previewBlock, setPreviewBlock] = useState<LessonPlanBlock | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -127,6 +130,7 @@ export const WorkspaceCanvas = ({
                 index={index}
                 onEdit={onEditBlock}
                 onDelete={onDeleteBlock}
+                onPreview={(block) => setPreviewBlock(block)}
               />
               
               {/* Add Between Button */}
@@ -150,6 +154,13 @@ export const WorkspaceCanvas = ({
             </div>
           ))}
         </div>
+
+        {/* Content Preview Dialog */}
+        <ContentPreviewDialog
+          open={!!previewBlock}
+          onOpenChange={(open) => !open && setPreviewBlock(null)}
+          block={previewBlock}
+        />
       </SortableContext>
     </DndContext>
   );

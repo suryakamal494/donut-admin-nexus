@@ -4,6 +4,7 @@ import {
   GripVertical, 
   Trash2, 
   Pencil,
+  Eye,
   Clock,
   BookOpen,
   Play,
@@ -25,6 +26,7 @@ interface WorkspaceBlockProps {
   index: number;
   onEdit: (block: LessonPlanBlock) => void;
   onDelete: (blockId: string) => void;
+  onPreview: (block: LessonPlanBlock) => void;
 }
 
 const iconMap = {
@@ -45,7 +47,8 @@ export const WorkspaceBlock = ({
   block, 
   index, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onPreview
 }: WorkspaceBlockProps) => {
   const config = blockTypeConfig[block.type];
   const Icon = iconMap[block.type];
@@ -161,7 +164,17 @@ export const WorkspaceBlock = ({
             variant="ghost"
             size="icon"
             className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+            onClick={() => onPreview(block)}
+            title="Preview content"
+          >
+            <Eye className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
             onClick={() => onEdit(block)}
+            title="Edit block"
           >
             <Pencil className="w-3.5 h-3.5" />
           </Button>
@@ -170,6 +183,7 @@ export const WorkspaceBlock = ({
             size="icon"
             className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
             onClick={() => onDelete(block.id)}
+            title="Delete block"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>

@@ -8,4 +8,5 @@ export { WorkspaceFooter } from "./WorkspaceFooter";
 export { BlockPopover } from "./BlockPopover";
 export { QuizPopover } from "./QuizPopover";
 export { AIAssistDialog } from "./AIAssistDialog";
+export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export * from "./types";
