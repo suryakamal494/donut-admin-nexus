@@ -3,20 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ExamBlock, BlockType, ScopeType, DateType, TimeType, BlockStrength, blockTypeConfig, scopeTypeConfig } from "@/types/examBlock";
-import { coursesForBlocks, classesForBlocks, batchesForBlocks } from "@/data/examBlockData";
+import { ExamBlock, ExamType, ScopeType, DateType, TimeType, scopeTypeConfig } from "@/types/examBlock";
+import { coursesForBlocks, classesForBlocks, batchesForBlocks, defaultExamTypes } from "@/data/examBlockData";
+import { ExamTypeManager } from "./ExamTypeManager";
 import { cn } from "@/lib/utils";
-import { format, addDays, eachDayOfInterval, isSameDay, parseISO } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import { 
-  FileText, ClipboardCheck, FileEdit, Trophy, Wrench, Calendar as CalendarIcon, 
-  Building2, BookOpen, GraduationCap, Users, Clock, Repeat, Check, X, Save
+  Calendar as CalendarIcon, Building2, BookOpen, GraduationCap, Users, 
+  Clock, Repeat, X, Save, Plus
 } from "lucide-react";
 
 interface ExamBlockFormProps {
@@ -27,15 +26,6 @@ interface ExamBlockFormProps {
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const blockTypeIcons: Record<BlockType, React.ElementType> = {
-  exam: FileText,
-  assessment: ClipboardCheck,
-  internal_test: FileEdit,
-  competition: Trophy,
-  workshop: Wrench,
-  other: CalendarIcon,
-};
-
 const scopeIcons: Record<ScopeType, React.ElementType> = {
   institution: Building2,
   course: BookOpen,
@@ -44,10 +34,13 @@ const scopeIcons: Record<ScopeType, React.ElementType> = {
 };
 
 export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockFormProps) => {
+  // Exam types state
+  const [examTypes, setExamTypes] = useState<ExamType[]>(defaultExamTypes);
+  
   // Form state
   const [name, setName] = useState(existingBlock?.name || "");
   const [description, setDescription] = useState(existingBlock?.description || "");
-  const [blockType, setBlockType] = useState<BlockType>(existingBlock?.blockType || "exam");
+  const [examTypeId, setExamTypeId] = useState(existingBlock?.examTypeId || "type-exam");
   const [scopeType, setScopeType] = useState<ScopeType>(existingBlock?.scopeType || "institution");
   const [scopeId, setScopeId] = useState(existingBlock?.scopeId || "");
   const [scopeName, setScopeName] = useState(existingBlock?.scopeName || "");
@@ -66,7 +59,6 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
   const [startTime, setStartTime] = useState(existingBlock?.startTime || "09:00");
   const [endTime, setEndTime] = useState(existingBlock?.endTime || "12:00");
   const [selectedPeriods, setSelectedPeriods] = useState<number[]>(existingBlock?.periods || []);
-  const [blockStrength, setBlockStrength] = useState<BlockStrength>(existingBlock?.blockStrength || "hard");
 
   // Determine if recurring should be available
   const canShowRecurring = dateType !== 'multi_day' && timeType !== 'full_day';
@@ -121,12 +113,27 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
     }
   };
 
+  const handleAddExamType = (type: ExamType) => {
+    setExamTypes(prev => [...prev, type]);
+  };
+
+  const handleUpdateExamType = (type: ExamType) => {
+    setExamTypes(prev => prev.map(t => t.id === type.id ? type : t));
+  };
+
+  const handleDeleteExamType = (typeId: string) => {
+    setExamTypes(prev => prev.filter(t => t.id !== typeId));
+    if (examTypeId === typeId) {
+      setExamTypeId("type-exam");
+    }
+  };
+
   const handleSubmit = () => {
     const block: ExamBlock = {
       id: existingBlock?.id || "",
       name,
       description: description || undefined,
-      blockType,
+      examTypeId,
       scopeType,
       scopeId: scopeType !== 'institution' ? scopeId : undefined,
       scopeName: scopeType !== 'institution' ? scopeName : undefined,
@@ -141,7 +148,6 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
       startTime: timeType === 'time_range' ? startTime : undefined,
       endTime: timeType === 'time_range' ? endTime : undefined,
       periods: timeType === 'periods' ? selectedPeriods : undefined,
-      blockStrength,
       createdAt: existingBlock?.createdAt || new Date().toISOString(),
       isActive: existingBlock?.isActive ?? true,
     };
@@ -154,45 +160,77 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
     (dateType === 'recurring' ? (recurringStartDate && recurringEndDate) : selectedDates.length > 0) &&
     (timeType === 'full_day' || timeType === 'time_range' || selectedPeriods.length > 0);
 
+  const getTypeColor = (color?: string) => {
+    switch (color) {
+      case 'red': return 'bg-red-100 text-red-700 border-red-200';
+      case 'orange': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'amber': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'green': return 'bg-green-100 text-green-700 border-green-200';
+      case 'blue': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'purple': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'pink': return 'bg-pink-100 text-pink-700 border-pink-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  const selectedType = examTypes.find(t => t.id === examTypeId);
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Step 1: What */}
+      {/* Step 1: Exam Details */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">1</span>
-            What is this block for?
+            <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
+            Exam Details
           </CardTitle>
-          <CardDescription>Select the type of activity and give it a name</CardDescription>
+          <CardDescription>Choose exam type and enter details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Block Type Selection */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-            {(Object.keys(blockTypeConfig) as BlockType[]).map((type) => {
-              const config = blockTypeConfig[type];
-              const Icon = blockTypeIcons[type];
-              return (
-                <button
-                  key={type}
-                  onClick={() => setBlockType(type)}
-                  className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all",
-                    blockType === type
-                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                      : "border-border hover:border-primary/50"
+          {/* Exam Type Selection */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Exam Type *</Label>
+              <ExamTypeManager
+                examTypes={examTypes}
+                onAddType={handleAddExamType}
+                onUpdateType={handleUpdateExamType}
+                onDeleteType={handleDeleteExamType}
+              />
+            </div>
+            <Select value={examTypeId} onValueChange={setExamTypeId}>
+              <SelectTrigger className="w-full max-w-md">
+                <SelectValue>
+                  {selectedType && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={cn("text-xs", getTypeColor(selectedType.color))}>
+                        {selectedType.name}
+                      </Badge>
+                    </div>
                   )}
-                >
-                  <Icon className={cn("w-5 h-5", blockType === type ? "text-primary" : "text-muted-foreground")} />
-                  <span className="text-xs font-medium">{config.label}</span>
-                </button>
-              );
-            })}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {examTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={cn("text-xs", getTypeColor(type.color))}>
+                        {type.name}
+                      </Badge>
+                      {type.isDefault && (
+                        <span className="text-[10px] text-muted-foreground">(default)</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Name & Description */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Block Name *</Label>
+              <Label htmlFor="name">Exam Name *</Label>
               <Input
                 id="name"
                 placeholder="e.g., Mid-Term Examination"
@@ -204,7 +242,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
               <Label htmlFor="description">Description (Optional)</Label>
               <Input
                 id="description"
-                placeholder="Brief description of this block"
+                placeholder="Brief description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -213,14 +251,14 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </CardContent>
       </Card>
 
-      {/* Step 2: Who */}
+      {/* Step 2: Applicable For */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">2</span>
-            Who is affected by this block?
+            <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">2</span>
+            Applicable For
           </CardTitle>
-          <CardDescription>Select one scope per block</CardDescription>
+          <CardDescription>Select who this exam applies to</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Scope Type Selection */}
@@ -277,14 +315,14 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </CardContent>
       </Card>
 
-      {/* Step 3: When */}
+      {/* Step 3: Schedule */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">3</span>
-            When does the block apply?
+            <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">3</span>
+            Schedule
           </CardTitle>
-          <CardDescription>Select dates and time for this block</CardDescription>
+          <CardDescription>Set the date and time for this exam</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Date Type Selection */}
@@ -296,7 +334,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                 className={cn(
                   "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                   dateType === 'single_day'
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50"
                 )}
               >
@@ -307,7 +345,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                 className={cn(
                   "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                   dateType === 'multi_day'
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50"
                 )}
               >
@@ -319,7 +357,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2",
                     dateType === 'recurring'
-                      ? "border-primary bg-primary text-white"
+                      ? "border-primary bg-primary text-primary-foreground"
                       : "border-border hover:border-primary/50"
                   )}
                 >
@@ -347,7 +385,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                   selected={selectedDates[selectedDates.length - 1]}
                   onSelect={handleDateSelect}
                   modifiers={{ selected: selectedDates }}
-                  modifiersStyles={{ selected: { backgroundColor: 'hsl(var(--primary))', color: 'white' } }}
+                  modifiersStyles={{ selected: { backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' } }}
                   className="rounded-md border"
                 />
               </div>
@@ -413,7 +451,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
               </div>
               {recurringStartDate && recurringEndDate && (
                 <p className="text-sm text-muted-foreground">
-                  This block will repeat every <strong>{recurringDay}</strong> from {format(recurringStartDate, 'MMM d')} to {format(recurringEndDate, 'MMM d, yyyy')}
+                  This exam will repeat every <strong>{recurringDay}</strong> from {format(recurringStartDate, 'MMM d')} to {format(recurringEndDate, 'MMM d, yyyy')}
                 </p>
               )}
             </div>
@@ -428,7 +466,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                 className={cn(
                   "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                   timeType === 'full_day'
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50"
                 )}
               >
@@ -439,7 +477,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                 className={cn(
                   "px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2",
                   timeType === 'time_range'
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50"
                 )}
               >
@@ -451,7 +489,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                 className={cn(
                   "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                   timeType === 'periods'
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary/50"
                 )}
               >
@@ -497,7 +535,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
                     className={cn(
                       "w-10 h-10 rounded-lg border text-sm font-medium transition-all",
                       selectedPeriods.includes(period)
-                        ? "border-primary bg-primary text-white"
+                        ? "border-primary bg-primary text-primary-foreground"
                         : "border-border hover:border-primary/50"
                     )}
                   >
@@ -515,51 +553,6 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </CardContent>
       </Card>
 
-      {/* Step 4: Strength */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">4</span>
-            How strong is this block?
-          </CardTitle>
-          <CardDescription>Determines if regular classes can override this block</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup value={blockStrength} onValueChange={(v) => setBlockStrength(v as BlockStrength)} className="flex flex-col sm:flex-row gap-4">
-            <div 
-              className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all flex-1",
-                blockStrength === 'hard' ? "border-red-500 bg-red-50 dark:bg-red-950/20" : "border-border hover:border-red-300"
-              )}
-              onClick={() => setBlockStrength('hard')}
-            >
-              <RadioGroupItem value="hard" id="hard" className="mt-1" />
-              <div>
-                <Label htmlFor="hard" className="font-semibold cursor-pointer">Hard Block</Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Normal classes must NOT happen. Use for exams and important events.
-                </p>
-              </div>
-            </div>
-            <div 
-              className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all flex-1",
-                blockStrength === 'soft' ? "border-amber-500 bg-amber-50 dark:bg-amber-950/20" : "border-border hover:border-amber-300"
-              )}
-              onClick={() => setBlockStrength('soft')}
-            >
-              <RadioGroupItem value="soft" id="soft" className="mt-1" />
-              <div>
-                <Label htmlFor="soft" className="font-semibold cursor-pointer">Soft Block</Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Classes can happen if needed. Use for workshops or optional events.
-                </p>
-              </div>
-            </div>
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pt-2">
         <Button variant="outline" onClick={onCancel}>
@@ -567,7 +560,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </Button>
         <Button onClick={handleSubmit} disabled={!isValid} className="gap-2">
           <Save className="w-4 h-4" />
-          {existingBlock ? 'Update Block' : 'Create Block'}
+          {existingBlock ? 'Save Exam' : 'Create Exam'}
         </Button>
       </div>
     </div>
