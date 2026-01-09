@@ -2,29 +2,27 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Calendar as CalendarIcon,
-  BookOpen,
-  Plus,
+  CheckCircle2,
+  Edit3,
+  AlertCircle,
   List,
   Grid3X3,
-  AlertCircle,
-  CheckCircle2,
-  Clock
 } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
 import { WeekNavigator } from "@/components/teacher/WeekNavigator";
+import { TeacherTimetableGrid } from "@/components/teacher/TeacherTimetableGrid";
 import { ScheduleClassCard } from "@/components/teacher/ScheduleClassCard";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { 
   teacherWeeklySchedule,
   type TeacherTimetableSlot 
 } from "@/data/teacherData";
 
-// Generate schedule for any week (returns mock data for non-current weeks)
+// Generate schedule for any week
 const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlot[]> => {
   const today = new Date();
   const currentWeekMonday = new Date(today);
@@ -33,16 +31,12 @@ const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlo
   currentWeekMonday.setDate(diff);
   currentWeekMonday.setHours(0, 0, 0, 0);
   
-  // If it's the current week, use actual data
   if (weekStart.getTime() === currentWeekMonday.getTime()) {
     return teacherWeeklySchedule;
   }
   
-  // For other weeks, generate similar schedule with new dates
   const schedule: Record<string, TeacherTimetableSlot[]> = {};
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  
-  // Get entries from current week as template
   const templateEntries = Object.values(teacherWeeklySchedule);
   
   dayNames.forEach((_, dayIndex) => {
@@ -54,7 +48,6 @@ const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlo
       schedule[dateStr] = templateEntries[dayIndex].map((slot, i) => ({
         ...slot,
         id: `slot-${dateStr}-${i}`,
-        // Randomly mark some as having plans for variety
         hasLessonPlan: Math.random() > 0.4,
         lessonPlanStatus: Math.random() > 0.6 ? 'ready' : (Math.random() > 0.5 ? 'draft' : 'none'),
       }));
@@ -66,9 +59,8 @@ const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlo
 
 const TeacherSchedule = () => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"week" | "list">("week");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   
-  // Get Monday of current week
   const getMonday = (date: Date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -93,8 +85,8 @@ const TeacherSchedule = () => {
       result.push({
         date,
         dateStr: date.toISOString().split('T')[0],
-        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        fullDayName: date.toLocaleDateString('en-US', { weekday: 'long' }),
+        dayName: date.toLocaleDateString('en-US', { weekday: 'long' }),
+        shortDayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNum: date.getDate(),
         month: date.toLocaleDateString('en-US', { month: 'short' }),
         isToday: date.toDateString() === new Date().toDateString(),
@@ -102,6 +94,42 @@ const TeacherSchedule = () => {
     }
     return result;
   }, [currentWeekStart]);
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    let totalClasses = 0;
+    let ready = 0;
+    let draft = 0;
+    let pending = 0;
+    
+    Object.values(weeklySchedule).forEach(slots => {
+      slots.forEach(slot => {
+        totalClasses++;
+        if (slot.lessonPlanStatus === 'ready') ready++;
+        else if (slot.lessonPlanStatus === 'draft') draft++;
+        else pending++;
+      });
+    });
+    
+    return { totalClasses, ready, draft, pending };
+  }, [weeklySchedule]);
+
+  const handleCellClick = (slot: TeacherTimetableSlot | undefined, dateStr: string, periodNumber: number) => {
+    if (!slot) return;
+    
+    if (slot.hasLessonPlan && slot.lessonPlanId) {
+      navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`);
+    } else {
+      const params = new URLSearchParams({
+        batch: slot.batchId,
+        batchName: slot.batchName,
+        date: dateStr,
+        period: periodNumber.toString(),
+        className: slot.className,
+      });
+      navigate(`/teacher/lesson-plans/create?${params.toString()}`);
+    }
+  };
 
   const isSlotLive = (slot: TeacherTimetableSlot, dateStr: string) => {
     const now = new Date();
@@ -122,188 +150,92 @@ const TeacherSchedule = () => {
     return currentTime >= slot.endTime;
   };
 
-  // Stats calculation
-  const stats = useMemo(() => {
-    let totalClasses = 0;
-    let ready = 0;
-    let draft = 0;
-    let pending = 0;
-    
-    Object.values(weeklySchedule).forEach(slots => {
-      slots.forEach(slot => {
-        totalClasses++;
-        if (slot.lessonPlanStatus === 'ready') ready++;
-        else if (slot.lessonPlanStatus === 'draft') draft++;
-        else pending++;
-      });
-    });
-    
-    const coverage = totalClasses > 0 ? Math.round((ready / totalClasses) * 100) : 0;
-    
-    return { totalClasses, ready, draft, pending, coverage };
-  }, [weeklySchedule]);
-
-  const handleCreatePlan = (slot: TeacherTimetableSlot, dateStr: string) => {
-    const params = new URLSearchParams({
-      batch: slot.batchId,
-      batchName: slot.batchName,
-      date: dateStr,
-      period: slot.periodNumber.toString(),
-      className: slot.className,
-    });
-    navigate(`/teacher/lesson-plans/create?${params.toString()}`);
-  };
-
-  const handleViewPlan = (slot: TeacherTimetableSlot) => {
-    if (slot.lessonPlanId) {
-      navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`);
-    }
-  };
-
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-4 max-w-7xl mx-auto">
       <PageHeader
         title="My Schedule"
-        description="Weekly calendar and class schedule"
+        description="Weekly timetable with lesson plan status"
         breadcrumbs={[
           { label: "Teacher", href: "/teacher" },
           { label: "Schedule" },
         ]}
       />
 
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Controls Bar */}
+      <div className="flex flex-col gap-3">
+        {/* Week Navigation */}
         <WeekNavigator 
           currentWeekStart={currentWeekStart}
           onWeekChange={setCurrentWeekStart}
         />
         
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          {/* Stats Badges */}
-          <div className="flex items-center gap-2 flex-1 sm:flex-initial overflow-x-auto pb-1 sm:pb-0">
-            <Badge variant="secondary" className="gap-1 whitespace-nowrap">
-              <CalendarIcon className="w-3 h-3" />
-              {stats.totalClasses} classes
-            </Badge>
-            <Badge 
-              variant="secondary" 
-              className={cn(
-                "gap-1 whitespace-nowrap",
-                stats.coverage >= 70 ? "bg-green-100 text-green-700" : 
-                stats.coverage >= 40 ? "bg-amber-100 text-amber-700" : 
-                "bg-red-100 text-red-700"
-              )}
-            >
-              <CheckCircle2 className="w-3 h-3" />
-              {stats.ready} ready
-            </Badge>
-            {stats.pending > 0 && (
-              <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-700 whitespace-nowrap">
-                <AlertCircle className="w-3 h-3" />
-                {stats.pending} pending
+        {/* Stats + View Toggle */}
+        <div className="flex items-center justify-between gap-3">
+          {/* Stats Badges - Horizontal Scroll on Mobile */}
+          <ScrollArea className="flex-1">
+            <div className="flex items-center gap-2 pb-1">
+              <Badge variant="secondary" className="gap-1.5 whitespace-nowrap px-3 py-1">
+                <CalendarIcon className="w-3.5 h-3.5" />
+                <span className="font-semibold">{stats.totalClasses}</span>
+                <span className="text-muted-foreground">classes</span>
               </Badge>
-            )}
-          </div>
+              <Badge 
+                variant="secondary" 
+                className="gap-1.5 whitespace-nowrap px-3 py-1 bg-green-100 text-green-700 border-green-200"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="font-semibold">{stats.ready}</span>
+                <span>ready</span>
+              </Badge>
+              {stats.draft > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="gap-1.5 whitespace-nowrap px-3 py-1 bg-amber-100 text-amber-700 border-amber-200"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span className="font-semibold">{stats.draft}</span>
+                  <span>draft</span>
+                </Badge>
+              )}
+              {stats.pending > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="gap-1.5 whitespace-nowrap px-3 py-1 bg-orange-100 text-orange-700 border-orange-200"
+                >
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span className="font-semibold">{stats.pending}</span>
+                  <span>pending</span>
+                </Badge>
+              )}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
           
           {/* View Toggle */}
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "week" | "list")}>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "grid" | "list")}>
             <TabsList className="h-9">
-              <TabsTrigger value="week" className="px-3">
+              <TabsTrigger value="grid" className="px-3 gap-1.5">
                 <Grid3X3 className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs">Grid</span>
               </TabsTrigger>
-              <TabsTrigger value="list" className="px-3">
+              <TabsTrigger value="list" className="px-3 gap-1.5">
                 <List className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs">List</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </div>
 
-      {/* Weekly Grid View */}
-      {viewMode === "week" && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {days.map((day) => {
-            const slots = weeklySchedule[day.dateStr] || [];
-            const hasLiveClass = slots.some(s => isSlotLive(s, day.dateStr));
-            
-            return (
-              <Card 
-                key={day.dateStr} 
-                className={cn(
-                  "overflow-hidden flex flex-col",
-                  day.isToday && "border-primary ring-2 ring-primary/20",
-                  hasLiveClass && "border-primary/70"
-                )}
-              >
-                {/* Day Header */}
-                <CardHeader className={cn(
-                  "p-3 pb-2 border-b",
-                  day.isToday ? "bg-primary text-primary-foreground" : "bg-muted/50"
-                )}>
-                  <div className="text-center">
-                    <p className={cn(
-                      "text-[10px] font-medium uppercase tracking-wide",
-                      day.isToday ? "text-primary-foreground/80" : "text-muted-foreground"
-                    )}>
-                      {day.dayName}
-                    </p>
-                    <p className={cn(
-                      "text-xl font-bold",
-                      day.isToday ? "text-primary-foreground" : "text-foreground"
-                    )}>
-                      {day.dayNum}
-                    </p>
-                    <p className={cn(
-                      "text-[10px]",
-                      day.isToday ? "text-primary-foreground/70" : "text-muted-foreground"
-                    )}>
-                      {day.month}
-                    </p>
-                  </div>
-                </CardHeader>
-                
-                {/* Slots */}
-                <CardContent className="p-2 flex-1">
-                  <ScrollArea className="h-[280px] sm:h-[320px] pr-1">
-                    <div className="space-y-2">
-                      {slots.length > 0 ? (
-                        slots.map((slot) => (
-                          <ScheduleClassCard
-                            key={slot.id}
-                            slot={slot}
-                            isLive={isSlotLive(slot, day.dateStr)}
-                            isPast={isSlotPast(slot, day.dateStr)}
-                            compact
-                            onViewPlan={() => handleViewPlan(slot)}
-                            onCreatePlan={() => handleCreatePlan(slot, day.dateStr)}
-                          />
-                        ))
-                      ) : (
-                        <div className="text-center py-8 text-foreground/40">
-                          <Clock className="w-6 h-6 mx-auto mb-2 opacity-30" />
-                          <p className="text-xs">No classes</p>
-                        </div>
-                      )}
-                    </div>
-                  </ScrollArea>
-                  
-                  {/* Quick Add Button */}
-                  {slots.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full mt-2 h-10 text-xs text-muted-foreground hover:text-primary gap-1"
-                      onClick={() => navigate(`/teacher/lesson-plans/create?date=${day.dateStr}`)}
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Plan
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+      {/* Grid View */}
+      {viewMode === "grid" && (
+        <Card className="overflow-hidden border-0 shadow-sm">
+          <TeacherTimetableGrid
+            days={days}
+            weeklySchedule={weeklySchedule}
+            onCellClick={handleCellClick}
+          />
+        </Card>
       )}
 
       {/* List View */}
@@ -327,7 +259,7 @@ const TeacherSchedule = () => {
                       : "bg-muted"
                   )}>
                     <span className="text-[10px] font-medium uppercase leading-none">
-                      {day.dayName}
+                      {day.shortDayName}
                     </span>
                     <span className="text-xl font-bold leading-tight">{day.dayNum}</span>
                   </div>
@@ -336,7 +268,7 @@ const TeacherSchedule = () => {
                       "font-semibold text-lg",
                       day.isToday && "text-primary"
                     )}>
-                      {day.fullDayName}
+                      {day.dayName}
                     </p>
                     <div className="flex items-center gap-2 text-sm text-foreground/60 font-medium">
                       <span>{slots.length} class{slots.length !== 1 ? 'es' : ''}</span>
@@ -367,8 +299,12 @@ const TeacherSchedule = () => {
                       slot={slot}
                       isLive={isSlotLive(slot, day.dateStr)}
                       isPast={isSlotPast(slot, day.dateStr)}
-                      onViewPlan={() => handleViewPlan(slot)}
-                      onCreatePlan={() => handleCreatePlan(slot, day.dateStr)}
+                      onViewPlan={() => {
+                        if (slot.lessonPlanId) {
+                          navigate(`/teacher/lesson-plans/${slot.lessonPlanId}`);
+                        }
+                      }}
+                      onCreatePlan={() => handleCellClick(slot, day.dateStr, slot.periodNumber)}
                       onStartClass={() => {}}
                     />
                   ))}
@@ -378,17 +314,6 @@ const TeacherSchedule = () => {
           })}
         </div>
       )}
-
-      {/* Mobile FAB */}
-      <div className="fixed bottom-20 right-4 md:hidden z-10">
-        <Button 
-          size="lg"
-          className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
-          onClick={() => navigate("/teacher/lesson-plans/create")}
-        >
-          <Plus className="w-6 h-6" />
-        </Button>
-      </div>
     </div>
   );
 };
