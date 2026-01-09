@@ -322,11 +322,6 @@ export default function Setup() {
                     </div>
                   ))}
                   
-                  {/* Add Chapter Button */}
-                  <Button variant="outline" className="w-full mt-3 gap-2 border-dashed">
-                    <Plus className="w-4 h-4" />
-                    Add Chapter
-                  </Button>
                 </div>
               ) : (
                 <div className="text-center py-12">
