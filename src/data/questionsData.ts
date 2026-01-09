@@ -15,6 +15,7 @@ export type QuestionType =
 export type QuestionLanguage = "english" | "hindi" | "sanskrit" | "telugu";
 export type QuestionDifficulty = "easy" | "medium" | "hard";
 export type QuestionStatus = "review" | "approved" | "archived";
+export type CognitiveType = "logical" | "analytical" | "conceptual" | "numerical" | "application" | "memory";
 
 export interface QuestionOption {
   id: string;
@@ -75,6 +76,7 @@ export interface Question {
   timeRecommended?: number;
   source?: string;
   tags?: string[];
+  cognitiveType?: CognitiveType;
   createdAt: string;
   updatedAt: string;
   createdBy: string;
@@ -129,6 +131,16 @@ export const languageConfig: Record<QuestionLanguage, { label: string; nativeLab
   hindi: { label: "Hindi", nativeLabel: "हिंदी" },
   sanskrit: { label: "Sanskrit", nativeLabel: "संस्कृतम्" },
   telugu: { label: "Telugu", nativeLabel: "తెలుగు" },
+};
+
+// Cognitive Type Config
+export const cognitiveTypeConfig: Record<CognitiveType, { label: string; className: string }> = {
+  logical: { label: "Logical", className: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800" },
+  analytical: { label: "Analytical", className: "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800" },
+  conceptual: { label: "Conceptual", className: "bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800" },
+  numerical: { label: "Numerical", className: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800" },
+  application: { label: "Application", className: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800" },
+  memory: { label: "Memory", className: "bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800" },
 };
 
 // 80+ Mock Questions
@@ -3073,4 +3085,26 @@ export const getChaptersForSubject = (subjectId: string): string[] => {
   return Array.from(new Set(
     mockQuestions.filter(q => q.subjectId === subjectId).map(q => q.chapter)
   ));
+};
+
+// Helper to get cognitive type based on question characteristics (for questions without explicit cognitiveType)
+export const getCognitiveTypeForQuestion = (q: Question): CognitiveType => {
+  if (q.cognitiveType) return q.cognitiveType;
+  
+  // Infer from question type and characteristics
+  if (q.type === 'numerical') return 'numerical';
+  if (q.type === 'assertion_reasoning') return 'logical';
+  if (q.type === 'matrix_match') return 'analytical';
+  if (q.type === 'fill_blanks' || q.type === 'true_false') return 'memory';
+  
+  // Infer from difficulty and subject for MCQ
+  if (q.difficulty === 'easy') return 'memory';
+  if (q.difficulty === 'hard') return 'analytical';
+  
+  // Default based on subject patterns
+  if (q.subject === 'Mathematics') return 'numerical';
+  if (q.subject === 'Physics' && q.chapter?.toLowerCase().includes('mechanics')) return 'application';
+  if (q.subject === 'Chemistry' && q.chapter?.toLowerCase().includes('organic')) return 'conceptual';
+  
+  return 'conceptual';
 };
