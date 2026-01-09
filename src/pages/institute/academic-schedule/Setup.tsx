@@ -26,16 +26,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+// Unified subject colors using shorthand IDs (consistent across the platform)
 const SUBJECT_COLORS: Record<string, string> = {
-  // Numeric IDs from getSubjectsByClass (aligned with cbseMasterData)
-  "1": "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",     // Physics
-  "2": "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200", // Chemistry
-  "3": "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",   // Mathematics
-  "4": "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",       // Biology
-  "5": "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",       // History
-  "8": "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",               // Hindi (subjectId = 8 in cbseMasterData)
-  "7": "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",   // English
-  "6": "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",           // Other
+  // Core subjects (shorthand codes)
+  phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
+  che: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200",
+  mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
+  bio: "bg-green-100 text-green-700 border-green-200 hover:bg-green-200",
+  his: "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200",
+  hin: "bg-red-100 text-red-700 border-red-200 hover:bg-red-200",
+  eng: "bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200",
+  sci: "bg-teal-100 text-teal-700 border-teal-200 hover:bg-teal-200",
+  sst: "bg-indigo-100 text-indigo-700 border-indigo-200 hover:bg-indigo-200",
+  cs: "bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200",
+  eco: "bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200",
   // JEE subjects
   jee_phy: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200",
   jee_mat: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200",
@@ -45,7 +49,7 @@ const SUBJECT_COLORS: Record<string, string> = {
 export default function Setup() {
   const [selectedTrack, setSelectedTrack] = useState<"cbse" | "jee">("cbse");
   const [selectedClass, setSelectedClass] = useState<string>("1"); // Start with Class 6
-  const [selectedSubject, setSelectedSubject] = useState<string>("3"); // Math exists for all classes
+  const [selectedSubject, setSelectedSubject] = useState<string>("mat"); // Math exists for all classes (shorthand ID)
 
   // Get classes for the selected track
   const classes = useMemo(() => {
@@ -92,8 +96,8 @@ export default function Setup() {
       // Check if current subject exists for new class
       const subjectExists = subjects.some(s => s.id === selectedSubject);
       if (!subjectExists) {
-        // Default to Math (3) if available, otherwise first subject
-        const mathSubject = subjects.find(s => s.id === "3");
+        // Default to Math ("mat") if available, otherwise first subject
+        const mathSubject = subjects.find(s => s.id === "mat");
         setSelectedSubject(mathSubject ? mathSubject.id : subjects[0].id);
       }
     }

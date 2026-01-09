@@ -28,7 +28,7 @@ import {
 import { WeekNavigator, BatchPlanAccordion } from "@/components/academic-schedule";
 import { weeklyChapterPlans, academicWeeks, currentWeekIndex, academicScheduleSetups } from "@/data/academicScheduleData";
 import { batches } from "@/data/instituteData";
-import { WeeklyChapterPlan, ChapterHourAllocation } from "@/types/academicSchedule";
+import { WeeklyChapterPlan, ChapterHourAllocation, ChapterPlanStatus } from "@/types/academicSchedule";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
@@ -130,17 +130,38 @@ export default function WeeklyPlans() {
           p => p.batchId === batch.id && p.subjectId === subject.subjectId
         );
         
-        const chapterNames = plan?.plannedChapters.map(chapterId => {
+        // Get chapter details with status
+        const chaptersWithStatus = plan?.plannedChapters.map((chapterId, index) => {
           const setup = academicScheduleSetups.find(s => s.subjectId === subject.subjectId);
           const chapter = setup?.chapters.find(c => c.chapterId === chapterId);
-          return chapter?.chapterName || chapterId;
+          const chapterName = chapter?.chapterName || chapterId;
+          
+          // Derive status based on week and position
+          let status: ChapterPlanStatus = 'pending';
+          if (isPastWeek) {
+            // Past weeks: all completed
+            status = 'completed';
+          } else if (isCurrentWeek) {
+            // Current week: first chapter in progress, rest pending
+            status = index === 0 ? 'in_progress' : 'pending';
+          }
+          // Future weeks: all pending (default)
+          
+          return {
+            chapterId,
+            chapterName,
+            status,
+          };
         }) || [];
+
+        const chapterNames = chaptersWithStatus.map(c => c.chapterName);
 
         return {
           subjectId: subject.subjectId,
           subjectName: subject.subjectName,
           chapters: plan?.plannedChapters || [],
           chapterNames,
+          chaptersWithStatus,
           hasPlans: !!plan && plan.plannedChapters.length > 0,
         };
       });
@@ -154,7 +175,7 @@ export default function WeeklyPlans() {
         totalCount: subjects.length,
       };
     });
-  }, [filteredBatches, weekPlans]);
+  }, [filteredBatches, weekPlans, isPastWeek, isCurrentWeek]);
 
   const stats = useMemo(() => {
     const totalSubjects = batchPlansData.reduce((sum, b) => sum + b.totalCount, 0);

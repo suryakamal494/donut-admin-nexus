@@ -87,6 +87,9 @@ export interface TeachingConfirmation {
 // Progress Tracking & Analytics
 // ============================================
 
+// Chapter plan status for visual indicators in Weekly Plans
+export type ChapterPlanStatus = 'pending' | 'in_progress' | 'completed';
+
 export type ChapterStatus = 
   | "not_started" 
   | "in_progress" 
