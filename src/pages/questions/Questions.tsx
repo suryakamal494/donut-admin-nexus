@@ -184,23 +184,26 @@ const Questions = () => {
           { label: "Question Bank" },
         ]}
         actions={
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Link to="/superadmin/questions/upload-pdf">
-              <Button variant="outline" className="gap-2">
-                <Upload className="w-4 h-4" />
-                Upload PDF
+              <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+                <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Upload PDF</span>
+                <span className="sm:hidden">PDF</span>
               </Button>
             </Link>
             <Link to="/superadmin/questions/ai">
-              <Button variant="outline" className="gap-2">
-                <Sparkles className="w-4 h-4" />
-                Generate with AI
+              <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Generate with AI</span>
+                <span className="sm:hidden">AI</span>
               </Button>
             </Link>
             <Link to="/superadmin/questions/create">
-              <Button className="gradient-button gap-2">
-                <Plus className="w-4 h-4" />
-                Add Question
+              <Button size="sm" className="gradient-button gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Add Question</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </Link>
           </div>
@@ -228,14 +231,14 @@ const Questions = () => {
       />
 
       {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{allDisplayItems.length}</span> questions found
           {activeFilterCount > 0 && <span> (filtered)</span>}
         </p>
         {paragraphGroups.size > 0 && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <FileText className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+            <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>{paragraphGroups.size} paragraph groups</span>
           </div>
         )}

@@ -104,29 +104,29 @@ const InstituteDetails = () => {
       {/* Main Content */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/50 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="border-b border-border/50 px-4 overflow-x-auto">
-            <TabsList className="bg-transparent h-12 p-0 gap-0">
+          <div className="border-b border-border/50 px-2 sm:px-4 overflow-x-auto">
+            <TabsList className="bg-transparent h-11 sm:h-12 p-0 gap-0 w-max">
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-12 px-4"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-11 sm:h-12 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="curriculum" 
-                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-12 px-4"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-11 sm:h-12 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap"
               >
                 Curriculums & Courses
               </TabsTrigger>
               <TabsTrigger 
                 value="custom" 
-                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-12 px-4"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-11 sm:h-12 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap"
               >
                 Custom Courses
               </TabsTrigger>
               <TabsTrigger 
                 value="activity" 
-                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-12 px-4"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-11 sm:h-12 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap"
               >
                 Activity Log
               </TabsTrigger>

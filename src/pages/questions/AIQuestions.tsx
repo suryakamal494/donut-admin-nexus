@@ -126,32 +126,32 @@ const AIQuestions = () => {
       />
 
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Form */}
-          <div className="lg:col-span-2 bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+          <div className="lg:col-span-2 bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-2xl gradient-button flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl gradient-button flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold">AI Question Generator</h2>
-                <p className="text-sm text-muted-foreground">
-                  Configure parameters and let AI create questions for you
+                <h2 className="text-base sm:text-lg font-bold">AI Question Generator</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Configure parameters and let AI create questions
                 </p>
               </div>
             </div>
 
             {/* Form */}
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
               {/* Question Types */}
-              <div className="space-y-3">
-                <Label>Question Types <span className="text-destructive">*</span></Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm">Question Types <span className="text-destructive">*</span></Label>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2">
                   {allQuestionTypes.map((type) => (
                     <div
                       key={type}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition-all ${
+                      className={`flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border cursor-pointer transition-all ${
                         selectedTypes.includes(type)
                           ? "bg-primary/5 border-primary/30"
                           : "bg-muted/30 border-border/50 hover:border-primary/20"
@@ -161,15 +161,16 @@ const AIQuestions = () => {
                       <Checkbox
                         checked={selectedTypes.includes(type)}
                         onCheckedChange={() => toggleQuestionType(type)}
+                        className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                       />
-                      <span className="text-sm font-medium">
+                      <span className="text-xs sm:text-sm font-medium truncate">
                         {questionTypeLabels[type]}
                       </span>
                     </div>
                   ))}
                 </div>
                 {selectedTypes.length > 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {selectedTypes.length} type(s) selected
                   </p>
                 )}
@@ -254,11 +255,11 @@ const AIQuestions = () => {
           </div>
 
           {/* Sidebar - Classification & Visibility */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Classification */}
-            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-              <h3 className="text-lg font-semibold mb-4">Classification</h3>
-              <div className="space-y-4">
+            <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Classification</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <SourceTypeSelector 
                   value={sourceType} 
                   onChange={handleSourceTypeChange} 
