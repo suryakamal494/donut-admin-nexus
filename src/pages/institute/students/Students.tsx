@@ -46,7 +46,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { PageHeader } from "@/components/ui/page-header";
-import { students, batches, Student } from "@/data/instituteData";
+import { students, batches, availableClasses, Student } from "@/data/instituteData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -56,13 +56,32 @@ const Students = () => {
   const batchIdFilter = searchParams.get("batchId");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [expandedBatches, setExpandedBatches] = useState<string[]>(
     batchIdFilter ? [batchIdFilter] : batches.slice(0, 2).map((b) => b.id)
   );
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
+  // Create class chips with student counts
+  const classChips = availableClasses
+    .map((cls) => {
+      const classBatches = batches.filter(b => b.classId === cls.id);
+      const classStudentCount = students.filter(s => 
+        classBatches.some(b => b.id === s.batchId)
+      ).length;
+      return {
+        id: cls.id,
+        name: cls.name,
+        count: classStudentCount,
+      };
+    })
+    .filter((c) => c.count > 0);
+
   // Group students by batch
   const studentsByBatch = batches.reduce((acc, batch) => {
+    // Filter by selected class
+    if (selectedClass && batch.classId !== selectedClass) return acc;
+    
     const batchStudents = students.filter((s) => s.batchId === batch.id);
     if (batchStudents.length > 0 || !batchIdFilter) {
       acc[batch.id] = {
@@ -131,41 +150,76 @@ const Students = () => {
         }
       />
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-3 md:gap-4">
+      {/* Quick Stats - Compact */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardContent className="p-3 md:p-4 flex items-center gap-3 md:gap-4">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-foreground">{totalStudents}</p>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Total</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{totalStudents}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Total</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 border-emerald-500/20">
-          <CardContent className="p-3 md:p-4 flex items-center gap-3 md:gap-4">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-emerald-600" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-foreground">{activeStudents}</p>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Active</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{activeStudents}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Active</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20">
-          <CardContent className="p-3 md:p-4 flex items-center gap-3 md:gap-4">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-              <Users className="h-5 w-5 md:h-6 md:w-6 text-amber-600" />
+          <CardContent className="p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-foreground">{batches.length}</p>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Batches</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{batches.length}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Batches</p>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Class Filter Chips */}
+      <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-border/50">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <button
+            onClick={() => setSelectedClass(null)}
+            className={cn(
+              "px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
+              "border border-border/50 hover:border-primary/50",
+              selectedClass === null
+                ? "bg-primary text-primary-foreground border-primary shadow-md"
+                : "bg-muted/50 text-muted-foreground hover:bg-muted"
+            )}
+          >
+            All
+            <span className="ml-1 text-xs opacity-80">({totalStudents})</span>
+          </button>
+          {classChips.map((chip) => (
+            <button
+              key={chip.id}
+              onClick={() => setSelectedClass(chip.id)}
+              className={cn(
+                "px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
+                "border border-border/50 hover:border-primary/50",
+                selectedClass === chip.id
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              )}
+            >
+              {chip.name.replace('Class ', '')}
+              <span className="ml-1 text-xs opacity-80">({chip.count})</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Search */}
