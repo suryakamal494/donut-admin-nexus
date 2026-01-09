@@ -1,8 +1,4 @@
 // Teacher Module Components
-export { LessonBlockCard, blockTypeConfig } from "./LessonBlockCard";
-export type { BlockType } from "./LessonBlockCard";
-export { AddBlockMenu } from "./AddBlockMenu";
-export { SortableBlockList } from "./SortableBlockList";
 export { WeekNavigator } from "./WeekNavigator";
 export { TeachingConfirmationDialog } from "./TeachingConfirmationDialog";
 export { ScheduleClassCard } from "./ScheduleClassCard";
@@ -13,3 +9,6 @@ export { CreateHomeworkDialog } from "./CreateHomeworkDialog";
 export { CurrentClassWidget } from "./CurrentClassWidget";
 export { TeacherTimetableCell } from "./TeacherTimetableCell";
 export { TeacherTimetableGrid } from "./TeacherTimetableGrid";
+
+// Lesson Workspace exports
+export * from "./lesson-workspace";

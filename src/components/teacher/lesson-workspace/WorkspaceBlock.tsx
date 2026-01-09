@@ -1,0 +1,180 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { 
+  GripVertical, 
+  Trash2, 
+  Pencil,
+  Clock,
+  BookOpen,
+  Play,
+  HelpCircle,
+  ClipboardList,
+  Sparkles,
+  FileText,
+  Video,
+  Image as ImageIcon
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { blockTypeConfig, type LessonPlanBlock } from "./types";
+
+interface WorkspaceBlockProps {
+  block: LessonPlanBlock;
+  index: number;
+  onEdit: (block: LessonPlanBlock) => void;
+  onDelete: (blockId: string) => void;
+}
+
+const iconMap = {
+  explain: BookOpen,
+  demonstrate: Play,
+  quiz: HelpCircle,
+  homework: ClipboardList,
+};
+
+const sourceIconMap = {
+  presentation: FileText,
+  video: Video,
+  document: FileText,
+  image: ImageIcon,
+};
+
+export const WorkspaceBlock = ({ 
+  block, 
+  index, 
+  onEdit, 
+  onDelete 
+}: WorkspaceBlockProps) => {
+  const config = blockTypeConfig[block.type];
+  const Icon = iconMap[block.type];
+  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const getSourceLabel = () => {
+    if (block.source === 'library') return 'From Library';
+    if (block.source === 'ai') return 'AI Generated';
+    if (block.source === 'custom') return 'Custom Upload';
+    return '';
+  };
+
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group transition-all duration-200 overflow-hidden",
+        "bg-white border-l-4",
+        isDragging && "opacity-60 shadow-xl scale-[1.02] z-50",
+        block.type === 'explain' && "border-l-[hsl(var(--donut-coral))]",
+        block.type === 'demonstrate' && "border-l-[hsl(var(--donut-orange))]",
+        block.type === 'quiz' && "border-l-[hsl(var(--donut-pink))]",
+        block.type === 'homework' && "border-l-[hsl(var(--donut-purple))]"
+      )}
+    >
+      <div className="flex items-center gap-3 p-3 sm:p-4">
+        {/* Drag Handle + Sequence */}
+        <div 
+          {...attributes}
+          {...listeners}
+          className="flex items-center gap-2 cursor-grab active:cursor-grabbing opacity-40 group-hover:opacity-100 transition-opacity touch-none shrink-0"
+        >
+          <GripVertical className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-bold text-muted-foreground w-4 text-center">
+            {index + 1}
+          </span>
+        </div>
+        
+        {/* Block Type Icon */}
+        <div className={cn(
+          "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+          config.color
+        )}>
+          <Icon className="w-4 h-4 text-white" />
+        </div>
+        
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge 
+              variant="secondary" 
+              className={cn(
+                "text-[10px] px-1.5 py-0.5 border-0",
+                config.bgColor
+              )}
+            >
+              {config.label}
+            </Badge>
+            
+            {block.duration && block.duration > 0 && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 gap-0.5">
+                <Clock className="w-2.5 h-2.5" />
+                {block.duration}m
+              </Badge>
+            )}
+            
+            {block.aiGenerated && (
+              <Badge 
+                variant="secondary" 
+                className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary border-0 gap-0.5"
+              >
+                <Sparkles className="w-2.5 h-2.5" />
+                AI
+              </Badge>
+            )}
+          </div>
+          
+          <h4 className="font-medium text-sm text-foreground mt-1 line-clamp-1">
+            {block.title || "Untitled block"}
+          </h4>
+          
+          {block.source && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {getSourceLabel()}
+              {block.sourceType && ` • ${block.sourceType}`}
+            </p>
+          )}
+          
+          {block.type === 'quiz' && block.questions && block.questions.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {block.questions.length} question{block.questions.length > 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+        
+        {/* Actions */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+            onClick={() => onEdit(block)}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => onDelete(block.id)}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+};
