@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TimetableGrid, TeacherLoadCard, BatchSelector, AssignmentDialog, InfoTooltip, ConflictSummaryPanel, UndoRedoControls, HolidayCalendarDialog, Holiday, CopyWeekDialog, CopyOptions } from "@/components/timetable";
 import { DragData } from "@/components/timetable/TimetableGrid";
 import { defaultPeriodStructure, teacherLoads, timetableEntries, TimetableEntry, TimetableConflict, TeacherLoad, academicHolidays, defaultTeacherConstraints, defaultFacilities, TeacherConstraint, Facility } from "@/data/timetableData";
+import { examBlocks } from "@/data/examBlockData";
 import { useTimetableHistory } from "@/hooks/useTimetableHistory";
 import { batches, availableSubjects } from "@/data/instituteData";
 import { cn } from "@/lib/utils";
@@ -814,6 +815,7 @@ const Timetable = () => {
                   draggedEntry={draggedEntry}
                   holidays={holidays}
                   weekStartDate={currentWeekStart}
+                  examBlocks={examBlocks}
                 />
               </CardContent>
             </Card>
