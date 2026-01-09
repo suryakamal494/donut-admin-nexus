@@ -284,40 +284,45 @@ export default function WeeklyPlans() {
       </div>
 
       {/* Compact Header Row 2: Class Chips + Week Navigator */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 bg-muted/30 rounded-xl p-2 sm:p-3">
-        {/* Class Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 sm:pb-0">
-          <button
-            onClick={() => setClassFilter("all")}
-            className={cn(
-              "px-3 h-8 rounded-full text-xs font-medium transition-all shrink-0",
-              classFilter === "all"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-background hover:bg-muted text-muted-foreground"
-            )}
-          >
-            All
-          </button>
-          {CLASS_CHIPS.map(cls => (
+      <div className="bg-card border border-border/50 rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-6">
+        {/* Class Section */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Class</span>
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
             <button
-              key={cls}
-              onClick={() => setClassFilter(cls)}
+              onClick={() => setClassFilter("all")}
               className={cn(
-                "w-8 h-8 rounded-full text-xs font-medium transition-all shrink-0 flex items-center justify-center",
-                classFilter === cls
+                "px-2.5 h-7 rounded-full text-xs font-medium transition-all shrink-0",
+                classFilter === "all"
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-background hover:bg-muted text-muted-foreground"
+                  : "bg-muted/60 hover:bg-muted text-muted-foreground"
               )}
             >
-              {cls}
+              All
             </button>
-          ))}
+            {CLASS_CHIPS.map(cls => (
+              <button
+                key={cls}
+                onClick={() => setClassFilter(cls)}
+                className={cn(
+                  "w-7 h-7 rounded-full text-xs font-medium transition-all shrink-0 flex items-center justify-center",
+                  classFilter === cls
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted/60 hover:bg-muted text-muted-foreground"
+                )}
+              >
+                {cls}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <Separator orientation="vertical" className="h-6 hidden sm:block" />
+        {/* Divider - visible on tablet+ */}
+        <div className="hidden sm:block w-px h-8 bg-border/60" />
         
-        {/* Week Navigator */}
-        <div className="flex items-center justify-between sm:justify-start gap-2">
+        {/* Week Section */}
+        <div className="flex items-center gap-2 flex-1">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Week</span>
           <WeekNavigator
             weeks={academicWeeks}
             currentWeekIndex={currentWeekIndex}
@@ -327,18 +332,18 @@ export default function WeeklyPlans() {
           
           {/* Week Status Badge */}
           {isPastWeek && (
-            <Badge variant="secondary" className="text-muted-foreground gap-1 text-xs shrink-0">
+            <Badge variant="secondary" className="text-muted-foreground gap-1 text-xs shrink-0 ml-auto sm:ml-0">
               <Lock className="w-3 h-3" />
               <span className="hidden sm:inline">View Only</span>
             </Badge>
           )}
           {isCurrentWeek && (
-            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-0 text-xs shrink-0">
-              <span className="relative flex h-1.5 w-1.5 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+            <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-50 border border-emerald-200/50 text-xs shrink-0 ml-auto sm:ml-0">
+              <span className="relative flex h-1.5 w-1.5 mr-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
               </span>
-              Current
+              Current Week
             </Badge>
           )}
         </div>

@@ -58,7 +58,7 @@ export function WeekNavigator({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 shrink-0"
+        className="h-7 w-7 shrink-0"
         onClick={() => onWeekChange(Math.max(0, selectedWeekIndex - 1))}
         disabled={selectedWeekIndex === 0}
       >
@@ -66,19 +66,19 @@ export function WeekNavigator({
       </Button>
 
       {/* Week Dots */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5 sm:gap-1">
         {visibleIndices.map((idx) => (
           <button
             key={idx}
             onClick={() => onWeekChange(idx)}
             className={cn(
-              "w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all",
+              "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all",
               idx === selectedWeekIndex
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-md"
                 : idx === currentWeekIndex
-                ? "bg-primary/20 text-primary ring-1 ring-primary/50"
+                ? "bg-primary/15 text-primary border border-primary/30"
                 : idx < currentWeekIndex
-                ? "bg-muted text-muted-foreground/70 hover:bg-muted/80"
+                ? "bg-muted/70 text-muted-foreground/60 hover:bg-muted"
                 : "bg-muted/40 text-muted-foreground/50 hover:bg-muted/60"
             )}
             title={weeks[idx]?.label}
@@ -92,24 +92,26 @@ export function WeekNavigator({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 shrink-0"
+        className="h-7 w-7 shrink-0"
         onClick={() => onWeekChange(Math.min(weeks.length - 1, selectedWeekIndex + 1))}
         disabled={selectedWeekIndex === weeks.length - 1}
       >
         <ChevronRight className="w-4 h-4" />
       </Button>
 
-      {/* Date Range */}
-      <span className="text-xs font-medium text-muted-foreground hidden sm:inline ml-1">
-        {formatDateRange()}
-      </span>
+      {/* Date Range - More Prominent */}
+      <div className="flex items-center gap-1.5 ml-1 sm:ml-2 px-2 py-1 rounded-md bg-muted/50">
+        <span className="text-xs sm:text-sm font-medium text-foreground">
+          {formatDateRange()}
+        </span>
+      </div>
 
       {/* Today Button */}
       {!isCurrentWeek && (
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="h-7 px-2 text-xs gap-1 ml-1"
+          className="h-7 px-2 text-xs gap-1 border-primary/30 text-primary hover:bg-primary/5"
           onClick={goToCurrentWeek}
         >
           <RotateCcw className="w-3 h-3" />
