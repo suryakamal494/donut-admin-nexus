@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Upload, Video, FileText, FileCode, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +8,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useState, useMemo } from "react";
-import { availableClasses, availableSubjects, assignedTracks } from "@/data/instituteData";
-import { getSubjectsForCourse, getChaptersForCourseBySubject, subjects as masterSubjects } from "@/data/masterData";
+import { useState, useMemo, useEffect } from "react";
+import { availableClasses, availableSubjects, assignedTracks, instituteContent } from "@/data/instituteData";
+import { getSubjectsForCourse, getChaptersForCourseBySubject } from "@/data/masterData";
 import { getChaptersByClassAndSubject, getTopicsByChapter } from "@/data/cbseMasterData";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -22,9 +22,21 @@ const contentTypes = [
 ];
 
 const InstituteCreateContent = () => {
-  const [selectedType, setSelectedType] = useState("video");
+  const { contentId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  const isEditMode = !!contentId;
+  const existingContent = useMemo(() => {
+    if (!contentId) return null;
+    return instituteContent.find(c => c.id === contentId && c.source === "institute");
+  }, [contentId]);
+
+  const [selectedType, setSelectedType] = useState("video");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [learningObjectives, setLearningObjectives] = useState("");
+  const [externalUrl, setExternalUrl] = useState("");
 
   // Course-based selection state
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -32,6 +44,18 @@ const InstituteCreateContent = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedChapter, setSelectedChapter] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
+
+  // Pre-populate form for edit mode
+  useEffect(() => {
+    if (existingContent) {
+      setSelectedType(existingContent.type);
+      setTitle(existingContent.title);
+      setDescription(existingContent.description);
+      setExternalUrl(existingContent.url || "");
+      // Note: Would need to reverse-lookup course from content data
+      // For now, we just set basic fields
+    }
+  }, [existingContent]);
 
   // Determine if selected course has classes
   const selectedTrack = assignedTracks.find(t => t.id === selectedCourse);
@@ -93,7 +117,14 @@ const InstituteCreateContent = () => {
   };
 
   const handleSubmit = () => {
-    toast({ title: "Content Created!", description: "Content has been added to your library." });
+    if (!title.trim()) {
+      toast({ title: "Error", description: "Please enter a title", variant: "destructive" });
+      return;
+    }
+    toast({ 
+      title: isEditMode ? "Content Updated!" : "Content Created!", 
+      description: isEditMode ? "Your changes have been saved." : "Content has been added to your library." 
+    });
     navigate("/institute/content");
   };
 
@@ -102,87 +133,19 @@ const InstituteCreateContent = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <PageHeader
-        title="Create Content"
-        description="Add new learning content to your institute's library"
+        title={isEditMode ? "Edit Content" : "Create Content"}
+        description={isEditMode ? "Update your content details" : "Add new learning content to your institute's library"}
         breadcrumbs={[
           { label: "Dashboard", href: "/institute/dashboard" },
           { label: "Content", href: "/institute/content" },
-          { label: "Create" },
+          { label: isEditMode ? "Edit" : "Create" },
         ]}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Content Type Selection */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Content Type</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {contentTypes.map((type) => (
-                <button
-                  key={type.id}
-                  onClick={() => setSelectedType(type.id)}
-                  className={cn(
-                    "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
-                    selectedType === type.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                  )}
-                >
-                  <type.icon className={cn("w-6 h-6", selectedType === type.id ? "text-primary" : "text-muted-foreground")} />
-                  <span className="text-sm font-medium">{type.label}</span>
-                  <span className="text-xs text-muted-foreground">{type.description}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Upload Area */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">
-              {selectedType === "iframe" ? "Enter URL" : "Upload File"}
-            </h3>
-            {selectedType === "iframe" ? (
-              <div className="space-y-2">
-                <Label>External URL</Label>
-                <Input placeholder="https://www.youtube.com/embed/..." />
-                <p className="text-xs text-muted-foreground">
-                  Paste an embed URL from YouTube, Vimeo, Google Slides, or any other service
-                </p>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                <Upload className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <p className="font-medium text-lg">Drag & drop your file here</p>
-                <p className="text-sm text-muted-foreground mt-1">or click to browse</p>
-                <Button variant="outline" className="mt-4">Select File</Button>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Supported formats: {selectedTypeData?.accept || "Any"}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Content Details */}
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-            <h3 className="text-lg font-semibold mb-4">Content Details</h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Title *</Label>
-                <Input placeholder="Enter content title" />
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea placeholder="Describe what this content covers..." className="min-h-24" />
-              </div>
-              <div className="space-y-2">
-                <Label>Learning Objectives</Label>
-                <Textarea placeholder="What will students learn from this content?" className="min-h-20" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
+        {/* Mobile: Classification first for logical flow */}
+        <div className="order-1 lg:order-2 space-y-6">
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
             <h3 className="text-lg font-semibold mb-4">Classification</h3>
             <div className="space-y-4">
               {/* Course Selection */}
@@ -203,8 +166,8 @@ const InstituteCreateContent = () => {
                         checked={selectedCourse === track.id}
                         onCheckedChange={() => handleCourseChange(track.id)}
                       />
-                      <div>
-                        <p className="font-medium text-sm">{track.name}</p>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{track.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {track.hasClasses ? "Curriculum-based" : "Competitive exam"}
                         </p>
@@ -286,10 +249,97 @@ const InstituteCreateContent = () => {
           <Button 
             className="w-full gradient-button" 
             onClick={handleSubmit}
-            disabled={!selectedCourse || !selectedSubject || !selectedChapter || (isCBSE && !selectedClass)}
+            disabled={!isEditMode && (!selectedCourse || !selectedSubject || !selectedChapter || (isCBSE && !selectedClass))}
           >
-            Save Content
+            {isEditMode ? "Save Changes" : "Save Content"}
           </Button>
+        </div>
+
+        {/* Content details */}
+        <div className="order-2 lg:order-1 lg:col-span-2 space-y-6">
+          {/* Content Type Selection */}
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-lg font-semibold mb-4">Content Type</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              {contentTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setSelectedType(type.id)}
+                  className={cn(
+                    "p-3 sm:p-4 rounded-xl border flex flex-col items-center gap-1 sm:gap-2 transition-all",
+                    selectedType === type.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  )}
+                >
+                  <type.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", selectedType === type.id ? "text-primary" : "text-muted-foreground")} />
+                  <span className="text-xs sm:text-sm font-medium">{type.label}</span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:block">{type.description}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Upload Area */}
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedType === "iframe" ? "Enter URL" : "Upload File"}
+            </h3>
+            {selectedType === "iframe" ? (
+              <div className="space-y-2">
+                <Label>External URL</Label>
+                <Input 
+                  placeholder="https://www.youtube.com/embed/..." 
+                  value={externalUrl}
+                  onChange={(e) => setExternalUrl(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Paste an embed URL from YouTube, Vimeo, Google Slides, or any other service
+                </p>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-border rounded-xl p-8 sm:p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                <Upload className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-muted-foreground mb-4" />
+                <p className="font-medium text-base sm:text-lg">Drag & drop your file here</p>
+                <p className="text-sm text-muted-foreground mt-1">or click to browse</p>
+                <Button variant="outline" className="mt-4">Select File</Button>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Supported formats: {selectedTypeData?.accept || "Any"}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Content Details */}
+          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-soft border border-border/50">
+            <h3 className="text-lg font-semibold mb-4">Content Details</h3>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Title *</Label>
+                <Input 
+                  placeholder="Enter content title" 
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea 
+                  placeholder="Describe what this content covers..." 
+                  className="min-h-24" 
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Learning Objectives</Label>
+                <Textarea 
+                  placeholder="What will students learn from this content?" 
+                  className="min-h-20" 
+                  value={learningObjectives}
+                  onChange={(e) => setLearningObjectives(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
