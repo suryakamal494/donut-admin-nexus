@@ -208,34 +208,36 @@ const Substitution = () => {
           { label: "Substitution" },
         ]}
         actions={
-          <Button onClick={() => setMarkAbsentDialogOpen(true)} className="gap-2">
+          <Button onClick={() => setMarkAbsentDialogOpen(true)} className="gap-2" size="sm">
             <UserX className="w-4 h-4" />
-            Mark Teacher Absent
+            <span className="hidden sm:inline">Mark Teacher Absent</span>
+            <span className="sm:hidden">Mark Absent</span>
           </Button>
         }
       />
 
       {/* Date Navigator with Calendar Picker */}
       <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setSelectedDate(subDays(selectedDate, 1))}
+              className="shrink-0"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
             
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="gap-2 hover:bg-muted px-4">
-                  <CalendarIcon className="w-5 h-5 text-muted-foreground" />
-                  <div className="text-center">
-                    <p className="font-semibold text-lg">
-                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                <Button variant="ghost" className="gap-1.5 sm:gap-2 hover:bg-muted px-2 sm:px-4 min-w-0 flex-1 sm:flex-none">
+                  <CalendarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0" />
+                  <div className="text-center min-w-0">
+                    <p className="font-semibold text-sm sm:text-lg truncate">
+                      {format(selectedDate, 'EEE, MMM d, yyyy')}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground hidden sm:block">
                       {isToday(selectedDate) ? "Today" : isFuture(selectedDate) ? "Upcoming" : "Past"} • Click to select date
                     </p>
                   </div>

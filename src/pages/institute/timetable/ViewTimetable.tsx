@@ -151,42 +151,42 @@ const ViewTimetable = () => {
 
       {/* Filter Bar */}
       <Card>
-        <CardContent className="py-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <CardContent className="py-3 sm:py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
             {/* Left: View Toggle + Navigator */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'weekly' | 'monthly')}>
-                <TabsList>
-                  <TabsTrigger value="weekly">Weekly</TabsTrigger>
-                  <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                <TabsList className="w-full sm:w-auto">
+                  <TabsTrigger value="weekly" className="flex-1 sm:flex-none">Weekly</TabsTrigger>
+                  <TabsTrigger value="monthly" className="flex-1 sm:flex-none">Monthly</TabsTrigger>
                 </TabsList>
               </Tabs>
 
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" onClick={goToPrevious}>
+              <div className="flex items-center justify-between sm:justify-start gap-2">
+                <Button variant="outline" size="icon" onClick={goToPrevious} className="shrink-0">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <div className="min-w-[180px] text-center font-medium">
+                <div className="min-w-0 flex-1 sm:flex-none sm:min-w-[140px] lg:min-w-[180px] text-center font-medium text-sm sm:text-base truncate">
                   {viewMode === 'weekly' 
                     ? `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`
                     : format(currentDate, 'MMMM yyyy')
                   }
                 </div>
-                <Button variant="outline" size="icon" onClick={goToNext}>
+                <Button variant="outline" size="icon" onClick={goToNext} className="shrink-0">
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
 
-              <Button variant="outline" size="sm" onClick={goToToday}>
+              <Button variant="outline" size="sm" onClick={goToToday} className="hidden sm:flex">
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 Today
               </Button>
             </div>
 
             {/* Right: Filters + Export */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[140px] lg:w-[160px]">
                   <SelectValue placeholder="Select Batch" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +198,7 @@ const ViewTimetable = () => {
               </Select>
 
               <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[140px] lg:w-[160px]">
                   <SelectValue placeholder="Select Teacher" />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,18 +209,20 @@ const ViewTimetable = () => {
                 </SelectContent>
               </Select>
 
-              <Button variant="outline" onClick={handlePrint} className="print:hidden">
-                <Printer className="w-4 h-4 mr-2" />
-                Export PDF
-              </Button>
-
-              {/* Edit button - only for future weeks */}
-              {!isPastWeek && viewMode === 'weekly' && (
-                <Button onClick={handleEditWeek} className="print:hidden">
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Edit Week
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={handlePrint} className="print:hidden flex-1 sm:flex-none" size="sm">
+                  <Printer className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Export PDF</span>
                 </Button>
-              )}
+
+                {/* Edit button - only for future weeks */}
+                {!isPastWeek && viewMode === 'weekly' && (
+                  <Button onClick={handleEditWeek} className="print:hidden flex-1 sm:flex-none" size="sm">
+                    <Pencil className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Edit Week</span>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 

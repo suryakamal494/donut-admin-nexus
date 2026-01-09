@@ -234,35 +234,36 @@ const TimetableSetup = () => {
         actions={
           <Button onClick={handleSave} className="gap-2">
             <Save className="w-4 h-4" />
-            Save & Continue
+            <span className="hidden sm:inline">Save & Continue</span>
+            <span className="sm:hidden">Save</span>
           </Button>
         }
       />
 
       {/* Advanced Mode Toggle */}
       <Card className="border-dashed">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                "w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors shrink-0",
                 isAdvancedMode ? "bg-amber-100 dark:bg-amber-900" : "bg-muted"
               )}>
                 <Zap className={cn(
-                  "w-5 h-5",
+                  "w-4 h-4 sm:w-5 sm:h-5",
                   isAdvancedMode ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
                 )} />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">Advanced Setup</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-medium text-sm sm:text-base">Advanced Setup</p>
                   {isAdvancedMode && (
                     <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
                       Enabled
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-none">
                   {isAdvancedMode 
                     ? "Configure teacher constraints and facility management" 
                     : "Enable for teacher constraints, facility scheduling, and more"}
@@ -284,8 +285,8 @@ const TimetableSetup = () => {
 
       {/* Progress Overview */}
       <Card className="bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-6 overflow-x-auto pb-1">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 overflow-x-auto pb-2 scrollbar-thin">
             {tabs.map((tab, index) => {
               const progress = getTabProgress(tab.id);
               const Icon = tab.icon;
@@ -295,7 +296,7 @@ const TimetableSetup = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg transition-all whitespace-nowrap",
+                    "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all whitespace-nowrap shrink-0",
                     activeTab === tab.id
                       ? "bg-primary text-white"
                       : "hover:bg-muted/50",
@@ -303,15 +304,16 @@ const TimetableSetup = () => {
                   )}
                 >
                   <div className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
+                    "w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-medium shrink-0",
                     progress === 'complete' && activeTab !== tab.id && "bg-green-100 text-green-700",
                     progress === 'partial' && activeTab !== tab.id && "bg-amber-100 text-amber-700",
                     progress === 'empty' && activeTab !== tab.id && "bg-muted text-muted-foreground",
                     activeTab === tab.id && "bg-white/20 text-white"
                   )}>
-                    {progress === 'complete' ? <Check className="w-3.5 h-3.5" /> : index + 1}
+                    {progress === 'complete' ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : index + 1}
                   </div>
-                  <span className="text-sm font-medium">{tab.label}</span>
+                  <span className="text-xs sm:text-sm font-medium hidden sm:inline">{tab.label}</span>
+                  <span className="text-xs font-medium sm:hidden">{tab.label.split(' ')[0]}</span>
                   {isAdvancedTab && activeTab !== tab.id && (
                     <Zap className="w-3 h-3 text-amber-500" />
                   )}
@@ -522,7 +524,7 @@ const TimetableSetup = () => {
                       Auto-Generate
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(period => {
                       const mapping = timeMapping.find(t => t.period === period) || { startTime: '', endTime: '' };
                       const isAfterBreak = breaks.some(b => b.afterPeriod === period - 1);
@@ -626,7 +628,7 @@ const TimetableSetup = () => {
 
               {/* Holiday Preview */}
               {holidays.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   {holidays.slice(0, 8).map((holiday, i) => (
                     <div key={i} className="p-3 rounded-lg border bg-muted/30">
                       <p className="text-sm font-medium">{holiday.name}</p>
