@@ -494,6 +494,16 @@ const subjectNames: Record<string, string> = {
   "4": "Biology",
   "5": "History",
   "6": "Hindi",
+  "7": "English",
+  "8": "Computer Science",
+  "9": "Economics",
+  "10": "Geography",
+  "11": "Political Science",
+  "12": "Sanskrit",
+  "13": "Social Studies",
+  "14": "Science",
+  "15": "Accountancy",
+  "16": "Business Studies",
 };
 
 export const getSubjectsByClass = (classId: string): ClassSubject[] => {
