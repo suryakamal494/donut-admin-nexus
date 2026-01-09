@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -28,6 +29,8 @@ import {
   Filter,
   Plus,
   Check,
+  Layers,
+  Eye,
 } from "lucide-react";
 import { WeekNavigator, BatchPlanAccordion } from "@/components/academic-schedule";
 import { weeklyChapterPlans, academicWeeks, currentWeekIndex, academicScheduleSetups } from "@/data/academicScheduleData";
@@ -36,26 +39,90 @@ import { WeeklyChapterPlan, ChapterHourAllocation } from "@/types/academicSchedu
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-// Subject list for batch-subject combinations
-const subjectsList = [
-  { subjectId: "phy", subjectName: "Physics" },
-  { subjectId: "mat", subjectName: "Mathematics" },
-  { subjectId: "che", subjectName: "Chemistry" },
-];
-
-// Get subjects for a batch (simplified)
-const getBatchSubjects = (batchId: string) => {
-  return subjectsList;
+// Subject configuration based on class level
+const getSubjectsForClass = (classId: string): { subjectId: string; subjectName: string }[] => {
+  // Extract class number from classId (e.g., "class-6" -> 6)
+  const classNum = parseInt(classId.replace("class-", ""));
+  
+  // Class 6-8: General subjects
+  if (classNum >= 6 && classNum <= 8) {
+    return [
+      { subjectId: "mat", subjectName: "Mathematics" },
+      { subjectId: "sci", subjectName: "Science" },
+      { subjectId: "eng", subjectName: "English" },
+      { subjectId: "hin", subjectName: "Hindi" },
+      { subjectId: "sst", subjectName: "Social Studies" },
+    ];
+  }
+  
+  // Class 9-10: Science stream
+  if (classNum >= 9 && classNum <= 10) {
+    return [
+      { subjectId: "phy", subjectName: "Physics" },
+      { subjectId: "che", subjectName: "Chemistry" },
+      { subjectId: "mat", subjectName: "Mathematics" },
+      { subjectId: "bio", subjectName: "Biology" },
+      { subjectId: "eng", subjectName: "English" },
+      { subjectId: "hin", subjectName: "Hindi" },
+      { subjectId: "sst", subjectName: "Social Studies" },
+    ];
+  }
+  
+  // Class 11-12: Science stream
+  if (classNum >= 11 && classNum <= 12) {
+    return [
+      { subjectId: "phy", subjectName: "Physics" },
+      { subjectId: "che", subjectName: "Chemistry" },
+      { subjectId: "mat", subjectName: "Mathematics" },
+      { subjectId: "bio", subjectName: "Biology" },
+    ];
+  }
+  
+  // Default
+  return [
+    { subjectId: "mat", subjectName: "Mathematics" },
+    { subjectId: "sci", subjectName: "Science" },
+    { subjectId: "eng", subjectName: "English" },
+  ];
 };
+
+// JEE subjects
+const getJEESubjects = (): { subjectId: string; subjectName: string }[] => {
+  return [
+    { subjectId: "jee_phy", subjectName: "JEE Physics" },
+    { subjectId: "jee_che", subjectName: "JEE Chemistry" },
+    { subjectId: "jee_mat", subjectName: "JEE Mathematics" },
+  ];
+};
+
+// Get subjects for a batch
+const getBatchSubjects = (batch: typeof batches[0]) => {
+  // Check if JEE batch
+  if (batch.assignedCourses?.includes("jee-mains") || batch.id.startsWith("jee-")) {
+    return getJEESubjects();
+  }
+  return getSubjectsForClass(batch.classId);
+};
+
+// Class numbers for filter chips
+const CLASS_CHIPS = ["6", "7", "8", "9", "10", "11", "12"];
 
 export default function WeeklyPlans() {
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(currentWeekIndex);
   const [classFilter, setClassFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [editingPlan, setEditingPlan] = useState<WeeklyChapterPlan | null>(null);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
+  const [bulkSelectedBatches, setBulkSelectedBatches] = useState<string[]>([]);
 
   const selectedWeek = academicWeeks[selectedWeekIndex];
+  
+  // Determine if selected week is past, current, or future
+  const isPastWeek = selectedWeekIndex < currentWeekIndex;
+  const isCurrentWeek = selectedWeekIndex === currentWeekIndex;
+  const isFutureWeek = selectedWeekIndex > currentWeekIndex;
 
   // Filter plans for the selected week
   const weekPlans = useMemo(() => {
@@ -65,22 +132,19 @@ export default function WeeklyPlans() {
     );
   }, [selectedWeek]);
 
-  // Get all unique classes for filter
-  const classOptions = useMemo(() => {
-    const classes = [...new Set(batches.map(b => b.classId || b.className))];
-    return classes.sort();
-  }, []);
-
   // Filter batches by class
   const filteredBatches = useMemo(() => {
     if (classFilter === "all") return batches;
-    return batches.filter(b => (b.classId || b.className) === classFilter);
+    return batches.filter(b => {
+      const classNum = b.classId.replace("class-", "");
+      return classNum === classFilter;
+    });
   }, [classFilter]);
 
   // Build batch data with their subject plans
   const batchPlansData = useMemo(() => {
     return filteredBatches.map(batch => {
-      const batchSubjects = getBatchSubjects(batch.id);
+      const batchSubjects = getBatchSubjects(batch);
       
       const subjects = batchSubjects.map(subject => {
         const plan = weekPlans.find(
@@ -134,7 +198,7 @@ export default function WeeklyPlans() {
   const handleEditPlan = (batchId: string, subjectId: string) => {
     const plan = weekPlans.find(p => p.batchId === batchId && p.subjectId === subjectId);
     const batch = batches.find(b => b.id === batchId);
-    const batchSubjects = getBatchSubjects(batchId);
+    const batchSubjects = getBatchSubjects(batch!);
     const subject = batchSubjects.find(s => s.subjectId === subjectId);
     
     if (plan) {
@@ -157,11 +221,26 @@ export default function WeeklyPlans() {
       });
       setSelectedChapters([]);
     }
+    setIsViewMode(false);
     setIsDialogOpen(true);
   };
 
   const handleAddPlan = (batchId: string, subjectId: string) => {
     handleEditPlan(batchId, subjectId);
+  };
+
+  const handleViewPlan = (batchId: string, subjectId: string) => {
+    const plan = weekPlans.find(p => p.batchId === batchId && p.subjectId === subjectId);
+    const batch = batches.find(b => b.id === batchId);
+    const batchSubjects = getBatchSubjects(batch!);
+    const subject = batchSubjects.find(s => s.subjectId === subjectId);
+    
+    if (plan) {
+      setEditingPlan(plan);
+      setSelectedChapters(plan.plannedChapters);
+      setIsViewMode(true);
+      setIsDialogOpen(true);
+    }
   };
 
   const handleSavePlan = () => {
@@ -175,11 +254,22 @@ export default function WeeklyPlans() {
   };
 
   const toggleChapter = (chapterId: string) => {
+    if (isViewMode) return;
     setSelectedChapters(prev =>
       prev.includes(chapterId)
         ? prev.filter(id => id !== chapterId)
         : [...prev, chapterId]
     );
+  };
+
+  const handleBulkAdd = () => {
+    if (bulkSelectedBatches.length === 0) {
+      toast.error("Please select at least one batch");
+      return;
+    }
+    toast.success(`Bulk plans added for ${bulkSelectedBatches.length} batches!`);
+    setIsBulkDialogOpen(false);
+    setBulkSelectedBatches([]);
   };
 
   return (
@@ -192,6 +282,36 @@ export default function WeeklyPlans() {
           { label: "Weekly Plans" },
         ]}
       />
+
+      {/* Class Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <span className="text-sm font-medium text-muted-foreground shrink-0">Class:</span>
+        <button
+          onClick={() => setClassFilter("all")}
+          className={cn(
+            "px-4 py-2 rounded-full text-sm font-medium transition-all min-w-[44px] h-[44px] flex items-center justify-center",
+            classFilter === "all"
+              ? "bg-primary text-primary-foreground shadow-md"
+              : "bg-muted hover:bg-muted/80 text-muted-foreground"
+          )}
+        >
+          All
+        </button>
+        {CLASS_CHIPS.map(cls => (
+          <button
+            key={cls}
+            onClick={() => setClassFilter(cls)}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm font-medium transition-all min-w-[44px] h-[44px] flex items-center justify-center",
+              classFilter === cls
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "bg-muted hover:bg-muted/80 text-muted-foreground"
+            )}
+          >
+            {cls}
+          </button>
+        ))}
+      </div>
 
       {/* Week Navigator */}
       <WeekNavigator
@@ -252,28 +372,15 @@ export default function WeeklyPlans() {
         </Card>
       </div>
 
-      {/* Filter & Actions Row */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <Select value={classFilter} onValueChange={setClassFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Filter by class" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Classes</SelectItem>
-              {classOptions.map(cls => (
-                <SelectItem key={cls} value={cls}>Class {cls}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Actions Row */}
+      {!isPastWeek && (
+        <div className="flex justify-end">
+          <Button className="gap-2" onClick={() => setIsBulkDialogOpen(true)}>
+            <Layers className="w-4 h-4" />
+            Bulk Add Plans
+          </Button>
         </div>
-
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Bulk Add Plans
-        </Button>
-      </div>
+      )}
 
       {/* Batch Accordions */}
       <div className="space-y-4">
@@ -294,8 +401,10 @@ export default function WeeklyPlans() {
               className={batch.className}
               subjects={batch.subjects}
               isExpanded={true}
+              isPastWeek={isPastWeek}
               onEditPlan={handleEditPlan}
               onAddPlan={handleAddPlan}
+              onViewPlan={handleViewPlan}
             />
           ))
         )}
@@ -306,12 +415,12 @@ export default function WeeklyPlans() {
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <span className="text-muted-foreground font-medium">Legend:</span>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary" />
+            <div className="w-3 h-3 rounded-full bg-primary ring-2 ring-primary/50" />
             <span>Current Week</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-muted" />
-            <span>Past Weeks</span>
+            <span>Past Weeks (View Only)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-muted/50" />
@@ -320,13 +429,27 @@ export default function WeeklyPlans() {
         </div>
       </Card>
 
-      {/* Add/Edit Plan Dialog */}
+      {/* Add/Edit/View Plan Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {editingPlan?.id ? "Edit" : "Add"} Weekly Plan
+            <DialogTitle className="flex items-center gap-2">
+              {isViewMode ? (
+                <>
+                  <Eye className="w-5 h-5" />
+                  View Weekly Plan
+                </>
+              ) : editingPlan?.id ? (
+                "Edit Weekly Plan"
+              ) : (
+                "Add Weekly Plan"
+              )}
             </DialogTitle>
+            {isViewMode && (
+              <DialogDescription>
+                This is a past week. Plans cannot be modified.
+              </DialogDescription>
+            )}
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -344,23 +467,28 @@ export default function WeeklyPlans() {
             </div>
 
             <div className="border-t pt-4">
-              <Label className="text-sm font-medium">Select Chapters</Label>
+              <Label className="text-sm font-medium">
+                {isViewMode ? "Planned Chapters" : "Select Chapters"}
+              </Label>
               <ScrollArea className="h-[250px] mt-2">
                 <div className="space-y-2">
                   {editingPlan && getChaptersForSubject(editingPlan.subjectId).map((chapter) => (
                     <div
                       key={chapter.chapterId}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
+                        "flex items-center gap-3 p-3 rounded-lg border transition-colors",
                         selectedChapters.includes(chapter.chapterId)
                           ? "border-primary bg-primary/5"
-                          : "hover:bg-muted/50"
+                          : "hover:bg-muted/50",
+                        isViewMode && !selectedChapters.includes(chapter.chapterId) && "opacity-50",
+                        !isViewMode && "cursor-pointer"
                       )}
                       onClick={() => toggleChapter(chapter.chapterId)}
                     >
                       <Checkbox
                         checked={selectedChapters.includes(chapter.chapterId)}
                         onCheckedChange={() => toggleChapter(chapter.chapterId)}
+                        disabled={isViewMode}
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
@@ -375,6 +503,13 @@ export default function WeeklyPlans() {
                       )}
                     </div>
                   ))}
+                  {editingPlan && getChaptersForSubject(editingPlan.subjectId).length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No chapters found for this subject.</p>
+                      <p className="text-xs mt-1">Please set up the academic schedule first.</p>
+                    </div>
+                  )}
                 </div>
               </ScrollArea>
             </div>
@@ -382,10 +517,83 @@ export default function WeeklyPlans() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              {isViewMode ? "Close" : "Cancel"}
+            </Button>
+            {!isViewMode && (
+              <Button onClick={handleSavePlan}>
+                Save Plan
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Add Plans Dialog */}
+      <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Layers className="w-5 h-5" />
+              Bulk Add Plans
+            </DialogTitle>
+            <DialogDescription>
+              Select batches to add plans for Week {selectedWeekIndex + 1}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <Label className="text-sm font-medium">Select Batches</Label>
+            <ScrollArea className="h-[300px] mt-2 border rounded-lg p-2">
+              <div className="space-y-2">
+                {filteredBatches.map((batch) => (
+                  <div
+                    key={batch.id}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
+                      bulkSelectedBatches.includes(batch.id)
+                        ? "border-primary bg-primary/5"
+                        : "hover:bg-muted/50"
+                    )}
+                    onClick={() => {
+                      setBulkSelectedBatches(prev =>
+                        prev.includes(batch.id)
+                          ? prev.filter(id => id !== batch.id)
+                          : [...prev, batch.id]
+                      );
+                    }}
+                  >
+                    <Checkbox
+                      checked={bulkSelectedBatches.includes(batch.id)}
+                      onCheckedChange={() => {
+                        setBulkSelectedBatches(prev =>
+                          prev.includes(batch.id)
+                            ? prev.filter(id => id !== batch.id)
+                            : [...prev, batch.id]
+                        );
+                      }}
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{batch.name}</p>
+                      <p className="text-xs text-muted-foreground">{batch.className}</p>
+                    </div>
+                    {bulkSelectedBatches.includes(batch.id) && (
+                      <Check className="w-4 h-4 text-primary" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+            <p className="text-xs text-muted-foreground mt-2">
+              {bulkSelectedBatches.length} batch(es) selected
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSavePlan}>
-              Save Plan
+            <Button onClick={handleBulkAdd} disabled={bulkSelectedBatches.length === 0}>
+              Add Plans ({bulkSelectedBatches.length})
             </Button>
           </DialogFooter>
         </DialogContent>
