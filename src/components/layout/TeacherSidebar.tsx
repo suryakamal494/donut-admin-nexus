@@ -1,5 +1,7 @@
+import { useCallback } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { preloadRoute } from "@/lib/route-preloader";
 import {
   LayoutDashboard,
   Calendar,
@@ -53,6 +55,10 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
     return location.pathname.startsWith(path);
   };
 
+  const handlePreload = useCallback((path: string) => {
+    preloadRoute(path);
+  }, []);
+
   const NavItemComponent = ({ item }: { item: NavItem }) => {
     const Icon = item.icon;
     const active = isActive(item.path);
@@ -61,6 +67,8 @@ const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Teache
       <NavLink
         to={item.path}
         onClick={() => isMobile && onMobileClose?.()}
+        onMouseEnter={() => handlePreload(item.path)}
+        onFocus={() => handlePreload(item.path)}
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
           active
