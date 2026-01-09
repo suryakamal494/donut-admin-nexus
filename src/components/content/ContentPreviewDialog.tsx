@@ -11,9 +11,10 @@ interface ContentPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEdit: (content: ContentItem) => void;
+  mode?: "superadmin" | "institute";
 }
 
-export const ContentPreviewDialog = ({ content, open, onOpenChange, onEdit }: ContentPreviewDialogProps) => {
+export const ContentPreviewDialog = ({ content, open, onOpenChange, onEdit, mode = "superadmin" }: ContentPreviewDialogProps) => {
   if (!content) return null;
 
   const renderPreview = () => {
@@ -39,27 +40,27 @@ export const ContentPreviewDialog = ({ content, open, onOpenChange, onEdit }: Co
       
       case "pdf":
         return (
-          <div className="aspect-[4/3] w-full bg-muted rounded-lg overflow-hidden">
+          <div className="w-full min-h-[50vh] max-h-[70vh] bg-muted rounded-lg overflow-hidden">
             <iframe
               src={`${content.url}#toolbar=0`}
               title={content.title}
-              className="w-full h-full"
+              className="w-full h-full min-h-[50vh]"
             />
           </div>
         );
       
       case "ppt":
         return (
-          <div className="aspect-video w-full bg-muted rounded-lg overflow-hidden">
+          <div className="w-full min-h-[45vh] max-h-[70vh] bg-muted rounded-lg overflow-hidden">
             {content.embedUrl ? (
               <iframe
                 src={content.embedUrl}
                 title={content.title}
-                className="w-full h-full"
+                className="w-full h-full min-h-[45vh]"
                 allowFullScreen
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-8">
+              <div className="w-full h-full min-h-[200px] flex flex-col items-center justify-center gap-3 p-8">
                 <ContentTypeIcon type="ppt" size="lg" />
                 <p className="text-sm text-muted-foreground">PowerPoint preview</p>
                 <Button variant="outline" size="sm" asChild>
@@ -153,69 +154,76 @@ export const ContentPreviewDialog = ({ content, open, onOpenChange, onEdit }: Co
           {renderPreview()}
         </div>
         
-        {/* Content Details */}
-        <div className="mt-4 space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <ContentStatusBadge status={content.status} />
-            <ContentVisibilityBadge visibility={content.visibility} />
-          </div>
-          
-          <p className="text-sm text-muted-foreground">{content.description}</p>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">Views</p>
-                <p className="text-sm font-medium">{content.viewCount.toLocaleString()}</p>
-              </div>
+        {/* Content Details - Only show for superadmin mode */}
+        {mode !== "institute" && (
+          <div className="mt-4 space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <ContentStatusBadge status={content.status} />
+              <ContentVisibilityBadge visibility={content.visibility} />
             </div>
-            <div className="flex items-center gap-2">
-              <Download className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">Downloads</p>
-                <p className="text-sm font-medium">{content.downloadCount.toLocaleString()}</p>
-              </div>
-            </div>
-            {content.duration && (
+            
+            <p className="text-sm text-muted-foreground">{content.description}</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-muted-foreground" />
+                <Eye className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Duration</p>
-                  <p className="text-sm font-medium">{content.duration} min</p>
+                  <p className="text-xs text-muted-foreground">Views</p>
+                  <p className="text-sm font-medium">{content.viewCount.toLocaleString()}</p>
                 </div>
               </div>
-            )}
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">Created</p>
-                <p className="text-sm font-medium">{format(new Date(content.createdAt), "MMM d, yyyy")}</p>
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-muted-foreground" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Downloads</p>
+                  <p className="text-sm font-medium">{content.downloadCount.toLocaleString()}</p>
+                </div>
+              </div>
+              {content.duration && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Duration</p>
+                    <p className="text-sm font-medium">{content.duration} min</p>
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Created</p>
+                  <p className="text-sm font-medium">{format(new Date(content.createdAt), "MMM d, yyyy")}</p>
+                </div>
               </div>
             </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={() => onEdit(content)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
+              <Button variant="outline" size="sm">
+                <Share2 className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <a href={content.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Open Original
+                </a>
+              </Button>
+            </div>
           </div>
-          
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => onEdit(content)}>
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share2 className="w-4 h-4 mr-2" />
-              Share
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <a href={content.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Open Original
-              </a>
-            </Button>
-          </div>
-        </div>
+        )}
+        
+        {/* Minimal description for institute mode */}
+        {mode === "institute" && content.description && (
+          <p className="mt-3 text-sm text-muted-foreground">{content.description}</p>
+        )}
       </DialogContent>
     </Dialog>
   );

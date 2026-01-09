@@ -223,6 +223,7 @@ const InstituteContent = () => {
             handleEdit(content);
           }
         }}
+        mode="institute"
       />
 
       {/* Delete Confirmation Dialog */}

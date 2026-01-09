@@ -89,30 +89,30 @@ export const InstituteContentFilters = ({
   const filteredSubjects = getAvailableSubjects();
   
   return (
-    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-soft border border-border/50 space-y-3 sm:space-y-4">
-      {/* Top row: Search + Source Toggle + Course Toggle */}
-      <div className="flex flex-col xl:flex-row gap-3 xl:gap-4 items-stretch xl:items-center">
-        {/* Search - full width on mobile */}
-        <div className="relative w-full xl:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search content..." 
-            value={searchQuery} 
-            onChange={(e) => onSearchChange(e.target.value)} 
-            className="pl-10" 
-          />
-        </div>
-        
-        {/* Source Toggle - horizontal scroll on small screens */}
-        <div className="flex items-center gap-2 w-full xl:w-auto">
-          <span className="text-sm font-medium text-muted-foreground shrink-0 hidden sm:block">Source:</span>
-          <div className="flex border border-border rounded-lg bg-muted/30 overflow-x-auto w-full xl:w-auto">
+    <div className="bg-card rounded-2xl p-2 sm:p-3 lg:p-4 shadow-soft border border-border/50 space-y-2 sm:space-y-3">
+      {/* Row 1: Search */}
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input 
+          placeholder="Search content..." 
+          value={searchQuery} 
+          onChange={(e) => onSearchChange(e.target.value)} 
+          className="pl-10 h-9" 
+        />
+      </div>
+      
+      {/* Row 2: Source + Course Toggles - Combined on md+ */}
+      <div className="flex flex-col md:flex-row gap-2 md:gap-3 items-stretch md:items-center">
+        {/* Source Toggle */}
+        <div className="flex items-center gap-1.5 w-full md:w-auto">
+          <span className="text-xs font-medium text-muted-foreground shrink-0 hidden sm:block">Source:</span>
+          <div className="flex border border-border rounded-md bg-muted/30 overflow-x-auto w-full md:w-auto">
             <Button 
               variant={sourceFilter === "all" ? "secondary" : "ghost"} 
               size="sm"
               onClick={() => onSourceChange("all")}
               className={cn(
-                "rounded-r-none border-r border-border/50 px-3 sm:px-4 shrink-0",
+                "rounded-r-none border-r border-border/50 px-2 sm:px-3 h-8 text-xs shrink-0",
                 sourceFilter === "all" && "bg-primary text-primary-foreground hover:bg-primary/90"
               )}
             >
@@ -123,38 +123,36 @@ export const InstituteContentFilters = ({
               size="sm"
               onClick={() => onSourceChange("global")}
               className={cn(
-                "rounded-none border-r border-border/50 px-3 sm:px-4 shrink-0 whitespace-nowrap",
+                "rounded-none border-r border-border/50 px-2 sm:px-3 h-8 text-xs shrink-0 whitespace-nowrap",
                 sourceFilter === "global" && "bg-slate-600 text-white hover:bg-slate-700"
               )}
             >
-              <span className="hidden sm:inline">Global Library</span>
-              <span className="sm:hidden">Global</span>
+              Global
             </Button>
             <Button 
               variant={sourceFilter === "institute" ? "secondary" : "ghost"} 
               size="sm"
               onClick={() => onSourceChange("institute")}
               className={cn(
-                "rounded-l-none px-3 sm:px-4 shrink-0 whitespace-nowrap",
+                "rounded-l-none px-2 sm:px-3 h-8 text-xs shrink-0 whitespace-nowrap",
                 sourceFilter === "institute" && "bg-emerald-600 text-white hover:bg-emerald-700"
               )}
             >
-              <span className="hidden sm:inline">Our Content</span>
-              <span className="sm:hidden">Ours</span>
+              Ours
             </Button>
           </div>
         </div>
         
-        {/* Course Toggle - horizontal scroll */}
-        <div className="flex items-center gap-2 w-full xl:w-auto">
-          <span className="text-sm font-medium text-muted-foreground shrink-0 hidden sm:block">Course:</span>
-          <div className="flex border border-border rounded-lg bg-muted/30 overflow-x-auto w-full xl:w-auto">
+        {/* Course Toggle */}
+        <div className="flex items-center gap-1.5 w-full md:w-auto">
+          <span className="text-xs font-medium text-muted-foreground shrink-0 hidden sm:block">Course:</span>
+          <div className="flex border border-border rounded-md bg-muted/30 overflow-x-auto w-full md:w-auto">
             <Button 
               variant={courseFilter === "all" ? "secondary" : "ghost"} 
               size="sm"
               onClick={() => onCourseChange("all")}
               className={cn(
-                "rounded-r-none border-r border-border/50 px-3 shrink-0",
+                "rounded-r-none border-r border-border/50 px-2 sm:px-3 h-8 text-xs shrink-0",
                 courseFilter === "all" && "bg-primary text-primary-foreground hover:bg-primary/90"
               )}
             >
@@ -167,7 +165,7 @@ export const InstituteContentFilters = ({
                 size="sm"
                 onClick={() => onCourseChange(track.id)}
                 className={cn(
-                  "px-3 shrink-0 whitespace-nowrap",
+                  "px-2 sm:px-3 h-8 text-xs shrink-0 whitespace-nowrap",
                   index < assignedTracks.length - 1 ? "rounded-none border-r border-border/50" : "rounded-l-none",
                   courseFilter === track.id && "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
@@ -179,12 +177,12 @@ export const InstituteContentFilters = ({
         </div>
       </div>
       
-      {/* Bottom row: Filters */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      {/* Row 3: Dropdown Filters + View Toggle */}
+      <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1">
         {/* Type Filter */}
         <Select value={typeFilter} onValueChange={(v) => onTypeChange(v as ContentType | "all")}>
-          <SelectTrigger className="w-full xs:w-[130px] sm:w-36">
-            <Filter className="w-4 h-4 mr-2 shrink-0" />
+          <SelectTrigger className="w-auto min-w-[90px] sm:min-w-[110px] h-8 text-xs shrink-0">
+            <Filter className="w-3 h-3 mr-1 shrink-0" />
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent className="bg-popover">
@@ -197,7 +195,7 @@ export const InstituteContentFilters = ({
         {/* Class Filter - Only show for curriculum-based courses */}
         {showClassFilter && (
           <Select value={classFilter} onValueChange={onClassChange}>
-            <SelectTrigger className="w-full xs:w-[130px] sm:w-36">
+            <SelectTrigger className="w-auto min-w-[80px] sm:min-w-[100px] h-8 text-xs shrink-0">
               <SelectValue placeholder="Class" />
             </SelectTrigger>
             <SelectContent className="bg-popover">
@@ -211,7 +209,7 @@ export const InstituteContentFilters = ({
         
         {/* Subject Filter */}
         <Select value={subjectFilter} onValueChange={onSubjectChange}>
-          <SelectTrigger className="w-full xs:w-[130px] sm:w-36">
+          <SelectTrigger className="w-auto min-w-[80px] sm:min-w-[100px] h-8 text-xs shrink-0">
             <SelectValue placeholder="Subject" />
           </SelectTrigger>
           <SelectContent className="bg-popover">
@@ -224,7 +222,7 @@ export const InstituteContentFilters = ({
         
         {/* Status Filter */}
         <Select value={statusFilter} onValueChange={onStatusChange}>
-          <SelectTrigger className="w-full xs:w-[130px] sm:w-36">
+          <SelectTrigger className="w-auto min-w-[80px] sm:min-w-[100px] h-8 text-xs shrink-0">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent className="bg-popover">
@@ -234,30 +232,30 @@ export const InstituteContentFilters = ({
           </SelectContent>
         </Select>
         
-        <div className="flex-1 hidden sm:block" />
+        <div className="flex-1 min-w-[8px]" />
         
-        {/* Results count - hide on very small screens */}
-        <span className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
+        {/* Results count */}
+        <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">
           {totalItems} item{totalItems !== 1 ? 's' : ''}
         </span>
         
         {/* View Mode Toggle */}
-        <div className="flex border border-border rounded-lg ml-auto sm:ml-0">
+        <div className="flex border border-border rounded-md shrink-0">
           <Button 
             variant={viewMode === "grid" ? "secondary" : "ghost"} 
             size="icon" 
             onClick={() => onViewModeChange("grid")}
-            className="rounded-r-none h-9 w-9"
+            className="rounded-r-none h-8 w-8"
           >
-            <Grid className="w-4 h-4" />
+            <Grid className="w-3.5 h-3.5" />
           </Button>
           <Button 
             variant={viewMode === "list" ? "secondary" : "ghost"} 
             size="icon" 
             onClick={() => onViewModeChange("list")}
-            className="rounded-l-none h-9 w-9"
+            className="rounded-l-none h-8 w-8"
           >
-            <List className="w-4 h-4" />
+            <List className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
