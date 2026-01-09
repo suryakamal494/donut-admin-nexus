@@ -233,7 +233,7 @@ const Teachers = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Edit</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/institute/teachers/${teacher.id}/edit`)}><Edit className="h-4 w-4 mr-2" />Edit</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleResetPassword(teacher.name)}>
                             <Key className="h-4 w-4 mr-2" />Reset Password
                           </DropdownMenuItem>

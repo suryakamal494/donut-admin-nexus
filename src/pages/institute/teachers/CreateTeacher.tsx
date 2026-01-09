@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Check,
   ChevronLeft,
@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubjectBadge } from "@/components/subject";
-import { availableSubjects, batches, assignedTracks } from "@/data/instituteData";
+import { availableSubjects, batches, assignedTracks, teachers } from "@/data/instituteData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +41,10 @@ const generatePassword = () => {
 
 const CreateTeacher = () => {
   const navigate = useNavigate();
+  const { teacherId } = useParams();
+  const isEditMode = !!teacherId;
+  const existingTeacher = isEditMode ? teachers.find((t) => t.id === teacherId) : null;
+  
   const [currentStep, setCurrentStep] = useState(1);
 
   // Form state
@@ -55,6 +59,25 @@ const CreateTeacher = () => {
   const [selectedBatchMappings, setSelectedBatchMappings] = useState<
     { batchId: string; subjectId: string }[]
   >([]);
+
+  // Pre-populate form fields when in edit mode
+  useEffect(() => {
+    if (existingTeacher) {
+      setName(existingTeacher.name);
+      setEmail(existingTeacher.email);
+      setMobile(existingTeacher.mobile);
+      setUsername(existingTeacher.username);
+      setPassword(""); // Don't show existing password
+      setSelectedSubjects(existingTeacher.subjects);
+      setSelectedCourses(existingTeacher.assignedCourses);
+      // Map batches to batch mappings format
+      const mappings = existingTeacher.batches.map((b) => {
+        const subjectId = availableSubjects.find((s) => s.name === b.subject)?.id || "";
+        return { batchId: b.batchId, subjectId };
+      });
+      setSelectedBatchMappings(mappings);
+    }
+  }, [existingTeacher]);
 
   // Get batches that:
   // 1. Have at least one of the selected subjects
@@ -141,7 +164,11 @@ const CreateTeacher = () => {
   };
 
   const handleCreate = () => {
-    toast.success(`Teacher "${name}" added successfully!`);
+    if (isEditMode) {
+      toast.success(`Teacher "${name}" updated successfully!`);
+    } else {
+      toast.success(`Teacher "${name}" added successfully!`);
+    }
     navigate("/institute/teachers");
   };
 
@@ -156,8 +183,11 @@ const CreateTeacher = () => {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Add New Teacher"
-        description="Add a teacher to your institute. You can assign subjects and map them to specific batches."
+        title={isEditMode ? "Edit Teacher" : "Add New Teacher"}
+        description={isEditMode 
+          ? "Update the teacher's information, subjects, and batch assignments."
+          : "Add a teacher to your institute. You can assign subjects and map them to specific batches."
+        }
         actions={
           <Button variant="outline" onClick={() => navigate("/institute/teachers")}>
             <ChevronLeft className="h-4 w-4 mr-2" />
@@ -178,7 +208,7 @@ const CreateTeacher = () => {
             <div key={step.id} className="flex flex-col items-center">
               <div
                 className={cn(
-                  "h-10 w-10 rounded-full flex items-center justify-center font-medium transition-all duration-300",
+                  "h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center font-medium text-sm md:text-base transition-all duration-300",
                   currentStep > step.id
                     ? "bg-primary text-primary-foreground"
                     : currentStep === step.id
@@ -186,9 +216,9 @@ const CreateTeacher = () => {
                     : "bg-muted text-muted-foreground"
                 )}
               >
-                {currentStep > step.id ? <Check className="h-5 w-5" /> : step.id}
+                {currentStep > step.id ? <Check className="h-4 w-4 md:h-5 md:w-5" /> : step.id}
               </div>
-              <div className="mt-3 text-center">
+              <div className="mt-2 md:mt-3 text-center">
                 <p
                   className={cn(
                     "text-sm font-medium",
@@ -208,7 +238,7 @@ const CreateTeacher = () => {
 
       {/* Step Content */}
       <Card className="border-2">
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-6 md:p-8">
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
             <div className="space-y-6 max-w-lg mx-auto">
@@ -233,7 +263,7 @@ const CreateTeacher = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -269,14 +299,15 @@ const CreateTeacher = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <div className="flex gap-2">
+                  <Label htmlFor="password">{isEditMode ? "New Password (leave blank to keep current)" : "Password *"}</Label>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <div className="relative flex-1">
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        placeholder={isEditMode ? "Enter new password" : ""}
                       />
                       <Button
                         type="button"
@@ -296,6 +327,7 @@ const CreateTeacher = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setPassword(generatePassword())}
+                      className="shrink-0"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Generate
@@ -327,7 +359,7 @@ const CreateTeacher = () => {
                   <Badge variant="secondary">{selectedSubjects.length} selected</Badge>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {availableSubjects.map((subject) => {
                     const isSelected = selectedSubjects.includes(subject.id);
                     return (
@@ -524,11 +556,12 @@ const CreateTeacher = () => {
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between">
+      <div className="flex flex-col-reverse sm:flex-row justify-between gap-3">
         <Button
           variant="outline"
           onClick={() => setCurrentStep((prev) => prev - 1)}
           disabled={currentStep === 1}
+          className="w-full sm:w-auto"
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
           Previous
@@ -538,6 +571,7 @@ const CreateTeacher = () => {
           <Button
             onClick={() => setCurrentStep((prev) => prev + 1)}
             disabled={!canProceed()}
+            className="w-full sm:w-auto"
           >
             Next Step
             <ChevronRight className="h-4 w-4 ml-2" />
@@ -545,11 +579,11 @@ const CreateTeacher = () => {
         ) : (
           <Button
             onClick={handleCreate}
-            disabled={!canProceed()}
-            className="bg-gradient-to-r from-primary to-primary/80"
+            disabled={!canProceed() || (!isEditMode && !password.trim())}
+            className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80"
           >
             <Check className="h-4 w-4 mr-2" />
-            Add Teacher
+            {isEditMode ? "Save Changes" : "Add Teacher"}
           </Button>
         )}
       </div>
