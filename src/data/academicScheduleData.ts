@@ -63,7 +63,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-mat",
     courseId: "cbse",
     classId: "1",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -84,7 +84,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-sci",
     courseId: "cbse",
     classId: "1",
-    subjectId: "14", // Science
+    subjectId: "sci", // Science
     subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
@@ -102,7 +102,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-eng",
     courseId: "cbse",
     classId: "1",
-    subjectId: "7", // English
+    subjectId: "eng", // English
     subjectName: "English",
     academicYear: "2025-26",
     chapters: [
@@ -119,7 +119,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-hin",
     courseId: "cbse",
     classId: "1",
-    subjectId: "8", // Hindi
+    subjectId: "hin", // Hindi
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -136,7 +136,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c6-sst",
     courseId: "cbse",
     classId: "1",
-    subjectId: "13", // Social Studies
+    subjectId: "sst", // Social Studies
     subjectName: "Social Studies",
     academicYear: "2025-26",
     chapters: [
@@ -157,7 +157,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-mat",
     courseId: "cbse",
     classId: "2",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -176,7 +176,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-sci",
     courseId: "cbse",
     classId: "2",
-    subjectId: "14", // Science
+    subjectId: "sci", // Science
     subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
@@ -194,7 +194,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-eng",
     courseId: "cbse",
     classId: "2",
-    subjectId: "7", // English
+    subjectId: "eng", // English
     subjectName: "English",
     academicYear: "2025-26",
     chapters: [
@@ -211,7 +211,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-hin",
     courseId: "cbse",
     classId: "2",
-    subjectId: "8", // Hindi
+    subjectId: "hin", // Hindi
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -228,7 +228,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c7-sst",
     courseId: "cbse",
     classId: "2",
-    subjectId: "13", // Social Studies
+    subjectId: "sst", // Social Studies
     subjectName: "Social Studies",
     academicYear: "2025-26",
     chapters: [
@@ -249,7 +249,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-mat",
     courseId: "cbse",
     classId: "3",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -268,7 +268,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-sci",
     courseId: "cbse",
     classId: "3",
-    subjectId: "14", // Science
+    subjectId: "sci", // Science
     subjectName: "Science",
     academicYear: "2025-26",
     chapters: [
@@ -286,7 +286,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-eng",
     courseId: "cbse",
     classId: "3",
-    subjectId: "7", // English
+    subjectId: "eng", // English
     subjectName: "English",
     academicYear: "2025-26",
     chapters: [
@@ -303,7 +303,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-hin",
     courseId: "cbse",
     classId: "3",
-    subjectId: "8", // Hindi
+    subjectId: "hin", // Hindi
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -320,7 +320,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c8-sst",
     courseId: "cbse",
     classId: "3",
-    subjectId: "13", // Social Studies
+    subjectId: "sst", // Social Studies
     subjectName: "Social Studies",
     academicYear: "2025-26",
     chapters: [
@@ -341,7 +341,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-phy",
     courseId: "cbse",
     classId: "4",
-    subjectId: "1", // Physics
+    subjectId: "phy", // Physics
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
@@ -359,7 +359,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-che",
     courseId: "cbse",
     classId: "4",
-    subjectId: "2", // Chemistry
+    subjectId: "che", // Chemistry
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
@@ -376,7 +376,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-mat",
     courseId: "cbse",
     classId: "4",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -395,7 +395,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-bio",
     courseId: "cbse",
     classId: "4",
-    subjectId: "4", // Biology
+    subjectId: "bio", // Biology
     subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
@@ -412,7 +412,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-eng",
     courseId: "cbse",
     classId: "4",
-    subjectId: "7", // English
+    subjectId: "eng", // English
     subjectName: "English",
     academicYear: "2025-26",
     chapters: [
@@ -429,7 +429,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-hin",
     courseId: "cbse",
     classId: "4",
-    subjectId: "8", // Hindi
+    subjectId: "hin", // Hindi
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -446,7 +446,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c9-sst",
     courseId: "cbse",
     classId: "4",
-    subjectId: "13", // Social Studies
+    subjectId: "sst", // Social Studies
     subjectName: "Social Studies",
     academicYear: "2025-26",
     chapters: [
@@ -467,7 +467,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-phy",
     courseId: "cbse",
     classId: "5",
-    subjectId: "1", // Physics
+    subjectId: "phy", // Physics
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
@@ -485,7 +485,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-che",
     courseId: "cbse",
     classId: "5",
-    subjectId: "2", // Chemistry
+    subjectId: "che", // Chemistry
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
@@ -503,7 +503,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-mat",
     courseId: "cbse",
     classId: "5",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -522,7 +522,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-bio",
     courseId: "cbse",
     classId: "5",
-    subjectId: "4", // Biology
+    subjectId: "bio", // Biology
     subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
@@ -539,7 +539,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-eng",
     courseId: "cbse",
     classId: "5",
-    subjectId: "7", // English
+    subjectId: "eng", // English
     subjectName: "English",
     academicYear: "2025-26",
     chapters: [
@@ -556,7 +556,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c10-hin",
     courseId: "cbse",
     classId: "5",
-    subjectId: "8", // Hindi
+    subjectId: "hin", // Hindi
     subjectName: "Hindi",
     academicYear: "2025-26",
     chapters: [
@@ -577,7 +577,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-phy",
     courseId: "cbse",
     classId: "6",
-    subjectId: "1", // Physics
+    subjectId: "phy", // Physics
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
@@ -595,7 +595,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-che",
     courseId: "cbse",
     classId: "6",
-    subjectId: "2", // Chemistry
+    subjectId: "che", // Chemistry
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
@@ -613,7 +613,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-mat",
     courseId: "cbse",
     classId: "6",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -631,7 +631,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c11-bio",
     courseId: "cbse",
     classId: "6",
-    subjectId: "4", // Biology
+    subjectId: "bio", // Biology
     subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
@@ -652,7 +652,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-phy",
     courseId: "cbse",
     classId: "7",
-    subjectId: "1", // Physics
+    subjectId: "phy", // Physics
     subjectName: "Physics",
     academicYear: "2025-26",
     chapters: [
@@ -670,7 +670,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-che",
     courseId: "cbse",
     classId: "7",
-    subjectId: "2", // Chemistry
+    subjectId: "che", // Chemistry
     subjectName: "Chemistry",
     academicYear: "2025-26",
     chapters: [
@@ -688,7 +688,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-mat",
     courseId: "cbse",
     classId: "7",
-    subjectId: "3", // Mathematics
+    subjectId: "mat", // Mathematics
     subjectName: "Mathematics",
     academicYear: "2025-26",
     chapters: [
@@ -714,7 +714,7 @@ export const academicScheduleSetups: AcademicScheduleSetup[] = [
     id: "setup-c12-bio",
     courseId: "cbse",
     classId: "7",
-    subjectId: "4", // Biology
+    subjectId: "bio", // Biology
     subjectName: "Biology",
     academicYear: "2025-26",
     chapters: [
