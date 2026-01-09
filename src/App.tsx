@@ -136,6 +136,7 @@ const App = () => (
             <Route path="batches/:batchId/timetable" element={<BatchTimetable />} />
             <Route path="teachers" element={<InstituteTeachers />} />
             <Route path="teachers/create" element={<CreateTeacher />} />
+            <Route path="teachers/:teacherId/edit" element={<CreateTeacher />} />
             <Route path="teachers/bulk-upload" element={<BulkUploadTeachers />} />
             <Route path="students" element={<InstituteStudents />} />
             <Route path="students/add" element={<AddStudent />} />
