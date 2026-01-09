@@ -3,6 +3,9 @@
 export type BlockType = 'explain' | 'demonstrate' | 'quiz' | 'homework';
 export type BlockSource = 'library' | 'ai' | 'custom';
 
+// Link types for embedded content
+export type LinkType = 'youtube' | 'vimeo' | 'google-drive' | 'google-docs' | 'iframe' | 'unknown';
+
 export interface LessonPlanBlock {
   id: string;
   type: BlockType;
@@ -15,7 +18,46 @@ export interface LessonPlanBlock {
   questions?: string[];
   attachmentUrl?: string;
   aiGenerated?: boolean;
+  // New fields for link/embed support
+  embedUrl?: string;
+  linkType?: LinkType;
 }
+
+// Helper to detect link type from URL
+export const detectLinkType = (url: string): LinkType => {
+  if (!url) return 'unknown';
+  const lowerUrl = url.toLowerCase();
+  
+  if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) return 'youtube';
+  if (lowerUrl.includes('vimeo.com')) return 'vimeo';
+  if (lowerUrl.includes('drive.google.com')) return 'google-drive';
+  if (lowerUrl.includes('docs.google.com') || lowerUrl.includes('slides.google.com')) return 'google-docs';
+  
+  return 'iframe';
+};
+
+// Get YouTube embed URL from various YouTube URL formats
+export const getYouTubeEmbedUrl = (url: string): string => {
+  let videoId = '';
+  
+  if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
+  } else if (url.includes('youtube.com/watch')) {
+    const urlParams = new URLSearchParams(url.split('?')[1]);
+    videoId = urlParams.get('v') || '';
+  } else if (url.includes('youtube.com/embed/')) {
+    videoId = url.split('embed/')[1]?.split('?')[0] || '';
+  }
+  
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+};
+
+// Get Vimeo embed URL
+export const getVimeoEmbedUrl = (url: string): string => {
+  const match = url.match(/vimeo\.com\/(\d+)/);
+  const videoId = match ? match[1] : '';
+  return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+};
 
 export interface LessonPlan {
   id: string;
