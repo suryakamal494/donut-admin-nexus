@@ -6,16 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ExamBlock, ExamType, scopeTypeConfig } from "@/types/examBlock";
 import { defaultExamTypes } from "@/data/examBlockData";
-import { ExamYearlyCalendar } from "./ExamYearlyCalendar";
 import { cn } from "@/lib/utils";
 import { format, parseISO, isAfter, isBefore, startOfDay } from "date-fns";
 import { 
   Search, Plus, Edit2, Trash2, Calendar, Clock, Users, Building2, BookOpen, GraduationCap,
-  Repeat, List, CalendarDays
+  Repeat
 } from "lucide-react";
 
 interface ExamBlockListProps {
@@ -38,13 +36,11 @@ export const ExamBlockList = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"list" | "yearly">("list");
 
   const filteredBlocks = useMemo(() => {
     const today = startOfDay(new Date());
     
     return blocks.filter(block => {
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesName = block.name.toLowerCase().includes(query);
@@ -52,10 +48,8 @@ export const ExamBlockList = ({
         if (!matchesName && !matchesScope) return false;
       }
 
-      // Type filter
       if (filterType !== "all" && block.examTypeId !== filterType) return false;
 
-      // Status filter
       if (filterStatus !== "all") {
         if (filterStatus === "active" && !block.isActive) return false;
         if (filterStatus === "inactive" && block.isActive) return false;
@@ -165,35 +159,13 @@ export const ExamBlockList = ({
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Create Exam Schedule</span>
               </Button>
-              <ToggleGroup 
-                type="single" 
-                value={viewMode} 
-                onValueChange={(v) => v && setViewMode(v as "list" | "yearly")}
-                className="shrink-0"
-              >
-                <ToggleGroupItem value="list" aria-label="List view" className="px-3">
-                  <List className="w-4 h-4" />
-                </ToggleGroupItem>
-                <ToggleGroupItem value="yearly" aria-label="Yearly view" className="px-3">
-                  <CalendarDays className="w-4 h-4" />
-                </ToggleGroupItem>
-              </ToggleGroup>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Yearly View */}
-      {viewMode === "yearly" && (
-        <ExamYearlyCalendar 
-          blocks={blocks} 
-          examTypes={examTypes}
-          onEdit={onEdit}
-        />
-      )}
-
       {/* List View */}
-      {viewMode === "list" && filteredBlocks.length === 0 ? (
+      {filteredBlocks.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
@@ -211,7 +183,7 @@ export const ExamBlockList = ({
             )}
           </CardContent>
         </Card>
-      ) : viewMode === "list" ? (
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredBlocks.map((block) => {
             const examType = getExamType(block.examTypeId);
@@ -329,7 +301,7 @@ export const ExamBlockList = ({
             );
           })}
         </div>
-      ) : null}
+      )}
 
       {/* Stats */}
       {blocks.length > 0 && (
