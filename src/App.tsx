@@ -49,6 +49,7 @@ import InstituteTimetableSetup from "./pages/institute/timetable/TimetableSetup"
 import InstituteTimetableUpload from "./pages/institute/timetable/TimetableUpload";
 import InstituteViewTimetable from "./pages/institute/timetable/ViewTimetable";
 import InstituteSubstitution from "./pages/institute/timetable/Substitution";
+import InstituteExamSchedule from "./pages/institute/timetable/ExamSchedule";
 import InstituteQuestions from "./pages/institute/questions/Questions";
 import InstituteAIQuestions from "./pages/institute/questions/AIQuestions";
 import InstituteUploadPDF from "./pages/institute/questions/UploadPDF";
@@ -146,6 +147,7 @@ const App = () => (
             <Route path="timetable/upload" element={<InstituteTimetableUpload />} />
             <Route path="timetable/view" element={<InstituteViewTimetable />} />
             <Route path="timetable/substitution" element={<InstituteSubstitution />} />
+            <Route path="timetable/exam-schedule" element={<InstituteExamSchedule />} />
             <Route path="questions" element={<InstituteQuestions />} />
             <Route path="questions/ai" element={<InstituteAIQuestions />} />
             <Route path="questions/upload-pdf" element={<InstituteUploadPDF />} />
