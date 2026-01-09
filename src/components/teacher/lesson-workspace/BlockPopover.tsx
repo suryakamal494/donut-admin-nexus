@@ -169,11 +169,12 @@ export const BlockPopover = ({
         <PopoverTrigger asChild>
           {children}
         </PopoverTrigger>
-        <PopoverContent 
-          className="w-[340px] p-0" 
+<PopoverContent 
+          className="w-[340px] p-0 bg-popover" 
           align="start"
+          side="bottom"
           sideOffset={8}
-          collisionPadding={16}
+          collisionPadding={{ top: 80, left: 16, right: 16, bottom: 16 }}
           avoidCollisions={true}
         >
           {/* Header */}

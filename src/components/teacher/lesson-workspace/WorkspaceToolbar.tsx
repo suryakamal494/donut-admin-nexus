@@ -6,77 +6,124 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { blockTypeConfig, type BlockType } from "./types";
+import { blockTypeConfig, type BlockType, type LessonPlanBlock } from "./types";
 import { cn } from "@/lib/utils";
+import { BlockPopover } from "./BlockPopover";
+import { QuizPopover } from "./QuizPopover";
 
 interface WorkspaceToolbarProps {
   onBlockClick: (type: BlockType) => void;
   onAIAssist: () => void;
+  onAddBlock: (block: Omit<LessonPlanBlock, 'id'>) => void;
   isGenerating?: boolean;
   activeBlock?: BlockType | null;
+  chapter?: string;
+  subject?: string;
 }
-
-const iconMap = {
-  BookOpen,
-  Play,
-  HelpCircle,
-  ClipboardList,
-};
 
 export const WorkspaceToolbar = ({ 
   onBlockClick, 
   onAIAssist, 
+  onAddBlock,
   isGenerating,
-  activeBlock 
+  activeBlock,
+  chapter,
+  subject,
 }: WorkspaceToolbarProps) => {
   const blockTypes: BlockType[] = ['explain', 'demonstrate', 'quiz', 'homework'];
 
+  const getIcon = (type: BlockType) => {
+    switch (type) {
+      case 'explain': return BookOpen;
+      case 'demonstrate': return Play;
+      case 'quiz': return HelpCircle;
+      case 'homework': return ClipboardList;
+    }
+  };
+
+  const renderBlockButton = (type: BlockType) => {
+    const config = blockTypeConfig[type];
+    const IconComponent = getIcon(type);
+    const isActive = activeBlock === type;
+    
+    const buttonContent = (
+      <Button
+        variant={isActive ? "default" : "outline"}
+        size="sm"
+        className={cn(
+          "gap-1.5 sm:gap-2 shrink-0 h-10 sm:h-11 px-3 sm:px-4 transition-all",
+          isActive 
+            ? "bg-primary text-primary-foreground shadow-md" 
+            : "hover:bg-primary/5 hover:border-primary/30"
+        )}
+        onClick={() => onBlockClick(type)}
+      >
+        <IconComponent className="w-4 h-4" />
+        <span className="hidden sm:inline text-sm font-medium">
+          {config.label}
+        </span>
+      </Button>
+    );
+
+    // When popover is open, don't show tooltip
+    if (isActive) {
+      if (type === 'quiz') {
+        return (
+          <QuizPopover
+            key={type}
+            open={isActive}
+            onOpenChange={(open) => !open && onBlockClick(type)}
+            onAddBlock={onAddBlock}
+            chapter={chapter}
+            subject={subject}
+          >
+            {buttonContent}
+          </QuizPopover>
+        );
+      }
+      
+      return (
+        <BlockPopover
+          key={type}
+          type={type}
+          open={isActive}
+          onOpenChange={(open) => !open && onBlockClick(type)}
+          onAddBlock={onAddBlock}
+          chapter={chapter}
+          subject={subject}
+        >
+          {buttonContent}
+        </BlockPopover>
+      );
+    }
+
+    // When popover is closed, show tooltip
+    return (
+      <Tooltip key={type}>
+        <TooltipTrigger asChild>
+          {buttonContent}
+        </TooltipTrigger>
+        <TooltipContent 
+          side="bottom" 
+          sideOffset={8}
+          className="z-[200] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
+        >
+          <p className="font-medium mb-1">{config.label}</p>
+          <p className="text-xs text-muted-foreground">
+            {config.tooltip}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
+
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-border/50 p-3 sm:p-4">
+      <div className="bg-background rounded-xl border border-border/50 p-3 sm:p-4 shadow-sm">
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Block Type Buttons */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 overflow-x-auto pb-1 sm:pb-0">
-            {blockTypes.map((type) => {
-              const config = blockTypeConfig[type];
-              const IconComponent = type === 'explain' ? BookOpen 
-                : type === 'demonstrate' ? Play 
-                : type === 'quiz' ? HelpCircle 
-                : ClipboardList;
-              
-              return (
-                <Tooltip key={type}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={activeBlock === type ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "gap-1.5 sm:gap-2 shrink-0 h-10 sm:h-11 px-3 sm:px-4 transition-all",
-                        activeBlock === type 
-                          ? "gradient-button shadow-md" 
-                          : "hover:bg-primary/5 hover:border-primary/30"
-                      )}
-                      onClick={() => onBlockClick(type)}
-                    >
-                      <IconComponent className="w-4 h-4" />
-                      <span className="hidden sm:inline text-sm font-medium">
-                        {config.label}
-                      </span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent 
-                    side="bottom" 
-                    sideOffset={8}
-                    className="z-[100] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
-                  >
-                    <p className="font-medium mb-1">{config.label}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {config.tooltip}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
+            {blockTypes.map(renderBlockButton)}
           </div>
           
           {/* Divider */}
@@ -109,7 +156,7 @@ export const WorkspaceToolbar = ({
             <TooltipContent 
               side="bottom" 
               sideOffset={8}
-              className="z-[100] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
+              className="z-[200] max-w-[240px] text-center p-3 bg-popover border shadow-lg"
             >
               <p className="font-medium mb-1">AI Assist</p>
               <p className="text-xs text-muted-foreground">
