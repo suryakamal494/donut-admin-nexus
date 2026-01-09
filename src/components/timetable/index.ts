@@ -15,6 +15,7 @@ export { InfoTooltip } from './InfoTooltip';
 export { ExamBlockForm } from './ExamBlockForm';
 export { ExamBlockList } from './ExamBlockList';
 export { ExamTypeManager } from './ExamTypeManager';
+export { ExamYearlyCalendar } from './ExamYearlyCalendar';
 export type { Holiday } from './HolidayCalendarDialog';
 export type { ParsedEntry } from './ParsedGridPreview';
 export type { CopyOptions } from './CopyWeekDialog';

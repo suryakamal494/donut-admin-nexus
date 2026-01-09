@@ -5,14 +5,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ExamBlock, ExamType, scopeTypeConfig } from "@/types/examBlock";
 import { defaultExamTypes } from "@/data/examBlockData";
+import { ExamYearlyCalendar } from "./ExamYearlyCalendar";
 import { cn } from "@/lib/utils";
 import { format, parseISO, isAfter, isBefore, startOfDay } from "date-fns";
 import { 
   Search, Plus, Edit2, Trash2, Calendar, Clock, Users, Building2, BookOpen, GraduationCap,
-  Repeat
+  Repeat, List, CalendarDays
 } from "lucide-react";
 
 interface ExamBlockListProps {
@@ -35,6 +38,7 @@ export const ExamBlockList = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"list" | "yearly">("list");
 
   const filteredBlocks = useMemo(() => {
     const today = startOfDay(new Date());
@@ -159,33 +163,55 @@ export const ExamBlockList = ({
               </Select>
               <Button onClick={onCreateNew} className="gap-2 shrink-0">
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Create Exam</span>
+                <span className="hidden sm:inline">Create Exam Schedule</span>
               </Button>
+              <ToggleGroup 
+                type="single" 
+                value={viewMode} 
+                onValueChange={(v) => v && setViewMode(v as "list" | "yearly")}
+                className="shrink-0"
+              >
+                <ToggleGroupItem value="list" aria-label="List view" className="px-3">
+                  <List className="w-4 h-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="yearly" aria-label="Yearly view" className="px-3">
+                  <CalendarDays className="w-4 h-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Exam List */}
-      {filteredBlocks.length === 0 ? (
+      {/* Yearly View */}
+      {viewMode === "yearly" && (
+        <ExamYearlyCalendar 
+          blocks={blocks} 
+          examTypes={examTypes}
+          onEdit={onEdit}
+        />
+      )}
+
+      {/* List View */}
+      {viewMode === "list" && filteredBlocks.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
             <h3 className="text-lg font-medium mb-2">No exams found</h3>
             <p className="text-sm text-muted-foreground mb-4">
               {blocks.length === 0 
-                ? "Create your first exam to reserve time slots"
+                ? "Create your first exam schedule to reserve time slots"
                 : "Try adjusting your filters"}
             </p>
             {blocks.length === 0 && (
               <Button onClick={onCreateNew} className="gap-2">
                 <Plus className="w-4 h-4" />
-                Create Exam
+                Create Exam Schedule
               </Button>
             )}
           </CardContent>
         </Card>
-      ) : (
+      ) : viewMode === "list" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredBlocks.map((block) => {
             const examType = getExamType(block.examTypeId);
@@ -249,11 +275,24 @@ export const ExamBlockList = ({
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <Switch
-                        checked={block.isActive}
-                        onCheckedChange={() => onToggleActive(block.id)}
-                        className="data-[state=checked]:bg-green-500"
-                      />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Switch
+                              checked={block.isActive}
+                              onCheckedChange={() => onToggleActive(block.id)}
+                              className="data-[state=checked]:bg-green-500"
+                            />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            {block.isActive 
+                              ? "Active: This exam will block timetable slots" 
+                              : "Inactive: Timetable won't be affected"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
 
@@ -290,7 +329,7 @@ export const ExamBlockList = ({
             );
           })}
         </div>
-      )}
+      ) : null}
 
       {/* Stats */}
       {blocks.length > 0 && (

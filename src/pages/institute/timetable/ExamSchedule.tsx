@@ -66,7 +66,7 @@ const ExamSchedule = () => {
           </TabsTrigger>
           <TabsTrigger value="create" className="gap-2">
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">{editingBlock ? "Edit Exam" : "Create Exam"}</span>
+            <span className="hidden sm:inline">{editingBlock ? "Edit Exam Schedule" : "Create Exam Schedule"}</span>
             <span className="sm:hidden">{editingBlock ? "Edit" : "Create"}</span>
           </TabsTrigger>
         </TabsList>
