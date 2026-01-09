@@ -304,9 +304,9 @@ export const BlockDialog = ({
             </div>
             
             {/* Library Tab */}
-            <TabsContent value="library" className="mt-0 flex-1 flex flex-col overflow-hidden">
+            <TabsContent value="library" className="mt-0 flex-1 flex flex-col min-h-0">
               {/* Filters */}
-              <div className="px-4 py-3 space-y-2 border-b">
+              <div className="px-4 py-3 space-y-2 border-b shrink-0">
                 {/* Search */}
                 <div className="relative">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -344,26 +344,28 @@ export const BlockDialog = ({
                 )}
               </div>
               
-              {/* Content List - Standard ScrollArea */}
-              <ScrollArea className="flex-1 h-[350px]">
-                <div className="p-2 space-y-1">
-                  {filteredContent.length > 0 ? (
-                    filteredContent.map((item) => (
-                      <ContentItem
-                        key={item.id}
-                        item={item}
-                        onSelect={() => handleLibrarySelect(item)}
-                      />
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                      <Search className="w-10 h-10 mb-3 opacity-50" />
-                      <p className="text-sm font-medium">No content found</p>
-                      <p className="text-xs">Try adjusting your filters</p>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
+              {/* Content List - with proper scroll container */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="p-2 space-y-1">
+                    {filteredContent.length > 0 ? (
+                      filteredContent.map((item) => (
+                        <ContentItem
+                          key={item.id}
+                          item={item}
+                          onSelect={() => handleLibrarySelect(item)}
+                        />
+                      ))
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                        <Search className="w-10 h-10 mb-3 opacity-50" />
+                        <p className="text-sm font-medium">No content found</p>
+                        <p className="text-xs">Try adjusting your filters</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
             </TabsContent>
             
             {/* AI Tab */}

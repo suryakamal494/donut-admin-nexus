@@ -255,9 +255,9 @@ export const QuizDialog = ({
             </div>
             
             {/* Question Bank Tab */}
-            <TabsContent value="bank" className="mt-0 flex-1 flex flex-col overflow-hidden">
+            <TabsContent value="bank" className="mt-0 flex-1 flex flex-col min-h-0">
               {/* Filters */}
-              <div className="px-4 py-3 space-y-2 border-b">
+              <div className="px-4 py-3 space-y-2 border-b shrink-0">
                 {/* Search */}
                 <div className="relative">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -318,27 +318,29 @@ export const QuizDialog = ({
                 )}
               </div>
               
-              {/* Question List - Standard ScrollArea */}
-              <ScrollArea className="flex-1 h-[300px]">
-                <div className="p-3 space-y-2">
-                  {filteredQuestions.length > 0 ? (
-                    filteredQuestions.map((question) => (
-                      <QuestionItem
-                        key={question.id}
-                        question={question}
-                        isSelected={selectedQuestions.has(question.id)}
-                        onToggle={() => toggleQuestion(question.id)}
-                      />
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                      <Search className="w-10 h-10 mb-3 opacity-50" />
-                      <p className="text-sm font-medium">No questions found</p>
-                      <p className="text-xs">Try adjusting your filters</p>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
+              {/* Question List - with proper scroll container */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="p-3 space-y-2">
+                    {filteredQuestions.length > 0 ? (
+                      filteredQuestions.map((question) => (
+                        <QuestionItem
+                          key={question.id}
+                          question={question}
+                          isSelected={selectedQuestions.has(question.id)}
+                          onToggle={() => toggleQuestion(question.id)}
+                        />
+                      ))
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                        <Search className="w-10 h-10 mb-3 opacity-50" />
+                        <p className="text-sm font-medium">No questions found</p>
+                        <p className="text-xs">Try adjusting your filters</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
               
               {/* Footer with Add button */}
               <div className="p-4 border-t shrink-0">
