@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Eye } from "lucide-react";
+import { Eye, BookOpen, FileText, LayoutGrid } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +8,7 @@ import { SubjectBadge } from "@/components/subject";
 import { assignedTracks } from "@/data/instituteData";
 import { allCBSEChapters, allCBSETopics, cbseDataStats } from "@/data/cbseMasterData";
 import { courseChapterMappings, courseOwnedChapters, courseOwnedChapterTopics } from "@/data/masterData";
+import { cn } from "@/lib/utils";
 
 const MasterData = () => {
   const [selectedTrackId, setSelectedTrackId] = useState<string>(assignedTracks[0]?.id || "cbse");
@@ -65,7 +66,7 @@ const MasterData = () => {
   }, [selectedTrack]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Master Data"
         description="Browse your assigned academic curriculum structure"
@@ -74,7 +75,7 @@ const MasterData = () => {
           { label: "Master Data" },
         ]}
         actions={
-          <Badge variant="secondary" className="gap-1.5">
+          <Badge variant="secondary" className="gap-1.5 bg-muted/80">
             <Eye className="h-3 w-3" />
             Read-Only
           </Badge>
@@ -82,50 +83,65 @@ const MasterData = () => {
       />
 
       {/* Track Selector Tabs */}
-      <Tabs value={selectedTrackId} onValueChange={handleTrackChange} className="w-full">
-        <TabsList className="h-auto p-1 bg-muted/50">
-          {assignedTracks.map((track) => (
-            <TabsTrigger
-              key={track.id}
-              value={track.id}
-              className="px-4 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
-            >
-              {track.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <Tabs value={selectedTrackId} onValueChange={handleTrackChange} className="w-full">
+          <TabsList className="h-auto p-1 bg-muted/50 w-full sm:w-auto inline-flex">
+            {assignedTracks.map((track) => (
+              <TabsTrigger
+                key={track.id}
+                value={track.id}
+                className={cn(
+                  "px-3 sm:px-4 py-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm",
+                  "data-[state=active]:text-primary font-medium"
+                )}
+              >
+                <LayoutGrid className="w-3.5 h-3.5 mr-1.5 hidden sm:inline" />
+                {track.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold text-foreground">{trackStats.totalChapters}</div>
-          <div className="text-xs text-muted-foreground">Total Chapters</div>
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/10 p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <BookOpen className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Chapters</span>
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-foreground">{trackStats.totalChapters}</div>
         </div>
-        <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold text-foreground">{trackStats.totalTopics}</div>
-          <div className="text-xs text-muted-foreground">Total Topics</div>
+        <div className="bg-gradient-to-br from-amber-500/5 to-orange-500/10 rounded-xl border border-amber-500/10 p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <FileText className="w-4 h-4 text-amber-600" />
+            <span className="text-xs text-muted-foreground font-medium">Topics</span>
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-foreground">{trackStats.totalTopics}</div>
         </div>
+        
         {selectedTrack.type === "curriculum" && Object.keys(trackStats.subjectBreakdown).length > 0 && (
-          <div className="col-span-2 bg-card rounded-lg border p-4">
-            <div className="text-xs text-muted-foreground mb-2">Subject Coverage</div>
+          <div className="col-span-2 bg-card rounded-xl border p-3 sm:p-4">
+            <div className="text-xs text-muted-foreground mb-2 font-medium">Subject Coverage</div>
             <div className="flex flex-wrap gap-1.5">
               {Object.entries(trackStats.subjectBreakdown).map(([subject, count]) => (
-                <div key={subject} className="flex items-center gap-1.5">
+                <div key={subject} className="flex items-center gap-1">
                   <SubjectBadge subject={subject.charAt(0).toUpperCase() + subject.slice(1)} size="sm" />
-                  <span className="text-xs text-muted-foreground">({count as number})</span>
+                  <span className="text-xs text-muted-foreground font-medium">({count as number})</span>
                 </div>
               ))}
             </div>
           </div>
         )}
         {selectedTrack.type === "course" && (
-          <div className="col-span-2 bg-card rounded-lg border p-4">
-            <div className="text-xs text-muted-foreground mb-2">Track Type</div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">Competitive Track</Badge>
-              <span className="text-sm text-muted-foreground">
-                Includes curriculum chapters + exclusive content
+          <div className="col-span-2 bg-gradient-to-br from-teal-500/5 to-emerald-500/10 rounded-xl border border-teal-500/10 p-3 sm:p-4">
+            <div className="text-xs text-muted-foreground mb-2 font-medium">Track Type</div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge className="text-xs bg-teal-100 text-teal-700 border-teal-200 hover:bg-teal-100">
+                Competitive Track
+              </Badge>
+              <span className="text-xs sm:text-sm text-muted-foreground">
+                Curriculum chapters + exclusive content
               </span>
             </div>
           </div>
@@ -135,7 +151,7 @@ const MasterData = () => {
       {/* Dynamic Panel Layout */}
       {selectedTrack.hasClasses ? (
         // 3-Panel Layout for Curriculum (CBSE)
-        <div className="grid grid-cols-1 md:grid-cols-[160px_200px_1fr] gap-4 h-[calc(100vh-380px)] min-h-[400px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[180px_200px_1fr] gap-3 sm:gap-4 min-h-[400px] lg:h-[calc(100vh-420px)]">
           <ClassPanelView
             selectedClassId={selectedClassId}
             onSelectClass={handleSelectClass}
@@ -145,14 +161,16 @@ const MasterData = () => {
             selectedSubjectId={selectedSubjectId}
             onSelectSubject={handleSelectSubject}
           />
-          <ContentPanelView
-            selectedClassId={selectedClassId}
-            selectedSubjectId={selectedSubjectId}
-          />
+          <div className="md:col-span-2 lg:col-span-1">
+            <ContentPanelView
+              selectedClassId={selectedClassId}
+              selectedSubjectId={selectedSubjectId}
+            />
+          </div>
         </div>
       ) : (
         // 2-Panel Layout for Course (JEE Mains) - No class selection
-        <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4 h-[calc(100vh-380px)] min-h-[400px]">
+        <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-3 sm:gap-4 min-h-[400px] md:h-[calc(100vh-420px)]">
           <SubjectPanelView
             selectedClassId={null}
             selectedSubjectId={selectedSubjectId}
@@ -170,9 +188,9 @@ const MasterData = () => {
       )}
 
       {/* Info Note */}
-      <div className="bg-muted/50 rounded-lg border border-dashed p-4">
-        <p className="text-sm text-muted-foreground">
-          <strong>Note:</strong> This is a read-only view of your assigned academic content. 
+      <div className="bg-muted/30 rounded-xl border border-dashed p-3 sm:p-4">
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          <strong className="text-foreground">Note:</strong> This is a read-only view of your assigned academic content. 
           {selectedTrack.type === "curriculum" 
             ? " Hindi chapters display both Devanagari script and transliteration for accessibility."
             : " Course chapters include both curriculum-linked content and exclusive course materials."
