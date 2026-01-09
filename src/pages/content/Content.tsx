@@ -76,15 +76,19 @@ const Content = () => {
         description="Manage all learning content - videos, documents, presentations, and interactive simulations"
         breadcrumbs={[{ label: "Dashboard", href: "/superadmin/dashboard" }, { label: "Content" }]}
         actions={
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Link to="/superadmin/content/create">
-              <Button variant="outline" className="gap-2">
-                <Plus className="w-4 h-4" />Create Content
+              <Button variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Create Content</span>
+                <span className="sm:hidden">Create</span>
               </Button>
             </Link>
             <Link to="/superadmin/content/ai-generate">
-              <Button className="gradient-button gap-2">
-                <Sparkles className="w-4 h-4" />AI Content Generator
+              <Button size="sm" className="gradient-button gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">AI Content Generator</span>
+                <span className="sm:hidden">AI</span>
               </Button>
             </Link>
           </div>
@@ -111,7 +115,7 @@ const Content = () => {
           <p className="text-muted-foreground">No content found matching your filters.</p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {paginatedContent.map((content) => (
             <ContentCard
               key={content.id}
