@@ -292,47 +292,49 @@ Mrs. Priya Sharma	priya@school.edu	9876543211	Chemistry"
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[30px]">Status</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Mobile</TableHead>
-                  <TableHead>Subjects</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {parsedTeachers.map((teacher, index) => (
-                  <TableRow
-                    key={index}
-                    className={cn(!teacher.isValid && "bg-destructive/5")}
-                  >
-                    <TableCell>
-                      {teacher.isValid ? (
-                        <Check className="h-4 w-4 text-emerald-600" />
-                      ) : (
-                        <AlertCircle className="h-4 w-4 text-destructive" />
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium">{teacher.name || "-"}</TableCell>
-                    <TableCell>{teacher.email || "-"}</TableCell>
-                    <TableCell>{teacher.mobile || "-"}</TableCell>
-                    <TableCell>{teacher.subjects || "-"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveRow(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table className="min-w-[600px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[30px]">Status</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="hidden sm:table-cell">Email</TableHead>
+                    <TableHead>Mobile</TableHead>
+                    <TableHead className="hidden md:table-cell">Subjects</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {parsedTeachers.map((teacher, index) => (
+                    <TableRow
+                      key={index}
+                      className={cn(!teacher.isValid && "bg-destructive/5")}
+                    >
+                      <TableCell>
+                        {teacher.isValid ? (
+                          <Check className="h-4 w-4 text-emerald-600" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">{teacher.name || "-"}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{teacher.email || "-"}</TableCell>
+                      <TableCell>{teacher.mobile || "-"}</TableCell>
+                      <TableCell className="hidden md:table-cell">{teacher.subjects || "-"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveRow(index)}
+                        >
+                          <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
             {invalidCount > 0 && (
               <div className="mt-4 p-4 bg-destructive/10 rounded-lg">

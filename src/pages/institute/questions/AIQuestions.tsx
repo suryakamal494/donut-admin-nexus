@@ -468,7 +468,7 @@ const AIQuestions = () => {
         <div className="lg:col-span-2">
           <Card className="h-full">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Lightbulb className="h-5 w-5 text-amber-500" />
@@ -479,13 +479,14 @@ const AIQuestions = () => {
                   </CardDescription>
                 </div>
                 {generatedQuestions.length > 0 && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary">
                       {selectedCount} / {generatedQuestions.length} selected
                     </Badge>
-                    <Button onClick={handleAddToBank} disabled={selectedCount === 0}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add to Bank
+                    <Button onClick={handleAddToBank} disabled={selectedCount === 0} size="sm" className="sm:size-default">
+                      <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Add to Bank</span>
+                      <span className="sm:hidden">Add</span>
                     </Button>
                   </div>
                 )}
@@ -551,7 +552,7 @@ const AIQuestions = () => {
                           </div>
                           <p className="text-sm text-foreground">{q.questionText}</p>
                           {q.options && (
-                            <div className="grid grid-cols-2 gap-2 mt-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                               {q.options.map((opt: any, i: number) => (
                                 <div
                                   key={opt.id}
