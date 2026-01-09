@@ -1,6 +1,8 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { classes } from "@/data/mockData";
 import { allCBSEChapters } from "@/data/cbseMasterData";
+import { GraduationCap } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ClassPanelViewProps {
   selectedClassId: string | null;
@@ -13,9 +15,13 @@ export const ClassPanelView = ({ selectedClassId, onSelectClass }: ClassPanelVie
   };
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-lg border">
-      <div className="p-3 border-b">
-        <h3 className="font-semibold text-sm text-foreground">Classes</h3>
+    <div className="flex flex-col h-full bg-card rounded-xl border shadow-sm overflow-hidden">
+      <div className="p-3 border-b border-border/50 bg-muted/30">
+        <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
+          <GraduationCap className="w-4 h-4 text-primary" />
+          Classes
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">{classes.length} classes</p>
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1">
@@ -27,19 +33,25 @@ export const ClassPanelView = ({ selectedClassId, onSelectClass }: ClassPanelVie
               <button
                 key={cls.id}
                 onClick={() => onSelectClass(cls.id)}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors flex items-center justify-between group ${
+                className={cn(
+                  "w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center justify-between group",
                   isSelected 
-                    ? 'bg-primary/10 text-primary border border-primary/20' 
-                    : 'hover:bg-muted text-foreground'
-                }`}
+                    ? 'gradient-button text-white shadow-md' 
+                    : 'hover:bg-muted/50 text-foreground'
+                )}
               >
                 <span className="text-sm font-medium">{cls.name}</span>
-                <span className={`text-xs ${
+                <span className={cn(
+                  "text-xs px-2 py-0.5 rounded-full min-w-[32px] text-center font-medium",
                   chapterCount > 0 
-                    ? isSelected ? 'text-primary' : 'text-muted-foreground'
-                    : 'text-muted-foreground/50'
-                }`}>
-                  {chapterCount > 0 ? `${chapterCount} ch` : '—'}
+                    ? isSelected 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-primary/10 text-primary'
+                    : isSelected
+                      ? 'bg-white/10 text-white/60'
+                      : 'text-muted-foreground/50'
+                )}>
+                  {chapterCount > 0 ? chapterCount : '—'}
                 </span>
               </button>
             );
