@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ExamBlock, ExamType, ScopeType, DateType, TimeType, scopeTypeConfig } from "@/types/examBlock";
 import { coursesForBlocks, classesForBlocks, batchesForBlocks, defaultExamTypes } from "@/data/examBlockData";
 import { ExamTypeManager } from "./ExamTypeManager";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { format, isSameDay, parseISO } from "date-fns";
 import { 
   Calendar as CalendarIcon, Building2, BookOpen, GraduationCap, Users, 
-  Clock, Repeat, X, Save, Plus
+  Clock, Repeat, X, Save, Plus, Info
 } from "lucide-react";
 
 interface ExamBlockFormProps {
@@ -177,20 +178,33 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Step 1: Exam Details */}
+      {/* Step 1: Exam Type */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">1</span>
-            Exam Details
+            Exam Type
           </CardTitle>
-          <CardDescription>Choose exam type and enter details</CardDescription>
+          <CardDescription>Select or create an exam type</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Exam Type Selection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Exam Type *</Label>
+              <Label className="flex items-center gap-1.5">
+                Exam Type *
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[250px]">
+                    <p className="text-xs">
+                      Exam types help categorize and visually distinguish your exams. 
+                      Create custom types like "Weekly Quiz", "Unit Test", or "Term Exam" to organize your schedule.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </Label>
               <ExamTypeManager
                 examTypes={examTypes}
                 onAddType={handleAddExamType}
@@ -251,14 +265,14 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </CardContent>
       </Card>
 
-      {/* Step 2: Applicable For */}
+      {/* Step 2: Scope */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base sm:text-lg flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">2</span>
-            Applicable For
+            Scope
           </CardTitle>
-          <CardDescription>Select who this exam applies to</CardDescription>
+          <CardDescription>Who does this exam apply to?</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Scope Type Selection */}
@@ -322,7 +336,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
             <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">3</span>
             Schedule
           </CardTitle>
-          <CardDescription>Set the date and time for this exam</CardDescription>
+          <CardDescription>When does this exam happen?</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Date Type Selection */}
@@ -560,7 +574,7 @@ export const ExamBlockForm = ({ existingBlock, onSave, onCancel }: ExamBlockForm
         </Button>
         <Button onClick={handleSubmit} disabled={!isValid} className="gap-2">
           <Save className="w-4 h-4" />
-          {existingBlock ? 'Save Exam' : 'Create Exam'}
+          {existingBlock ? 'Save Exam Schedule' : 'Create Exam Schedule'}
         </Button>
       </div>
     </div>
