@@ -137,7 +137,7 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
               <button
                 onClick={() => navigate(item.subItems![0].href)}
                 className={cn(
-                  "w-full flex items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-200",
+                  "w-full h-10 flex items-center justify-center rounded-xl transition-all duration-200",
                   parentActive
                     ? "gradient-button shadow-md"
                     : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
@@ -228,7 +228,8 @@ const InstituteSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: Inst
       <button
         onClick={() => navigate(item.href)}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+          "w-full flex items-center rounded-xl transition-all duration-200 group",
+          collapsed ? "h-10 justify-center" : "gap-3 px-3 py-2.5",
           active
             ? "gradient-button shadow-md"
             : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
