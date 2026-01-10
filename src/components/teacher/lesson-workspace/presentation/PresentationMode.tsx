@@ -1,6 +1,6 @@
 /**
  * Presentation Mode - Main Component
- * Full-screen presentation view for lesson plans with annotation, AI assist, and theme support
+ * Full-screen presentation view for lesson plans with annotation, AI assist, theme support, and onboarding
  */
 
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { ContentRenderer } from "./ContentRenderer";
 import { NavigationBar } from "./NavigationBar";
 import { TimelineSidebar } from "./TimelineSidebar";
 import { AIAssistChat } from "./AIAssistChat";
+import { OnboardingTour, useOnboardingTour } from "./OnboardingTour";
 import { themeClasses } from "./types";
 import type { PresentationModeProps } from "./types";
 import { AnnotationCanvas } from "../AnnotationCanvas";
@@ -24,9 +25,12 @@ export const PresentationMode = ({
     currentBlock,
     isFirst,
     isLast,
+    isSavingScreenshot,
     refs,
     handlers,
   } = usePresentationState(open, blocks, onClose);
+
+  const { showTour, completeTour, skipTour } = useOnboardingTour();
 
   if (!open || blocks.length === 0) return null;
 
@@ -95,21 +99,25 @@ export const PresentationMode = ({
         showTimeline={state.showTimeline}
         showAIChat={state.showAIChat}
         theme={state.theme}
+        isSavingScreenshot={isSavingScreenshot}
         onNavigate={handlers.navigateTo}
         onToggleAnnotation={handlers.toggleAnnotation}
         onToggleFullscreen={handlers.toggleFullscreen}
         onToggleTimeline={handlers.toggleTimeline}
         onToggleTheme={handlers.toggleTheme}
         onToggleAIChat={handlers.toggleAIChat}
+        onSaveScreenshot={handlers.handleSaveScreenshot}
         onClose={onClose}
       />
 
-      {/* Keyboard Hints (hidden on mobile, hidden when annotating) */}
+      {/* Onboarding Tour for first-time users */}
+      {showTour && !state.showAnnotation && !state.showAIChat && (
+        <OnboardingTour theme={state.theme} onComplete={completeTour} />
+      )}
+
+      {/* Keyboard Hints - Always visible with contrast background */}
       {!state.showAnnotation && (
-        <div className={cn(
-          "absolute top-4 right-4 hidden lg:flex items-center gap-3 text-xs",
-          tc.textMuted
-        )}>
+        <div className="absolute top-4 right-4 hidden lg:flex items-center gap-3 text-xs text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
           <span>← → Navigate</span>
           <span>A Annotate</span>
           <span>H AI Help</span>

@@ -1,10 +1,11 @@
 /**
  * Bottom Navigation Bar for Presentation Mode
+ * Includes all controls with data-tour attributes for onboarding
  */
 
 import { 
-  ChevronLeft, ChevronRight, Clock, X, Pencil, 
-  Maximize, Shrink, Maximize2, Minimize2, Sun, Moon, Sparkles
+  ChevronLeft, ChevronRight, Clock, X, Pencil, Camera,
+  Maximize, Shrink, Maximize2, Minimize2, Sun, Moon, Sparkles, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,12 +34,14 @@ interface NavigationBarProps {
   showTimeline: boolean;
   showAIChat: boolean;
   theme: PresentationTheme;
+  isSavingScreenshot?: boolean;
   onNavigate: (index: number) => void;
   onToggleAnnotation: () => void;
   onToggleFullscreen: () => void;
   onToggleTimeline: () => void;
   onToggleTheme: () => void;
   onToggleAIChat: () => void;
+  onSaveScreenshot?: () => void;
   onClose: () => void;
 }
 
@@ -53,12 +56,14 @@ export const NavigationBar = ({
   showTimeline,
   showAIChat,
   theme,
+  isSavingScreenshot = false,
   onNavigate,
   onToggleAnnotation,
   onToggleFullscreen,
   onToggleTimeline,
   onToggleTheme,
   onToggleAIChat,
+  onSaveScreenshot,
   onClose,
 }: NavigationBarProps) => {
   const tc = themeClasses[theme];
@@ -78,6 +83,7 @@ export const NavigationBar = ({
           onClick={() => onNavigate(currentIndex - 1)}
           disabled={isFirst}
           className={cn("h-12 px-6 gap-2 disabled:opacity-30", tc.button)}
+          data-tour="nav-prev"
         >
           <ChevronLeft className="w-5 h-5" />
           <span className="hidden sm:inline">Previous</span>
@@ -128,6 +134,7 @@ export const NavigationBar = ({
             onClick={() => onNavigate(currentIndex + 1)}
             disabled={isLast}
             className={cn("h-12 px-6 gap-2 disabled:opacity-30", tc.button)}
+            data-tour="nav-next"
           >
             <span className="hidden sm:inline">Next</span>
             <ChevronRight className="w-5 h-5" />
@@ -145,6 +152,7 @@ export const NavigationBar = ({
                 : tc.button
             )}
             title="AI Assist (H)"
+            data-tour="ai-assist"
           >
             <Sparkles className="w-5 h-5" />
           </Button>
@@ -161,9 +169,29 @@ export const NavigationBar = ({
                 : tc.button
             )}
             title="Annotate (A)"
+            data-tour="annotation"
           >
             <Pencil className="w-5 h-5" />
           </Button>
+          
+          {/* Screenshot Button - Direct access */}
+          {onSaveScreenshot && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onSaveScreenshot}
+              disabled={isSavingScreenshot}
+              className={cn("h-10 w-10", tc.button)}
+              title="Take Screenshot"
+              data-tour="screenshot"
+            >
+              {isSavingScreenshot ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Camera className="w-5 h-5" />
+              )}
+            </Button>
+          )}
           
           {/* Theme Toggle */}
           <Button
@@ -172,6 +200,7 @@ export const NavigationBar = ({
             onClick={onToggleTheme}
             className={cn("h-10 w-10 hidden md:flex", tc.button)}
             title={theme === 'light' ? "Dark Mode" : "Light Mode"}
+            data-tour="theme"
           >
             {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </Button>
@@ -183,6 +212,7 @@ export const NavigationBar = ({
             onClick={onToggleFullscreen}
             className={cn("h-10 w-10", tc.button)}
             title={isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
+            data-tour="fullscreen"
           >
             {isFullscreen ? <Shrink className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
           </Button>
@@ -194,6 +224,7 @@ export const NavigationBar = ({
             onClick={onToggleTimeline}
             className={cn("h-10 w-10 hidden md:flex", tc.button)}
             title="Toggle Timeline (T)"
+            data-tour="timeline"
           >
             {showTimeline ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
           </Button>

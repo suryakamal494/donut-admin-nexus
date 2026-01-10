@@ -43,8 +43,8 @@ export const QuizContent = ({ block, theme }: QuizContentProps) => {
 
   return (
     <div className="flex flex-col h-full p-6 md:p-12">
-      {/* Quiz Header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Quiz Header with Explicit Navigation Buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className={cn("text-sm px-3 py-1 border-0", tc.badge)}>
             Question {currentIndex + 1} of {questionObjects.length}
@@ -58,24 +58,43 @@ export const QuizContent = ({ block, theme }: QuizContentProps) => {
             {currentQuestion.difficulty}
           </Badge>
         </div>
-        <div className="flex items-center gap-2">
+        
+        {/* Prominent Previous/Next Buttons */}
+        <div className="flex items-center gap-3">
           <Button
-            variant="ghost"
-            size="icon"
+            variant="outline"
+            size="lg"
             onClick={() => { setCurrentIndex(prev => prev - 1); setShowSolution(false); }}
             disabled={isFirst}
-            className={cn(tc.button, "disabled:opacity-30")}
+            className={cn(
+              "h-11 px-4 gap-2 disabled:opacity-30",
+              theme === 'dark' 
+                ? "bg-white/10 border-white/20 text-white hover:bg-white/20" 
+                : "bg-slate-100 border-slate-300 text-slate-900 hover:bg-slate-200"
+            )}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden sm:inline">Previous</span>
           </Button>
+          
+          <span className={cn("text-sm font-medium px-2 hidden md:block", tc.textMuted)}>
+            {currentIndex + 1} / {questionObjects.length}
+          </span>
+          
           <Button
-            variant="ghost"
-            size="icon"
+            variant="outline"
+            size="lg"
             onClick={() => { setCurrentIndex(prev => prev + 1); setShowSolution(false); }}
             disabled={isLast}
-            className={cn(tc.button, "disabled:opacity-30")}
+            className={cn(
+              "h-11 px-4 gap-2 disabled:opacity-30",
+              theme === 'dark' 
+                ? "bg-white/10 border-white/20 text-white hover:bg-white/20" 
+                : "bg-slate-100 border-slate-300 text-slate-900 hover:bg-slate-200"
+            )}
           >
-            <ChevronRight className="w-6 h-6" />
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
       </div>
