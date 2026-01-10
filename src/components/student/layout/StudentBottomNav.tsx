@@ -60,7 +60,7 @@ const StudentBottomNav = () => {
                   className={cn(
                     "relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300",
                     active 
-                      ? "bg-gradient-to-b from-donut-coral to-donut-pink -translate-y-3 shadow-lg shadow-donut-coral/30" 
+                      ? "bg-gradient-to-b from-donut-coral to-donut-orange -translate-y-3 shadow-lg shadow-donut-coral/30" 
                       : "hover:bg-muted/50"
                   )}
                 >

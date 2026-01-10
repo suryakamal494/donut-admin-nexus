@@ -6,10 +6,10 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Coral to Orange to Pink Gradient */
-    --donut-coral: 0 85% 70%;
-    --donut-orange: 24 95% 65%;
-    --donut-pink: 340 85% 65%;
+    /* Brand Colors - Warm Coral to Orange Gradient (matching reference button) */
+    --donut-coral: 12 85% 65%;
+    --donut-orange: 25 90% 58%;
+    --donut-pink: 16 80% 60%;
     --donut-warm: 30 100% 97%;
     
     /* Accent Colors */
@@ -69,9 +69,9 @@
     --glass-background: 0 0% 100% / 0.8;
     --glass-border: 0 0% 100% / 0.3;
     
-    /* Gradients */
-    --gradient-donut: linear-gradient(135deg, hsl(0 85% 70%), hsl(24 95% 65%), hsl(340 85% 65%));
-    --gradient-donut-hover: linear-gradient(135deg, hsl(0 85% 65%), hsl(24 95% 60%), hsl(340 85% 60%));
+    /* Gradients - Warm coral to orange (matching reference button) */
+    --gradient-donut: linear-gradient(135deg, hsl(12 85% 65%), hsl(25 90% 58%));
+    --gradient-donut-hover: linear-gradient(135deg, hsl(12 85% 60%), hsl(25 90% 53%));
     --gradient-warm-bg: linear-gradient(180deg, hsl(30 50% 99%) 0%, hsl(30 40% 97%) 100%);
     --gradient-sidebar: linear-gradient(180deg, hsl(220 25% 14%) 0%, hsl(220 25% 10%) 100%);
   }
@@ -96,7 +96,7 @@
 
   /* Gradient Text */
   .gradient-text {
-    background: linear-gradient(135deg, hsl(0 85% 70%), hsl(24 95% 65%), hsl(340 85% 65%));
+    background: linear-gradient(135deg, hsl(12 85% 65%), hsl(25 90% 58%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -104,19 +104,19 @@
 
   /* Gradient Button */
   .gradient-button {
-    background: linear-gradient(135deg, hsl(0 85% 70%), hsl(24 95% 65%), hsl(340 85% 65%));
+    background: linear-gradient(135deg, hsl(12 85% 65%), hsl(25 90% 58%));
     @apply text-white font-semibold shadow-lg transition-all duration-300;
   }
 
   .gradient-button:hover {
-    background: linear-gradient(135deg, hsl(0 85% 65%), hsl(24 95% 60%), hsl(340 85% 60%));
+    background: linear-gradient(135deg, hsl(12 85% 60%), hsl(25 90% 53%));
     @apply shadow-xl scale-[1.02];
   }
 
   /* Gradient Border */
   .gradient-border {
     position: relative;
-    background: linear-gradient(135deg, hsl(0 85% 70%), hsl(24 95% 65%), hsl(340 85% 65%));
+    background: linear-gradient(135deg, hsl(12 85% 65%), hsl(25 90% 58%));
     padding: 2px;
   }
 
@@ -132,7 +132,7 @@
   .stats-glow::before {
     content: '';
     @apply absolute -top-1/2 -right-1/2 w-full h-full opacity-10 blur-3xl rounded-full;
-    background: linear-gradient(135deg, hsl(0 85% 70%), hsl(24 95% 65%));
+    background: linear-gradient(135deg, hsl(12 85% 65%), hsl(25 90% 58%));
   }
 
   /* Sidebar Active State */
@@ -143,7 +143,7 @@
   .sidebar-active::before {
     content: '';
     @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full;
-    background: linear-gradient(180deg, hsl(0 85% 70%), hsl(24 95% 65%));
+    background: linear-gradient(180deg, hsl(12 85% 65%), hsl(25 90% 58%));
   }
 
 
@@ -155,9 +155,9 @@
   /* Sidebar Header Glow */
   .sidebar-header-glow {
     background: linear-gradient(135deg, 
-      hsl(0 85% 70% / 0.08) 0%, 
-      hsl(24 95% 65% / 0.12) 50%, 
-      hsl(340 85% 65% / 0.06) 100%
+      hsl(12 85% 65% / 0.08) 0%, 
+      hsl(25 90% 58% / 0.12) 50%, 
+      hsl(16 80% 60% / 0.06) 100%
     );
   }
 
@@ -165,7 +165,7 @@
   .bg-gradient-soft {
     background: linear-gradient(180deg, 
       hsl(30 50% 99%) 0%, 
-      hsl(0 85% 70% / 0.03) 50%, 
+      hsl(12 85% 65% / 0.03) 50%, 
       hsl(30 50% 99%) 100%
     );
   }
@@ -177,7 +177,7 @@
 
   .card-premium:hover {
     @apply -translate-y-0.5;
-    box-shadow: 0 8px 24px hsl(24 95% 65% / 0.12);
+    box-shadow: 0 8px 24px hsl(25 90% 58% / 0.12);
   }
 
   /* Bottom Nav Curved */

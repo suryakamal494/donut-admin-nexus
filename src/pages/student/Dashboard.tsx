@@ -74,7 +74,7 @@ const StudentDashboard = () => {
       </div>
 
       {/* AI Recommendation Card */}
-      <div className="bg-gradient-to-br from-donut-coral/90 to-donut-pink/90 rounded-3xl p-4 mb-6 shadow-lg shadow-donut-coral/20 cursor-pointer hover:shadow-xl transition-shadow">
+      <div className="bg-gradient-to-br from-donut-coral to-donut-orange rounded-3xl p-4 mb-6 shadow-lg shadow-donut-coral/20 cursor-pointer hover:shadow-xl transition-shadow">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-5 h-5 text-white" />
