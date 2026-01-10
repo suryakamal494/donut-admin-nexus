@@ -135,37 +135,30 @@ export const WorkspaceCanvas = ({
         items={blocks.map(b => b.id)} 
         strategy={verticalListSortingStrategy}
       >
-        <div className="space-y-2">
+        <div className="space-y-3">
           {blocks.map((block, index) => (
-            <div key={block.id}>
-              <WorkspaceBlock
-                block={block}
-                index={index}
-                onEdit={onEditBlock}
-                onDelete={onDeleteBlock}
-                onPreview={(block) => setPreviewBlock(block)}
-              />
-              
-              {/* Add Between Button */}
-              {index < blocks.length - 1 && (
-                <div className="flex items-center justify-center py-1 group/add">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "h-6 px-3 text-xs gap-1",
-                      "opacity-0 group-hover/add:opacity-100 transition-opacity",
-                      "text-muted-foreground hover:text-primary hover:bg-primary/5"
-                    )}
-                    onClick={() => onAddBetween(index + 1, 'explain')}
-                  >
-                    <Plus className="w-3 h-3" />
-                    Add block
-                  </Button>
-                </div>
-              )}
-            </div>
+            <WorkspaceBlock
+              key={block.id}
+              block={block}
+              index={index}
+              onEdit={onEditBlock}
+              onDelete={onDeleteBlock}
+              onPreview={(block) => setPreviewBlock(block)}
+            />
           ))}
+          
+          {/* Single Add Content Button at Bottom */}
+          <div className="pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full h-10 gap-2 border-dashed border-2 text-muted-foreground hover:text-primary hover:border-primary/50 hover:bg-primary/5"
+              onClick={() => onAddBetween(blocks.length, 'explain')}
+            >
+              <Plus className="w-4 h-4" />
+              Add Content
+            </Button>
+          </div>
         </div>
 
         {/* Content Preview Dialog */}

@@ -11,4 +11,5 @@ export { AIAssistDialog } from "./AIAssistDialog";
 export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export { QuestionBankSheet } from "./QuestionBankSheet";
 export { ContentLibrarySheet } from "./ContentLibrarySheet";
+export { PresentationMode } from "./PresentationMode";
 export * from "./types";

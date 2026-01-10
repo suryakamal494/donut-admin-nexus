@@ -10,6 +10,7 @@ import {
   WorkspaceCanvas,
   WorkspaceFooter,
   AIAssistDialog,
+  PresentationMode,
   type LessonPlanBlock,
   type BlockType,
   type WorkspaceContext,
@@ -89,6 +90,7 @@ const LessonPlanCanvas = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeBlockType, setActiveBlockType] = useState<BlockType | null>(null);
   const [showAIDialog, setShowAIDialog] = useState(false);
+  const [showPresentation, setShowPresentation] = useState(false);
   const [topic, setTopic] = useState(existingPlan?.topics?.[0] || '');
 
   // Update blocks when existing plan changes (e.g., navigation)
@@ -211,7 +213,7 @@ const LessonPlanCanvas = () => {
         isSaving={isSaving}
         onBack={() => navigate("/teacher/lesson-plans")}
         onSave={handleSave}
-        onStartClass={() => toast({ title: "Starting class..." })}
+        onStartClass={() => setShowPresentation(true)}
         planTitle={planTitle}
       />
 
@@ -253,6 +255,13 @@ const LessonPlanCanvas = () => {
         onChapterChange={(ch) => setContext(prev => ({ ...prev, chapter: ch }))}
         onGenerate={handleAIGenerate}
         isGenerating={isGenerating}
+      />
+
+      <PresentationMode
+        open={showPresentation}
+        onClose={() => setShowPresentation(false)}
+        blocks={blocks}
+        lessonTitle={planTitle || `${context.chapter} - ${context.subject}`}
       />
     </div>
   );
