@@ -1,11 +1,34 @@
 // AI Recommendations Carousel Component
-// Horizontal swipeable carousel on mobile, grid on desktop
+// Swipeable carousel on mobile with dot indicators, grid on desktop
 
 import { Sparkles } from "lucide-react";
 import { aiRecommendations } from "@/data/student/dashboard";
 import AIRecommendationCard from "./AIRecommendationCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const AIRecommendationsCarousel = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <div className="mb-6">
       {/* Section Header */}
@@ -16,12 +39,46 @@ const AIRecommendationsCarousel = () => {
         <h2 className="font-semibold text-foreground text-sm">AI Suggestions</h2>
       </div>
 
-      {/* Mobile: Horizontal Scroll | Desktop: Grid */}
-      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-3 lg:overflow-visible scrollbar-hide">
+      {/* Mobile/Tablet: Swipeable Carousel */}
+      <div className="lg:hidden">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-3">
+            {aiRecommendations.map((rec) => (
+              <CarouselItem key={rec.id} className="pl-3 basis-[88%] sm:basis-[75%]">
+                <AIRecommendationCard recommendation={rec} compact />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+        
+        {/* Dot Indicators */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {Array.from({ length: count }).map((_, index) => (
+            <button
+              key={index}
+              className={cn(
+                "w-2 h-2 rounded-full transition-all duration-200",
+                current === index 
+                  ? "bg-donut-coral w-4" 
+                  : "bg-muted-foreground/30"
+              )}
+              onClick={() => api?.scrollTo(index)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Grid */}
+      <div className="hidden lg:grid lg:grid-cols-3 gap-3">
         {aiRecommendations.map((rec) => (
-          <div key={rec.id} className="flex-shrink-0 w-[85%] sm:w-[280px] lg:w-auto">
-            <AIRecommendationCard recommendation={rec} compact />
-          </div>
+          <AIRecommendationCard key={rec.id} recommendation={rec} compact />
         ))}
       </div>
     </div>
