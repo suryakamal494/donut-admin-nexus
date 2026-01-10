@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { TeacherExam } from "@/data/teacher/types";
@@ -298,56 +299,59 @@ export const TeacherExamCard = ({
               </div>
             )}
             
-            {/* Action Buttons - Correct teacher actions */}
-            <div className="flex items-center gap-1.5 pt-1">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex-1 h-8 text-xs px-2" 
-                onClick={onView}
-              >
-                <Eye className="w-3 h-3 mr-1" />
-                View
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex-1 h-8 text-xs px-2" 
-                onClick={onAssign}
-              >
-                <Users className="w-3 h-3 mr-1" />
-                Assign
-              </Button>
-              {exam.status === "draft" ? (
-                <Button 
-                  size="sm" 
-                  className="flex-1 h-8 text-xs px-2 gradient-button" 
-                  onClick={onSchedule}
-                >
-                  <CalendarClock className="w-3 h-3 mr-1" />
-                  Schedule
-                </Button>
-              ) : exam.status === "completed" ? (
-                <Button 
-                  size="sm" 
-                  className="flex-1 h-8 text-xs px-2 gradient-button" 
-                  onClick={onViewResults}
-                >
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  Results
-                </Button>
-              ) : (
+            {/* Action Buttons - Scrollable on mobile to prevent overflow */}
+            <ScrollArea className="w-full">
+              <div className="flex items-center gap-1.5 pt-1 pb-1">
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="flex-1 h-8 text-xs px-2" 
-                  onClick={onEdit}
+                  className="h-8 text-xs px-2.5 whitespace-nowrap shrink-0" 
+                  onClick={onView}
                 >
-                  <Edit className="w-3 h-3 mr-1" />
-                  Edit
+                  <Eye className="w-3 h-3 mr-1" />
+                  View
                 </Button>
-              )}
-            </div>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="h-8 text-xs px-2.5 whitespace-nowrap shrink-0" 
+                  onClick={onAssign}
+                >
+                  <Users className="w-3 h-3 mr-1" />
+                  Assign
+                </Button>
+                {exam.status === "draft" ? (
+                  <Button 
+                    size="sm" 
+                    className="h-8 text-xs px-2.5 whitespace-nowrap shrink-0 gradient-button" 
+                    onClick={onSchedule}
+                  >
+                    <CalendarClock className="w-3 h-3 mr-1" />
+                    Schedule
+                  </Button>
+                ) : exam.status === "completed" ? (
+                  <Button 
+                    size="sm" 
+                    className="h-8 text-xs px-2.5 whitespace-nowrap shrink-0 gradient-button" 
+                    onClick={onViewResults}
+                  >
+                    <BarChart3 className="w-3 h-3 mr-1" />
+                    Results
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-8 text-xs px-2.5 whitespace-nowrap shrink-0" 
+                    onClick={onEdit}
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    Edit
+                  </Button>
+                )}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
         </CardContent>
       </Card>

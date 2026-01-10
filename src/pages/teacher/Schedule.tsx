@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Calendar as CalendarIcon,
@@ -17,6 +17,7 @@ import { WeekNavigator } from "@/components/teacher/WeekNavigator";
 import { TeacherTimetableGrid } from "@/components/teacher/TeacherTimetableGrid";
 import { ScheduleClassCard } from "@/components/teacher/ScheduleClassCard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   teacherWeeklySchedule,
   type TeacherTimetableSlot 
@@ -59,7 +60,15 @@ const getScheduleForWeek = (weekStart: Date): Record<string, TeacherTimetableSlo
 
 const TeacherSchedule = () => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const isMobile = useIsMobile();
+  
+  // Default to list view on mobile for better UX
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  
+  // Update view mode based on device
+  useEffect(() => {
+    setViewMode(isMobile ? "list" : "grid");
+  }, [isMobile]);
   
   const getMonday = (date: Date) => {
     const d = new Date(date);

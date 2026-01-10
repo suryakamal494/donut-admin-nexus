@@ -88,15 +88,15 @@ export const TeacherTimetableGrid = ({
 
   return (
     <ScrollArea className="w-full">
-      <div className="min-w-[800px]">
+      <div className="min-w-[700px] md:min-w-[800px]">
         {/* Table Structure */}
         <table className="w-full border-collapse">
           {/* Header Row */}
           <thead>
             <tr>
               {/* Period Column Header */}
-              <th className="sticky left-0 z-20 w-[100px] min-w-[100px] bg-white border-b border-r p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
-                <span className="text-xs font-bold text-black uppercase tracking-wide">Period</span>
+              <th className="sticky left-0 z-20 w-[80px] min-w-[80px] md:w-[100px] md:min-w-[100px] bg-white border-b border-r p-1.5 md:p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+                <span className="text-[10px] md:text-xs font-bold text-black uppercase tracking-wide">Period</span>
               </th>
               
               {/* Day Headers */}
@@ -104,7 +104,7 @@ export const TeacherTimetableGrid = ({
                 <th
                   key={day.dateStr}
                   className={cn(
-                    "min-w-[120px] p-2 text-center border-b transition-colors",
+                    "min-w-[90px] md:min-w-[120px] p-1.5 md:p-2 text-center border-b transition-colors",
                     day.isToday 
                       ? "bg-gradient-to-b from-primary/15 to-primary/5" 
                       : "bg-muted/30"
@@ -112,19 +112,19 @@ export const TeacherTimetableGrid = ({
                 >
                   <div className="flex flex-col items-center gap-0.5">
                     <span className={cn(
-                      "text-[10px] font-semibold uppercase tracking-wide",
+                      "text-[9px] md:text-[10px] font-semibold uppercase tracking-wide",
                       day.isToday ? "text-primary" : "text-muted-foreground"
                     )}>
                       {day.shortDayName}
                     </span>
                     <span className={cn(
-                      "text-lg font-bold leading-none",
+                      "text-base md:text-lg font-bold leading-none",
                       day.isToday ? "text-primary" : "text-foreground"
                     )}>
                       {day.dayNum}
                     </span>
                     {day.isToday && (
-                      <span className="text-[8px] font-bold text-white bg-primary px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                      <span className="text-[7px] md:text-[8px] font-bold text-white bg-primary px-1 md:px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                         Today
                       </span>
                     )}
@@ -143,15 +143,15 @@ export const TeacherTimetableGrid = ({
                   <tr key={`break-${row.break!.id}`}>
                     <td 
                       colSpan={7} 
-                      className="bg-amber-50/60 border-y border-amber-200/40 py-1.5 px-3"
+                      className="bg-amber-50/60 border-y border-amber-200/40 py-1 md:py-1.5 px-2 md:px-3"
                     >
-                      <div className="flex items-center justify-center gap-2">
-                        <BreakIcon className="w-3.5 h-3.5 text-amber-600" />
-                        <span className="text-xs font-medium text-amber-700">
+                      <div className="flex items-center justify-center gap-1.5 md:gap-2">
+                        <BreakIcon className="w-3 h-3 md:w-3.5 md:h-3.5 text-amber-600" />
+                        <span className="text-[10px] md:text-xs font-medium text-amber-700">
                           {row.break!.name}
                         </span>
-                        <span className="text-[10px] text-amber-600/70">
-                          ({row.break!.duration} min)
+                        <span className="text-[9px] md:text-[10px] text-amber-600/70">
+                          ({row.break!.duration}m)
                         </span>
                       </div>
                     </td>
@@ -166,14 +166,14 @@ export const TeacherTimetableGrid = ({
               return (
                 <tr key={`period-row-${periodNumber}`}>
                   {/* Period Label Cell - Sticky */}
-                  <td className="sticky left-0 z-10 w-[100px] min-w-[100px] bg-white border-b border-r p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+                  <td className="sticky left-0 z-10 w-[80px] min-w-[80px] md:w-[100px] md:min-w-[100px] bg-white border-b border-r p-1 md:p-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
                     <div className="flex flex-col items-center justify-center">
-                      <span className="text-xs font-bold text-black">
-                        Period {periodNumber}
+                      <span className="text-[10px] md:text-xs font-bold text-black">
+                        P{periodNumber}
                       </span>
                       {periodTime && (
-                        <span className="text-[10px] text-black mt-0.5 font-medium">
-                          {periodTime.startTime} - {periodTime.endTime}
+                        <span className="text-[8px] md:text-[10px] text-black mt-0.5 font-medium">
+                          {periodTime.startTime}
                         </span>
                       )}
                     </div>
@@ -189,7 +189,7 @@ export const TeacherTimetableGrid = ({
                       <td
                         key={`cell-${day.dateStr}-${periodNumber}`}
                         className={cn(
-                          "border-b p-1",
+                          "border-b p-0.5 md:p-1",
                           day.isToday && "bg-primary/[0.03]"
                         )}
                       >
