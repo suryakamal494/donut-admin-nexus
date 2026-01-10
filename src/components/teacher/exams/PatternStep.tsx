@@ -22,18 +22,21 @@ const patternOptions = [
   { 
     id: "custom" as const, 
     label: "Custom", 
+    shortLabel: "Custom",
     description: "Set your own rules",
     icon: Settings,
   },
   { 
     id: "jee_main" as const, 
     label: "JEE Main", 
+    shortLabel: "JEE",
     description: "Standard JEE pattern",
     icon: Zap,
   },
   { 
     id: "neet" as const, 
     label: "NEET", 
+    shortLabel: "NEET",
     description: "Medical entrance",
     icon: Zap,
   },
@@ -49,13 +52,12 @@ export const PatternStep = ({
   onBack,
 }: PatternStepProps) => {
   return (
-    <div className="space-y-6">
-      {/* Exam Pattern */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Exam Pattern</Label>
+    <div className="space-y-4">
+      {/* Exam Pattern - Compact grid */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium">Exam Pattern</Label>
         
-        {/* Mobile: Horizontal scroll cards - wider cards */}
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-3 md:overflow-visible md:mx-0 md:px-0">
+        <div className="grid grid-cols-3 gap-2">
           {patternOptions.map((opt) => {
             const isSelected = pattern === opt.id;
             const Icon = opt.icon;
@@ -67,39 +69,40 @@ export const PatternStep = ({
                 type="button"
                 onClick={() => setPattern(opt.id)}
                 className={cn(
-                  "snap-center flex-shrink-0 w-[160px] md:w-auto p-4 rounded-xl border-2 text-left transition-all duration-200",
+                  "p-2.5 sm:p-3 rounded-lg border-2 text-left transition-all duration-200",
                   "active:scale-[0.98]",
                   isSelected
-                    ? "border-primary bg-primary/5 scale-[1.02]"
+                    ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50 bg-card"
                 )}
               >
                 <div className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center mb-3",
+                  "w-8 h-8 rounded-lg flex items-center justify-center mb-2",
                   isSelected ? "bg-primary/10" : "bg-muted"
                 )}>
                   <Icon className={cn(
-                    "w-5 h-5",
+                    "w-4 h-4",
                     isSelected ? "text-primary" : "text-muted-foreground"
                   )} />
                 </div>
                 <h4 className={cn(
-                  "font-semibold text-sm mb-1",
+                  "font-semibold text-xs mb-0.5",
                   isSelected ? "text-primary" : "text-foreground"
                 )}>
-                  {opt.label}
+                  <span className="sm:hidden">{opt.shortLabel}</span>
+                  <span className="hidden sm:inline">{opt.label}</span>
                 </h4>
-                <p className="text-xs text-muted-foreground line-clamp-2">
+                <p className="text-[10px] text-muted-foreground line-clamp-1">
                   {opt.description}
                 </p>
                 
-                {/* Show pattern details for standard patterns */}
+                {/* Pattern details for standard patterns */}
                 {config && isSelected && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {config.totalQuestions} Qs
+                  <div className="mt-1.5 flex gap-1">
+                    <Badge variant="secondary" className="text-[9px] px-1 py-0">
+                      {config.totalQuestions}Q
                     </Badge>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge variant="secondary" className="text-[9px] px-1 py-0">
                       {config.duration}m
                     </Badge>
                   </div>
@@ -110,13 +113,13 @@ export const PatternStep = ({
         </div>
       </div>
 
-      {/* Student Interface */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Student Interface</Label>
-        <div className="grid grid-cols-2 gap-3">
+      {/* Student Interface - Compact */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium">Student Interface</Label>
+        <div className="grid grid-cols-2 gap-2">
           {([
-            { id: "platform" as const, label: "Platform UI", description: "Modern interface", icon: Monitor },
-            { id: "real_exam" as const, label: "Real Exam UI", description: "Exam-like interface", icon: FileText },
+            { id: "platform" as const, label: "Platform UI", shortLabel: "Platform", description: "Modern", icon: Monitor },
+            { id: "real_exam" as const, label: "Real Exam UI", shortLabel: "Real Exam", description: "Exam-like", icon: FileText },
           ]).map((opt) => {
             const isSelected = uiType === opt.id;
             const Icon = opt.icon;
@@ -127,7 +130,7 @@ export const PatternStep = ({
                 type="button"
                 onClick={() => setUIType(opt.id)}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
+                  "relative flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all duration-200",
                   "active:scale-[0.98]",
                   isSelected
                     ? "border-primary bg-primary/5"
@@ -135,21 +138,22 @@ export const PatternStep = ({
                 )}
               >
                 <div className={cn(
-                  "w-12 h-12 rounded-lg flex items-center justify-center",
+                  "w-9 h-9 rounded-lg flex items-center justify-center",
                   isSelected ? "bg-primary/10" : "bg-muted"
                 )}>
                   <Icon className={cn(
-                    "w-6 h-6",
+                    "w-4.5 h-4.5",
                     isSelected ? "text-primary" : "text-muted-foreground"
                   )} />
                 </div>
                 <span className={cn(
-                  "font-medium text-sm text-center",
+                  "font-medium text-xs text-center",
                   isSelected ? "text-primary" : "text-foreground"
                 )}>
-                  {opt.label}
+                  <span className="sm:hidden">{opt.shortLabel}</span>
+                  <span className="hidden sm:inline">{opt.label}</span>
                 </span>
-                <span className="text-xs text-muted-foreground text-center">
+                <span className="text-[10px] text-muted-foreground">
                   {opt.description}
                 </span>
               </button>
@@ -159,22 +163,22 @@ export const PatternStep = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-4 sticky bottom-0 bg-card pb-2">
+      <div className="flex gap-2 pt-3 sticky bottom-0 bg-card pb-2">
         <Button
           variant="outline"
           onClick={onBack}
-          className="flex-1 h-12"
+          className="flex-1 h-11"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-1.5" />
           Back
         </Button>
         <Button
           onClick={onNext}
           disabled={!canProceed}
-          className="flex-1 h-12 gradient-button"
+          className="flex-1 h-11 gradient-button"
         >
           Next
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <ArrowRight className="w-4 h-4 ml-1.5" />
         </Button>
       </div>
     </div>
