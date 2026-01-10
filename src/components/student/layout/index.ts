@@ -1,5 +1,5 @@
 // Student Layout Components - Barrel Export
-// This module will contain student-specific layouts (Bottom Nav, etc.)
+// This module contains student-specific layouts
 // Completely separate from Teacher/Institute/Admin layouts
 
-export {};
+export { default as StudentBottomNav } from './StudentBottomNav';
