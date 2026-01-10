@@ -26,7 +26,7 @@ const StudentDashboard = () => {
         </div>
         
         {/* Streak badge */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full shadow-lg shadow-orange-300/40">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 gradient-button rounded-full shadow-lg shadow-donut-coral/40">
           <Flame className="w-4 h-4 text-white" />
           <span className="text-sm font-bold text-white">{studentProfile.streak}</span>
         </div>
@@ -34,7 +34,7 @@ const StudentDashboard = () => {
 
       {/* Desktop streak indicator */}
       <div className="hidden lg:flex items-center gap-2 mb-6">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full shadow-lg shadow-orange-300/40">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 gradient-button rounded-full shadow-lg shadow-donut-coral/40">
           <Flame className="w-4 h-4 text-white" />
           <span className="text-sm font-bold text-white">{studentProfile.streak} day streak</span>
         </div>
@@ -43,7 +43,7 @@ const StudentDashboard = () => {
       {/* Quick Stats Row */}
       <div className="flex gap-3 mb-6 overflow-x-auto pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 scrollbar-hide">
         <div className="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-300/40">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-donut-coral to-donut-pink flex items-center justify-center shadow-md shadow-donut-coral/40">
             <Target className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
@@ -53,7 +53,7 @@ const StudentDashboard = () => {
         </div>
         
         <div className="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-md shadow-violet-300/40">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-donut-orange to-donut-coral flex items-center justify-center shadow-md shadow-donut-orange/40">
             <Zap className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
@@ -63,7 +63,7 @@ const StudentDashboard = () => {
         </div>
 
         <div className="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-300/40">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-donut-pink to-donut-coral flex items-center justify-center shadow-md shadow-donut-pink/40">
             <Clock className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
@@ -104,10 +104,10 @@ const StudentDashboard = () => {
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                 task.type === 'class' 
-                  ? 'bg-gradient-to-br from-blue-400 to-indigo-500 shadow-blue-300/40' 
+                  ? 'bg-gradient-to-br from-donut-coral to-donut-orange shadow-donut-coral/40' 
                   : task.type === 'test'
-                  ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-300/40'
-                  : 'bg-gradient-to-br from-emerald-400 to-teal-500 shadow-emerald-300/40'
+                  ? 'bg-gradient-to-br from-donut-orange to-donut-pink shadow-donut-orange/40'
+                  : 'bg-gradient-to-br from-donut-pink to-donut-coral shadow-donut-pink/40'
               } shadow-md`}>
                 <Clock className="w-5 h-5 text-white" />
               </div>

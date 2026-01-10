@@ -24,43 +24,43 @@ const iconMap: Record<string, LucideIcon> = {
   Code,
 };
 
-// Color configurations for each subject
+// Color configurations for each subject - Using Donut AI brand palette variations
 const colorConfig: Record<string, { gradient: string; shadow: string; bg: string; text: string }> = {
-  blue: {
-    gradient: "from-blue-400 to-blue-600",
-    shadow: "shadow-blue-400/30",
-    bg: "bg-blue-50",
-    text: "text-blue-600",
+  coral: {
+    gradient: "from-donut-coral to-donut-orange",
+    shadow: "shadow-donut-coral/30",
+    bg: "bg-donut-coral/10",
+    text: "text-donut-coral",
   },
-  purple: {
-    gradient: "from-violet-400 to-purple-600",
-    shadow: "shadow-violet-400/30",
-    bg: "bg-violet-50",
-    text: "text-violet-600",
+  orange: {
+    gradient: "from-donut-orange to-donut-coral",
+    shadow: "shadow-donut-orange/30",
+    bg: "bg-donut-orange/10",
+    text: "text-donut-orange",
   },
-  green: {
-    gradient: "from-emerald-400 to-green-600",
-    shadow: "shadow-emerald-400/30",
-    bg: "bg-emerald-50",
-    text: "text-emerald-600",
+  pink: {
+    gradient: "from-donut-pink to-donut-coral",
+    shadow: "shadow-donut-pink/30",
+    bg: "bg-donut-pink/10",
+    text: "text-donut-pink",
   },
-  red: {
-    gradient: "from-rose-400 to-red-500",
-    shadow: "shadow-rose-400/30",
-    bg: "bg-rose-50",
-    text: "text-rose-600",
+  warm: {
+    gradient: "from-donut-coral to-donut-pink",
+    shadow: "shadow-donut-coral/30",
+    bg: "bg-donut-coral/10",
+    text: "text-donut-coral",
   },
-  amber: {
-    gradient: "from-amber-400 to-orange-500",
-    shadow: "shadow-amber-400/30",
-    bg: "bg-amber-50",
-    text: "text-amber-600",
+  sunset: {
+    gradient: "from-donut-orange to-donut-pink",
+    shadow: "shadow-donut-orange/30",
+    bg: "bg-donut-orange/10",
+    text: "text-donut-orange",
   },
-  cyan: {
-    gradient: "from-cyan-400 to-teal-500",
-    shadow: "shadow-cyan-400/30",
-    bg: "bg-cyan-50",
-    text: "text-cyan-600",
+  rose: {
+    gradient: "from-donut-pink to-donut-orange",
+    shadow: "shadow-donut-pink/30",
+    bg: "bg-donut-pink/10",
+    text: "text-donut-pink",
   },
 };
 
