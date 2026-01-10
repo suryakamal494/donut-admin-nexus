@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { 
   X, ChevronLeft, ChevronRight, BookOpen, Play, HelpCircle, 
   ClipboardList, Maximize2, Minimize2, Clock, FileText, Video,
@@ -337,6 +337,11 @@ export const PresentationMode = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
+  
+  // Touch swipe state
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const currentBlock = blocks[currentIndex];
   const progress = blocks.length > 0 ? ((currentIndex + 1) / blocks.length) * 100 : 0;
@@ -390,13 +395,57 @@ export const PresentationMode = ({
     }, 200);
   }, [blocks.length, isTransitioning]);
 
+  // Touch swipe handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    // Don't capture touch events on interactive elements (iframes, buttons, etc.)
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'IFRAME' || target.tagName === 'BUTTON' || target.closest('button')) {
+      return;
+    }
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+    
+    // Reset touch state
+    touchStartX.current = null;
+    touchStartY.current = null;
+    
+    // Minimum swipe distance (50px) and ensure horizontal swipe is dominant
+    const minSwipeDistance = 50;
+    if (Math.abs(deltaX) < minSwipeDistance || Math.abs(deltaX) < Math.abs(deltaY)) {
+      return;
+    }
+    
+    if (deltaX > 0 && !isFirst) {
+      // Swipe right -> go to previous
+      navigateTo(currentIndex - 1);
+    } else if (deltaX < 0 && !isLast) {
+      // Swipe left -> go to next
+      navigateTo(currentIndex + 1);
+    }
+  }, [currentIndex, isFirst, isLast, navigateTo]);
+
   if (!open || blocks.length === 0) return null;
 
   const BlockIcon = blockIcons[currentBlock.type];
   const config = blockTypeConfig[currentBlock.type];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 z-[100] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Main Content Area */}
       <div 
         className={cn(
