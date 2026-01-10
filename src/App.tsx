@@ -117,6 +117,12 @@ const CreateTeacherExam = lazy(() => import("./pages/teacher/CreateExam"));
 const TeacherExamResults = lazy(() => import("./pages/teacher/ExamResults"));
 const EditTeacherExam = lazy(() => import("./pages/teacher/EditExam"));
 
+// ============================================
+// STUDENT PANEL - Completely separate module
+// ============================================
+import StudentLogin from "./pages/student/Login";
+import StudentDashboard from "./pages/student/Dashboard";
+
 const queryClient = new QueryClient();
 
 // Suspense wrapper for remaining lazy-loaded pages
@@ -239,6 +245,10 @@ const App = () => (
             <Route path="reference" element={<TeacherReference />} />
             <Route path="profile" element={<TeacherProfile />} />
           </Route>
+
+          {/* Student Panel Routes - Completely separate module */}
+          <Route path="/student/login" element={<StudentLogin />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
