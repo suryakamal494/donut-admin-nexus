@@ -1,5 +1,5 @@
 // AI Recommendation Card Component
-// Individual card for AI-powered learning suggestions
+// Light card design with orange accent for AI-powered learning suggestions
 
 import { ChevronRight, Play, AlertCircle, Trophy, Sparkles } from "lucide-react";
 import type { AIRecommendation } from "@/data/student/dashboard";
@@ -26,26 +26,33 @@ const AIRecommendationCard = ({ recommendation, compact = false }: AIRecommendat
   return (
     <div 
       className={`
-        bg-gradient-to-br from-donut-coral to-donut-orange rounded-2xl shadow-lg shadow-donut-coral/20 
-        cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-200
-        ${compact ? 'p-3.5 min-w-[240px]' : 'p-4'}
+        bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm
+        border-l-4 border-l-donut-coral
+        cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-200
+        ${compact ? 'p-3.5' : 'p-4'}
       `}
     >
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+        {/* Orange gradient icon */}
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-donut-coral to-donut-orange flex items-center justify-center flex-shrink-0 shadow-sm shadow-donut-coral/20">
           {getIcon(recommendation.type)}
         </div>
+        
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-white/80 text-[10px] font-medium uppercase tracking-wide mb-0.5">
+          <p className="text-donut-coral text-[10px] font-semibold uppercase tracking-wider mb-0.5">
             {recommendation.title}
           </p>
-          <p className={`text-white font-semibold ${compact ? 'text-xs line-clamp-2' : 'text-sm'}`}>
+          <p className={`text-foreground font-medium ${compact ? 'text-sm line-clamp-2' : 'text-sm'}`}>
             {recommendation.description}
           </p>
         </div>
-        <div className="flex-shrink-0 flex items-center gap-1">
-          <span className="text-white/90 text-xs font-medium hidden sm:block">{recommendation.action}</span>
-          <ChevronRight className="w-4 h-4 text-white/60" />
+        
+        {/* Action arrow */}
+        <div className="flex-shrink-0 flex items-center">
+          <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
         </div>
       </div>
     </div>

@@ -50,8 +50,8 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Stats Row */}
-      <div className="mb-6">
+      {/* Quick Stats Row - Desktop only */}
+      <div className="hidden lg:block mb-6">
         <QuickStatsBar />
       </div>
 

@@ -6,3 +6,4 @@ export { default as HomeworkSection } from './HomeworkSection';
 export { default as ScheduleTimeline } from './ScheduleTimeline';
 export { default as UpcomingTestCard } from './UpcomingTestCard';
 export { default as UpcomingTestsSection } from './UpcomingTestsSection';
+export { default as ClassDetailSheet } from './ClassDetailSheet';
