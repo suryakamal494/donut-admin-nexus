@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Search, X, Check, Filter, ChevronDown, ChevronUp, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { QuestionViewDialog } from "@/components/questions/QuestionViewDialog";
 import { 
   mockQuestions, 
   Question, 
@@ -29,6 +30,18 @@ interface TeacherQuestionBankSheetProps {
   onSelectionChange: (ids: string[]) => void;
 }
 
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useMemo(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  
+  return debouncedValue;
+};
+
 export const TeacherQuestionBankSheet = ({
   open,
   onOpenChange,
@@ -38,8 +51,13 @@ export const TeacherQuestionBankSheet = ({
 }: TeacherQuestionBankSheetProps) => {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [difficultyFilter, setDifficultyFilter] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Question preview state
+  const [previewQuestion, setPreviewQuestion] = useState<Question | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Filter questions to teacher's subjects only
   const teacherSubjects = currentTeacher.subjects;
@@ -57,9 +75,9 @@ export const TeacherQuestionBankSheet = ({
         return false;
       }
 
-      // Search
-      if (searchQuery) {
-        const searchLower = searchQuery.toLowerCase();
+      // Search (debounced)
+      if (debouncedSearch) {
+        const searchLower = debouncedSearch.toLowerCase();
         return q.questionText.toLowerCase().includes(searchLower) ||
           q.chapter.toLowerCase().includes(searchLower) ||
           q.topic.toLowerCase().includes(searchLower);
@@ -67,25 +85,31 @@ export const TeacherQuestionBankSheet = ({
 
       return true;
     });
-  }, [teacherSubjects, difficultyFilter, searchQuery]);
+  }, [teacherSubjects, difficultyFilter, debouncedSearch]);
 
-  const toggleQuestion = (questionId: string) => {
+  const toggleQuestion = useCallback((questionId: string) => {
     if (selectedQuestionIds.includes(questionId)) {
       onSelectionChange(selectedQuestionIds.filter(id => id !== questionId));
     } else {
       onSelectionChange([...selectedQuestionIds, questionId]);
     }
-  };
+  }, [selectedQuestionIds, onSelectionChange]);
 
-  const selectAllVisible = () => {
+  const selectAllVisible = useCallback(() => {
     const visibleIds = filteredQuestions.map(q => q.id);
     const newSelection = [...new Set([...selectedQuestionIds, ...visibleIds])];
     onSelectionChange(newSelection);
-  };
+  }, [filteredQuestions, selectedQuestionIds, onSelectionChange]);
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     onSelectionChange([]);
-  };
+  }, [onSelectionChange]);
+  
+  const handlePreview = useCallback((question: Question, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPreviewQuestion(question);
+    setShowPreview(true);
+  }, []);
 
   const QuestionCard = ({ question }: { question: Question }) => {
     const isSelected = selectedQuestionIds.includes(question.id);
@@ -127,6 +151,16 @@ export const TeacherQuestionBankSheet = ({
               {question.chapter} • {question.topic}
             </p>
           </div>
+          
+          {/* Preview button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={(e) => handlePreview(question, e)}
+          >
+            <Eye className="w-4 h-4 text-muted-foreground" />
+          </Button>
         </div>
       </div>
     );
@@ -234,25 +268,39 @@ export const TeacherQuestionBankSheet = ({
   // Use Drawer on mobile, Sheet on desktop
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="h-[90vh]">
-          <DrawerHeader className="border-b">
-            <DrawerTitle>Select Questions</DrawerTitle>
-          </DrawerHeader>
-          <Content />
-        </DrawerContent>
-      </Drawer>
+      <>
+        <Drawer open={open} onOpenChange={onOpenChange}>
+          <DrawerContent className="h-[90vh]">
+            <DrawerHeader className="border-b">
+              <DrawerTitle>Select Questions</DrawerTitle>
+            </DrawerHeader>
+            <Content />
+          </DrawerContent>
+        </Drawer>
+        <QuestionViewDialog 
+          question={previewQuestion} 
+          open={showPreview} 
+          onOpenChange={setShowPreview} 
+        />
+      </>
     );
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg p-0">
-        <SheetHeader className="p-4 border-b">
-          <SheetTitle>Select Questions</SheetTitle>
-        </SheetHeader>
-        <Content />
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent className="w-full sm:max-w-lg p-0">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle>Select Questions</SheetTitle>
+          </SheetHeader>
+          <Content />
+        </SheetContent>
+      </Sheet>
+      <QuestionViewDialog 
+        question={previewQuestion} 
+        open={showPreview} 
+        onOpenChange={setShowPreview} 
+      />
+    </>
   );
 };
