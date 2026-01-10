@@ -345,6 +345,7 @@ export const PresentationMode = ({
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentContainerRef = useRef<HTMLDivElement>(null);
   const annotationRef = useRef<AnnotationCanvasRef>(null);
 
   const currentBlock = blocks[currentIndex];
@@ -528,6 +529,7 @@ export const PresentationMode = ({
     >
       {/* Main Content Area */}
       <div 
+        ref={contentContainerRef}
         className={cn(
           "absolute inset-0 bottom-20 transition-opacity duration-200",
           isTransitioning ? "opacity-0" : "opacity-100"
@@ -542,6 +544,7 @@ export const PresentationMode = ({
         isActive={showAnnotation} 
         onClose={() => setShowAnnotation(false)}
         blockTitle={currentBlock.title}
+        presentationContainerRef={contentContainerRef}
       />
 
       {/* Timeline Sidebar */}
