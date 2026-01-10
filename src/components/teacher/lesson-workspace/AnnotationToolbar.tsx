@@ -1,6 +1,6 @@
 import { 
   Pencil, Highlighter, Circle, Square, ArrowRight, Type, 
-  Eraser, Trash2, Undo, Redo, X, Palette
+  Eraser, Trash2, Undo, Redo, X, Camera, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -20,8 +20,10 @@ interface AnnotationToolbarProps {
   onRedo: () => void;
   onClear: () => void;
   onClose: () => void;
+  onSaveScreenshot: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  isSaving: boolean;
 }
 
 const tools: { id: AnnotationTool; icon: typeof Pencil; label: string }[] = [
@@ -57,8 +59,10 @@ export const AnnotationToolbar = ({
   onRedo,
   onClear,
   onClose,
+  onSaveScreenshot,
   canUndo,
   canRedo,
+  isSaving,
 }: AnnotationToolbarProps) => {
   return (
     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-1 bg-black/80 backdrop-blur-xl rounded-2xl p-2 shadow-2xl border border-white/10">
@@ -163,6 +167,22 @@ export const AnnotationToolbar = ({
         title="Clear All"
       >
         <Trash2 className="w-5 h-5" />
+      </Button>
+
+      {/* Save Screenshot */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onSaveScreenshot}
+        disabled={isSaving}
+        className="h-10 w-10 rounded-xl text-white/60 hover:bg-green-500/20 hover:text-green-400 disabled:opacity-50"
+        title="Save Screenshot"
+      >
+        {isSaving ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <Camera className="w-5 h-5" />
+        )}
       </Button>
 
       {/* Divider */}

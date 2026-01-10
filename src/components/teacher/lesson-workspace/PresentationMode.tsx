@@ -540,7 +540,8 @@ export const PresentationMode = ({
       <AnnotationCanvas 
         ref={annotationRef}
         isActive={showAnnotation} 
-        onClose={() => setShowAnnotation(false)} 
+        onClose={() => setShowAnnotation(false)}
+        blockTitle={currentBlock.title}
       />
 
       {/* Timeline Sidebar */}

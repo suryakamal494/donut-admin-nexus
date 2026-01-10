@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Line, IText, FabricObject } from "fabric";
 import { AnnotationToolbar, AnnotationTool } from "./AnnotationToolbar";
+import { toast } from "sonner";
 
 interface AnnotationCanvasProps {
   isActive: boolean;
   onClose: () => void;
+  blockTitle?: string;
 }
 
 export interface AnnotationCanvasRef {
@@ -12,7 +14,7 @@ export interface AnnotationCanvasRef {
 }
 
 export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvasProps>(
-  ({ isActive, onClose }, ref) => {
+  ({ isActive, onClose, blockTitle }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<FabricCanvas | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +24,7 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
     const [brushSize, setBrushSize] = useState(4);
     const [canUndo, setCanUndo] = useState(false);
     const [canRedo, setCanRedo] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     
     const historyRef = useRef<string[]>([]);
     const historyIndexRef = useRef(-1);
@@ -269,6 +272,78 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
       saveState();
     }, [saveState]);
 
+    // Save screenshot with background
+    const handleSaveScreenshot = useCallback(async () => {
+      setIsSaving(true);
+      
+      try {
+        // Create a temporary canvas to composite the screenshot
+        const tempCanvas = document.createElement('canvas');
+        const ctx = tempCanvas.getContext('2d');
+        
+        if (!ctx) {
+          throw new Error('Could not create canvas context');
+        }
+
+        // Set dimensions
+        tempCanvas.width = window.innerWidth;
+        tempCanvas.height = window.innerHeight;
+
+        // First, capture the background (the presentation content)
+        // We'll use html2canvas-like approach with the existing content
+        // For now, we'll capture just the annotations with a dark background
+        
+        // Fill with dark background (simulating the presentation background)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Get the annotation canvas content
+        const fabricCanvas = fabricCanvasRef.current;
+        if (fabricCanvas) {
+          const annotationDataUrl = fabricCanvas.toDataURL({
+            format: 'png',
+            quality: 1,
+            multiplier: 1,
+          });
+
+          // Draw annotations on top
+          const annotationImg = new Image();
+          annotationImg.onload = () => {
+            ctx.drawImage(annotationImg, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const filename = blockTitle 
+              ? `annotation-${blockTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`
+              : `annotation-${timestamp}.png`;
+            
+            link.download = filename;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+            
+            toast.success('Screenshot saved!', {
+              description: `Saved as ${filename}`,
+            });
+            
+            setIsSaving(false);
+          };
+          
+          annotationImg.onerror = () => {
+            throw new Error('Failed to load annotation image');
+          };
+          
+          annotationImg.src = annotationDataUrl;
+        }
+      } catch (error) {
+        console.error('Failed to save screenshot:', error);
+        toast.error('Failed to save screenshot', {
+          description: 'Please try again',
+        });
+        setIsSaving(false);
+      }
+    }, [blockTitle]);
+
     // Expose clear method
     useImperativeHandle(ref, () => ({
       clear: handleClear,
@@ -298,8 +373,10 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
           onRedo={handleRedo}
           onClear={handleClear}
           onClose={onClose}
+          onSaveScreenshot={handleSaveScreenshot}
           canUndo={canUndo}
           canRedo={canRedo}
+          isSaving={isSaving}
         />
       </div>
     );
