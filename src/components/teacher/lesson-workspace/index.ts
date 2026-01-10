@@ -11,7 +11,7 @@ export { AIAssistDialog } from "./AIAssistDialog";
 export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export { QuestionBankSheet } from "./QuestionBankSheet";
 export { ContentLibrarySheet } from "./ContentLibrarySheet";
-export { PresentationMode } from "./PresentationMode";
+export { PresentationMode } from "./presentation";
 
 // Types
 export type { LessonPlanBlock, LessonPlan, WorkspaceContext, BlockType, BlockSource, LinkType, AnnotationTool } from "./types";
