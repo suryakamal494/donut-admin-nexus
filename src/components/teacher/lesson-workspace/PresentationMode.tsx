@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { 
   X, ChevronLeft, ChevronRight, BookOpen, Play, HelpCircle, 
   ClipboardList, Maximize2, Minimize2, Clock, FileText, Video,
-  CheckCircle2, Circle
+  CheckCircle2, Circle, Maximize, Shrink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -337,6 +337,7 @@ export const PresentationMode = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // Touch swipe state
   const touchStartX = useRef<number | null>(null);
@@ -365,11 +366,19 @@ export const PresentationMode = ({
           break;
         case 'Escape':
           e.preventDefault();
-          onClose();
+          if (isFullscreen) {
+            exitFullscreen();
+          } else {
+            onClose();
+          }
           break;
         case 't':
         case 'T':
           setShowTimeline(prev => !prev);
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
           break;
       }
     };
@@ -385,6 +394,62 @@ export const PresentationMode = ({
       setShowTimeline(false);
     }
   }, [open]);
+
+  // Fullscreen change listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Exit fullscreen when closing presentation
+  useEffect(() => {
+    if (!open && isFullscreen) {
+      exitFullscreen();
+    }
+  }, [open, isFullscreen]);
+
+  const enterFullscreen = useCallback(async () => {
+    try {
+      if (containerRef.current) {
+        if (containerRef.current.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+        } else if ((containerRef.current as any).webkitRequestFullscreen) {
+          await (containerRef.current as any).webkitRequestFullscreen();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to enter fullscreen:', error);
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if ((document as any).webkitFullscreenElement) {
+        await (document as any).webkitExitFullscreen();
+      }
+    } catch (error) {
+      console.error('Failed to exit fullscreen:', error);
+    }
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (isFullscreen) {
+      exitFullscreen();
+    } else {
+      enterFullscreen();
+    }
+  }, [isFullscreen, enterFullscreen, exitFullscreen]);
 
   const navigateTo = useCallback((index: number) => {
     if (index < 0 || index >= blocks.length || isTransitioning) return;
@@ -562,6 +627,17 @@ export const PresentationMode = ({
               <ChevronRight className="w-5 h-5" />
             </Button>
             
+            {/* Fullscreen Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleFullscreen}
+              className="h-10 w-10 text-white/70 hover:bg-white/10 hover:text-white"
+              title={isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
+            >
+              {isFullscreen ? <Shrink className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+            </Button>
+            
             {/* Timeline Toggle */}
             <Button
               variant="ghost"
@@ -590,6 +666,7 @@ export const PresentationMode = ({
       {/* Keyboard Hints (hidden on mobile) */}
       <div className="absolute top-4 right-4 hidden lg:flex items-center gap-3 text-white/40 text-xs">
         <span>← → Navigate</span>
+        <span>F Fullscreen</span>
         <span>T Timeline</span>
         <span>Esc Exit</span>
       </div>
