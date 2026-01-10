@@ -2,30 +2,30 @@
 
 // Exam Configuration Limits
 export const EXAM_CONFIG = {
-  QUESTION_MIN: 5,
-  QUESTION_MAX: 50,
-  QUESTION_DEFAULT: 20,
-  QUESTION_STEP: 5,
+  QUESTION_MIN: 5 as number,
+  QUESTION_MAX: 50 as number,
+  QUESTION_DEFAULT: 20 as number,
+  QUESTION_STEP: 5 as number,
   
-  DURATION_MIN: 10,
-  DURATION_MAX: 180,
-  DURATION_DEFAULT: 30,
-  DURATION_STEP: 5,
+  DURATION_MIN: 10 as number,
+  DURATION_MAX: 180 as number,
+  DURATION_DEFAULT: 30 as number,
+  DURATION_STEP: 5 as number,
   
-  MARKS_OPTIONS: [1, 2, 4, 5] as const,
-  MARKS_DEFAULT: 4,
+  MARKS_OPTIONS: [1, 2, 4, 5] as number[],
+  MARKS_DEFAULT: 4 as number,
   
-  NEGATIVE_MARKS_MIN: 0.25,
-  NEGATIVE_MARKS_DEFAULT: 1,
-  NEGATIVE_MARKS_STEP: 0.25,
-} as const;
+  NEGATIVE_MARKS_MIN: 0.25 as number,
+  NEGATIVE_MARKS_DEFAULT: 1 as number,
+  NEGATIVE_MARKS_STEP: 0.25 as number,
+};
 
 // Difficulty Distribution Defaults
 export const DIFFICULTY_DEFAULTS = {
-  EASY: 33,
-  MEDIUM: 34,
-  HARD: 33,
-} as const;
+  EASY: 33 as number,
+  MEDIUM: 34 as number,
+  HARD: 33 as number,
+};
 
 // Question Bank Settings
 export const QUESTION_BANK_CONFIG = {
@@ -33,14 +33,14 @@ export const QUESTION_BANK_CONFIG = {
   ESTIMATED_ITEM_HEIGHT: 120, // Estimated height of each question card in pixels
   OVERSCAN: 5, // Number of items to render outside visible area
   SEARCH_DEBOUNCE_MS: 300,
-} as const;
+};
 
 // UI Touch Targets (minimum sizes for accessibility)
 export const TOUCH_TARGETS = {
   MIN_HEIGHT: 44, // Minimum touch target height in pixels
   BUTTON_HEIGHT: 48,
   FAB_SIZE: 56,
-} as const;
+};
 
 // Status Colors (for reference - actual styling in components)
 export const EXAM_STATUS = {

@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { currentTeacher } from "@/data/teacher/profile";
 import { examPatternConfig } from "@/data/examsData";
+import { EXAM_CONFIG, DIFFICULTY_DEFAULTS } from "@/components/teacher/exams/constants";
 
 export type PatternType = "custom" | "jee_main" | "jee_advanced" | "neet";
 export type UIType = "platform" | "real_exam";
@@ -78,19 +79,19 @@ export const useTeacherExamCreation = () => {
   const [pattern, setPattern] = useState<PatternType>("custom");
   const [uiType, setUIType] = useState<UIType>("platform");
   
-  // Step 3: Custom Config
-  const [totalQuestions, setTotalQuestions] = useState(20);
-  const [duration, setDuration] = useState(30);
-  const [marksPerQuestion, setMarksPerQuestion] = useState(4);
+  // Step 3: Custom Config - use constants
+  const [totalQuestions, setTotalQuestions] = useState(EXAM_CONFIG.QUESTION_DEFAULT);
+  const [duration, setDuration] = useState(EXAM_CONFIG.DURATION_DEFAULT);
+  const [marksPerQuestion, setMarksPerQuestion] = useState(EXAM_CONFIG.MARKS_DEFAULT);
   const [negativeMarking, setNegativeMarking] = useState(false);
-  const [negativeMarks, setNegativeMarks] = useState(1);
+  const [negativeMarks, setNegativeMarks] = useState(EXAM_CONFIG.NEGATIVE_MARKS_DEFAULT);
   
   // Step 4: Creation Method
   const [creationMethod, setCreationMethod] = useState<CreationMethod>("ai");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [easyPercent, setEasyPercent] = useState(33);
-  const [mediumPercent, setMediumPercent] = useState(34);
-  const [hardPercent, setHardPercent] = useState(33);
+  const [easyPercent, setEasyPercent] = useState(DIFFICULTY_DEFAULTS.EASY);
+  const [mediumPercent, setMediumPercent] = useState(DIFFICULTY_DEFAULTS.MEDIUM);
+  const [hardPercent, setHardPercent] = useState(DIFFICULTY_DEFAULTS.HARD);
   const [selectedCognitiveTypes, setSelectedCognitiveTypes] = useState<string[]>(["conceptual", "application"]);
   
   // Step 5: Batch & Schedule
@@ -241,16 +242,16 @@ export const useTeacherExamCreation = () => {
     setSelectedSubjects([]);
     setPattern("custom");
     setUIType("platform");
-    setTotalQuestions(20);
-    setDuration(30);
-    setMarksPerQuestion(4);
+    setTotalQuestions(EXAM_CONFIG.QUESTION_DEFAULT);
+    setDuration(EXAM_CONFIG.DURATION_DEFAULT);
+    setMarksPerQuestion(EXAM_CONFIG.MARKS_DEFAULT);
     setNegativeMarking(false);
-    setNegativeMarks(1);
+    setNegativeMarks(EXAM_CONFIG.NEGATIVE_MARKS_DEFAULT);
     setCreationMethod("ai");
     setUploadedFile(null);
-    setEasyPercent(33);
-    setMediumPercent(34);
-    setHardPercent(33);
+    setEasyPercent(DIFFICULTY_DEFAULTS.EASY);
+    setMediumPercent(DIFFICULTY_DEFAULTS.MEDIUM);
+    setHardPercent(DIFFICULTY_DEFAULTS.HARD);
     setSelectedCognitiveTypes(["conceptual", "application"]);
     setSelectedBatches([]);
     setScheduleDate(undefined);
