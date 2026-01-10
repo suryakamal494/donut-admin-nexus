@@ -1,8 +1,10 @@
-import { ArrowRight, X, FlaskConical } from "lucide-react";
+import { useState, useCallback } from "react";
+import { ArrowRight, X, FlaskConical, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { validateExamName, validateSubjects } from "./validation";
 
 interface ExamDetailsStepProps {
   examName: string;
@@ -25,27 +27,66 @@ export const ExamDetailsStep = ({
   onNext,
   onCancel,
 }: ExamDetailsStepProps) => {
+  const [touched, setTouched] = useState({ name: false, subjects: false });
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+
+  // Validation
+  const nameValidation = validateExamName(examName);
+  const subjectsValidation = validateSubjects(selectedSubjects);
+
+  const showNameError = (touched.name || attemptedSubmit) && !nameValidation.isValid;
+  const showSubjectsError = (touched.subjects || attemptedSubmit) && !subjectsValidation.isValid;
+
+  const handleNext = useCallback(() => {
+    setAttemptedSubmit(true);
+    if (canProceed && nameValidation.isValid && subjectsValidation.isValid) {
+      onNext();
+    }
+  }, [canProceed, nameValidation.isValid, subjectsValidation.isValid, onNext]);
+
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setExamName(e.target.value);
+    if (!touched.name) setTouched(prev => ({ ...prev, name: true }));
+  }, [setExamName, touched.name]);
+
+  const handleSubjectToggle = useCallback((subject: string) => {
+    toggleSubject(subject);
+    if (!touched.subjects) setTouched(prev => ({ ...prev, subjects: true }));
+  }, [toggleSubject, touched.subjects]);
+
   return (
     <div className="space-y-6">
       {/* Exam Name */}
       <div className="space-y-2">
         <Label htmlFor="exam-name" className="text-sm font-medium">
-          Exam Name *
+          Exam Name <span className="text-destructive">*</span>
         </Label>
         <Input
           id="exam-name"
           value={examName}
-          onChange={(e) => setExamName(e.target.value)}
+          onChange={handleNameChange}
+          onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
           placeholder="e.g., Unit Test - Laws of Motion"
-          className="h-12 text-base"
+          className={cn(
+            "h-12 text-base",
+            showNameError && "border-destructive focus-visible:ring-destructive"
+          )}
+          aria-invalid={showNameError}
+          aria-describedby={showNameError ? "name-error" : undefined}
           autoFocus
         />
+        {showNameError && (
+          <p id="name-error" className="text-sm text-destructive flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5" />
+            {nameValidation.error}
+          </p>
+        )}
       </div>
 
       {/* Subject Selection */}
       <div className="space-y-3">
         <Label className="text-sm font-medium">
-          Select Subject{teacherSubjects.length > 1 ? "s" : ""} *
+          Select Subject{teacherSubjects.length > 1 ? "s" : ""} <span className="text-destructive">*</span>
         </Label>
         <div className="grid grid-cols-2 gap-3">
           {teacherSubjects.map((subject) => {
@@ -54,13 +95,14 @@ export const ExamDetailsStep = ({
               <button
                 key={subject}
                 type="button"
-                onClick={() => toggleSubject(subject)}
+                onClick={() => handleSubjectToggle(subject)}
                 className={cn(
                   "relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 min-h-[64px]",
                   "active:scale-[0.98]",
                   isSelected
                     ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-border hover:border-primary/50 bg-card"
+                    : "border-border hover:border-primary/50 bg-card",
+                  showSubjectsError && !isSelected && "border-destructive/50"
                 )}
               >
                 <div className={cn(
@@ -92,11 +134,16 @@ export const ExamDetailsStep = ({
           })}
         </div>
         
-        {teacherSubjects.length === 1 && selectedSubjects.length === 0 && (
+        {showSubjectsError ? (
+          <p className="text-sm text-destructive flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5" />
+            {subjectsValidation.error}
+          </p>
+        ) : teacherSubjects.length === 1 && selectedSubjects.length === 0 ? (
           <p className="text-xs text-muted-foreground">
             Tap to select your subject
           </p>
-        )}
+        ) : null}
       </div>
 
       {/* Actions - Sticky on mobile */}
@@ -110,7 +157,7 @@ export const ExamDetailsStep = ({
           Cancel
         </Button>
         <Button
-          onClick={onNext}
+          onClick={handleNext}
           disabled={!canProceed}
           className="flex-1 h-12 gradient-button"
         >
