@@ -16,6 +16,7 @@ export { teacherLessonPlans } from './lessonPlans';
 export { teacherAssessments } from './assessments';
 export { teacherHomework } from './homework';
 export { teacherExams } from './exams';
+export * from './examResults';
 
 
 // Stats & Actions

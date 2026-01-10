@@ -72,8 +72,8 @@ const Exams = () => {
   }, []);
 
   const handleViewResults = useCallback((examId: string) => {
-    toast.info("Results view coming soon");
-  }, []);
+    navigate(`/teacher/exams/${examId}/results`);
+  }, [navigate]);
 
   const filteredExams = useMemo(() => exams.filter((e) => {
     const matchesSearch = e.name.toLowerCase().includes(debouncedSearch.toLowerCase());
