@@ -1,1 +1,10 @@
 project_id = "jmzuxhkceuuulegbcvsi"
+
+[functions.lesson-plan-ai]
+verify_jwt = false
+
+[functions.assessment-ai]
+verify_jwt = false
+
+[functions.presentation-ai-assist]
+verify_jwt = false
