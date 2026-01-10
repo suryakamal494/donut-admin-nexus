@@ -132,7 +132,7 @@ export const useTeacherExamCreation = () => {
   
   // Validation
   const canProceedStep1 = examName.trim().length > 0 && selectedSubjects.length > 0;
-  const canProceedStep2 = pattern && uiType;
+  const canProceedStep2 = !!pattern && !!uiType;
   const canProceedStep3Custom = totalQuestions > 0 && duration > 0;
   const canProceedCreation = creationMethod === "ai" 
     ? selectedCognitiveTypes.length > 0 

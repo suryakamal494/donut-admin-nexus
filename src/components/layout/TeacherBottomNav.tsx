@@ -18,7 +18,7 @@ const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Home", path: "/teacher/dashboard" },
   { icon: Calendar, label: "Schedule", path: "/teacher/schedule" },
   { icon: BookOpen, label: "Plans", path: "/teacher/lesson-plans" },
-  { icon: ClipboardCheck, label: "Assess", path: "/teacher/assessments" },
+  { icon: ClipboardCheck, label: "Exams", path: "/teacher/exams" },
   { icon: User, label: "Profile", path: "/teacher/profile" },
 ];
 
