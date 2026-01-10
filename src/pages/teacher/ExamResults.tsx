@@ -4,22 +4,15 @@ import {
   ArrowLeft,
   Users,
   Trophy,
-  Clock,
   TrendingUp,
-  TrendingDown,
   BarChart3,
   Target,
   Medal,
-  CheckCircle2,
-  XCircle,
-  MinusCircle,
   Download,
   Share2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -34,23 +27,12 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
-  Legend,
   AreaChart,
   Area
 } from "recharts";
 import { teacherExams } from "@/data/teacher/exams";
-import { getExamAnalytics, generateExamAnalytics, type ExamAnalytics, type QuestionAnalysis } from "@/data/teacher/examResults";
-import { cn } from "@/lib/utils";
-
-const CHART_COLORS = {
-  primary: "hsl(var(--primary))",
-  success: "hsl(142, 76%, 36%)",
-  warning: "hsl(38, 92%, 50%)",
-  danger: "hsl(0, 84%, 60%)",
-  muted: "hsl(var(--muted-foreground))",
-};
+import { getExamAnalytics, generateExamAnalytics, type ExamAnalytics } from "@/data/teacher/examResults";
+import { QuestionAnalysisCard, StudentResultRow, TopPerformerRow } from "@/components/teacher/exams/results";
 
 const PIE_COLORS = ["#22c55e", "#f59e0b", "#ef4444", "#6b7280"];
 
@@ -230,7 +212,7 @@ const ExamResults = () => {
                           borderRadius: '8px',
                           fontSize: '12px'
                         }}
-                        formatter={(value: number, name: string) => [
+                        formatter={(value: number) => [
                           `${value} students (${scoreDistributionData.find(d => d.count === value)?.percentage}%)`,
                           'Count'
                         ]}
@@ -316,30 +298,7 @@ const ExamResults = () => {
             <CardContent>
               <div className="space-y-3">
                 {analytics.topPerformers.slice(0, 5).map((student, idx) => (
-                  <div 
-                    key={student.id} 
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg transition-colors",
-                      idx === 0 ? "bg-amber-50 dark:bg-amber-900/20" : "bg-muted/50"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0",
-                      idx === 0 ? "bg-amber-500 text-white" : 
-                      idx === 1 ? "bg-gray-400 text-white" :
-                      idx === 2 ? "bg-amber-700 text-white" : "bg-muted text-muted-foreground"
-                    )}>
-                      {idx + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{student.studentName}</p>
-                      <p className="text-xs text-muted-foreground">{student.rollNumber}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-semibold">{student.score}/{student.maxScore}</p>
-                      <p className="text-xs text-muted-foreground">{student.percentage}%</p>
-                    </div>
-                  </div>
+                  <TopPerformerRow key={student.id} student={student} index={idx} />
                 ))}
               </div>
             </CardContent>
@@ -411,32 +370,7 @@ const ExamResults = () => {
             <CardContent className="p-0">
               <div className="divide-y">
                 {analytics.topPerformers.map((student) => (
-                  <div key={student.id} className="flex items-center gap-3 p-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0",
-                      student.rank <= 3 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                    )}>
-                      #{student.rank}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{student.studentName}</p>
-                      <p className="text-xs text-muted-foreground">{student.rollNumber}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-semibold">{student.score}/{student.maxScore}</p>
-                      <div className="flex items-center gap-1 justify-end">
-                        <Progress 
-                          value={student.percentage} 
-                          className="w-16 h-1.5" 
-                        />
-                        <span className="text-xs text-muted-foreground w-8">{student.percentage}%</span>
-                      </div>
-                    </div>
-                    <div className="text-right text-xs text-muted-foreground shrink-0 hidden sm:block">
-                      <Clock className="w-3 h-3 inline mr-1" />
-                      {student.timeTaken}m
-                    </div>
-                  </div>
+                  <StudentResultRow key={student.id} student={student} />
                 ))}
               </div>
             </CardContent>
@@ -444,67 +378,6 @@ const ExamResults = () => {
         </TabsContent>
       </Tabs>
     </div>
-  );
-};
-
-// Question Analysis Card Component
-const QuestionAnalysisCard = ({ question }: { question: QuestionAnalysis }) => {
-  const total = question.correctAttempts + question.incorrectAttempts + question.unattempted;
-  
-  return (
-    <Card className="card-premium">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <h4 className="font-semibold">Question {question.questionNumber}</h4>
-            <p className="text-xs text-muted-foreground">{question.topic}</p>
-          </div>
-          <Badge 
-            variant="secondary" 
-            className={cn(
-              "text-xs",
-              question.difficulty === 'easy' ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-              question.difficulty === 'medium' ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
-              "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-            )}
-          >
-            {question.difficulty}
-          </Badge>
-        </div>
-        
-        {/* Success Rate Bar */}
-        <div className="mb-3">
-          <div className="flex justify-between text-xs mb-1">
-            <span className="text-muted-foreground">Success Rate</span>
-            <span className="font-medium">{question.successRate}%</span>
-          </div>
-          <Progress 
-            value={question.successRate} 
-            className="h-2"
-          />
-        </div>
-
-        {/* Attempt Breakdown */}
-        <div className="flex gap-3 text-xs">
-          <div className="flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-            <span>{question.correctAttempts}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <XCircle className="w-3.5 h-3.5 text-red-500" />
-            <span>{question.incorrectAttempts}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <MinusCircle className="w-3.5 h-3.5 text-gray-400" />
-            <span>{question.unattempted}</span>
-          </div>
-          <div className="flex items-center gap-1 ml-auto text-muted-foreground">
-            <Clock className="w-3.5 h-3.5" />
-            <span>{question.averageTime}s avg</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 };
 

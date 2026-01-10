@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
   { icon: ClipboardCheck, label: "Exams", path: "/teacher/exams" },
   { icon: FileText, label: "Homework", path: "/teacher/homework" },
   { icon: Library, label: "Content Library", path: "/teacher/content" },
-  { icon: Database, label: "Reference Data", path: "/teacher/reference" },
+  { icon: Database, label: "Chapter Details", path: "/teacher/reference" },
 ];
 
 const TeacherSidebar = ({ collapsed, onToggle, isMobile, onMobileClose }: TeacherSidebarProps) => {
