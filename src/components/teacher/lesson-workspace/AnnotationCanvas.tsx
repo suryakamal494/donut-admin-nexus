@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Line, IText, FabricObject } from "fabric";
+import html2canvas from "html2canvas";
 import { AnnotationToolbar, AnnotationTool } from "./AnnotationToolbar";
 import { toast } from "sonner";
 
 interface AnnotationCanvasProps {
   isActive: boolean;
   onClose: () => void;
+  presentationContainerRef?: React.RefObject<HTMLDivElement | null>;
   blockTitle?: string;
 }
 
@@ -14,7 +16,7 @@ export interface AnnotationCanvasRef {
 }
 
 export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvasProps>(
-  ({ isActive, onClose, blockTitle }, ref) => {
+  ({ isActive, onClose, blockTitle, presentationContainerRef }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<FabricCanvas | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -272,12 +274,91 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
       saveState();
     }, [saveState]);
 
-    // Save screenshot with background
-    const handleSaveScreenshot = useCallback(async () => {
-      setIsSaving(true);
+  // Save screenshot with full content using html2canvas
+  const handleSaveScreenshot = useCallback(async () => {
+    setIsSaving(true);
+    
+    try {
+      const fabricCanvas = fabricCanvasRef.current;
+      if (!fabricCanvas) {
+        throw new Error('Annotation canvas not available');
+      }
+
+      // Get the presentation container element
+      const presentationContainer = presentationContainerRef?.current;
       
-      try {
-        // Create a temporary canvas to composite the screenshot
+      if (presentationContainer) {
+        // Temporarily hide the annotation canvas for html2canvas
+        const annotationLayer = containerRef.current;
+        if (annotationLayer) {
+          annotationLayer.style.visibility = 'hidden';
+        }
+
+        // Capture the full presentation content using html2canvas
+        const backgroundCanvas = await html2canvas(presentationContainer, {
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#1e293b',
+          scale: 1,
+          logging: false,
+          ignoreElements: (element) => {
+            // Ignore the annotation canvas itself
+            return element === annotationLayer || element.contains(annotationLayer as Node);
+          }
+        });
+
+        // Restore annotation layer visibility
+        if (annotationLayer) {
+          annotationLayer.style.visibility = 'visible';
+        }
+
+        // Create final composite canvas
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = backgroundCanvas.width;
+        finalCanvas.height = backgroundCanvas.height;
+        const ctx = finalCanvas.getContext('2d');
+
+        if (!ctx) {
+          throw new Error('Could not create canvas context');
+        }
+
+        // Draw the captured background
+        ctx.drawImage(backgroundCanvas, 0, 0);
+
+        // Get annotation canvas data and overlay it
+        const annotationDataUrl = fabricCanvas.toDataURL({
+          format: 'png',
+          quality: 1,
+          multiplier: 1,
+        });
+
+        await new Promise<void>((resolve, reject) => {
+          const annotationImg = new Image();
+          annotationImg.onload = () => {
+            // Scale annotations to match the background canvas size
+            ctx.drawImage(annotationImg, 0, 0, finalCanvas.width, finalCanvas.height);
+            resolve();
+          };
+          annotationImg.onerror = () => reject(new Error('Failed to load annotation image'));
+          annotationImg.src = annotationDataUrl;
+        });
+
+        // Create download link
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const filename = blockTitle 
+          ? `screenshot-${blockTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`
+          : `screenshot-${timestamp}.png`;
+        
+        link.download = filename;
+        link.href = finalCanvas.toDataURL('image/png');
+        link.click();
+        
+        toast.success('Full screenshot saved!', {
+          description: `Saved as ${filename}`,
+        });
+      } else {
+        // Fallback: just save annotations with dark background
         const tempCanvas = document.createElement('canvas');
         const ctx = tempCanvas.getContext('2d');
         
@@ -285,64 +366,52 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
           throw new Error('Could not create canvas context');
         }
 
-        // Set dimensions
         tempCanvas.width = window.innerWidth;
         tempCanvas.height = window.innerHeight;
 
-        // First, capture the background (the presentation content)
-        // We'll use html2canvas-like approach with the existing content
-        // For now, we'll capture just the annotations with a dark background
-        
-        // Fill with dark background (simulating the presentation background)
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-        // Get the annotation canvas content
-        const fabricCanvas = fabricCanvasRef.current;
-        if (fabricCanvas) {
-          const annotationDataUrl = fabricCanvas.toDataURL({
-            format: 'png',
-            quality: 1,
-            multiplier: 1,
-          });
+        const annotationDataUrl = fabricCanvas.toDataURL({
+          format: 'png',
+          quality: 1,
+          multiplier: 1,
+        });
 
-          // Draw annotations on top
+        await new Promise<void>((resolve, reject) => {
           const annotationImg = new Image();
           annotationImg.onload = () => {
             ctx.drawImage(annotationImg, 0, 0);
-            
-            // Create download link
-            const link = document.createElement('a');
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-            const filename = blockTitle 
-              ? `annotation-${blockTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`
-              : `annotation-${timestamp}.png`;
-            
-            link.download = filename;
-            link.href = tempCanvas.toDataURL('image/png');
-            link.click();
-            
-            toast.success('Screenshot saved!', {
-              description: `Saved as ${filename}`,
-            });
-            
-            setIsSaving(false);
+            resolve();
           };
-          
-          annotationImg.onerror = () => {
-            throw new Error('Failed to load annotation image');
-          };
-          
+          annotationImg.onerror = () => reject(new Error('Failed to load annotation image'));
           annotationImg.src = annotationDataUrl;
-        }
-      } catch (error) {
-        console.error('Failed to save screenshot:', error);
-        toast.error('Failed to save screenshot', {
-          description: 'Please try again',
         });
-        setIsSaving(false);
+
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const filename = blockTitle 
+          ? `annotation-${blockTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`
+          : `annotation-${timestamp}.png`;
+        
+        link.download = filename;
+        link.href = tempCanvas.toDataURL('image/png');
+        link.click();
+        
+        toast.success('Screenshot saved!', {
+          description: `Saved as ${filename}`,
+        });
       }
-    }, [blockTitle]);
+      
+      setIsSaving(false);
+    } catch (error) {
+      console.error('Failed to save screenshot:', error);
+      toast.error('Failed to save screenshot', {
+        description: 'Please try again',
+      });
+      setIsSaving(false);
+    }
+  }, [blockTitle, presentationContainerRef]);
 
     // Expose clear method
     useImperativeHandle(ref, () => ({
