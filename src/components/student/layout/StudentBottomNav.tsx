@@ -40,7 +40,7 @@ const StudentBottomNav = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pointer-events-none">
+    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pointer-events-none lg:hidden">
       {/* Floating Navigation Container */}
       <nav className="pointer-events-auto max-w-md mx-auto">
         {/* Shadow layer for 3D depth effect */}
