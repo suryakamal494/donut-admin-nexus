@@ -13,6 +13,7 @@ import LazyErrorBoundary from "@/components/ui/lazy-error-boundary";
 import AdminLayout from "./components/layout/AdminLayout";
 import InstituteLayout from "./components/layout/InstituteLayout";
 import TeacherLayout from "./components/layout/TeacherLayout";
+import { StudentLayout } from "./components/student/layout";
 
 // ============================================
 // LANDING & ERROR - Regular imports (entry points)
@@ -250,13 +251,17 @@ const App = () => (
             <Route path="profile" element={<TeacherProfile />} />
           </Route>
 
-          {/* Student Panel Routes - Completely separate module */}
+          {/* Student Panel Routes - Layout-based routing */}
           <Route path="/student/login" element={<StudentLogin />} />
-          <Route path="/student/dashboard" element={<StudentDashboard />} />
-          <Route path="/student/subjects" element={<StudentSubjects />} />
-          <Route path="/student/tests" element={<StudentTests />} />
-          <Route path="/student/progress" element={<StudentProgress />} />
-          <Route path="/student/notifications" element={<StudentNotifications />} />
+          <Route path="/student" element={<StudentLayout />}>
+            <Route index element={<Navigate to="/student/dashboard" replace />} />
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="subjects" element={<StudentSubjects />} />
+            <Route path="subjects/:subjectId" element={<StudentSubjects />} />
+            <Route path="tests" element={<StudentTests />} />
+            <Route path="progress" element={<StudentProgress />} />
+            <Route path="notifications" element={<StudentNotifications />} />
+          </Route>
           
           <Route path="*" element={<NotFound />} />
         </Routes>
