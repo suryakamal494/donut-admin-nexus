@@ -77,7 +77,7 @@ const StudentSidebar = ({ collapsed, onToggle }: StudentSidebarProps) => {
         "flex items-center gap-3 px-4 h-16 border-b border-orange-100/50",
         collapsed && "justify-center"
       )}>
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-donut-coral to-donut-pink shadow-lg shadow-donut-coral/25">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-donut-coral to-donut-orange shadow-lg shadow-donut-coral/25">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
@@ -95,7 +95,7 @@ const StudentSidebar = ({ collapsed, onToggle }: StudentSidebarProps) => {
       )}>
         <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
           <Avatar className="h-10 w-10 border-2 border-donut-coral/30 shadow-md">
-            <AvatarFallback className="bg-gradient-to-br from-donut-coral to-donut-pink text-white font-bold text-sm">
+            <AvatarFallback className="bg-gradient-to-br from-donut-coral to-donut-orange text-white font-bold text-sm">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -135,7 +135,7 @@ const StudentSidebar = ({ collapsed, onToggle }: StudentSidebarProps) => {
                   "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
                   collapsed && "justify-center px-0",
                   active
-                    ? "bg-gradient-to-r from-donut-coral to-donut-pink text-white shadow-md shadow-donut-coral/30"
+                    ? "bg-gradient-to-r from-donut-coral to-donut-orange text-white shadow-md shadow-donut-coral/30"
                     : "text-muted-foreground hover:bg-white/80 hover:text-foreground"
                 )}
               >
