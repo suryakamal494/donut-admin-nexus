@@ -79,7 +79,7 @@ const LessonPlans = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto pb-20 md:pb-6">
       {/* Header with Stats */}
       <div className="space-y-3">
         <PageHeader

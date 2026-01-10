@@ -130,7 +130,7 @@ const Content = () => {
   const activeFilterCount = [selectedClass !== "all", selectedChapter !== "all", selectedType !== "all", selectedSource !== "all"].filter(Boolean).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div>
