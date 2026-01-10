@@ -1,10 +1,16 @@
-// Lesson Plan Workspace Types
+/**
+ * Lesson Plan Workspace Types
+ * Types and utilities for the lesson workspace feature
+ */
 
 export type BlockType = 'explain' | 'demonstrate' | 'quiz' | 'homework';
 export type BlockSource = 'library' | 'ai' | 'custom';
 
 // Link types for embedded content
 export type LinkType = 'youtube' | 'vimeo' | 'google-drive' | 'google-docs' | 'iframe' | 'unknown';
+
+// Annotation tool types
+export type AnnotationTool = 'pen' | 'highlighter' | 'arrow' | 'circle' | 'rectangle' | 'text' | 'eraser';
 
 export interface LessonPlanBlock {
   id: string;

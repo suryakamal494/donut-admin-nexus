@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-
-export type AnnotationTool = 'pen' | 'highlighter' | 'arrow' | 'circle' | 'rectangle' | 'text' | 'eraser';
+import type { AnnotationTool } from "./types";
 
 interface AnnotationToolbarProps {
   activeTool: AnnotationTool;

@@ -12,6 +12,7 @@ export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export { QuestionBankSheet } from "./QuestionBankSheet";
 export { ContentLibrarySheet } from "./ContentLibrarySheet";
 export { PresentationMode } from "./PresentationMode";
-export { AnnotationCanvas } from "./AnnotationCanvas";
-export { AnnotationToolbar } from "./AnnotationToolbar";
-export * from "./types";
+
+// Types
+export type { LessonPlanBlock, LessonPlan, WorkspaceContext, BlockType, BlockSource, LinkType, AnnotationTool } from "./types";
+export { blockTypeConfig, detectLinkType, getYouTubeEmbedUrl, getVimeoEmbedUrl } from "./types";
