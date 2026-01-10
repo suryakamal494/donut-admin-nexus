@@ -64,7 +64,8 @@ export const WorkspaceBlock = ({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
+    opacity: isDragging ? 0.4 : 1,
   };
 
   const getSourceLabel = () => {
@@ -79,9 +80,11 @@ export const WorkspaceBlock = ({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group transition-all duration-200 overflow-hidden",
+        "group overflow-hidden",
         "bg-white border-l-4",
-        isDragging && "opacity-60 shadow-xl scale-[1.02] z-50",
+        "transition-[transform,box-shadow,border-color] duration-200 ease-out",
+        isDragging && "shadow-2xl ring-2 ring-primary/20 scale-[1.02] z-50",
+        !isDragging && "hover:shadow-md",
         block.type === 'explain' && "border-l-[hsl(var(--donut-coral))]",
         block.type === 'demonstrate' && "border-l-[hsl(var(--donut-orange))]",
         block.type === 'quiz' && "border-l-[hsl(var(--donut-pink))]",

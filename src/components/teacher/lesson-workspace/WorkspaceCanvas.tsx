@@ -7,6 +7,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -14,6 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { restrictToVerticalAxis, restrictToParentElement } from "@dnd-kit/modifiers";
 import { Plus, BookOpen, Play, HelpCircle, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkspaceBlock } from "./WorkspaceBlock";
@@ -37,6 +40,8 @@ export const WorkspaceCanvas = ({
   onAddBetween,
 }: WorkspaceCanvasProps) => {
   const [previewBlock, setPreviewBlock] = useState<LessonPlanBlock | null>(null);
+  const [activeBlock, setActiveBlock] = useState<LessonPlanBlock | null>(null);
+  
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -48,8 +53,14 @@ export const WorkspaceCanvas = ({
     })
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const block = blocks.find((b) => b.id === event.active.id);
+    setActiveBlock(block || null);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveBlock(null);
 
     if (over && active.id !== over.id) {
       const oldIndex = blocks.findIndex((block) => block.id === active.id);
@@ -116,6 +127,8 @@ export const WorkspaceCanvas = ({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <SortableContext 
@@ -162,6 +175,24 @@ export const WorkspaceCanvas = ({
           block={previewBlock}
         />
       </SortableContext>
+
+      {/* Drag Overlay - shows a floating preview of the dragged block */}
+      <DragOverlay dropAnimation={{
+        duration: 200,
+        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+      }}>
+        {activeBlock ? (
+          <div className="opacity-95 shadow-2xl rounded-lg ring-2 ring-primary/30 rotate-[1deg]">
+            <WorkspaceBlock
+              block={activeBlock}
+              index={blocks.findIndex(b => b.id === activeBlock.id)}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onPreview={() => {}}
+            />
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };
