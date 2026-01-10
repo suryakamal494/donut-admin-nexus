@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { 
   X, ChevronLeft, ChevronRight, BookOpen, Play, HelpCircle, 
   ClipboardList, Maximize2, Minimize2, Clock, FileText, Video,
-  CheckCircle2, Circle, Maximize, Shrink
+  CheckCircle2, Circle, Maximize, Shrink, Pencil
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { LessonPlanBlock, blockTypeConfig } from "./types";
 import { mockQuestions, Question } from "@/data/questionsData";
+import { AnnotationCanvas, AnnotationCanvasRef } from "./AnnotationCanvas";
 
 interface PresentationModeProps {
   open: boolean;
@@ -338,11 +339,13 @@ export const PresentationMode = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showAnnotation, setShowAnnotation] = useState(false);
   
   // Touch swipe state
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const annotationRef = useRef<AnnotationCanvasRef>(null);
 
   const currentBlock = blocks[currentIndex];
   const progress = blocks.length > 0 ? ((currentIndex + 1) / blocks.length) * 100 : 0;
@@ -374,11 +377,15 @@ export const PresentationMode = ({
           break;
         case 't':
         case 'T':
-          setShowTimeline(prev => !prev);
+          if (!showAnnotation) setShowTimeline(prev => !prev);
           break;
         case 'f':
         case 'F':
           toggleFullscreen();
+          break;
+        case 'a':
+        case 'A':
+          setShowAnnotation(prev => !prev);
           break;
       }
     };
@@ -392,8 +399,16 @@ export const PresentationMode = ({
     if (open) {
       setCurrentIndex(0);
       setShowTimeline(false);
+      setShowAnnotation(false);
     }
   }, [open]);
+
+  // Clear annotations when changing blocks
+  useEffect(() => {
+    if (annotationRef.current) {
+      annotationRef.current.clear();
+    }
+  }, [currentIndex]);
 
   // Fullscreen change listener
   useEffect(() => {
@@ -521,6 +536,13 @@ export const PresentationMode = ({
         <PresentationContentRenderer block={currentBlock} />
       </div>
 
+      {/* Annotation Canvas Overlay */}
+      <AnnotationCanvas 
+        ref={annotationRef}
+        isActive={showAnnotation} 
+        onClose={() => setShowAnnotation(false)} 
+      />
+
       {/* Timeline Sidebar */}
       {showTimeline && (
         <div className="absolute right-0 top-0 bottom-20 w-80 bg-black/50 backdrop-blur-xl border-l border-white/10">
@@ -627,6 +649,22 @@ export const PresentationMode = ({
               <ChevronRight className="w-5 h-5" />
             </Button>
             
+            {/* Annotation Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowAnnotation(!showAnnotation)}
+              className={cn(
+                "h-10 w-10 hover:bg-white/10",
+                showAnnotation 
+                  ? "text-primary bg-white/10" 
+                  : "text-white/70 hover:text-white"
+              )}
+              title="Annotate (A)"
+            >
+              <Pencil className="w-5 h-5" />
+            </Button>
+            
             {/* Fullscreen Toggle */}
             <Button
               variant="ghost"
@@ -663,13 +701,16 @@ export const PresentationMode = ({
         </div>
       </div>
 
-      {/* Keyboard Hints (hidden on mobile) */}
-      <div className="absolute top-4 right-4 hidden lg:flex items-center gap-3 text-white/40 text-xs">
-        <span>← → Navigate</span>
-        <span>F Fullscreen</span>
-        <span>T Timeline</span>
-        <span>Esc Exit</span>
-      </div>
+      {/* Keyboard Hints (hidden on mobile, hidden when annotating) */}
+      {!showAnnotation && (
+        <div className="absolute top-4 right-4 hidden lg:flex items-center gap-3 text-white/40 text-xs">
+          <span>← → Navigate</span>
+          <span>A Annotate</span>
+          <span>F Fullscreen</span>
+          <span>T Timeline</span>
+          <span>Esc Exit</span>
+        </div>
+      )}
     </div>
   );
 };

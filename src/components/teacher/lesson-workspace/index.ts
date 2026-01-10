@@ -12,4 +12,6 @@ export { ContentPreviewDialog } from "./ContentPreviewDialog";
 export { QuestionBankSheet } from "./QuestionBankSheet";
 export { ContentLibrarySheet } from "./ContentLibrarySheet";
 export { PresentationMode } from "./PresentationMode";
+export { AnnotationCanvas } from "./AnnotationCanvas";
+export { AnnotationToolbar } from "./AnnotationToolbar";
 export * from "./types";
