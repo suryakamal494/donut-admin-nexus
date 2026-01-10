@@ -35,52 +35,65 @@ export const BatchScheduleStep = ({
 }: BatchScheduleStepProps) => {
   const hasBatchesSelected = selectedBatches.length > 0;
 
+  const hasBatches = Object.keys(batchesByClass).length > 0;
+  
   return (
-    <div className="space-y-6">
-      {/* Batch Selection */}
-      <div className="space-y-4">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <Users className="w-4 h-4 text-muted-foreground" />
-          Assign to Batches
-        </Label>
-        
-        {Object.entries(batchesByClass).map(([className, batches]) => (
-          <div key={className} className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              {className}
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {batches.map((batch) => {
-                const isSelected = selectedBatches.includes(batch.id);
-                return (
-                  <button
-                    key={batch.id}
-                    type="button"
-                    onClick={() => toggleBatch(batch.id)}
-                    className={cn(
-                      "relative flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
-                      "active:scale-[0.98]",
-                      isSelected
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50 bg-card"
-                    )}
-                  >
-                    <Checkbox checked={isSelected} />
-                    <span className={cn(
-                      "font-medium",
-                      isSelected ? "text-primary" : "text-foreground"
-                    )}>
-                      {batch.name}
-                    </span>
-                  </button>
-                );
-              })}
+    <div className="flex flex-col min-h-[60vh]">
+      <div className="flex-1 space-y-6">
+        {/* Batch Selection */}
+        <div className="space-y-4">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <Users className="w-4 h-4 text-muted-foreground" />
+            Assign to Batches
+          </Label>
+          
+          {hasBatches ? (
+            Object.entries(batchesByClass).map(([className, batches]) => (
+              <div key={className} className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  {className}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {batches.map((batch) => {
+                    const isSelected = selectedBatches.includes(batch.id);
+                    return (
+                      <button
+                        key={batch.id}
+                        type="button"
+                        onClick={() => toggleBatch(batch.id)}
+                        className={cn(
+                          "relative flex items-center gap-3 p-3 rounded-xl border-2 transition-all min-h-[48px]",
+                          "active:scale-[0.98]",
+                          isSelected
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50 bg-card"
+                        )}
+                      >
+                        <Checkbox checked={isSelected} />
+                        <span className={cn(
+                          "font-medium",
+                          isSelected ? "text-primary" : "text-foreground"
+                        )}>
+                          {batch.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 border-2 border-dashed rounded-xl">
+              <Users className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
+              <p className="font-medium text-foreground">No batches assigned</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                You'll be able to assign batches later
+              </p>
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
 
-      {/* Schedule (only show if batches selected) */}
+        {/* Schedule (only show if batches selected) */}
       {hasBatchesSelected && (
         <div className="space-y-4 p-4 bg-muted/50 rounded-xl">
           <Label className="text-sm font-medium flex items-center gap-2">
@@ -132,9 +145,10 @@ export const BatchScheduleStep = ({
           </p>
         </div>
       )}
+      </div>
 
-      {/* Actions */}
-      <div className="flex flex-col gap-3 pt-4 sticky bottom-0 bg-card pb-2">
+      {/* Actions - sticky footer */}
+      <div className="flex flex-col gap-3 pt-4 mt-auto sticky bottom-0 bg-background pb-safe">
         {!hasBatchesSelected && (
           <Button
             variant="outline"
@@ -143,7 +157,7 @@ export const BatchScheduleStep = ({
             className="h-12 gap-2"
           >
             <SkipForward className="w-4 h-4" />
-            Skip & Create as Draft
+            {hasBatches ? "Skip & Create as Draft" : "Create as Draft"}
           </Button>
         )}
         
@@ -157,18 +171,20 @@ export const BatchScheduleStep = ({
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <Button
-            onClick={() => onCreate(false)}
-            disabled={isProcessing || (!hasBatchesSelected)}
-            className="flex-1 h-12 gradient-button"
-          >
-            {isProcessing ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Check className="w-4 h-4 mr-2" />
-            )}
-            Create Exam
-          </Button>
+          {hasBatchesSelected && (
+            <Button
+              onClick={() => onCreate(false)}
+              disabled={isProcessing}
+              className="flex-1 h-12 gradient-button"
+            >
+              {isProcessing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Check className="w-4 h-4 mr-2" />
+              )}
+              Create Exam
+            </Button>
+          )}
         </div>
       </div>
     </div>

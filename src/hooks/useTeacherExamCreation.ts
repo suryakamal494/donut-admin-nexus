@@ -308,6 +308,7 @@ export const useTeacherExamCreation = () => {
     creationMethod,
     setCreationMethod,
     uploadedFile,
+    clearUploadedFile: useCallback(() => setUploadedFile(null), []),
     handleFileChange,
     easyPercent,
     mediumPercent,
