@@ -107,22 +107,83 @@ export const NavigationBar = ({
             )}
           </div>
           
-          {/* Progress Dots */}
+          {/* Progress Dots - Virtualized for large lesson plans */}
           <div className="flex items-center gap-1.5">
-            {blocks.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => onNavigate(idx)}
-                className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  idx === currentIndex 
-                    ? cn("w-6", tc.progressDotActive)
-                    : idx < currentIndex
-                    ? cn("w-1.5", tc.progressDotPast)
-                    : cn("w-1.5 hover:opacity-70", tc.progressDot)
+            {blocks.length <= 20 ? (
+              // Show all dots if 20 or fewer blocks
+              blocks.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => onNavigate(idx)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all",
+                    idx === currentIndex 
+                      ? cn("w-6", tc.progressDotActive)
+                      : idx < currentIndex
+                      ? cn("w-1.5", tc.progressDotPast)
+                      : cn("w-1.5 hover:opacity-70", tc.progressDot)
+                  )}
+                />
+              ))
+            ) : (
+              // For more than 20 blocks, show condensed navigation
+              <>
+                {/* First 3 dots */}
+                {blocks.slice(0, 3).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => onNavigate(idx)}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all",
+                      idx === currentIndex 
+                        ? cn("w-6", tc.progressDotActive)
+                        : idx < currentIndex
+                        ? cn("w-1.5", tc.progressDotPast)
+                        : cn("w-1.5 hover:opacity-70", tc.progressDot)
+                    )}
+                  />
+                ))}
+                
+                {/* Ellipsis if current not in first 3 or last 3 */}
+                {currentIndex > 3 && currentIndex < blocks.length - 4 && (
+                  <>
+                    <span className={cn("text-xs px-1", tc.textMuted)}>...</span>
+                    <button
+                      onClick={() => onNavigate(currentIndex)}
+                      className={cn("w-6 h-1.5 rounded-full transition-all", tc.progressDotActive)}
+                    />
+                    <span className={cn("text-xs px-1", tc.textMuted)}>...</span>
+                  </>
                 )}
-              />
-            ))}
+                
+                {currentIndex <= 3 && (
+                  <span className={cn("text-xs px-1", tc.textMuted)}>...</span>
+                )}
+                
+                {currentIndex >= blocks.length - 4 && (
+                  <span className={cn("text-xs px-1", tc.textMuted)}>...</span>
+                )}
+                
+                {/* Last 3 dots */}
+                {blocks.slice(-3).map((_, idx) => {
+                  const actualIdx = blocks.length - 3 + idx;
+                  return (
+                    <button
+                      key={actualIdx}
+                      onClick={() => onNavigate(actualIdx)}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all",
+                        actualIdx === currentIndex 
+                          ? cn("w-6", tc.progressDotActive)
+                          : actualIdx < currentIndex
+                          ? cn("w-1.5", tc.progressDotPast)
+                          : cn("w-1.5 hover:opacity-70", tc.progressDot)
+                      )}
+                    />
+                  );
+                })}
+              </>
+            )}
           </div>
         </div>
 

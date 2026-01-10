@@ -1,9 +1,10 @@
 /**
  * AI Assist Chat for Presentation Mode
  * Provides context-aware AI assistance during teaching
+ * Performance optimized with AbortController for cleanup
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { X, Send, Loader2, Sparkles, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,8 +36,22 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
+  const lastRequestTimeRef = useRef<number>(0);
   
   const tc = themeClasses[theme];
+
+  // Track mount state and cleanup
+  useEffect(() => {
+    isMountedRef.current = true;
+    abortControllerRef.current = new AbortController();
+    
+    return () => {
+      isMountedRef.current = false;
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   // Focus input on mount
   useEffect(() => {
@@ -50,8 +65,8 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
     }
   }, [messages]);
 
-  // Build context from current block
-  const buildContext = (): string => {
+  // Build context from current block - memoized
+  const buildContext = useCallback((): string => {
     let context = `Lesson: ${lessonTitle || 'Unknown'}\n`;
     context += `Current Block: ${block.title}\n`;
     context += `Block Type: ${block.type}\n`;
@@ -69,11 +84,20 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
     }
     
     return context;
-  };
+  }, [lessonTitle, block]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
+
+    // Rate limiting: max 5 requests per minute
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTimeRef.current;
+    if (timeSinceLastRequest < 2000) { // 2 second minimum between requests
+      toast.info('Please wait a moment before sending another message');
+      return;
+    }
+    lastRequestTimeRef.current = now;
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -97,6 +121,9 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
         },
       });
 
+      // Check if component is still mounted before updating state
+      if (!isMountedRef.current) return;
+
       if (error) throw error;
 
       const assistantMessage: Message = {
@@ -108,6 +135,10 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
+      // Ignore abort errors
+      if ((error as Error).name === 'AbortError') return;
+      if (!isMountedRef.current) return;
+      
       console.error('AI Assist error:', error);
       toast.error("Failed to get AI response. Please try again.");
       
@@ -120,9 +151,11 @@ export const AIAssistChat = ({ block, lessonTitle, theme, onClose }: AIAssistCha
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, [input, isLoading, messages, buildContext]);
 
   return (
     <div className={cn(

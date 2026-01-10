@@ -3,7 +3,7 @@
  * Handles multiple questions with navigation
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, HelpCircle, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,9 +24,12 @@ export const QuizContent = ({ block, theme }: QuizContentProps) => {
 
   const tc = themeClasses[theme];
 
-  const questionObjects: Question[] = (block.questions || [])
-    .map(qId => mockQuestions.find(q => q.id === qId || q.questionId === qId))
-    .filter((q): q is Question => q !== undefined);
+  // Memoize question filtering to prevent recalculation on every render
+  const questionObjects = useMemo<Question[]>(() => {
+    return (block.questions || [])
+      .map(qId => mockQuestions.find(q => q.id === qId || q.questionId === qId))
+      .filter((q): q is Question => q !== undefined);
+  }, [block.questions]);
 
   if (questionObjects.length === 0) {
     return (

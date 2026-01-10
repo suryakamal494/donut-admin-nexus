@@ -1,6 +1,7 @@
 /**
  * Presentation State Management Hook
  * Includes screenshot functionality for direct capture
+ * Performance optimized with debouncing and proper cleanup
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -32,6 +33,7 @@ export const usePresentationState = (
   const containerRef = useRef<HTMLDivElement>(null);
   const contentContainerRef = useRef<HTMLDivElement>(null);
   const annotationRef = useRef<AnnotationCanvasRef>(null);
+  const lastScreenshotTimeRef = useRef<number>(0);
 
   const currentBlock = blocks[state.currentIndex];
   const progress = blocks.length > 0 ? ((state.currentIndex + 1) / blocks.length) * 100 : 0;
@@ -231,8 +233,18 @@ export const usePresentationState = (
   }, [open, state.isFullscreen, exitFullscreen]);
 
   // Save screenshot directly (without entering annotation mode)
+  // Debounced to prevent rapid clicks
   const handleSaveScreenshot = useCallback(async () => {
     if (isSavingScreenshot) return;
+    
+    // Debounce: ignore if clicked within 1 second of last capture
+    const now = Date.now();
+    if (now - lastScreenshotTimeRef.current < 1000) {
+      toast.info('Please wait before taking another screenshot');
+      return;
+    }
+    lastScreenshotTimeRef.current = now;
+    
     setIsSavingScreenshot(true);
 
     try {
