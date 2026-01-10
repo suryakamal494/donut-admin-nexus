@@ -12,9 +12,11 @@ export { teacherWeeklySchedule, teacherTodayTimetable } from './schedule';
 // Lesson Plans
 export { teacherLessonPlans } from './lessonPlans';
 
-// Assessments & Homework
+// Assessments, Homework & Exams
 export { teacherAssessments } from './assessments';
 export { teacherHomework } from './homework';
+export { teacherExams } from './exams';
+
 
 // Stats & Actions
 export { 
