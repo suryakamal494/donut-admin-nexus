@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Plus, 
@@ -7,7 +7,8 @@ import {
   Clock,
   Users,
   TrendingUp,
-  Calendar
+  Calendar,
+  Radio
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,29 +19,44 @@ import { teacherExams } from "@/data/teacher/exams";
 import { cn } from "@/lib/utils";
 import type { TeacherExam } from "@/data/teacher/types";
 
+// Debounce hook for search
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useMemo(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  
+  return debouncedValue;
+};
+
 const Exams = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [exams, setExams] = useState<TeacherExam[]>(teacherExams);
 
-  const filteredExams = exams.filter((e) => {
-    const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredExams = useMemo(() => exams.filter((e) => {
+    const matchesSearch = e.name.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesStatus = statusFilter === "all" || e.status === statusFilter;
     return matchesSearch && matchesStatus;
-  });
+  }), [exams, debouncedSearch, statusFilter]);
 
-  const stats = {
+  const stats = useMemo(() => ({
     total: exams.length,
     draft: exams.filter(e => e.status === "draft").length,
     scheduled: exams.filter(e => e.status === "scheduled").length,
+    live: exams.filter(e => e.status === "live").length,
     completed: exams.filter(e => e.status === "completed").length,
-  };
+  }), [exams]);
 
   const statusFilters = [
     { id: "all", label: "All", count: stats.total },
     { id: "draft", label: "Drafts", count: stats.draft },
     { id: "scheduled", label: "Scheduled", count: stats.scheduled },
+    { id: "live", label: "Live", count: stats.live, pulse: true },
     { id: "completed", label: "Done", count: stats.completed },
   ];
 
@@ -104,23 +120,29 @@ const Exams = () => {
       </div>
 
       {/* Status Filter Pills - Mobile-first horizontal scroll */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide scroll-smooth">
         {statusFilters.map((filter) => (
           <button
             key={filter.id}
             onClick={() => setStatusFilter(filter.id)}
             className={cn(
-              "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
+              "shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all min-h-[44px] flex items-center gap-1.5",
               "active:scale-[0.98]",
               statusFilter === filter.id
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "bg-muted hover:bg-muted/80 text-muted-foreground"
             )}
           >
+            {filter.id === "live" && filter.count > 0 && (
+              <Radio className={cn(
+                "w-3 h-3",
+                statusFilter === filter.id ? "text-white" : "text-green-500 animate-pulse"
+              )} />
+            )}
             {filter.label}
             {filter.count > 0 && (
               <span className={cn(
-                "ml-1.5 px-1.5 py-0.5 rounded-full text-xs",
+                "px-1.5 py-0.5 rounded-full text-xs",
                 statusFilter === filter.id
                   ? "bg-white/20"
                   : "bg-background"

@@ -54,8 +54,8 @@ export const PatternStep = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium">Exam Pattern</Label>
         
-        {/* Mobile: Horizontal scroll cards */}
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory md:grid md:grid-cols-3 md:overflow-visible md:mx-0 md:px-0">
+        {/* Mobile: Horizontal scroll cards - wider cards */}
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-3 md:overflow-visible md:mx-0 md:px-0">
           {patternOptions.map((opt) => {
             const isSelected = pattern === opt.id;
             const Icon = opt.icon;
@@ -67,10 +67,10 @@ export const PatternStep = ({
                 type="button"
                 onClick={() => setPattern(opt.id)}
                 className={cn(
-                  "snap-center flex-shrink-0 w-[140px] md:w-auto p-4 rounded-xl border-2 text-left transition-all duration-200",
+                  "snap-center flex-shrink-0 w-[160px] md:w-auto p-4 rounded-xl border-2 text-left transition-all duration-200",
                   "active:scale-[0.98]",
                   isSelected
-                    ? "border-primary bg-primary/5"
+                    ? "border-primary bg-primary/5 scale-[1.02]"
                     : "border-border hover:border-primary/50 bg-card"
                 )}
               >

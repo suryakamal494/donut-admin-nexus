@@ -31,6 +31,7 @@ interface CreationMethodStepProps {
   toggleCognitiveType: (type: string) => void;
   uploadedFile: File | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  clearUploadedFile: () => void;
   selectedSubjects: string[];
   selectedQuestionIds: string[];
   setSelectedQuestionIds: (ids: string[]) => void;
@@ -75,6 +76,7 @@ export const CreationMethodStep = ({
   toggleCognitiveType,
   uploadedFile,
   handleFileChange,
+  clearUploadedFile,
   selectedSubjects,
   selectedQuestionIds,
   setSelectedQuestionIds,
@@ -87,6 +89,7 @@ export const CreationMethodStep = ({
   const clearFile = () => {
     const input = document.getElementById('pdf-upload') as HTMLInputElement;
     if (input) input.value = '';
+    clearUploadedFile();
   };
 
   return (

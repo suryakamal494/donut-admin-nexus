@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Check, FileText, Settings, Sparkles, Users, Trophy } from "lucide-react";
+import { Check, FileText, Settings, Sparkles, Users } from "lucide-react";
 
 interface TeacherExamStepperProps {
   currentStep: number;
@@ -41,16 +41,16 @@ export const TeacherExamStepper = ({ currentStep, totalSteps, pattern }: Teacher
             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
           />
         </div>
-        {/* Progress dots */}
-        <div className="flex justify-center gap-2 mt-3">
+        {/* Progress dots - enlarged for touch */}
+        <div className="flex justify-center gap-3 mt-3">
           {steps.map((_, idx) => (
             <div
               key={idx}
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-200",
-                idx + 1 < currentStep && "bg-primary",
-                idx + 1 === currentStep && "bg-primary w-6",
-                idx + 1 > currentStep && "bg-muted-foreground/30"
+                "h-3 rounded-full transition-all duration-200",
+                idx + 1 < currentStep && "bg-primary w-3",
+                idx + 1 === currentStep && "bg-primary w-8",
+                idx + 1 > currentStep && "bg-muted-foreground/30 w-3"
               )}
             />
           ))}
