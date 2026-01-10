@@ -72,6 +72,8 @@ export const teacherLessonPlans: LessonPlan[] = [
         source: "library",
         sourceType: "pdf",
         sourceId: "ncert-physics-ch5",
+        embedUrl: "https://ncert.nic.in/textbook/pdf/keph105.pdf",
+        linkType: "iframe",
       },
       {
         id: "block-1-5",
