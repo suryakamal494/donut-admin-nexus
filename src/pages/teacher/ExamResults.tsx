@@ -103,7 +103,7 @@ const ExamResults = () => {
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-20">
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-20 md:pb-6">
       <PageHeader
         title="Exam Results"
         description={exam.name}

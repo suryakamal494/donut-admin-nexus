@@ -151,7 +151,7 @@ const TeacherSchedule = () => {
   };
 
   return (
-    <div className="space-y-4 max-w-7xl mx-auto">
+    <div className="space-y-4 max-w-7xl mx-auto pb-20 md:pb-6">
       <PageHeader
         title="My Schedule"
         description="Weekly timetable with lesson plan status"

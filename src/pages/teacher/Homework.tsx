@@ -11,6 +11,7 @@ import {
   Calendar
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -55,62 +56,39 @@ const Homework = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      <PageHeader
-        title="Homework"
-        description="Assign and track homework submissions"
-        breadcrumbs={[
-          { label: "Teacher", href: "/teacher" },
-          { label: "Homework" },
-        ]}
-      />
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-20 md:pb-6">
+      {/* Header with inline stats */}
+      <div className="space-y-3">
+        <PageHeader
+          title="Homework"
+          description="Assign and track homework submissions"
+          breadcrumbs={[
+            { label: "Teacher", href: "/teacher" },
+            { label: "Homework" },
+          ]}
+        />
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.active}</p>
-              <p className="text-xs text-muted-foreground">Active</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.overdue}</p>
-              <p className="text-xs text-muted-foreground">Overdue</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.pendingReview}</p>
-              <p className="text-xs text-muted-foreground">To Review</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Compact Stats Row - Inline badges */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="secondary" className="bg-muted/50 text-xs gap-1.5 py-1 px-2.5">
+            <FileText className="w-3 h-3" />
+            {stats.total} Total
+          </Badge>
+          <Badge variant="outline" className="text-blue-700 border-blue-200 bg-blue-50/50 text-xs gap-1.5 py-1 px-2.5">
+            <Clock className="w-3 h-3" />
+            {stats.active} Active
+          </Badge>
+          {stats.overdue > 0 && (
+            <Badge variant="outline" className="text-red-700 border-red-200 bg-red-50/50 text-xs gap-1.5 py-1 px-2.5">
+              <AlertCircle className="w-3 h-3" />
+              {stats.overdue} Overdue
+            </Badge>
+          )}
+          <Badge variant="outline" className="text-amber-700 border-amber-200 bg-amber-50/50 text-xs gap-1.5 py-1 px-2.5">
+            <Users className="w-3 h-3" />
+            {stats.pendingReview} To Review
+          </Badge>
+        </div>
       </div>
 
       {/* Filters */}

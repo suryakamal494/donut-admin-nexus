@@ -108,7 +108,7 @@ const Exams = () => {
   ];
 
   return (
-    <div className="space-y-3 sm:space-y-5 max-w-7xl mx-auto">
+    <div className="space-y-3 sm:space-y-5 max-w-7xl mx-auto pb-20 md:pb-6">
       <PageHeader
         title="Exams"
         description="Create and manage tests for your students"

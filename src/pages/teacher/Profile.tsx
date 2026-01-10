@@ -62,7 +62,7 @@ const Profile = () => {
     .toUpperCase();
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
+    <div className="space-y-6 max-w-3xl mx-auto pb-20 md:pb-6">
       {/* Profile Header */}
       <Card className="overflow-hidden">
         {/* Gradient Header */}
