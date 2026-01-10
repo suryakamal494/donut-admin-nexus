@@ -122,6 +122,10 @@ const EditTeacherExam = lazy(() => import("./pages/teacher/EditExam"));
 // ============================================
 import StudentLogin from "./pages/student/Login";
 import StudentDashboard from "./pages/student/Dashboard";
+import StudentSubjects from "./pages/student/Subjects";
+import StudentTests from "./pages/student/Tests";
+import StudentProgress from "./pages/student/Progress";
+import StudentNotifications from "./pages/student/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -249,6 +253,10 @@ const App = () => (
           {/* Student Panel Routes - Completely separate module */}
           <Route path="/student/login" element={<StudentLogin />} />
           <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/subjects" element={<StudentSubjects />} />
+          <Route path="/student/tests" element={<StudentTests />} />
+          <Route path="/student/progress" element={<StudentProgress />} />
+          <Route path="/student/notifications" element={<StudentNotifications />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
