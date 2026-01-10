@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
   { icon: Calendar, label: "My Schedule", path: "/teacher/schedule" },
   { icon: BookOpen, label: "Lesson Plans", path: "/teacher/lesson-plans" },
   { icon: TrendingUp, label: "Syllabus Progress", path: "/teacher/academic-progress" },
-  { icon: ClipboardCheck, label: "Assessments", path: "/teacher/assessments" },
+  { icon: ClipboardCheck, label: "Exams", path: "/teacher/exams" },
   { icon: FileText, label: "Homework", path: "/teacher/homework" },
   { icon: Library, label: "Content Library", path: "/teacher/content" },
   { icon: Database, label: "Reference Data", path: "/teacher/reference" },

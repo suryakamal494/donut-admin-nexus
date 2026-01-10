@@ -105,14 +105,15 @@ import TeacherDashboard from "./pages/teacher/Dashboard";
 import TeacherSchedule from "./pages/teacher/Schedule";
 import LessonPlans from "./pages/teacher/LessonPlans";
 import TeacherAcademicProgress from "./pages/teacher/AcademicProgress";
-import TeacherAssessments from "./pages/teacher/Assessments";
+import TeacherExams from "./pages/teacher/Exams";
 import TeacherHomework from "./pages/teacher/Homework";
 import TeacherContent from "./pages/teacher/Content";
 import TeacherReference from "./pages/teacher/Reference";
 import TeacherProfile from "./pages/teacher/Profile";
 
-// Teacher - LAZY (Heavy page)
+// Teacher - LAZY (Heavy pages)
 const LessonPlanCanvas = lazy(() => import("./pages/teacher/LessonPlanCanvas"));
+const CreateTeacherExam = lazy(() => import("./pages/teacher/CreateExam"));
 
 const queryClient = new QueryClient();
 
@@ -227,7 +228,8 @@ const App = () => (
             <Route path="lesson-plans/new" element={<LazyPage><LessonPlanCanvas /></LazyPage>} />
             <Route path="lesson-plans/:planId" element={<LazyPage><LessonPlanCanvas /></LazyPage>} />
             <Route path="academic-progress" element={<TeacherAcademicProgress />} />
-            <Route path="assessments" element={<TeacherAssessments />} />
+            <Route path="exams" element={<TeacherExams />} />
+            <Route path="exams/create" element={<LazyPage><CreateTeacherExam /></LazyPage>} />
             <Route path="homework" element={<TeacherHomework />} />
             <Route path="content" element={<TeacherContent />} />
             <Route path="reference" element={<TeacherReference />} />

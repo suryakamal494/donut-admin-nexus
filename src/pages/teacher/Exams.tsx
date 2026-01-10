@@ -4,210 +4,201 @@ import {
   Plus, 
   Search, 
   FileQuestion,
-  BarChart3,
   Clock,
   Users,
   TrendingUp,
-  Filter
+  Calendar
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageHeader } from "@/components/ui/page-header";
-import { AssessmentCard } from "@/components/teacher/AssessmentCard";
-import { CreateAssessmentDialog } from "@/components/teacher/CreateAssessmentDialog";
-import { teacherAssessments, type TeacherAssessment } from "@/data/teacherData";
+import { TeacherExamCard } from "@/components/teacher/exams";
+import { teacherExams } from "@/data/teacher/exams";
+import { cn } from "@/lib/utils";
+import type { TeacherExam } from "@/data/teacher/types";
 
-const Assessments = () => {
+const Exams = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [assessments, setAssessments] = useState<TeacherAssessment[]>(teacherAssessments);
+  const [exams, setExams] = useState<TeacherExam[]>(teacherExams);
 
-  const filteredAssessments = assessments.filter((a) => {
-    const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || a.status === statusFilter;
-    const matchesType = typeFilter === "all" || a.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
+  const filteredExams = exams.filter((e) => {
+    const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || e.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   const stats = {
-    total: assessments.length,
-    draft: assessments.filter(a => a.status === "draft").length,
-    scheduled: assessments.filter(a => a.status === "scheduled").length,
-    completed: assessments.filter(a => a.status === "completed").length,
+    total: exams.length,
+    draft: exams.filter(e => e.status === "draft").length,
+    scheduled: exams.filter(e => e.status === "scheduled").length,
+    completed: exams.filter(e => e.status === "completed").length,
   };
 
-  const handleAssessmentCreated = (newAssessment: TeacherAssessment) => {
-    setAssessments(prev => [newAssessment, ...prev]);
-  };
+  const statusFilters = [
+    { id: "all", label: "All", count: stats.total },
+    { id: "draft", label: "Drafts", count: stats.draft },
+    { id: "scheduled", label: "Scheduled", count: stats.scheduled },
+    { id: "completed", label: "Done", count: stats.completed },
+  ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto">
       <PageHeader
-        title="Assessments"
-        description="Create quizzes, tests, and track student performance"
+        title="Exams"
+        description="Create and manage tests for your students"
         breadcrumbs={[
           { label: "Teacher", href: "/teacher" },
-          { label: "Assessments" },
+          { label: "Exams" },
         ]}
       />
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Stats Row - Compact on mobile */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-4">
         <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <FileQuestion className="w-5 h-5 text-primary" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <FileQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold">{stats.total}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Total</p>
             </div>
           </CardContent>
         </Card>
         <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-              <Clock className="w-5 h-5 text-muted-foreground" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.draft}</p>
-              <p className="text-xs text-muted-foreground">Drafts</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.scheduled}</p>
-              <p className="text-xs text-muted-foreground">Scheduled</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold">{stats.draft}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Drafts</p>
             </div>
           </CardContent>
         </Card>
         <Card className="card-premium">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.completed}</p>
-              <p className="text-xs text-muted-foreground">Completed</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold">{stats.scheduled}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Scheduled</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="card-premium">
+          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold">{stats.completed}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Done</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* Status Filter Pills - Mobile-first horizontal scroll */}
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+        {statusFilters.map((filter) => (
+          <button
+            key={filter.id}
+            onClick={() => setStatusFilter(filter.id)}
+            className={cn(
+              "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
+              "active:scale-[0.98]",
+              statusFilter === filter.id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted hover:bg-muted/80 text-muted-foreground"
+            )}
+          >
+            {filter.label}
+            {filter.count > 0 && (
+              <span className={cn(
+                "ml-1.5 px-1.5 py-0.5 rounded-full text-xs",
+                statusFilter === filter.id
+                  ? "bg-white/20"
+                  : "bg-background"
+              )}>
+                {filter.count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Search & Create */}
+      <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search assessments..."
+            placeholder="Search exams..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-11"
           />
         </div>
         
-        <div className="flex gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-hide">
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="min-w-[100px] w-auto shrink-0">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="quiz">Quiz</SelectItem>
-              <SelectItem value="test">Test</SelectItem>
-              <SelectItem value="poll">Poll</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="min-w-[110px] w-auto shrink-0">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="live">Live</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            className="gradient-button gap-2 shrink-0 h-10 min-w-[44px]"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Create</span>
-          </Button>
-        </div>
+        <Button 
+          className="gradient-button h-11 px-4 shrink-0"
+          onClick={() => navigate("/teacher/exams/create")}
+        >
+          <Plus className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Create</span>
+        </Button>
       </div>
 
-      {/* Assessments Grid */}
+      {/* Exams Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredAssessments.map((assessment) => (
-          <AssessmentCard
-            key={assessment.id}
-            assessment={assessment}
+        {filteredExams.map((exam) => (
+          <TeacherExamCard
+            key={exam.id}
+            exam={exam}
             onEdit={() => {}}
             onDuplicate={() => {}}
             onDelete={() => {
-              setAssessments(prev => prev.filter(a => a.id !== assessment.id));
+              setExams(prev => prev.filter(e => e.id !== exam.id));
             }}
             onStart={() => {}}
             onViewResults={() => {}}
           />
         ))}
         
-        {filteredAssessments.length === 0 && (
+        {filteredExams.length === 0 && (
           <Card className="col-span-full border-dashed">
             <CardContent className="p-8 flex flex-col items-center justify-center text-center">
-              <FileQuestion className="w-12 h-12 text-muted-foreground mb-4" />
-              <h3 className="font-semibold text-foreground mb-1">No assessments found</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {searchQuery || statusFilter !== "all" || typeFilter !== "all"
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <FileQuestion className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-1">No exams found</h3>
+              <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+                {searchQuery || statusFilter !== "all"
                   ? "Try adjusting your filters"
-                  : "Create your first quiz or test"}
+                  : "Create your first exam to get started"}
               </p>
-              <Button onClick={() => setShowCreateDialog(true)} className="gradient-button">
+              <Button 
+                onClick={() => navigate("/teacher/exams/create")} 
+                className="gradient-button"
+              >
                 <Plus className="w-4 h-4 mr-2" />
-                Create Assessment
+                Create Exam
               </Button>
             </CardContent>
           </Card>
         )}
       </div>
 
-      {/* Create Dialog */}
-      <CreateAssessmentDialog
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        onCreated={handleAssessmentCreated}
-      />
-
       {/* Mobile FAB */}
-      <div className="fixed bottom-20 right-4 md:hidden">
+      <div className="fixed bottom-20 right-4 md:hidden z-40">
         <Button 
           size="lg"
           className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
-          onClick={() => setShowCreateDialog(true)}
+          onClick={() => navigate("/teacher/exams/create")}
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -216,4 +207,4 @@ const Assessments = () => {
   );
 };
 
-export default Assessments;
+export default Exams;
