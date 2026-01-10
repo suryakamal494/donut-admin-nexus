@@ -1,8 +1,11 @@
 /**
  * Presentation State Management Hook
+ * Includes screenshot functionality for direct capture
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import html2canvas from "html2canvas";
+import { toast } from "sonner";
 import type { LessonPlanBlock } from "../types";
 import type { PresentationState, PresentationTheme } from "./types";
 import type { AnnotationCanvasRef } from "../AnnotationCanvas";
@@ -21,6 +24,7 @@ export const usePresentationState = (
     showAIChat: false,
     theme: (localStorage.getItem('presentation-theme') as PresentationTheme) || 'light',
   });
+  const [isSavingScreenshot, setIsSavingScreenshot] = useState(false);
 
   // Refs
   const touchStartX = useRef<number | null>(null);
@@ -226,12 +230,51 @@ export const usePresentationState = (
     }
   }, [open, state.isFullscreen, exitFullscreen]);
 
+  // Save screenshot directly (without entering annotation mode)
+  const handleSaveScreenshot = useCallback(async () => {
+    if (isSavingScreenshot) return;
+    setIsSavingScreenshot(true);
+
+    try {
+      const presentationContainer = contentContainerRef.current;
+      
+      if (presentationContainer) {
+        const backgroundCanvas = await html2canvas(presentationContainer, {
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: state.theme === 'dark' ? '#1e293b' : '#f8fafc',
+          scale: 1,
+          logging: false,
+        });
+
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const blockTitle = currentBlock?.title || 'slide';
+        const filename = `screenshot-${blockTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`;
+        
+        link.download = filename;
+        link.href = backgroundCanvas.toDataURL('image/png');
+        link.click();
+        
+        toast.success('Screenshot saved!', {
+          description: `Saved as ${filename}`,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save screenshot:', error);
+      toast.error('Failed to save screenshot');
+    } finally {
+      setIsSavingScreenshot(false);
+    }
+  }, [currentBlock, state.theme, isSavingScreenshot]);
+
   return {
     state,
     currentBlock,
     progress,
     isFirst,
     isLast,
+    isSavingScreenshot,
     refs: {
       containerRef,
       contentContainerRef,
@@ -246,6 +289,7 @@ export const usePresentationState = (
       toggleFullscreen,
       handleTouchStart,
       handleTouchEnd,
+      handleSaveScreenshot,
     },
   };
 };
