@@ -15,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { TeacherExamCard } from "@/components/teacher/exams";
-import { teacherExams } from "@/data/teacher/exams";
+import { teacherExams as initialExams } from "@/data/teacher/exams";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import type { TeacherExam } from "@/data/teacher/types";
 
 // Debounce hook for search
@@ -36,7 +37,43 @@ const Exams = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [exams, setExams] = useState<TeacherExam[]>(teacherExams);
+  const [exams, setExams] = useState<TeacherExam[]>(initialExams);
+
+  // Handlers for exam actions
+  const handleEdit = useCallback((examId: string) => {
+    navigate(`/teacher/exams/${examId}/edit`);
+  }, [navigate]);
+
+  const handleDuplicate = useCallback((exam: TeacherExam) => {
+    const duplicatedExam: TeacherExam = {
+      ...exam,
+      id: `exam-${Date.now()}`,
+      name: `Copy of ${exam.name}`,
+      status: "draft",
+      scheduledDate: undefined,
+      scheduledTime: undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setExams(prev => [duplicatedExam, ...prev]);
+    toast.success("Exam duplicated successfully");
+  }, []);
+
+  const handleDelete = useCallback((examId: string) => {
+    setExams(prev => prev.filter(e => e.id !== examId));
+    toast.success("Exam deleted");
+  }, []);
+
+  const handleStart = useCallback((examId: string) => {
+    setExams(prev => prev.map(e => 
+      e.id === examId ? { ...e, status: "live" as const } : e
+    ));
+    toast.success("Exam started!");
+  }, []);
+
+  const handleViewResults = useCallback((examId: string) => {
+    toast.info("Results view coming soon");
+  }, []);
 
   const filteredExams = useMemo(() => exams.filter((e) => {
     const matchesSearch = e.name.toLowerCase().includes(debouncedSearch.toLowerCase());
@@ -181,13 +218,11 @@ const Exams = () => {
           <TeacherExamCard
             key={exam.id}
             exam={exam}
-            onEdit={() => {}}
-            onDuplicate={() => {}}
-            onDelete={() => {
-              setExams(prev => prev.filter(e => e.id !== exam.id));
-            }}
-            onStart={() => {}}
-            onViewResults={() => {}}
+            onEdit={() => handleEdit(exam.id)}
+            onDuplicate={() => handleDuplicate(exam)}
+            onDelete={() => handleDelete(exam.id)}
+            onStart={() => handleStart(exam.id)}
+            onViewResults={() => handleViewResults(exam.id)}
           />
         ))}
         
