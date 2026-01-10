@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Canvas as FabricCanvas, PencilBrush, Circle, Rect, Line, IText, FabricObject } from "fabric";
 import html2canvas from "html2canvas";
-import { AnnotationToolbar, AnnotationTool } from "./AnnotationToolbar";
+import { AnnotationToolbar } from "./AnnotationToolbar";
+import type { AnnotationTool } from "./types";
 import { toast } from "sonner";
 
 interface AnnotationCanvasProps {
