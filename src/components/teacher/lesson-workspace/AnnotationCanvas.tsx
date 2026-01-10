@@ -21,6 +21,7 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<FabricCanvas | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const canvasInitializedRef = useRef(false);
     
     const [activeTool, setActiveTool] = useState<AnnotationTool>('pen');
     const [activeColor, setActiveColor] = useState('#FF3B30');
@@ -36,6 +37,16 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
     const currentShapeRef = useRef<FabricObject | null>(null);
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Cleanup timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+          saveTimeoutRef.current = null;
+        }
+      };
+    }, []);
+
     // Memoized save state with debouncing
     const saveState = useCallback(() => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
@@ -49,19 +60,21 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
         historyIndexRef.current = historyRef.current.length - 1;
         setCanUndo(historyIndexRef.current > 0);
         setCanRedo(false);
-      }, 100);
+      }, 150); // Slightly longer debounce for smoother experience
     }, []);
 
-    // Initialize canvas
+    // Initialize canvas only once, persist across visibility toggles
     useEffect(() => {
-      if (!canvasRef.current || !isActive) return;
-      if (fabricCanvasRef.current) return;
-
+      if (!canvasRef.current || canvasInitializedRef.current) return;
+      
+      canvasInitializedRef.current = true;
+      
       const canvas = new FabricCanvas(canvasRef.current, {
         width: window.innerWidth,
         height: window.innerHeight,
         backgroundColor: 'transparent',
         selection: false,
+        renderOnAddRemove: false, // Performance optimization
       });
 
       canvas.freeDrawingBrush = new PencilBrush(canvas);
@@ -79,18 +92,19 @@ export const AnnotationCanvas = forwardRef<AnnotationCanvasRef, AnnotationCanvas
 
       return () => {
         window.removeEventListener('resize', handleResize);
-        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       };
-    }, [isActive]);
+    }, []);
 
+    // Cleanup canvas on component unmount (not on visibility toggle)
     useEffect(() => {
       return () => {
-        if (!isActive && fabricCanvasRef.current) {
+        if (fabricCanvasRef.current) {
           fabricCanvasRef.current.dispose();
           fabricCanvasRef.current = null;
+          canvasInitializedRef.current = false;
         }
       };
-    }, [isActive]);
+    }, []);
 
     // Update brush settings
     useEffect(() => {
