@@ -5,16 +5,18 @@ import {
   Search, 
   FileQuestion,
   Clock,
-  Users,
-  TrendingUp,
   Calendar,
-  Radio
+  CheckCircle
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { TeacherExamCard } from "@/components/teacher/exams";
+import { ExamPreviewDialog } from "@/components/teacher/exams/ExamPreviewDialog";
+import { AssignBatchesDialog } from "@/components/teacher/exams/AssignBatchesDialog";
+import { ScheduleExamDialog } from "@/components/teacher/exams/ScheduleExamDialog";
 import { teacherExams as initialExams } from "@/data/teacher/exams";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -39,24 +41,26 @@ const Exams = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [exams, setExams] = useState<TeacherExam[]>(initialExams);
 
+  // Dialog states
+  const [previewExam, setPreviewExam] = useState<TeacherExam | null>(null);
+  const [assignExam, setAssignExam] = useState<TeacherExam | null>(null);
+  const [scheduleExam, setScheduleExam] = useState<TeacherExam | null>(null);
+
   // Handlers for exam actions
+  const handleView = useCallback((exam: TeacherExam) => {
+    setPreviewExam(exam);
+  }, []);
+
   const handleEdit = useCallback((examId: string) => {
     navigate(`/teacher/exams/${examId}/edit`);
   }, [navigate]);
 
-  const handleDuplicate = useCallback((exam: TeacherExam) => {
-    const duplicatedExam: TeacherExam = {
-      ...exam,
-      id: `exam-${Date.now()}`,
-      name: `Copy of ${exam.name}`,
-      status: "draft",
-      scheduledDate: undefined,
-      scheduledTime: undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setExams(prev => [duplicatedExam, ...prev]);
-    toast.success("Exam duplicated successfully");
+  const handleAssign = useCallback((exam: TeacherExam) => {
+    setAssignExam(exam);
+  }, []);
+
+  const handleSchedule = useCallback((exam: TeacherExam) => {
+    setScheduleExam(exam);
   }, []);
 
   const handleDelete = useCallback((examId: string) => {
@@ -64,16 +68,23 @@ const Exams = () => {
     toast.success("Exam deleted");
   }, []);
 
-  const handleStart = useCallback((examId: string) => {
-    setExams(prev => prev.map(e => 
-      e.id === examId ? { ...e, status: "live" as const } : e
-    ));
-    toast.success("Exam started!");
-  }, []);
-
   const handleViewResults = useCallback((examId: string) => {
     navigate(`/teacher/exams/${examId}/results`);
   }, [navigate]);
+
+  const handleAssignBatches = useCallback((examId: string, batchIds: string[]) => {
+    setExams(prev => prev.map(e => 
+      e.id === examId ? { ...e, batchIds } : e
+    ));
+  }, []);
+
+  const handleScheduleExam = useCallback((examId: string, date: Date, time: string) => {
+    setExams(prev => prev.map(e => 
+      e.id === examId 
+        ? { ...e, scheduledDate: date.toISOString(), scheduledTime: time, status: "scheduled" as const } 
+        : e
+    ));
+  }, []);
 
   const filteredExams = useMemo(() => exams.filter((e) => {
     const matchesSearch = e.name.toLowerCase().includes(debouncedSearch.toLowerCase());
@@ -85,20 +96,19 @@ const Exams = () => {
     total: exams.length,
     draft: exams.filter(e => e.status === "draft").length,
     scheduled: exams.filter(e => e.status === "scheduled").length,
-    live: exams.filter(e => e.status === "live").length,
     completed: exams.filter(e => e.status === "completed").length,
   }), [exams]);
 
+  // Status filters - removed "live"
   const statusFilters = [
-    { id: "all", label: "All", count: stats.total },
-    { id: "draft", label: "Drafts", count: stats.draft },
-    { id: "scheduled", label: "Scheduled", count: stats.scheduled },
-    { id: "live", label: "Live", count: stats.live, pulse: true },
-    { id: "completed", label: "Done", count: stats.completed },
+    { id: "all", label: "All", count: stats.total, icon: FileQuestion },
+    { id: "draft", label: "Drafts", count: stats.draft, icon: Clock },
+    { id: "scheduled", label: "Scheduled", count: stats.scheduled, icon: Calendar },
+    { id: "completed", label: "Done", count: stats.completed, icon: CheckCircle },
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-3 sm:space-y-5 max-w-7xl mx-auto">
       <PageHeader
         title="Exams"
         description="Create and manage tests for your students"
@@ -108,141 +118,90 @@ const Exams = () => {
         ]}
       />
 
-      {/* Stats Row - Compact on mobile */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-4">
-        <Card className="card-premium">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <FileQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-lg sm:text-2xl font-bold">{stats.total}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Total</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-lg sm:text-2xl font-bold">{stats.draft}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Drafts</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-lg sm:text-2xl font-bold">{stats.scheduled}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Scheduled</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-premium">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-lg sm:text-2xl font-bold">{stats.completed}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Done</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Status Filter Pills - Mobile-first horizontal scroll */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide scroll-smooth">
-        {statusFilters.map((filter) => (
-          <button
-            key={filter.id}
-            onClick={() => setStatusFilter(filter.id)}
-            className={cn(
-              "shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all min-h-[44px] flex items-center gap-1.5",
-              "active:scale-[0.98]",
-              statusFilter === filter.id
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            )}
-          >
-            {filter.id === "live" && filter.count > 0 && (
-              <Radio className={cn(
-                "w-3 h-3",
-                statusFilter === filter.id ? "text-white" : "text-green-500 animate-pulse"
-              )} />
-            )}
-            {filter.label}
-            {filter.count > 0 && (
+      {/* Compact Stats Row - Inline badges on mobile */}
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+        {statusFilters.map((stat) => {
+          const Icon = stat.icon;
+          const isActive = statusFilter === stat.id;
+          return (
+            <button
+              key={stat.id}
+              onClick={() => setStatusFilter(stat.id)}
+              className={cn(
+                "shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-xs font-medium transition-all",
+                "active:scale-[0.98] min-h-[32px] sm:min-h-[36px]",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-muted/70 hover:bg-muted text-muted-foreground"
+              )}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{stat.label}</span>
               <span className={cn(
-                "px-1.5 py-0.5 rounded-full text-xs",
-                statusFilter === filter.id
-                  ? "bg-white/20"
-                  : "bg-background"
+                "px-1.5 py-0.5 rounded text-[10px] font-semibold",
+                isActive ? "bg-white/20" : "bg-background"
               )}>
-                {filter.count}
+                {stat.count}
               </span>
-            )}
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Search & Create */}
-      <div className="flex gap-3">
+      {/* Search & Create - Compact */}
+      <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search exams..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-11"
+            className="pl-9 h-10"
           />
         </div>
         
         <Button 
-          className="gradient-button h-11 px-4 shrink-0"
+          className="gradient-button h-10 px-3 sm:px-4 shrink-0"
           onClick={() => navigate("/teacher/exams/create")}
         >
-          <Plus className="w-4 h-4 sm:mr-2" />
+          <Plus className="w-4 h-4 sm:mr-1.5" />
           <span className="hidden sm:inline">Create</span>
         </Button>
       </div>
 
       {/* Exams Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredExams.map((exam) => (
           <TeacherExamCard
             key={exam.id}
             exam={exam}
+            onView={() => handleView(exam)}
             onEdit={() => handleEdit(exam.id)}
-            onDuplicate={() => handleDuplicate(exam)}
+            onAssign={() => handleAssign(exam)}
+            onSchedule={() => handleSchedule(exam)}
             onDelete={() => handleDelete(exam.id)}
-            onStart={() => handleStart(exam.id)}
             onViewResults={() => handleViewResults(exam.id)}
           />
         ))}
         
         {filteredExams.length === 0 && (
           <Card className="col-span-full border-dashed">
-            <CardContent className="p-8 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <FileQuestion className="w-8 h-8 text-primary" />
+            <CardContent className="p-6 sm:p-8 flex flex-col items-center justify-center text-center">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <FileQuestion className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground mb-1">No exams found</h3>
-              <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+              <h3 className="font-semibold text-foreground mb-1 text-sm sm:text-base">No exams found</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 max-w-xs">
                 {searchQuery || statusFilter !== "all"
                   ? "Try adjusting your filters"
                   : "Create your first exam to get started"}
               </p>
               <Button 
                 onClick={() => navigate("/teacher/exams/create")} 
-                className="gradient-button"
+                className="gradient-button h-9"
+                size="sm"
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4 mr-1.5" />
                 Create Exam
               </Button>
             </CardContent>
@@ -254,12 +213,33 @@ const Exams = () => {
       <div className="fixed bottom-20 right-4 md:hidden z-40">
         <Button 
           size="lg"
-          className="w-14 h-14 rounded-full gradient-button shadow-lg shadow-primary/30"
+          className="w-12 h-12 rounded-full gradient-button shadow-lg shadow-primary/30"
           onClick={() => navigate("/teacher/exams/create")}
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-5 h-5" />
         </Button>
       </div>
+
+      {/* Dialogs */}
+      <ExamPreviewDialog
+        open={!!previewExam}
+        onOpenChange={(open) => !open && setPreviewExam(null)}
+        exam={previewExam}
+      />
+
+      <AssignBatchesDialog
+        open={!!assignExam}
+        onOpenChange={(open) => !open && setAssignExam(null)}
+        exam={assignExam}
+        onAssign={handleAssignBatches}
+      />
+
+      <ScheduleExamDialog
+        open={!!scheduleExam}
+        onOpenChange={(open) => !open && setScheduleExam(null)}
+        exam={scheduleExam}
+        onSchedule={handleScheduleExam}
+      />
     </div>
   );
 };

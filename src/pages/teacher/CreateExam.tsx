@@ -93,6 +93,7 @@ const CreateExam = () => {
           toggleCognitiveType={exam.toggleCognitiveType}
           uploadedFile={exam.uploadedFile}
           handleFileChange={exam.handleFileChange}
+          totalQuestions={exam.totalQuestions}
           clearUploadedFile={exam.clearUploadedFile}
           selectedSubjects={exam.selectedSubjects}
           selectedQuestionIds={exam.selectedQuestionIds}

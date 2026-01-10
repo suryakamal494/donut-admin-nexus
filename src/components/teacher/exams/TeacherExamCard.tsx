@@ -2,15 +2,15 @@ import { useState, useRef, useCallback } from "react";
 import { 
   MoreVertical, 
   Edit, 
-  Copy, 
   Trash2, 
-  Play, 
+  Eye,
   Users, 
   Clock,
   FileQuestion,
   BarChart3,
   Calendar,
-  Zap
+  Zap,
+  CalendarClock
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,17 +28,18 @@ import type { TeacherExam } from "@/data/teacher/types";
 
 interface TeacherExamCardProps {
   exam: TeacherExam;
+  onView?: () => void;
   onEdit?: () => void;
-  onDuplicate?: () => void;
+  onAssign?: () => void;
+  onSchedule?: () => void;
   onDelete?: () => void;
-  onStart?: () => void;
   onViewResults?: () => void;
 }
 
 // Swipe configuration
-const SWIPE_THRESHOLD = 60;
-const ACTION_WIDTH = 180;
-const VELOCITY_THRESHOLD = 0.5;
+const SWIPE_THRESHOLD = 50;
+const ACTION_WIDTH = 140;
+const VELOCITY_THRESHOLD = 0.4;
 
 const getStatusConfig = (status: TeacherExam["status"]) => {
   switch (status) {
@@ -49,7 +50,7 @@ const getStatusConfig = (status: TeacherExam["status"]) => {
     case "live":
       return { label: "Live", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 animate-pulse" };
     case "completed":
-      return { label: "Completed", className: "bg-primary/10 text-primary" };
+      return { label: "Done", className: "bg-primary/10 text-primary" };
     default:
       return { label: status, className: "bg-muted text-muted-foreground" };
   }
@@ -70,10 +71,11 @@ const getPatternConfig = (pattern: TeacherExam["pattern"]) => {
 
 export const TeacherExamCard = ({
   exam,
+  onView,
   onEdit,
-  onDuplicate,
+  onAssign,
+  onSchedule,
   onDelete,
-  onStart,
   onViewResults,
 }: TeacherExamCardProps) => {
   const isMobile = useIsMobile();
@@ -105,15 +107,11 @@ export const TeacherExamCard = ({
     const diffX = touchStartX.current - currentX;
     const diffY = Math.abs(touchStartY.current - currentY);
 
-    // If scrolling vertically, don't handle swipe
     if (diffY > Math.abs(diffX) && !isDragging.current) return;
     
     isDragging.current = true;
 
-    // Calculate new position
     let newTranslateX = isRevealed ? -ACTION_WIDTH - diffX : -diffX;
-    
-    // Clamp the value
     newTranslateX = Math.max(-ACTION_WIDTH, Math.min(0, newTranslateX));
     
     setTranslateX(newTranslateX);
@@ -127,7 +125,6 @@ export const TeacherExamCard = ({
     const duration = Date.now() - touchStartTime.current;
     const velocity = Math.abs(diffX) / duration;
 
-    // Determine if we should reveal or hide based on threshold and velocity
     const shouldReveal = velocity > VELOCITY_THRESHOLD 
       ? diffX > 0 
       : Math.abs(translateX) > SWIPE_THRESHOLD;
@@ -157,7 +154,7 @@ export const TeacherExamCard = ({
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      {/* Swipe Action Buttons (behind card) - Mobile only */}
+      {/* Swipe Action Buttons - Mobile only */}
       {isMobile && (
         <div 
           className={cn(
@@ -168,24 +165,17 @@ export const TeacherExamCard = ({
         >
           <button
             onClick={() => onEdit && handleAction(onEdit)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-blue-500 text-white active:bg-blue-600 transition-colors"
+            className="flex-1 flex flex-col items-center justify-center gap-0.5 bg-blue-500 text-white active:bg-blue-600 transition-colors"
           >
-            <Edit className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Edit</span>
-          </button>
-          <button
-            onClick={() => onDuplicate && handleAction(onDuplicate)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-amber-500 text-white active:bg-amber-600 transition-colors"
-          >
-            <Copy className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Duplicate</span>
+            <Edit className="w-4 h-4" />
+            <span className="text-[9px] font-medium">Edit</span>
           </button>
           <button
             onClick={() => onDelete && handleAction(onDelete)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-red-500 text-white active:bg-red-600 transition-colors"
+            className="flex-1 flex flex-col items-center justify-center gap-0.5 bg-red-500 text-white active:bg-red-600 transition-colors"
           >
-            <Trash2 className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Delete</span>
+            <Trash2 className="w-4 h-4" />
+            <span className="text-[9px] font-medium">Delete</span>
           </button>
         </div>
       )}
@@ -206,46 +196,54 @@ export const TeacherExamCard = ({
         onTouchEnd={handleTouchEnd}
       >
         <CardContent className="p-0">
-          {/* Header with gradient */}
-          <div className="relative h-2 bg-gradient-to-r from-primary via-accent to-primary" />
+          {/* Header gradient */}
+          <div className="relative h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
           
-          <div className="p-4 space-y-3">
+          <div className="p-3 space-y-2">
             {/* Top Row: Badges & Menu */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge className={statusConfig.className}>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <Badge className={cn("text-[10px] px-1.5 py-0", statusConfig.className)}>
                   {statusConfig.label}
                 </Badge>
                 {patternConfig && (
-                  <Badge variant="outline" className="text-xs">
-                    <patternConfig.icon className="w-3 h-3 mr-1" />
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                    <patternConfig.icon className="w-2.5 h-2.5 mr-0.5" />
                     {patternConfig.label}
                   </Badge>
                 )}
               </div>
               
-              {/* Desktop dropdown menu - hidden on mobile when swiping is available */}
+              {/* Desktop dropdown menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="icon" 
                     className={cn(
-                      "h-8 w-8 transition-opacity",
+                      "h-7 w-7 transition-opacity",
                       isMobile ? "opacity-50" : "md:opacity-0 md:group-hover:opacity-100"
                     )}
                   >
-                    <MoreVertical className="w-4 h-4" />
+                    <MoreVertical className="w-3.5 h-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={onView}>
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={onEdit}>
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={onDuplicate}>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Duplicate
+                  <DropdownMenuItem onClick={onAssign}>
+                    <Users className="w-4 h-4 mr-2" />
+                    Assign Batches
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onSchedule}>
+                    <CalendarClock className="w-4 h-4 mr-2" />
+                    Schedule
                   </DropdownMenuItem>
                   {exam.status === "completed" && (
                     <DropdownMenuItem onClick={onViewResults}>
@@ -263,39 +261,34 @@ export const TeacherExamCard = ({
             </div>
             
             {/* Title */}
-            <h3 className="font-semibold text-foreground line-clamp-2 leading-tight">
+            <h3 className="font-semibold text-sm text-foreground line-clamp-2 leading-tight">
               {exam.name}
             </h3>
             
-            {/* Subject & Batches */}
-            <div className="flex items-center gap-2 text-sm">
+            {/* Subject & Stats - Single compact row */}
+            <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
               <span className="text-primary font-medium">{exam.subjects.join(", ")}</span>
-              <span className="text-muted-foreground">•</span>
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Users className="w-3.5 h-3.5" />
-                {exam.batchIds.length} {exam.batchIds.length === 1 ? "batch" : "batches"}
+              <span className="flex items-center gap-0.5">
+                <FileQuestion className="w-3 h-3" />
+                {exam.totalQuestions}
               </span>
-            </div>
-            
-            {/* Stats Row */}
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <FileQuestion className="w-3.5 h-3.5" />
-                {exam.totalQuestions} Qs
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-0.5">
+                <Clock className="w-3 h-3" />
                 {exam.duration}m
               </span>
-              <span className="flex items-center gap-1">
-                {exam.totalMarks} marks
-              </span>
+              <span>{exam.totalMarks} marks</span>
+            </div>
+
+            {/* Batches */}
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Users className="w-3 h-3" />
+              {exam.batchIds.length} {exam.batchIds.length === 1 ? "batch" : "batches"}
             </div>
 
             {/* Schedule info */}
             {exam.scheduledDate && (
-              <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg w-fit">
-                <Calendar className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1 text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded w-fit">
+                <Calendar className="w-3 h-3" />
                 {new Date(exam.scheduledDate).toLocaleDateString('en-US', { 
                   month: 'short', 
                   day: 'numeric',
@@ -305,45 +298,56 @@ export const TeacherExamCard = ({
               </div>
             )}
             
-            {/* Actions based on status */}
-            <div className="flex items-center gap-2 pt-1">
-              {exam.status === "draft" && (
-                <>
-                  <Button size="sm" variant="outline" className="flex-1 h-9" onClick={onEdit}>
-                    Continue
-                  </Button>
-                  <Button size="sm" className="flex-1 h-9 gradient-button" onClick={onStart}>
-                    <Play className="w-3.5 h-3.5 mr-1.5" />
-                    Start
-                  </Button>
-                </>
-              )}
-              {exam.status === "scheduled" && (
-                <Button size="sm" className="w-full h-9 gradient-button" onClick={onStart}>
-                  <Play className="w-3.5 h-3.5 mr-1.5" />
-                  Start Now
+            {/* Action Buttons - Correct teacher actions */}
+            <div className="flex items-center gap-1.5 pt-1">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1 h-8 text-xs px-2" 
+                onClick={onView}
+              >
+                <Eye className="w-3 h-3 mr-1" />
+                View
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1 h-8 text-xs px-2" 
+                onClick={onAssign}
+              >
+                <Users className="w-3 h-3 mr-1" />
+                Assign
+              </Button>
+              {exam.status === "draft" ? (
+                <Button 
+                  size="sm" 
+                  className="flex-1 h-8 text-xs px-2 gradient-button" 
+                  onClick={onSchedule}
+                >
+                  <CalendarClock className="w-3 h-3 mr-1" />
+                  Schedule
                 </Button>
-              )}
-              {exam.status === "live" && (
-                <Button size="sm" variant="outline" className="w-full h-9 border-green-500 text-green-600 dark:text-green-400">
-                  <Users className="w-3.5 h-3.5 mr-1.5" />
-                  View Live
-                </Button>
-              )}
-              {exam.status === "completed" && (
-                <Button size="sm" variant="outline" className="w-full h-9" onClick={onViewResults}>
-                  <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
+              ) : exam.status === "completed" ? (
+                <Button 
+                  size="sm" 
+                  className="flex-1 h-8 text-xs px-2 gradient-button" 
+                  onClick={onViewResults}
+                >
+                  <BarChart3 className="w-3 h-3 mr-1" />
                   Results
+                </Button>
+              ) : (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1 h-8 text-xs px-2" 
+                  onClick={onEdit}
+                >
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
                 </Button>
               )}
             </div>
-
-            {/* Swipe hint indicator - shown only on mobile when card hasn't been swiped yet */}
-            {isMobile && !isRevealed && translateX === 0 && (
-              <div className="absolute bottom-2 right-2 flex items-center gap-1 text-[10px] text-muted-foreground/50 animate-pulse pointer-events-none">
-                <span>← Swipe</span>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
