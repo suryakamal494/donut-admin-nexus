@@ -26,7 +26,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "Calculator", 
     progress: 45, 
     status: "in-progress", 
-    color: "coral",
+    color: "blue",
     chaptersTotal: 6,
     chaptersCompleted: 3
   },
@@ -36,7 +36,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "Atom", 
     progress: 15, 
     status: "just-started", 
-    color: "orange",
+    color: "purple",
     chaptersTotal: 5,
     chaptersCompleted: 1
   },
@@ -46,7 +46,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "FlaskConical", 
     progress: 78, 
     status: "doing-well", 
-    color: "pink",
+    color: "green",
     chaptersTotal: 5,
     chaptersCompleted: 4
   },
@@ -56,7 +56,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "Leaf", 
     progress: 25, 
     status: "needs-attention", 
-    color: "warm",
+    color: "red",
     chaptersTotal: 6,
     chaptersCompleted: 2
   },
@@ -66,7 +66,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "BookOpen", 
     progress: 88, 
     status: "almost-done", 
-    color: "sunset",
+    color: "amber",
     chaptersTotal: 4,
     chaptersCompleted: 4
   },
@@ -76,7 +76,7 @@ export const studentSubjects: StudentSubject[] = [
     icon: "Code", 
     progress: 55, 
     status: "on-track", 
-    color: "rose",
+    color: "cyan",
     chaptersTotal: 5,
     chaptersCompleted: 3
   },
