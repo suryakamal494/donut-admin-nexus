@@ -85,6 +85,28 @@ export interface TeacherAssessment {
   createdAt: string;
 }
 
+// Teacher Exam (Full exam with all features from Institute panel)
+export interface TeacherExam {
+  id: string;
+  name: string;
+  subjects: string[];
+  pattern: 'custom' | 'jee_main' | 'jee_advanced' | 'neet';
+  uiType: 'platform' | 'real_exam';
+  totalQuestions: number;
+  totalMarks: number;
+  duration: number;
+  negativeMarking: boolean;
+  negativeMarks: number;
+  creationMethod: 'ai' | 'pdf' | 'questionBank';
+  batchIds: string[];
+  scheduledDate?: string;
+  scheduledTime?: string;
+  status: 'draft' | 'scheduled' | 'live' | 'completed';
+  questionIds?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TeacherHomework {
   id: string;
   title: string;
