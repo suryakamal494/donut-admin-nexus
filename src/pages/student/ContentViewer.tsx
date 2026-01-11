@@ -25,6 +25,19 @@ import { getSubjectColors, getSubjectIcon, getSubjectPattern } from "@/component
 const SWIPE_THRESHOLD = 50;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 
+// Haptic feedback utility
+const triggerHaptic = (type: "light" | "medium" | "heavy" = "light") => {
+  // Use Vibration API if available
+  if ("vibrate" in navigator) {
+    const patterns = {
+      light: 10,
+      medium: 20,
+      heavy: 30,
+    };
+    navigator.vibrate(patterns[type]);
+  }
+};
+
 const StudentContentViewer = () => {
   const navigate = useNavigate();
   const { subjectId, chapterId, bundleId, contentId } = useParams<{
@@ -78,6 +91,7 @@ const StudentContentViewer = () => {
 
   const handleNext = useCallback(() => {
     if (hasNext) {
+      triggerHaptic("light");
       setSwipeDirection("left");
       const nextContent = contentItems[currentIndex + 1];
       navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${nextContent.id}`);
@@ -86,6 +100,7 @@ const StudentContentViewer = () => {
 
   const handlePrev = useCallback(() => {
     if (hasPrev) {
+      triggerHaptic("light");
       setSwipeDirection("right");
       const prevContent = contentItems[currentIndex - 1];
       navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${prevContent.id}`);
