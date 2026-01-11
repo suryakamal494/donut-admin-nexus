@@ -1,5 +1,6 @@
 // Classroom Mode - Displays lesson bundles and homework
 
+import { useNavigate, useParams } from "react-router-dom";
 import { BookOpen, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LessonBundleCard } from "./LessonBundleCard";
@@ -12,8 +13,15 @@ interface ClassroomModeProps {
 }
 
 export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModeProps) {
+  const navigate = useNavigate();
+  const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
+  
   const pendingHomework = homeworkItems.filter(h => !h.isCompleted);
   const completedHomework = homeworkItems.filter(h => h.isCompleted);
+
+  const handleBundleClick = (bundleId: string) => {
+    navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -31,7 +39,7 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
               <LessonBundleCard
                 key={bundle.id}
                 bundle={bundle}
-                onClick={() => console.log("Open bundle:", bundle.id)}
+                onClick={() => handleBundleClick(bundle.id)}
               />
             ))}
           </div>
