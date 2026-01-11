@@ -102,11 +102,11 @@ const StudentBundleDetail = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="max-w-3xl mx-auto px-4 py-4 lg:py-6 space-y-6">
-        {/* Bundle Header */}
+        {/* Bundle Header with Subject Branding */}
         <BundleHeader
           bundle={bundle}
           contentItems={contentItems}
-          subjectName={subject.name}
+          subject={subject}
           chapterName={chapter.name}
           onBack={handleBack}
         />
@@ -130,7 +130,14 @@ const StudentBundleDetail = () => {
         {/* Content Items */}
         <section className="space-y-3">
           <div className="flex items-center gap-2 px-1">
-            <BookOpen className="w-4 h-4 text-cyan-600" />
+            <BookOpen className={cn(
+              "w-4 h-4",
+              subject.color === "blue" ? "text-blue-600" :
+              subject.color === "purple" ? "text-purple-600" :
+              subject.color === "green" ? "text-emerald-600" :
+              subject.color === "red" ? "text-rose-600" :
+              subject.color === "amber" ? "text-amber-600" : "text-cyan-600"
+            )} />
             <h2 className="text-sm font-semibold text-foreground">LESSON CONTENT</h2>
             <span className="text-xs text-muted-foreground">
               ({contentItems.length} items)
