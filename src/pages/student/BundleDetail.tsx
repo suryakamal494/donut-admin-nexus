@@ -1,6 +1,6 @@
 // Lesson Bundle Detail Page - View all content in a lesson bundle
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,11 +11,13 @@ import {
   getContentByBundle,
   getScreenshotsByBundle,
   type TeacherScreenshot,
+  type BundleContentItem,
 } from "@/data/student/lessonBundles";
 import { BundleHeader } from "@/components/student/chapter/BundleHeader";
 import { ContentItemCard } from "@/components/student/chapter/ContentItemCard";
 import { ScreenshotGallery } from "@/components/student/chapter/ScreenshotGallery";
 import { ScreenshotViewer } from "@/components/student/chapter/screenshot-viewer";
+import { VirtualizedList } from "@/components/student/chapter/VirtualizedList";
 
 const StudentBundleDetail = () => {
   const navigate = useNavigate();
@@ -28,42 +30,74 @@ const StudentBundleDetail = () => {
   const [screenshotViewerOpen, setScreenshotViewerOpen] = useState(false);
   const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState(0);
 
-  // Find subject
-  const subject = studentSubjects.find((s) => s.id === subjectId);
+  // Memoize data lookups
+  const subject = useMemo(
+    () => studentSubjects.find((s) => s.id === subjectId),
+    [subjectId]
+  );
+
+  const chapter = useMemo(() => {
+    if (!subjectId) return undefined;
+    const chapters = getChaptersBySubject(subjectId);
+    return chapters.find((c) => c.id === chapterId);
+  }, [subjectId, chapterId]);
+
+  const bundle = useMemo(
+    () => (bundleId ? getLessonBundleById(bundleId) : undefined),
+    [bundleId]
+  );
+
+  const contentItems = useMemo(
+    () => (bundleId ? getContentByBundle(bundleId) : []),
+    [bundleId]
+  );
+
+  const screenshots = useMemo(
+    () => (bundleId ? getScreenshotsByBundle(bundleId) : []),
+    [bundleId]
+  );
+
+  // Memoize handlers
+  const handleBack = useCallback(() => {
+    navigate(`/student/subjects/${subjectId}/${chapterId}`);
+  }, [navigate, subjectId, chapterId]);
+
+  const handleContentClick = useCallback((contentId: string) => {
+    navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${contentId}`);
+  }, [navigate, subjectId, chapterId, bundleId]);
+
+  const handleScreenshotClick = useCallback((screenshot: TeacherScreenshot) => {
+    const index = screenshots.findIndex(s => s.id === screenshot.id);
+    setSelectedScreenshotIndex(index >= 0 ? index : 0);
+    setScreenshotViewerOpen(true);
+  }, [screenshots]);
+
+  const handleCloseViewer = useCallback(() => {
+    setScreenshotViewerOpen(false);
+  }, []);
+
+  // Render function for content items
+  const renderContentItem = useCallback((item: BundleContentItem) => (
+    <ContentItemCard
+      item={item}
+      onClick={() => handleContentClick(item.id)}
+    />
+  ), [handleContentClick]);
+
+  const getContentKey = useCallback((item: BundleContentItem) => item.id, []);
+
+  // Early returns for missing data
   if (!subject) {
     return <Navigate to="/student/subjects" replace />;
   }
 
-  // Find chapter
-  const chapters = getChaptersBySubject(subjectId!);
-  const chapter = chapters.find((c) => c.id === chapterId);
   if (!chapter) {
     return <Navigate to={`/student/subjects/${subjectId}`} replace />;
   }
 
-  // Find bundle
-  const bundle = getLessonBundleById(bundleId!);
   if (!bundle) {
     return <Navigate to={`/student/subjects/${subjectId}/${chapterId}`} replace />;
   }
-
-  // Get bundle content and screenshots
-  const contentItems = getContentByBundle(bundleId!);
-  const screenshots = getScreenshotsByBundle(bundleId!);
-
-  const handleBack = () => {
-    navigate(`/student/subjects/${subjectId}/${chapterId}`);
-  };
-
-  const handleContentClick = (contentId: string) => {
-    navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${contentId}`);
-  };
-
-  const handleScreenshotClick = (screenshot: TeacherScreenshot) => {
-    const index = screenshots.findIndex(s => s.id === screenshot.id);
-    setSelectedScreenshotIndex(index >= 0 ? index : 0);
-    setScreenshotViewerOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -90,7 +124,7 @@ const StudentBundleDetail = () => {
           screenshots={screenshots}
           initialIndex={selectedScreenshotIndex}
           open={screenshotViewerOpen}
-          onClose={() => setScreenshotViewerOpen(false)}
+          onClose={handleCloseViewer}
         />
 
         {/* Content Items */}
@@ -104,15 +138,13 @@ const StudentBundleDetail = () => {
           </div>
 
           {contentItems.length > 0 ? (
-            <div className="space-y-2">
-              {contentItems.map((item) => (
-                <ContentItemCard
-                  key={item.id}
-                  item={item}
-                  onClick={() => handleContentClick(item.id)}
-                />
-              ))}
-            </div>
+            <VirtualizedList
+              items={contentItems}
+              renderItem={renderContentItem}
+              getItemKey={getContentKey}
+              estimatedItemHeight={80}
+              gap={8}
+            />
           ) : (
             <div className={cn(
               "bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50",

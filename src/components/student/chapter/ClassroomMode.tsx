@@ -1,10 +1,12 @@
-// Classroom Mode - Displays lesson bundles and homework
+// Classroom Mode - Displays lesson bundles and homework with virtualization
 
 import { useNavigate, useParams } from "react-router-dom";
+import { useCallback, useMemo } from "react";
 import { BookOpen, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LessonBundleCard } from "./LessonBundleCard";
 import { HomeworkCard } from "./HomeworkCard";
+import { VirtualizedList } from "./VirtualizedList";
 import type { LessonBundle, HomeworkItem } from "@/data/student/lessonBundles";
 
 interface ClassroomModeProps {
@@ -16,12 +18,48 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
   const navigate = useNavigate();
   const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
   
-  const pendingHomework = homeworkItems.filter(h => !h.isCompleted);
-  const completedHomework = homeworkItems.filter(h => h.isCompleted);
+  // Memoize filtered lists
+  const pendingHomework = useMemo(
+    () => homeworkItems.filter(h => !h.isCompleted),
+    [homeworkItems]
+  );
+  const completedHomework = useMemo(
+    () => homeworkItems.filter(h => h.isCompleted),
+    [homeworkItems]
+  );
 
-  const handleBundleClick = (bundleId: string) => {
+  // Memoize handlers
+  const handleBundleClick = useCallback((bundleId: string) => {
     navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}`);
-  };
+  }, [navigate, subjectId, chapterId]);
+
+  const handleHomeworkClick = useCallback((homeworkId: string) => {
+    console.log("Start homework:", homeworkId);
+  }, []);
+
+  // Render functions for virtualized lists
+  const renderBundle = useCallback((bundle: LessonBundle) => (
+    <LessonBundleCard
+      bundle={bundle}
+      onClick={() => handleBundleClick(bundle.id)}
+    />
+  ), [handleBundleClick]);
+
+  const renderHomework = useCallback((homework: HomeworkItem) => (
+    <HomeworkCard
+      homework={homework}
+      onClick={!homework.isCompleted ? () => handleHomeworkClick(homework.id) : undefined}
+    />
+  ), [handleHomeworkClick]);
+
+  const getBundleKey = useCallback((bundle: LessonBundle) => bundle.id, []);
+  const getHomeworkKey = useCallback((homework: HomeworkItem) => homework.id, []);
+
+  // Combine pending and completed homework for single virtualized list
+  const allHomework = useMemo(
+    () => [...pendingHomework, ...completedHomework],
+    [pendingHomework, completedHomework]
+  );
 
   return (
     <div className="space-y-6">
@@ -33,31 +71,18 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
           <span className="text-xs text-muted-foreground">({lessonBundles.length})</span>
         </div>
 
-        {lessonBundles.length > 0 ? (
-          <div className="space-y-3">
-            {lessonBundles.map((bundle) => (
-              <LessonBundleCard
-                key={bundle.id}
-                bundle={bundle}
-                onClick={() => handleBundleClick(bundle.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className={cn(
-            "bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50",
-            "p-6 text-center"
-          )}>
-            <BookOpen className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">
-              No class sessions yet for this chapter
-            </p>
-          </div>
-        )}
+        <VirtualizedList
+          items={lessonBundles}
+          renderItem={renderBundle}
+          getItemKey={getBundleKey}
+          estimatedItemHeight={100}
+          emptyMessage="No class sessions yet for this chapter"
+          emptyIcon={<BookOpen className="w-8 h-8 text-muted-foreground/40 mx-auto" />}
+        />
       </section>
 
       {/* Homework Section */}
-      {(pendingHomework.length > 0 || completedHomework.length > 0) && (
+      {allHomework.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-3 px-1">
             <ClipboardList className="w-4 h-4 text-amber-600" />
@@ -72,24 +97,12 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
             )}
           </div>
 
-          <div className="space-y-3">
-            {/* Pending homework first */}
-            {pendingHomework.map((homework) => (
-              <HomeworkCard
-                key={homework.id}
-                homework={homework}
-                onClick={() => console.log("Start homework:", homework.id)}
-              />
-            ))}
-            
-            {/* Completed homework */}
-            {completedHomework.map((homework) => (
-              <HomeworkCard
-                key={homework.id}
-                homework={homework}
-              />
-            ))}
-          </div>
+          <VirtualizedList
+            items={allHomework}
+            renderItem={renderHomework}
+            getItemKey={getHomeworkKey}
+            estimatedItemHeight={80}
+          />
         </section>
       )}
 
