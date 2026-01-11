@@ -108,10 +108,10 @@ const StudentContentViewer = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Header with subject branding */}
+    <div className="h-[100dvh] flex flex-col bg-background">
+      {/* Header with subject branding - compact for mobile */}
       <header className={cn(
-        "relative overflow-hidden",
+        "relative overflow-hidden flex-shrink-0",
         "bg-gradient-to-br backdrop-blur-xl border-b",
         colors.gradient,
         colors.border,
@@ -123,20 +123,20 @@ const StudentContentViewer = () => {
           className={cn(colors.patternColor, "opacity-30")}
         />
 
-        {/* Header content */}
-        <div className="relative z-10 flex items-center justify-between px-3 py-2.5 md:px-4 md:py-3">
-          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+        {/* Header content - compact */}
+        <div className="relative z-10 flex items-center justify-between px-2 py-2 md:px-4 md:py-3">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             <Button
               variant="ghost"
               size="icon"
               onClick={handleBack}
-              className="flex-shrink-0 h-8 w-8 md:h-9 md:w-9"
+              className="flex-shrink-0 h-8 w-8"
             >
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </Button>
             
             <div className="flex-1 min-w-0">
-              <h1 className="font-semibold text-foreground truncate text-sm lg:text-base">
+              <h1 className="font-semibold text-foreground truncate text-sm">
                 {content.title}
               </h1>
               <p className={cn("text-xs truncate", colors.textAccent)}>
@@ -146,55 +146,56 @@ const StudentContentViewer = () => {
           </div>
 
           {/* Right side: Completion badge + Subject icon */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Completion badge */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {content.isCompleted && (
-              <div className="flex items-center gap-1 px-2 py-0.5 bg-green-100 rounded-full">
+              <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-100 rounded-full">
                 <CheckCircle2 className="w-3 h-3 text-green-600" />
-                <span className="text-xs font-medium text-green-700 hidden sm:inline">Completed</span>
+                <span className="text-[10px] font-medium text-green-700 hidden sm:inline">Done</span>
               </div>
             )}
 
             {/* Subject icon */}
             <div className={cn(
-              "flex w-7 h-7 md:w-8 md:h-8 rounded-lg items-center justify-center",
+              "flex w-7 h-7 rounded-lg items-center justify-center",
               colors.iconBg
             )}>
-              <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+              <Icon className="w-3.5 h-3.5 text-white" />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Content Viewer */}
+      {/* Content Viewer - takes remaining space */}
       <main className="flex-1 overflow-hidden">
         {renderViewer()}
       </main>
 
-      {/* Navigation footer (for non-quiz content) */}
+      {/* Navigation footer (for non-quiz content) - mobile optimized */}
       {content.type !== "quiz" && (
         <footer className={cn(
-          "flex items-center justify-between px-4 py-3",
-          "bg-white/80 backdrop-blur-xl border-t border-slate-100",
-          "safe-area-inset-bottom"
+          "flex items-center justify-between gap-3 px-3 py-2.5 md:px-4 md:py-3",
+          "bg-white/90 backdrop-blur-xl border-t border-slate-100",
+          "safe-area-inset-bottom flex-shrink-0"
         )}>
           <Button
             variant="outline"
+            size="sm"
             onClick={handlePrev}
             disabled={!hasPrev}
-            className="flex-1 max-w-[140px]"
+            className="flex-1 max-w-[120px] h-9"
           >
             Previous
           </Button>
           
-          <span className="text-sm text-muted-foreground">
-            {currentIndex + 1} of {contentItems.length}
+          <span className="text-xs text-muted-foreground font-medium">
+            {currentIndex + 1} / {contentItems.length}
           </span>
 
           <Button
+            size="sm"
             onClick={handleNext}
             disabled={!hasNext}
-            className="flex-1 max-w-[140px]"
+            className="flex-1 max-w-[120px] h-9"
           >
             Next
           </Button>

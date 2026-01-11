@@ -131,7 +131,7 @@ export const LessonBundleCard = memo(function LessonBundleCard({
             }
           }}
           className={cn(
-            "w-full text-left ml-3 md:ml-4 mr-1",
+            "w-full text-left",
             "flex items-center gap-2 px-2.5 py-1.5 rounded-lg",
             "transition-all duration-200 active:scale-[0.98]",
             urgency === "overdue" && "bg-red-50 border border-red-200 hover:bg-red-100",
@@ -172,7 +172,7 @@ export const LessonBundleCard = memo(function LessonBundleCard({
 
       {/* Completed homework indicator (subtle) */}
       {!hasPendingHomework && linkedHomework.length > 0 && (
-        <div className="ml-3 md:ml-4 flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
           <CheckCircle2 className="w-3 h-3 text-emerald-500" />
           <span>Homework completed</span>
         </div>

@@ -48,10 +48,10 @@ export function PDFViewer({ content, onComplete }: PDFViewerProps) {
 
   return (
     <div className="flex flex-col h-full bg-slate-100">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-slate-200">
+      {/* Compact Toolbar - mobile-first */}
+      <div className="flex items-center justify-between px-2 md:px-4 py-1.5 md:py-2 bg-white border-b border-slate-200">
         {/* Page navigation */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
@@ -61,7 +61,7 @@ export function PDFViewer({ content, onComplete }: PDFViewerProps) {
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <span className="text-sm font-medium min-w-[80px] text-center">
+          <span className="text-xs md:text-sm font-medium min-w-[60px] md:min-w-[80px] text-center">
             {currentPage} / {totalPages}
           </span>
           <Button
@@ -75,8 +75,8 @@ export function PDFViewer({ content, onComplete }: PDFViewerProps) {
           </Button>
         </div>
 
-        {/* Zoom controls */}
-        <div className="flex items-center gap-2">
+        {/* Zoom controls - hidden on mobile */}
+        <div className="hidden md:flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -111,8 +111,8 @@ export function PDFViewer({ content, onComplete }: PDFViewerProps) {
         </div>
       </div>
 
-      {/* PDF Content Area */}
-      <div className="flex-1 overflow-auto p-4">
+      {/* PDF Content Area - takes remaining space */}
+      <div className="flex-1 overflow-auto p-2 md:p-4">
         <div 
           className="mx-auto bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-200"
           style={{ 
@@ -123,59 +123,37 @@ export function PDFViewer({ content, onComplete }: PDFViewerProps) {
           }}
         >
           {/* Mock PDF Page */}
-          <div className="aspect-[8.5/11] bg-white p-8 flex flex-col">
+          <div className="aspect-[8.5/11] bg-white p-4 md:p-8 flex flex-col">
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200">
-              <FileText className="w-8 h-8 text-blue-600" />
-              <div>
-                <h2 className="font-bold text-lg text-foreground">{content.title}</h2>
-                <p className="text-sm text-muted-foreground">Page {currentPage}</p>
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6 pb-3 md:pb-4 border-b border-slate-200">
+              <FileText className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+              <div className="min-w-0">
+                <h2 className="font-bold text-sm md:text-lg text-foreground truncate">{content.title}</h2>
+                <p className="text-xs md:text-sm text-muted-foreground">Page {currentPage}</p>
               </div>
             </div>
 
             {/* Mock content lines */}
-            <div className="space-y-3 flex-1">
-              {Array.from({ length: 12 }).map((_, i) => (
+            <div className="space-y-2 md:space-y-3 flex-1">
+              {Array.from({ length: 10 }).map((_, i) => (
                 <div
                   key={i}
                   className={cn(
-                    "h-3 bg-slate-100 rounded",
+                    "h-2 md:h-3 bg-slate-100 rounded",
                     i % 4 === 0 ? "w-3/4" : "w-full",
-                    i === 5 && "h-32 bg-slate-50 border border-slate-200" // Image placeholder
+                    i === 5 && "h-20 md:h-32 bg-slate-50 border border-slate-200"
                   )}
                 />
               ))}
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-center pt-4 mt-auto border-t border-slate-100 text-xs text-muted-foreground">
-              <span>{content.title}</span>
+            <div className="flex justify-between items-center pt-3 md:pt-4 mt-auto border-t border-slate-100 text-[10px] md:text-xs text-muted-foreground">
+              <span className="truncate max-w-[150px]">{content.title}</span>
               <span>Page {currentPage} of {totalPages}</span>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Mobile-friendly page nav at bottom */}
-      <div className="flex items-center justify-center gap-4 px-4 py-3 bg-white border-t border-slate-200 lg:hidden">
-        <Button
-          variant="outline"
-          onClick={goToPrevPage}
-          disabled={currentPage === 1}
-          className="flex-1 max-w-[150px]"
-        >
-          <ChevronLeft className="w-4 h-4 mr-1" />
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          onClick={goToNextPage}
-          disabled={currentPage === totalPages}
-          className="flex-1 max-w-[150px]"
-        >
-          Next
-          <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
       </div>
     </div>
   );

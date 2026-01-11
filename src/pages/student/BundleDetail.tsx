@@ -100,8 +100,8 @@ const StudentBundleDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="max-w-3xl mx-auto px-4 py-4 lg:py-6 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 pb-24 lg:pb-6">
+      <div className="max-w-3xl mx-auto px-3 md:px-4 py-3 lg:py-6 space-y-4 lg:space-y-6">
         {/* Bundle Header with Subject Branding */}
         <BundleHeader
           bundle={bundle}
@@ -111,7 +111,7 @@ const StudentBundleDetail = () => {
           onBack={handleBack}
         />
 
-        {/* Teacher Screenshots (if any) */}
+        {/* Teacher Screenshots (if any) - Collapsible on mobile */}
         {screenshots.length > 0 && (
           <ScreenshotGallery
             screenshots={screenshots}
@@ -128,7 +128,7 @@ const StudentBundleDetail = () => {
         />
 
         {/* Content Items */}
-        <section className="space-y-3">
+        <section className="space-y-2 md:space-y-3">
           <div className="flex items-center gap-2 px-1">
             <BookOpen className={cn(
               "w-4 h-4",
@@ -149,7 +149,7 @@ const StudentBundleDetail = () => {
               items={contentItems}
               renderItem={renderContentItem}
               getItemKey={getContentKey}
-              estimatedItemHeight={80}
+              estimatedItemHeight={72}
               gap={8}
             />
           ) : (
