@@ -125,6 +125,7 @@ import StudentLogin from "./pages/student/Login";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentSubjects from "./pages/student/Subjects";
 import StudentSubjectDetail from "./pages/student/SubjectDetail";
+import StudentChapterView from "./pages/student/ChapterView";
 import StudentTests from "./pages/student/Tests";
 import StudentProgress from "./pages/student/Progress";
 import StudentNotifications from "./pages/student/Notifications";
@@ -259,7 +260,7 @@ const App = () => (
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="subjects" element={<StudentSubjects />} />
             <Route path="subjects/:subjectId" element={<StudentSubjectDetail />} />
-            <Route path="subjects/:subjectId/:chapterId" element={<StudentSubjectDetail />} />
+            <Route path="subjects/:subjectId/:chapterId" element={<StudentChapterView />} />
             <Route path="tests" element={<StudentTests />} />
             <Route path="progress" element={<StudentProgress />} />
             <Route path="notifications" element={<StudentNotifications />} />
