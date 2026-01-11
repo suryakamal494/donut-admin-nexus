@@ -1,12 +1,11 @@
 // Question Palette Component
 // Mobile: Bottom sheet | Desktop: Sidebar panel
-// Shows all questions with animated status colors
+// Shows all questions with wrap grid layout - NO scrollbars
 
 import { memo, useMemo } from "react";
-import { X, CheckCircle2, Circle, Flag, Eye, HelpCircle } from "lucide-react";
+import { CheckCircle2, Circle, Flag, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -30,58 +29,81 @@ interface QuestionPaletteProps {
 
 const statusStyles = {
   not_visited: {
-    bg: "bg-muted",
-    border: "border-muted-foreground/20",
-    text: "text-muted-foreground",
+    bg: "bg-slate-200",
+    border: "border-slate-300",
+    text: "text-slate-600",
   },
   not_answered: {
     bg: "bg-red-100",
-    border: "border-red-300",
-    text: "text-red-600",
+    border: "border-red-400",
+    text: "text-red-700",
   },
   answered: {
-    bg: "bg-emerald-100",
-    border: "border-emerald-300",
-    text: "text-emerald-600",
+    bg: "bg-emerald-500",
+    border: "border-emerald-600",
+    text: "text-white",
   },
   marked_review: {
-    bg: "bg-purple-100",
-    border: "border-purple-300",
-    text: "text-purple-600",
+    bg: "bg-purple-500",
+    border: "border-purple-600",
+    text: "text-white",
   },
   answered_marked: {
-    bg: "bg-purple-100",
-    border: "border-purple-300",
-    text: "text-purple-600",
+    bg: "bg-purple-500",
+    border: "border-purple-600",
+    text: "text-white",
   },
 };
 
-// Legend Item with animated count
+// Section tab colors matching header
+const sectionTabColors: Record<string, { active: string; inactive: string }> = {
+  physics: {
+    active: "bg-purple-600 text-white",
+    inactive: "bg-purple-100 text-purple-700 hover:bg-purple-200",
+  },
+  chemistry: {
+    active: "bg-emerald-600 text-white",
+    inactive: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+  },
+  mathematics: {
+    active: "bg-blue-600 text-white",
+    inactive: "bg-blue-100 text-blue-700 hover:bg-blue-200",
+  },
+  biology: {
+    active: "bg-rose-600 text-white",
+    inactive: "bg-rose-100 text-rose-700 hover:bg-rose-200",
+  },
+  english: {
+    active: "bg-amber-600 text-white",
+    inactive: "bg-amber-100 text-amber-700 hover:bg-amber-200",
+  },
+};
+
+// Compact Legend Item
 const LegendItem = memo(function LegendItem({
   icon: Icon,
   label,
   count,
-  colorClass,
   bgClass,
+  textClass,
 }: {
   icon: typeof Circle;
   label: string;
   count: number;
-  colorClass: string;
-  bgClass?: string;
+  bgClass: string;
+  textClass: string;
 }) {
   return (
-    <div className={cn(
-      "flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg",
-      bgClass || "bg-transparent"
-    )}>
-      <Icon className={cn("w-3.5 h-3.5", colorClass)} />
-      <span className="text-muted-foreground">{label}</span>
+    <div className="flex items-center gap-1.5 text-[10px] sm:text-xs">
+      <span className={cn("w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center", bgClass)}>
+        <Icon className={cn("w-3 h-3 sm:w-3.5 sm:h-3.5", textClass)} />
+      </span>
+      <span className="text-muted-foreground hidden sm:inline">{label}</span>
       <motion.span 
         key={count}
-        initial={{ scale: 1.3, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="font-bold text-foreground min-w-[1.25rem] text-center"
+        initial={{ scale: 1.2 }}
+        animate={{ scale: 1 }}
+        className="font-bold text-foreground"
       >
         {count}
       </motion.span>
@@ -89,7 +111,7 @@ const LegendItem = memo(function LegendItem({
   );
 });
 
-// Palette Grid
+// Question Grid with wrap layout - no internal scroll
 const PaletteGrid = memo(function PaletteGrid({
   questions,
   currentQuestionIndex,
@@ -102,7 +124,7 @@ const PaletteGrid = memo(function PaletteGrid({
   onQuestionSelect: (index: number) => void;
 }) {
   return (
-    <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+    <div className="flex flex-wrap gap-1.5 sm:gap-2">
       {questions.map((q) => {
         const globalIndex = allQuestions.findIndex((aq) => aq.id === q.id);
         const isCurrent = globalIndex === currentQuestionIndex;
@@ -115,21 +137,14 @@ const PaletteGrid = memo(function PaletteGrid({
             key={q.id}
             onClick={() => onQuestionSelect(globalIndex)}
             initial={false}
-            animate={{
-              scale: isCurrent ? 1.05 : 1,
-              boxShadow: isCurrent 
-                ? "0 4px 12px rgba(0,0,0,0.15)" 
-                : "0 1px 3px rgba(0,0,0,0.1)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            whileTap={{ scale: 0.9 }}
             className={cn(
-              "relative w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-semibold text-sm",
-              "border-2 transition-colors duration-300",
+              "relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-semibold text-xs sm:text-sm",
+              "border-2 transition-all duration-200",
               style.bg,
               style.border,
               style.text,
-              isCurrent && "ring-2 ring-primary ring-offset-2"
+              isCurrent && "ring-2 ring-primary ring-offset-1 scale-110 z-10 shadow-lg"
             )}
           >
             {q.questionNumber}
@@ -137,22 +152,22 @@ const PaletteGrid = memo(function PaletteGrid({
             {/* Answered checkmark indicator */}
             {isAnswered && (
               <motion.span
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-600 flex items-center justify-center border border-white"
               >
-                <CheckCircle2 className="w-3 h-3 text-white" />
+                <CheckCircle2 className="w-2.5 h-2.5 text-white" />
               </motion.span>
             )}
             
             {/* Marked flag indicator */}
             {isMarked && !isAnswered && (
               <motion.span
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-purple-600 flex items-center justify-center border border-white"
               >
-                <Flag className="w-2.5 h-2.5 text-white" />
+                <Flag className="w-2 h-2 text-white" />
               </motion.span>
             )}
           </motion.button>
@@ -197,11 +212,16 @@ const QuestionPalette = memo(function QuestionPalette({
     onClose();
   };
 
+  const getSectionTabColors = (subject: string, isActive: boolean) => {
+    const colors = sectionTabColors[subject.toLowerCase()] || sectionTabColors.physics;
+    return isActive ? colors.active : colors.inactive;
+  };
+
   const PaletteContent = (
     <div className="flex flex-col h-full">
-      {/* Section Tabs */}
+      {/* Section Pills - Colored with no scrollbar */}
       {sections.length > 1 && (
-        <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide border-b border-border">
+        <div className="flex flex-wrap gap-1.5 px-3 py-2 border-b border-border bg-muted/30">
           {sections.map((section) => {
             const isActive = section.id === currentSectionId;
             const stats = getSectionStats(sessionQuestions, section.id);
@@ -211,18 +231,16 @@ const QuestionPalette = memo(function QuestionPalette({
                 key={section.id}
                 onClick={() => onSectionChange(section.id)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium",
-                  "transition-all duration-200 shrink-0",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium",
+                  "transition-all duration-200",
+                  getSectionTabColors(section.subject, isActive)
                 )}
               >
-                {section.name}
+                <span className="truncate max-w-[50px] sm:max-w-none">{section.name}</span>
                 <span
                   className={cn(
-                    "px-1.5 py-0.5 rounded text-[10px] font-bold",
-                    isActive ? "bg-white/20" : "bg-current/10"
+                    "px-1 py-0.5 rounded text-[9px] font-bold",
+                    isActive ? "bg-white/25" : "bg-current/10"
                   )}
                 >
                   {stats.answered}/{stats.total}
@@ -233,42 +251,42 @@ const QuestionPalette = memo(function QuestionPalette({
         </div>
       )}
 
-      {/* Legend with highlighted stats */}
-      <div className="px-4 py-3 border-b border-border bg-muted/30">
-        <div className="grid grid-cols-2 gap-2">
+      {/* Legend - Compact inline */}
+      <div className="px-3 py-2 border-b border-border bg-white">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <LegendItem
             icon={CheckCircle2}
             label="Answered"
             count={overallStats.answered}
-            colorClass="text-emerald-600"
-            bgClass="bg-emerald-50"
+            bgClass="bg-emerald-500"
+            textClass="text-white"
           />
           <LegendItem
             icon={Circle}
-            label="Not Answered"
+            label="Unanswered"
             count={overallStats.notAnswered}
-            colorClass="text-red-600"
-            bgClass="bg-red-50"
+            bgClass="bg-red-100"
+            textClass="text-red-600"
           />
           <LegendItem
             icon={Flag}
             label="Marked"
             count={overallStats.marked}
-            colorClass="text-purple-600"
-            bgClass="bg-purple-50"
+            bgClass="bg-purple-500"
+            textClass="text-white"
           />
           <LegendItem
             icon={HelpCircle}
             label="Not Visited"
             count={overallStats.notVisited}
-            colorClass="text-muted-foreground"
-            bgClass="bg-muted"
+            bgClass="bg-slate-200"
+            textClass="text-slate-500"
           />
         </div>
       </div>
 
-      {/* Question Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Question Grid - scrollable area without visible scrollbar */}
+      <div className="flex-1 overflow-y-auto scrollbar-hide p-3">
         <PaletteGrid
           questions={currentSectionQuestions}
           currentQuestionIndex={currentQuestionIndex}
@@ -284,9 +302,9 @@ const QuestionPalette = memo(function QuestionPalette({
     <>
       {/* Mobile Sheet */}
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl p-0 lg:hidden">
-          <SheetHeader className="px-4 py-3 border-b border-border">
-            <SheetTitle className="text-base">Question Palette</SheetTitle>
+        <SheetContent side="bottom" className="h-[60vh] rounded-t-2xl p-0 lg:hidden">
+          <SheetHeader className="px-3 py-2 border-b border-border">
+            <SheetTitle className="text-sm font-semibold">Question Palette</SheetTitle>
           </SheetHeader>
           {PaletteContent}
         </SheetContent>
@@ -295,12 +313,12 @@ const QuestionPalette = memo(function QuestionPalette({
       {/* Desktop: Sidebar (always visible) */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col w-72 border-l border-border bg-white",
+          "hidden lg:flex flex-col w-64 border-l border-border bg-white",
           "h-full overflow-hidden"
         )}
       >
-        <div className="px-4 py-3 border-b border-border">
-          <h3 className="font-semibold text-foreground">Question Palette</h3>
+        <div className="px-3 py-2 border-b border-border bg-muted/30">
+          <h3 className="font-semibold text-foreground text-sm">Question Palette</h3>
         </div>
         {PaletteContent}
       </aside>

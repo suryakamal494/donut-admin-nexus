@@ -22,6 +22,7 @@ export type QuestionStatus =
 export interface QuestionOption {
   id: string;
   text: string;
+  imageUrl?: string; // Support image-based options
   isCorrect?: boolean; // Only for answer checking
 }
 
@@ -162,16 +163,16 @@ export const sampleMCQSingle: MCQSingleQuestion[] = [
     subject: "physics",
     chapter: "Laws of Motion",
     topic: "Newton's Laws",
-    text: "A block of mass 5 kg is placed on a frictionless surface. A force of 20 N is applied horizontally. What is the acceleration of the block?",
+    text: "A block of mass 5 kg is placed on a frictionless horizontal surface. A horizontal force F = 20 N is applied on the block. Simultaneously, another force of 10 N is applied at an angle of 60° above the horizontal in the same direction. What is the net acceleration of the block?",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "easy",
+    difficulty: "medium",
     status: "not_visited",
     options: [
-      { id: "a", text: "2 m/s²" },
-      { id: "b", text: "4 m/s²", isCorrect: true },
-      { id: "c", text: "5 m/s²" },
-      { id: "d", text: "10 m/s²" },
+      { id: "a", text: "5 m/s²" },
+      { id: "b", text: "5.5 m/s²", isCorrect: true },
+      { id: "c", text: "6 m/s²" },
+      { id: "d", text: "4.5 m/s²" },
     ],
   },
   {
@@ -180,16 +181,16 @@ export const sampleMCQSingle: MCQSingleQuestion[] = [
     subject: "physics",
     chapter: "Laws of Motion",
     topic: "Friction",
-    text: "The coefficient of static friction between two surfaces is 0.5. If a block of mass 10 kg is placed on an inclined plane at 30°, will it slide?",
+    text: "A block of mass 10 kg is placed on a rough inclined plane making an angle of 37° with the horizontal. The coefficient of static friction between the block and the plane is 0.8 and the coefficient of kinetic friction is 0.6. If the block is given a slight push down the plane, the acceleration of the block will be (take g = 10 m/s², sin 37° = 0.6, cos 37° = 0.8):",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "medium",
+    difficulty: "hard",
     status: "not_visited",
     options: [
-      { id: "a", text: "Yes, it will slide", isCorrect: true },
-      { id: "b", text: "No, it will remain stationary" },
-      { id: "c", text: "It depends on the surface area" },
-      { id: "d", text: "Cannot be determined" },
+      { id: "a", text: "1.2 m/s² down the plane", isCorrect: true },
+      { id: "b", text: "2.4 m/s² down the plane" },
+      { id: "c", text: "0 (block remains stationary)" },
+      { id: "d", text: "0.8 m/s² up the plane" },
     ],
   },
   {
@@ -198,16 +199,16 @@ export const sampleMCQSingle: MCQSingleQuestion[] = [
     subject: "chemistry",
     chapter: "Atomic Structure",
     topic: "Quantum Numbers",
-    text: "Which of the following sets of quantum numbers is not possible for an electron?",
+    text: "An electron in a hydrogen atom undergoes a transition from a higher energy level to n = 2. If the wavelength of the emitted photon is 486 nm (blue line of Balmer series), which energy level did the electron come from? (Use Rydberg constant R = 1.097 × 10⁷ m⁻¹)",
     marks: 4,
     negativeMarks: 1,
     difficulty: "medium",
     status: "not_visited",
     options: [
-      { id: "a", text: "n=3, l=2, m=1, s=+½" },
-      { id: "b", text: "n=2, l=2, m=0, s=-½", isCorrect: true },
-      { id: "c", text: "n=4, l=0, m=0, s=+½" },
-      { id: "d", text: "n=3, l=1, m=-1, s=-½" },
+      { id: "a", text: "n = 3" },
+      { id: "b", text: "n = 4", isCorrect: true },
+      { id: "c", text: "n = 5" },
+      { id: "d", text: "n = 6" },
     ],
   },
   {
@@ -216,34 +217,35 @@ export const sampleMCQSingle: MCQSingleQuestion[] = [
     subject: "mathematics",
     chapter: "Quadratic Equations",
     topic: "Roots",
-    text: "If α and β are roots of x² - 5x + 6 = 0, find the value of α² + β².",
+    text: "If α and β are the roots of the equation x² - 5x + 6 = 0, and a new quadratic equation is formed whose roots are (α - 1/β) and (β - 1/α), then the sum of coefficients of the new equation with leading coefficient 1 is:",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "easy",
+    difficulty: "hard",
     status: "not_visited",
     options: [
-      { id: "a", text: "11" },
-      { id: "b", text: "13", isCorrect: true },
-      { id: "c", text: "25" },
-      { id: "d", text: "36" },
+      { id: "a", text: "7/6" },
+      { id: "b", text: "13/6", isCorrect: true },
+      { id: "c", text: "25/6" },
+      { id: "d", text: "37/6" },
     ],
   },
   {
     id: "q5",
     type: "mcq_single",
-    subject: "biology",
-    chapter: "Cell Biology",
-    topic: "Cell Organelles",
-    text: "Which organelle is known as the 'powerhouse of the cell'?",
+    subject: "physics",
+    chapter: "Electrostatics",
+    topic: "Electric Field",
+    text: "Three point charges +q, +2q, and -3q are placed at the vertices A, B, and C of an equilateral triangle of side 'a'. The electric potential at the centroid of the triangle is (k = 1/4πε₀):",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "easy",
+    difficulty: "medium",
     status: "not_visited",
+    imageUrl: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=300&h=200&fit=crop",
     options: [
-      { id: "a", text: "Nucleus" },
-      { id: "b", text: "Ribosome" },
-      { id: "c", text: "Mitochondria", isCorrect: true },
-      { id: "d", text: "Golgi apparatus" },
+      { id: "a", text: "Zero", isCorrect: true },
+      { id: "b", text: "kq/a" },
+      { id: "c", text: "3kq/a" },
+      { id: "d", text: "-3kq/a" },
     ],
   },
 ];
@@ -480,10 +482,19 @@ export const sampleAssertionReasoning: AssertionReasoningQuestion[] = [
   },
 ];
 
-// Paragraph for paragraph-based questions
+// Complex paragraph for paragraph-based questions - realistic JEE Main style
 export const sampleParagraph = {
   id: "para1",
-  text: `A car starts from rest and accelerates uniformly at 2 m/s² for 10 seconds. It then moves with constant velocity for the next 20 seconds. Finally, it decelerates uniformly and comes to rest in 5 seconds. The total distance covered by the car during this journey can be calculated using equations of motion.`,
+  text: `A car starts from rest at point A and accelerates uniformly at 2 m/s² for 10 seconds. After this acceleration phase, the car continues to move with the constant velocity it has attained for the next 20 seconds. At this point, the driver sees an obstacle ahead and applies brakes, causing the car to decelerate uniformly. The car comes to rest after 5 seconds of braking.
+
+During the entire journey, the car moves in a straight line. The road surface has a coefficient of friction μ = 0.4 between the tires and the road (though this only becomes relevant during braking). Assume g = 10 m/s² for calculations.
+
+The motion of the car can be analyzed using the equations of kinematics:
+• v = u + at (velocity-time relation)
+• s = ut + ½at² (displacement-time relation)  
+• v² = u² + 2as (velocity-displacement relation)
+
+Based on the information provided, answer the following questions about the car's journey.`,
 };
 
 export const sampleParagraphQuestions: ParagraphQuestion[] = [
@@ -495,16 +506,16 @@ export const sampleParagraphQuestions: ParagraphQuestion[] = [
     topic: "Motion",
     paragraphId: "para1",
     paragraphText: sampleParagraph.text,
-    text: "What is the velocity of the car at the end of the acceleration phase?",
+    text: "What is the maximum velocity attained by the car during its journey, and at what distance from point A does the car first reach this velocity?",
     marks: 4,
     negativeMarks: 1,
     difficulty: "easy",
     status: "not_visited",
     options: [
-      { id: "a", text: "10 m/s" },
-      { id: "b", text: "20 m/s", isCorrect: true },
-      { id: "c", text: "30 m/s" },
-      { id: "d", text: "40 m/s" },
+      { id: "a", text: "20 m/s, at 100 m from A", isCorrect: true },
+      { id: "b", text: "10 m/s, at 50 m from A" },
+      { id: "c", text: "20 m/s, at 200 m from A" },
+      { id: "d", text: "40 m/s, at 400 m from A" },
     ],
   },
   {
@@ -515,16 +526,16 @@ export const sampleParagraphQuestions: ParagraphQuestion[] = [
     topic: "Motion",
     paragraphId: "para1",
     paragraphText: sampleParagraph.text,
-    text: "What is the distance covered during the constant velocity phase?",
+    text: "The total distance covered by the car from start to stop is:",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "easy",
+    difficulty: "medium",
     status: "not_visited",
     options: [
-      { id: "a", text: "200 m" },
-      { id: "b", text: "300 m" },
-      { id: "c", text: "400 m", isCorrect: true },
-      { id: "d", text: "500 m" },
+      { id: "a", text: "500 m" },
+      { id: "b", text: "550 m", isCorrect: true },
+      { id: "c", text: "600 m" },
+      { id: "d", text: "650 m" },
     ],
   },
   {
@@ -535,16 +546,16 @@ export const sampleParagraphQuestions: ParagraphQuestion[] = [
     topic: "Motion",
     paragraphId: "para1",
     paragraphText: sampleParagraph.text,
-    text: "What is the deceleration of the car during the final phase?",
+    text: "What is the magnitude of deceleration during the braking phase? Is this deceleration physically achievable given the coefficient of friction μ = 0.4?",
     marks: 4,
     negativeMarks: 1,
-    difficulty: "medium",
+    difficulty: "hard",
     status: "not_visited",
     options: [
-      { id: "a", text: "2 m/s²" },
-      { id: "b", text: "4 m/s²", isCorrect: true },
-      { id: "c", text: "5 m/s²" },
-      { id: "d", text: "10 m/s²" },
+      { id: "a", text: "4 m/s², No - exceeds maximum possible friction" },
+      { id: "b", text: "4 m/s², Yes - within friction limits", isCorrect: true },
+      { id: "c", text: "2 m/s², Yes - well within limits" },
+      { id: "d", text: "5 m/s², No - impossible to achieve" },
     ],
   },
 ];

@@ -1,5 +1,6 @@
 // MCQ Single Choice Renderer
 // Radio-button style selection with mobile-optimized touch targets
+// Supports both text and image options
 
 import { memo } from "react";
 import { Check } from "lucide-react";
@@ -25,6 +26,7 @@ const MCQSingleRenderer = memo(function MCQSingleRenderer({
       {options.map((option, index) => {
         const isSelected = selectedOption === option.id;
         const optionLetter = String.fromCharCode(65 + index);
+        const hasImage = !!option.imageUrl;
 
         return (
           <motion.button
@@ -34,7 +36,7 @@ const MCQSingleRenderer = memo(function MCQSingleRenderer({
             whileTap={{ scale: disabled ? 1 : 0.98 }}
             className={cn(
               "w-full flex items-start gap-3 p-3.5 sm:p-4 rounded-xl border-2 text-left",
-              "transition-all duration-200 min-h-[52px]", // 44px+ touch target
+              "transition-all duration-200 min-h-[52px]",
               "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2",
               isSelected
                 ? "border-primary bg-primary/5 shadow-md"
@@ -55,15 +57,29 @@ const MCQSingleRenderer = memo(function MCQSingleRenderer({
               {isSelected ? <Check className="w-4 h-4" /> : optionLetter}
             </span>
 
-            {/* Option Text */}
-            <span
-              className={cn(
-                "text-sm sm:text-base pt-1 flex-1",
-                isSelected ? "text-foreground font-medium" : "text-foreground"
+            {/* Option Content */}
+            <div className="flex-1 pt-1">
+              {/* Option Text */}
+              <span
+                className={cn(
+                  "text-sm sm:text-base block leading-relaxed",
+                  isSelected ? "text-foreground font-medium" : "text-foreground"
+                )}
+              >
+                {option.text}
+              </span>
+              
+              {/* Option Image (if any) */}
+              {hasImage && (
+                <div className="mt-2 rounded-lg overflow-hidden border border-border bg-muted/30">
+                  <img
+                    src={option.imageUrl}
+                    alt={`Option ${optionLetter}`}
+                    className="w-full max-w-xs object-contain max-h-40"
+                  />
+                </div>
               )}
-            >
-              {option.text}
-            </span>
+            </div>
           </motion.button>
         );
       })}

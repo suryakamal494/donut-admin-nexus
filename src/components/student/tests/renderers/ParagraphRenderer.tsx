@@ -1,8 +1,9 @@
 // Paragraph-Based Question Renderer
-// Displays paragraph context with MCQ options
+// Displays paragraph context with scrollable area for long content
+// Mobile-optimized with expand/collapse for very long paragraphs
 
-import { memo, useState } from "react";
-import { Check, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { memo, useState, useMemo } from "react";
+import { Check, BookOpen, ChevronDown, ChevronUp, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import type { QuestionOption } from "@/data/student/testQuestions";
@@ -14,8 +15,12 @@ interface ParagraphRendererProps {
   selectedOption?: string;
   onSelect: (optionId: string) => void;
   disabled?: boolean;
-  isFirstInParagraph?: boolean; // Show full paragraph only for first question
+  isFirstInParagraph?: boolean;
 }
+
+// Threshold for showing "show more" button
+const PARAGRAPH_PREVIEW_LENGTH = 300;
+const PARAGRAPH_MAX_HEIGHT = 160; // 40 * 4 lines roughly
 
 const ParagraphRenderer = memo(function ParagraphRenderer({
   paragraphText,
@@ -27,30 +32,50 @@ const ParagraphRenderer = memo(function ParagraphRenderer({
   isFirstInParagraph = true,
 }: ParagraphRendererProps) {
   const [isParagraphExpanded, setIsParagraphExpanded] = useState(isFirstInParagraph);
+  const [isFullyExpanded, setIsFullyExpanded] = useState(false);
+
+  const isLongParagraph = useMemo(() => 
+    paragraphText.length > PARAGRAPH_PREVIEW_LENGTH, 
+    [paragraphText]
+  );
 
   return (
     <div className="space-y-4">
-      {/* Paragraph Section */}
-      <div className="bg-muted/50 border border-border rounded-xl overflow-hidden">
+      {/* Paragraph Section with scroll for long content */}
+      <div className="bg-amber-50/50 border border-amber-200/50 rounded-xl overflow-hidden">
         {/* Paragraph Header - Always visible */}
         <button
           onClick={() => setIsParagraphExpanded(!isParagraphExpanded)}
-          className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/70 transition-colors"
+          className="w-full flex items-center justify-between p-3 text-left hover:bg-amber-50 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">
+            <BookOpen className="w-4 h-4 text-amber-600" />
+            <span className="text-xs font-medium text-amber-700">
               Reading Passage
             </span>
           </div>
-          {isParagraphExpanded ? (
-            <ChevronUp className="w-4 h-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-          )}
+          <div className="flex items-center gap-2">
+            {isLongParagraph && isParagraphExpanded && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFullyExpanded(!isFullyExpanded);
+                }}
+                className="text-[10px] text-amber-600 hover:text-amber-800 flex items-center gap-0.5"
+              >
+                <ZoomIn className="w-3 h-3" />
+                {isFullyExpanded ? "Less" : "Full"}
+              </button>
+            )}
+            {isParagraphExpanded ? (
+              <ChevronUp className="w-4 h-4 text-amber-600" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-amber-600" />
+            )}
+          </div>
         </button>
 
-        {/* Paragraph Content */}
+        {/* Paragraph Content with scroll */}
         <AnimatePresence initial={false}>
           {isParagraphExpanded && (
             <motion.div
@@ -60,19 +85,29 @@ const ParagraphRenderer = memo(function ParagraphRenderer({
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="px-4 pb-4 pt-0">
-                <p className="text-sm text-foreground leading-relaxed">
+              <div 
+                className={cn(
+                  "px-4 pb-4 pt-0",
+                  isLongParagraph && !isFullyExpanded && "max-h-40 overflow-y-auto scrollbar-hide"
+                )}
+              >
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                   {paragraphText}
                 </p>
               </div>
+              
+              {/* Fade indicator for scrollable content */}
+              {isLongParagraph && !isFullyExpanded && (
+                <div className="h-6 bg-gradient-to-t from-amber-50/80 to-transparent -mt-6 relative pointer-events-none" />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Question Text */}
-      <div className="py-2">
-        <p className="text-base text-foreground font-medium leading-relaxed">
+      {/* Question Text - prominent */}
+      <div className="py-2 px-1">
+        <p className="text-base sm:text-lg text-foreground font-medium leading-relaxed">
           {questionText}
         </p>
       </div>
@@ -112,15 +147,28 @@ const ParagraphRenderer = memo(function ParagraphRenderer({
                 {isSelected ? <Check className="w-4 h-4" /> : optionLetter}
               </span>
 
-              {/* Option Text */}
-              <span
-                className={cn(
-                  "text-sm sm:text-base pt-1 flex-1",
-                  isSelected ? "text-foreground font-medium" : "text-foreground"
+              {/* Option Text and Image */}
+              <div className="flex-1 pt-1">
+                <span
+                  className={cn(
+                    "text-sm sm:text-base block",
+                    isSelected ? "text-foreground font-medium" : "text-foreground"
+                  )}
+                >
+                  {option.text}
+                </span>
+                
+                {/* Option Image if present */}
+                {option.imageUrl && (
+                  <div className="mt-2 rounded-lg overflow-hidden border border-border">
+                    <img
+                      src={option.imageUrl}
+                      alt={`Option ${optionLetter}`}
+                      className="w-full max-w-xs object-contain"
+                    />
+                  </div>
                 )}
-              >
-                {option.text}
-              </span>
+              </div>
             </motion.button>
           );
         })}

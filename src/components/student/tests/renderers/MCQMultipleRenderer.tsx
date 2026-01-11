@@ -1,8 +1,9 @@
 // MCQ Multiple Choice Renderer
 // Checkbox-style selection with partial marking support
+// Supports both text and image options
 
 import { memo } from "react";
-import { Check, Square, CheckSquare } from "lucide-react";
+import { Check, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import type { QuestionOption } from "@/data/student/testQuestions";
@@ -31,6 +32,7 @@ const MCQMultipleRenderer = memo(function MCQMultipleRenderer({
       {options.map((option, index) => {
         const isSelected = selectedOptions.includes(option.id);
         const optionLetter = String.fromCharCode(65 + index);
+        const hasImage = !!option.imageUrl;
 
         return (
           <motion.button
@@ -65,15 +67,29 @@ const MCQMultipleRenderer = memo(function MCQMultipleRenderer({
               )}
             </span>
 
-            {/* Option Text */}
-            <span
-              className={cn(
-                "text-sm sm:text-base pt-1 flex-1",
-                isSelected ? "text-foreground font-medium" : "text-foreground"
+            {/* Option Content */}
+            <div className="flex-1 pt-1">
+              {/* Option Text */}
+              <span
+                className={cn(
+                  "text-sm sm:text-base block leading-relaxed",
+                  isSelected ? "text-foreground font-medium" : "text-foreground"
+                )}
+              >
+                {option.text}
+              </span>
+              
+              {/* Option Image (if any) */}
+              {hasImage && (
+                <div className="mt-2 rounded-lg overflow-hidden border border-border bg-muted/30">
+                  <img
+                    src={option.imageUrl}
+                    alt={`Option ${optionLetter}`}
+                    className="w-full max-w-xs object-contain max-h-40"
+                  />
+                </div>
               )}
-            >
-              {option.text}
-            </span>
+            </div>
 
             {/* Selection indicator on right */}
             {isSelected && (
