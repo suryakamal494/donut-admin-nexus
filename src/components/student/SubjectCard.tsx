@@ -138,21 +138,10 @@ const StudentSubjectCard = ({ subject, compact = false }: SubjectCardProps) => {
         {status.emoji} {status.label}
       </p>
 
-      {/* Progress bar */}
-      <div className="relative h-2 bg-muted/50 rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-500", colors.gradient)}
-          style={{ width: `${subject.progress}%` }}
-        />
-      </div>
-
-      {/* Progress text */}
-      <div className="flex justify-between items-center mt-2">
-        <span className="text-xs text-muted-foreground">
+      {/* Chapter count */}
+      <div className="flex items-center justify-between mt-1">
+        <span className="text-sm font-medium text-muted-foreground">
           {subject.chaptersCompleted}/{subject.chaptersTotal} chapters
-        </span>
-        <span className={cn("text-xs font-semibold", colors.text)}>
-          {subject.progress}%
         </span>
       </div>
     </button>
