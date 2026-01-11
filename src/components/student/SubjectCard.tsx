@@ -1,8 +1,9 @@
 // Student Subject Card - Glassmorphic design with progress
 // Completely separate from other portal components
 
+import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
+import {
   Calculator, 
   Atom, 
   FlaskConical, 
@@ -79,15 +80,15 @@ interface SubjectCardProps {
   compact?: boolean;
 }
 
-const StudentSubjectCard = ({ subject, compact = false }: SubjectCardProps) => {
+const StudentSubjectCard = memo(function StudentSubjectCard({ subject, compact = false }: SubjectCardProps) {
   const navigate = useNavigate();
   const Icon = iconMap[subject.icon] || BookOpen;
   const colors = colorConfig[subject.color] || colorConfig.blue;
   const status = statusLabels[subject.status] || statusLabels["in-progress"];
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     navigate(`/student/subjects/${subject.id}`);
-  };
+  }, [navigate, subject.id]);
 
   if (compact) {
     return (
@@ -146,6 +147,6 @@ const StudentSubjectCard = ({ subject, compact = false }: SubjectCardProps) => {
       </div>
     </button>
   );
-};
+});
 
 export default StudentSubjectCard;

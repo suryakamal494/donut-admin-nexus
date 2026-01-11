@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Video, FileText, Trophy, Bell, Check, X, LucideIcon } from "lucide-react";
 
@@ -26,13 +27,14 @@ const typeConfig: Record<NotificationType, { icon: LucideIcon, color: string, bg
   general: { icon: Bell, color: "#8B5CF6", bgColor: "bg-violet-100" },
 };
 
-const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: NotificationCardProps) => {
+const NotificationCard = memo(function NotificationCard({ notification, onMarkAsRead, onDismiss }: NotificationCardProps) {
   const config = typeConfig[notification.type];
   const IconComponent = config.icon;
   
-  const formatTime = (date: Date) => {
+  // Memoize formatted time
+  const formattedTime = useMemo(() => {
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    const diffMs = now.getTime() - notification.timestamp.getTime();
     const diffMins = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -40,8 +42,17 @@ const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: Notificatio
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
+    return notification.timestamp.toLocaleDateString();
+  }, [notification.timestamp]);
+
+  // Memoize handlers
+  const handleMarkAsRead = useCallback(() => {
+    onMarkAsRead(notification.id);
+  }, [onMarkAsRead, notification.id]);
+
+  const handleDismiss = useCallback(() => {
+    onDismiss(notification.id);
+  }, [onDismiss, notification.id]);
 
   return (
     <motion.div
@@ -79,7 +90,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: Notificatio
           {notification.message}
         </p>
         <span className="text-xs text-muted-foreground/60 mt-1 block">
-          {formatTime(notification.timestamp)}
+          {formattedTime}
         </span>
       </div>
 
@@ -87,7 +98,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: Notificatio
       <div className="flex flex-col gap-1 absolute right-3 top-1/2 -translate-y-1/2">
         {!notification.read && (
           <button
-            onClick={() => onMarkAsRead(notification.id)}
+            onClick={handleMarkAsRead}
             className="p-1.5 rounded-lg hover:bg-emerald-100 text-muted-foreground hover:text-emerald-600 transition-colors"
             title="Mark as read"
           >
@@ -95,7 +106,7 @@ const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: Notificatio
           </button>
         )}
         <button
-          onClick={() => onDismiss(notification.id)}
+          onClick={handleDismiss}
           className="p-1.5 rounded-lg hover:bg-red-100 text-muted-foreground hover:text-red-500 transition-colors"
           title="Dismiss"
         >
@@ -104,6 +115,6 @@ const NotificationCard = ({ notification, onMarkAsRead, onDismiss }: Notificatio
       </div>
     </motion.div>
   );
-};
+});
 
 export default NotificationCard;
