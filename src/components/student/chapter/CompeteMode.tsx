@@ -1,9 +1,11 @@
 // Compete Mode - Challenge cards for testing mastery with virtualization
 
 import { useCallback, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Trophy, ChevronRight, Star, Zap, Award, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VirtualizedList } from "./VirtualizedList";
+import { useToast } from "@/hooks/use-toast";
 import type { ChallengeItem } from "@/data/student/lessonBundles";
 
 interface CompeteModeProps {
@@ -35,6 +37,10 @@ const difficultyConfig = {
 };
 
 export function CompeteMode({ challenges }: CompeteModeProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
+
   // Memoize filtered and sorted lists
   const { pendingChallenges, completedChallenges, sortedPending, totalPoints, earnedPoints } = useMemo(() => {
     const pending = challenges.filter(c => !c.isCompleted);
@@ -59,9 +65,17 @@ export function CompeteMode({ challenges }: CompeteModeProps) {
   }, [challenges]);
 
   // Memoize handlers
-  const handleChallengeClick = useCallback((challengeId: string) => {
-    console.log("Start challenge:", challengeId);
-  }, []);
+  const handleChallengeClick = useCallback((challenge: ChallengeItem) => {
+    toast({
+      title: "Starting Challenge",
+      description: `Loading: ${challenge.title}`,
+      duration: 2000,
+    });
+    
+    // Navigate to test player with a mock challenge test ID
+    // In a full implementation, challenges would have linked test IDs in the database
+    navigate(`/student/tests/challenge-${challenge.id}`);
+  }, [navigate, toast]);
 
   // Render functions
   const renderPendingChallenge = useCallback((challenge: ChallengeItem) => {
@@ -70,7 +84,7 @@ export function CompeteMode({ challenges }: CompeteModeProps) {
 
     return (
       <button
-        onClick={() => handleChallengeClick(challenge.id)}
+        onClick={() => handleChallengeClick(challenge)}
         className={cn(
           "w-full text-left group",
           "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",

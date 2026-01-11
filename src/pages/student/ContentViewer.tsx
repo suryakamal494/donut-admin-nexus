@@ -6,6 +6,7 @@ import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { studentSubjects } from "@/data/student/subjects";
 import { getChaptersBySubject } from "@/data/student/chapters";
 import {
@@ -40,6 +41,7 @@ const triggerHaptic = (type: "light" | "medium" | "heavy" = "light") => {
 
 const StudentContentViewer = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { subjectId, chapterId, bundleId, contentId } = useParams<{
     subjectId: string;
     chapterId: string;
@@ -108,7 +110,16 @@ const StudentContentViewer = () => {
   }, [hasPrev, contentItems, currentIndex, navigate, subjectId, chapterId, bundleId]);
 
   const handleComplete = () => {
-    console.log("Content completed:", contentId);
+    toast({
+      title: "Content Completed! ✓",
+      description: "Great job! Moving to next item...",
+      duration: 2000,
+    });
+    
+    // Auto-advance to next content if available
+    if (hasNext) {
+      setTimeout(() => handleNext(), 1500);
+    }
   };
 
   // Handle swipe gesture

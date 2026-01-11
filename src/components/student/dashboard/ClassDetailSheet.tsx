@@ -1,6 +1,7 @@
 // Class Detail Sheet Component
 // Opens when tapping a class in the schedule timeline
 
+import { useNavigate } from "react-router-dom";
 import { Clock, MapPin, User, BookOpen, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer";
 import { subjectColors, type ScheduleItem } from "@/data/student/dashboard";
+import { useToast } from "@/hooks/use-toast";
 
 interface ClassDetailSheetProps {
   classItem: ScheduleItem | null;
@@ -20,9 +22,48 @@ interface ClassDetailSheetProps {
 }
 
 const ClassDetailSheet = ({ classItem, open, onOpenChange }: ClassDetailSheetProps) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   if (!classItem || classItem.type === 'break') return null;
 
   const colors = classItem.subject ? subjectColors[classItem.subject] : null;
+
+  const handleJoinClass = () => {
+    if (classItem.status === 'current') {
+      // For live classes, show toast about video integration
+      toast({
+        title: "Joining Class",
+        description: "Live video class integration coming soon!",
+        duration: 2000,
+      });
+    } else if (classItem.status === 'upcoming') {
+      toast({
+        title: "Class Not Started",
+        description: "This class hasn't started yet. Check back later!",
+        duration: 2000,
+      });
+    } else {
+      // For completed classes, navigate to subject content
+      if (classItem.subject) {
+        onOpenChange(false);
+        navigate(`/student/subjects/${classItem.subject}`);
+      }
+    }
+  };
+
+  const getButtonText = () => {
+    switch (classItem.status) {
+      case 'current':
+        return 'Join Class';
+      case 'upcoming':
+        return 'Class Not Started';
+      case 'completed':
+        return 'View Content';
+      default:
+        return 'Join Class';
+    }
+  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -105,11 +146,13 @@ const ClassDetailSheet = ({ classItem, open, onOpenChange }: ClassDetailSheetPro
 
         <DrawerFooter className="pt-2">
           <Button 
-            className="w-full h-12 bg-gradient-to-r from-donut-coral to-donut-orange text-white font-semibold rounded-xl shadow-lg shadow-donut-coral/25"
+            onClick={handleJoinClass}
+            disabled={classItem.status === 'upcoming'}
+            className="w-full h-12 bg-gradient-to-r from-donut-coral to-donut-orange text-white font-semibold rounded-xl shadow-lg shadow-donut-coral/25 disabled:opacity-50"
             size="lg"
           >
             <Video className="w-5 h-5 mr-2" />
-            Join Class
+            {getButtonText()}
           </Button>
         </DrawerFooter>
       </DrawerContent>

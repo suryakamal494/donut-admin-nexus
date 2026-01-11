@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { BookOpen } from "lucide-react";
 import { LessonBundleCard } from "./LessonBundleCard";
 import { VirtualizedList } from "./VirtualizedList";
+import { useToast } from "@/hooks/use-toast";
 import type { LessonBundle, HomeworkItem } from "@/data/student/lessonBundles";
 
 interface ClassroomModeProps {
@@ -14,6 +15,7 @@ interface ClassroomModeProps {
 
 export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModeProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
   
   // Group homework by linked session ID
@@ -35,9 +37,22 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
   }, [navigate, subjectId, chapterId]);
 
   const handleHomeworkClick = useCallback((homeworkId: string) => {
-    // Navigate to homework detail or start homework
-    console.log("Start homework:", homeworkId);
-  }, []);
+    // Find the homework item
+    const homework = homeworkItems.find(hw => hw.id === homeworkId);
+    
+    if (homework) {
+      toast({
+        title: "Opening Homework",
+        description: `${homework.title} - Homework viewer coming soon!`,
+        duration: 2000,
+      });
+      
+      // If homework has linked content, navigate to it
+      if (homework.linkedSessionId) {
+        navigate(`/student/subjects/${subjectId}/${chapterId}/${homework.linkedSessionId}`);
+      }
+    }
+  }, [homeworkItems, navigate, subjectId, chapterId, toast]);
 
   // Render function for virtualized list
   const renderBundle = useCallback((bundle: LessonBundle) => {

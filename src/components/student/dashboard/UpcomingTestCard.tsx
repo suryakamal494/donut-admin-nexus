@@ -1,6 +1,7 @@
 // Upcoming Test Card Component
 // Individual card for upcoming tests/exams
 
+import { useNavigate } from "react-router-dom";
 import { FileText, Calendar } from "lucide-react";
 import { subjectColors, formatRelativeDate, formatTestTime, type UpcomingTest } from "@/data/student/dashboard";
 import { cn } from "@/lib/utils";
@@ -23,13 +24,22 @@ const getTestTypeBadge = (type: UpcomingTest['type']) => {
 };
 
 const UpcomingTestCard = ({ test }: UpcomingTestCardProps) => {
+  const navigate = useNavigate();
   const colors = subjectColors[test.subject] || subjectColors.math;
   const typeBadge = getTestTypeBadge(test.type);
   const relativeDate = formatRelativeDate(test.date);
   const time = formatTestTime(test.date);
 
+  const handleClick = () => {
+    // Navigate to the Tests page
+    navigate('/student/tests');
+  };
+
   return (
-    <div className="flex-shrink-0 w-[200px] lg:w-auto bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer">
+    <div 
+      onClick={handleClick}
+      className="flex-shrink-0 w-[200px] lg:w-auto bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer active:scale-[0.98]"
+    >
       {/* Subject Icon & Type Badge */}
       <div className="flex items-start justify-between mb-2.5">
         <div className={cn("w-9 h-9 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-sm", colors.icon)}>
