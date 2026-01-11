@@ -124,6 +124,7 @@ const EditTeacherExam = lazy(() => import("./pages/teacher/EditExam"));
 import StudentLogin from "./pages/student/Login";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentSubjects from "./pages/student/Subjects";
+import StudentSubjectDetail from "./pages/student/SubjectDetail";
 import StudentTests from "./pages/student/Tests";
 import StudentProgress from "./pages/student/Progress";
 import StudentNotifications from "./pages/student/Notifications";
@@ -257,7 +258,8 @@ const App = () => (
             <Route index element={<Navigate to="/student/dashboard" replace />} />
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="subjects" element={<StudentSubjects />} />
-            <Route path="subjects/:subjectId" element={<StudentSubjects />} />
+            <Route path="subjects/:subjectId" element={<StudentSubjectDetail />} />
+            <Route path="subjects/:subjectId/:chapterId" element={<StudentSubjectDetail />} />
             <Route path="tests" element={<StudentTests />} />
             <Route path="progress" element={<StudentProgress />} />
             <Route path="notifications" element={<StudentNotifications />} />
