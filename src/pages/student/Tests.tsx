@@ -1,24 +1,167 @@
-// Student Tests Page - Placeholder
-// Full implementation coming in future phases
+// Student Tests Page
+// Test listing with clear segmentation: My Tests (teacher) vs Grand Tests/PYPs
+// Mobile-first responsive design
 
-import { Trophy } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Trophy, ClipboardList, GraduationCap } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  SubjectTestGroup,
+  GrandTestCard,
+  ExamPatternFilter,
+} from "@/components/student/tests";
+import {
+  teacherTests,
+  grandTests,
+  previousYearPapers,
+  getTestsBySubject,
+  getLiveTestsCount,
+} from "@/data/student/tests";
+import type { ExamPattern } from "@/data/student/tests";
 
 const StudentTests = () => {
+  const [activeTab, setActiveTab] = useState("my-tests");
+  const [selectedPattern, setSelectedPattern] = useState<ExamPattern | "all">("all");
+
+  // Group teacher tests by subject
+  const testsBySubject = useMemo(() => getTestsBySubject(teacherTests), []);
+  const subjectOrder = Object.keys(testsBySubject).sort((a, b) => {
+    // Sort by live tests first, then alphabetically
+    const aLive = getLiveTestsCount(testsBySubject[a]);
+    const bLive = getLiveTestsCount(testsBySubject[b]);
+    if (aLive !== bLive) return bLive - aLive;
+    return a.localeCompare(b);
+  });
+
+  // Combine and filter grand tests + PYPs
+  const allGrandTests = useMemo(() => [...grandTests, ...previousYearPapers], []);
+  const filteredGrandTests = useMemo(() => {
+    if (selectedPattern === "all") return allGrandTests;
+    return allGrandTests.filter((test) => test.pattern === selectedPattern);
+  }, [allGrandTests, selectedPattern]);
+
+  // Counts
+  const totalTeacherTests = teacherTests.length;
+  const liveTeacherTests = getLiveTestsCount(teacherTests);
+  const liveGrandTests = getLiveTestsCount(allGrandTests);
+
+  const handleStartTest = (testId: string) => {
+    console.log("Start test:", testId);
+    // TODO: Navigate to test player
+  };
+
+  const handleViewTest = (testId: string) => {
+    console.log("View test:", testId);
+  };
+
+  const handleViewResults = (testId: string) => {
+    console.log("View results:", testId);
+  };
+
   return (
-    <div className="w-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-lg shadow-amber-400/25">
+    <div className="w-full pb-20">
+      {/* Page Header */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-400/25">
           <Trophy className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-xl font-bold text-foreground">Tests & Practice</h1>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Tests & Practice</h1>
+          <p className="text-xs text-muted-foreground">
+            {liveTeacherTests + liveGrandTests > 0
+              ? `${liveTeacherTests + liveGrandTests} live now`
+              : "All caught up!"}
+          </p>
+        </div>
       </div>
 
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-8 border border-white/50 text-center">
-        <p className="text-muted-foreground">Tests & Practice coming soon</p>
-        <p className="text-xs text-muted-foreground/60 mt-1">
-          Compete mode • Practice tests • Challenges
-        </p>
-      </div>
+      {/* Tabs: My Tests | Grand Tests & PYPs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="w-full grid grid-cols-2 mb-4 bg-white/60 backdrop-blur-sm p-1 rounded-xl border border-white/50">
+          <TabsTrigger
+            value="my-tests"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-peach data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
+          >
+            <ClipboardList className="w-4 h-4 mr-1.5" />
+            My Tests
+            {liveTeacherTests > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 bg-white/20 rounded-full text-[10px]">
+                {liveTeacherTests}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger
+            value="grand-tests"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-peach data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
+          >
+            <GraduationCap className="w-4 h-4 mr-1.5" />
+            Grand Tests
+            {liveGrandTests > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 bg-white/20 rounded-full text-[10px]">
+                {liveGrandTests}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        {/* My Tests Tab */}
+        <TabsContent value="my-tests" className="mt-0">
+          {subjectOrder.length > 0 ? (
+            <div className="space-y-1">
+              {subjectOrder.map((subject, index) => (
+                <SubjectTestGroup
+                  key={subject}
+                  subject={subject}
+                  tests={testsBySubject[subject]}
+                  defaultExpanded={index === 0}
+                  onStartTest={handleStartTest}
+                  onViewTest={handleViewTest}
+                  onViewResults={handleViewResults}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-8 border border-white/50 text-center">
+              <p className="text-muted-foreground">No tests available</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                Tests assigned by your teachers will appear here
+              </p>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Grand Tests Tab */}
+        <TabsContent value="grand-tests" className="mt-0">
+          {/* Pattern Filter */}
+          <ExamPatternFilter
+            selectedPattern={selectedPattern}
+            onPatternChange={setSelectedPattern}
+            className="mb-4"
+          />
+
+          {/* Grand Tests Grid */}
+          {filteredGrandTests.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredGrandTests.map((test) => (
+                <GrandTestCard
+                  key={test.id}
+                  test={test}
+                  onStart={handleStartTest}
+                  onView={handleViewTest}
+                  onResults={handleViewResults}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-8 border border-white/50 text-center">
+              <p className="text-muted-foreground">No tests for this pattern</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                Try selecting a different exam pattern
+              </p>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
