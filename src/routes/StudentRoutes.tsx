@@ -16,6 +16,7 @@ import StudentBundleDetail from "@/pages/student/BundleDetail";
 import StudentContentViewer from "@/pages/student/ContentViewer";
 import StudentTests from "@/pages/student/Tests";
 import StudentTestPlayer from "@/pages/student/TestPlayer";
+import StudentTestResults from "@/pages/student/TestResults";
 import StudentProgress from "@/pages/student/Progress";
 import StudentNotifications from "@/pages/student/Notifications";
 
@@ -28,6 +29,7 @@ export default function StudentRoutes() {
       {/* STANDALONE full-screen pages (no bottom nav overlap) */}
       <Route path="subjects/:subjectId/:chapterId/:bundleId/:contentId" element={<StudentContentViewer />} />
       <Route path="tests/:testId" element={<StudentTestPlayer />} />
+      <Route path="tests/:testId/results" element={<StudentTestResults />} />
       
       {/* Main student routes with layout */}
       <Route element={<StudentLayout />}>
