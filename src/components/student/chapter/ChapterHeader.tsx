@@ -1,84 +1,13 @@
 // Chapter Header - Displays chapter info with subject-specific branding
 
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calculator, Atom, FlaskConical, Leaf, BookOpen, Code, type LucideIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LearningStateBadge from "@/components/student/subjects/LearningStateBadge";
 import SubjectBackgroundPattern from "@/components/student/subjects/SubjectBackgroundPattern";
+import { getSubjectColors, getSubjectIcon, getSubjectPattern } from "@/components/student/shared/subjectColors";
 import type { StudentChapter } from "@/data/student/chapters";
 import type { StudentSubject } from "@/data/student/subjects";
-
-// Icon mapping
-const iconMap: Record<string, LucideIcon> = {
-  Calculator,
-  Atom,
-  FlaskConical,
-  Leaf,
-  BookOpen,
-  Code,
-};
-
-// Color configurations for chapter headers (matching subject headers)
-const headerColors: Record<string, { 
-  gradient: string; 
-  iconBg: string;
-  textAccent: string;
-  patternColor: string;
-  numberBg: string;
-}> = {
-  blue: {
-    gradient: "from-blue-50/90 via-blue-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-blue-400 to-blue-600",
-    textAccent: "text-blue-600",
-    patternColor: "text-blue-400",
-    numberBg: "from-blue-500 to-blue-700",
-  },
-  purple: {
-    gradient: "from-violet-50/90 via-purple-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-violet-400 to-purple-600",
-    textAccent: "text-violet-600",
-    patternColor: "text-violet-400",
-    numberBg: "from-violet-500 to-purple-700",
-  },
-  green: {
-    gradient: "from-emerald-50/90 via-green-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-emerald-400 to-green-600",
-    textAccent: "text-emerald-600",
-    patternColor: "text-emerald-400",
-    numberBg: "from-emerald-500 to-green-700",
-  },
-  red: {
-    gradient: "from-rose-50/90 via-red-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-rose-400 to-red-500",
-    textAccent: "text-rose-600",
-    patternColor: "text-rose-400",
-    numberBg: "from-rose-500 to-red-600",
-  },
-  amber: {
-    gradient: "from-amber-50/90 via-orange-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-amber-400 to-orange-500",
-    textAccent: "text-amber-600",
-    patternColor: "text-amber-400",
-    numberBg: "from-amber-500 to-orange-600",
-  },
-  cyan: {
-    gradient: "from-cyan-50/90 via-teal-100/50 to-white/80",
-    iconBg: "bg-gradient-to-br from-cyan-400 to-teal-500",
-    textAccent: "text-cyan-600",
-    patternColor: "text-cyan-400",
-    numberBg: "from-cyan-500 to-teal-600",
-  },
-};
-
-// Map subject IDs to pattern types
-const subjectPatternMap: Record<string, "math" | "physics" | "chemistry" | "biology" | "english" | "cs"> = {
-  math: "math",
-  physics: "physics",
-  chemistry: "chemistry",
-  biology: "biology",
-  english: "english",
-  cs: "cs",
-};
 
 interface ChapterHeaderProps {
   chapter: StudentChapter;
@@ -87,9 +16,9 @@ interface ChapterHeaderProps {
 
 export function ChapterHeader({ chapter, subject }: ChapterHeaderProps) {
   const navigate = useNavigate();
-  const Icon = iconMap[subject.icon] || BookOpen;
-  const colors = headerColors[subject.color] || headerColors.blue;
-  const pattern = subjectPatternMap[subject.id] || "math";
+  const Icon = getSubjectIcon(subject.icon);
+  const colors = getSubjectColors(subject.color);
+  const pattern = getSubjectPattern(subject.id);
 
   return (
     <div className="space-y-2">
