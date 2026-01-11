@@ -1,71 +1,13 @@
 // Bundle Header - Displays bundle info with subject branding
 
 import { ArrowLeft, Calendar, User, CheckCircle2 } from "lucide-react";
-import { Calculator, Atom, FlaskConical, Leaf, BookOpen, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import SubjectBackgroundPattern from "@/components/student/subjects/SubjectBackgroundPattern";
+import { getSubjectColors, getSubjectIcon } from "@/components/student/shared/subjectColors";
 import type { LessonBundle, BundleContentItem } from "@/data/student/lessonBundles";
 import type { StudentSubject } from "@/data/student/subjects";
-import type { LucideIcon } from "lucide-react";
-
-// Icon mapping for subjects
-const iconMap: Record<string, LucideIcon> = {
-  Calculator, Atom, FlaskConical, Leaf, BookOpen, Code,
-};
-
-// Subject color configurations
-const headerColors: Record<string, {
-  gradient: string;
-  border: string;
-  textAccent: string;
-  progressBar: string;
-  pattern: "math" | "physics" | "chemistry" | "biology" | "english" | "cs";
-}> = {
-  blue: {
-    gradient: "from-blue-50/90 via-blue-100/70 to-indigo-50/80",
-    border: "border-blue-200/60",
-    textAccent: "text-blue-600",
-    progressBar: "from-blue-500 to-blue-400",
-    pattern: "math",
-  },
-  purple: {
-    gradient: "from-purple-50/90 via-purple-100/70 to-violet-50/80",
-    border: "border-purple-200/60",
-    textAccent: "text-purple-600",
-    progressBar: "from-purple-500 to-purple-400",
-    pattern: "physics",
-  },
-  green: {
-    gradient: "from-emerald-50/90 via-green-100/70 to-teal-50/80",
-    border: "border-emerald-200/60",
-    textAccent: "text-emerald-600",
-    progressBar: "from-emerald-500 to-emerald-400",
-    pattern: "chemistry",
-  },
-  red: {
-    gradient: "from-rose-50/90 via-red-100/70 to-pink-50/80",
-    border: "border-rose-200/60",
-    textAccent: "text-rose-600",
-    progressBar: "from-rose-500 to-rose-400",
-    pattern: "biology",
-  },
-  amber: {
-    gradient: "from-amber-50/90 via-orange-100/70 to-yellow-50/80",
-    border: "border-amber-200/60",
-    textAccent: "text-amber-600",
-    progressBar: "from-amber-500 to-amber-400",
-    pattern: "english",
-  },
-  cyan: {
-    gradient: "from-cyan-50/90 via-sky-100/70 to-blue-50/80",
-    border: "border-cyan-200/60",
-    textAccent: "text-cyan-600",
-    progressBar: "from-cyan-500 to-cyan-400",
-    pattern: "cs",
-  },
-};
 
 interface BundleHeaderProps {
   bundle: LessonBundle;
@@ -86,9 +28,9 @@ export function BundleHeader({
   const totalCount = contentItems.length;
   const allCompleted = completedCount === totalCount && totalCount > 0;
 
-  // Get subject-specific colors
-  const colors = headerColors[subject.color] || headerColors.cyan;
-  const IconComponent = iconMap[subject.icon] || BookOpen;
+  // Get subject-specific colors using shared utility
+  const colors = getSubjectColors(subject.color);
+  const IconComponent = getSubjectIcon(subject.icon);
 
   return (
     <div className="space-y-2 md:space-y-3">

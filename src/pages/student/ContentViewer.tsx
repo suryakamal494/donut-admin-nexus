@@ -1,4 +1,4 @@
-// Content Viewer Page - Full-screen content viewing experience
+// Content Viewer Page - Full-screen content viewing experience with subject branding
 
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -9,7 +9,6 @@ import { getChaptersBySubject } from "@/data/student/chapters";
 import {
   getLessonBundleById,
   getContentByBundle,
-  bundleContentItems,
 } from "@/data/student/lessonBundles";
 import {
   VideoPlayer,
@@ -17,6 +16,8 @@ import {
   QuizViewer,
   SimulationViewer,
 } from "@/components/student/content-viewer";
+import SubjectBackgroundPattern from "@/components/student/subjects/SubjectBackgroundPattern";
+import { getSubjectColors, getSubjectIcon, getSubjectPattern } from "@/components/student/shared/subjectColors";
 
 const StudentContentViewer = () => {
   const navigate = useNavigate();
@@ -52,6 +53,11 @@ const StudentContentViewer = () => {
   if (!content) {
     return <Navigate to={`/student/subjects/${subjectId}/${chapterId}/${bundleId}`} replace />;
   }
+
+  // Get subject-specific styling
+  const colors = getSubjectColors(subject.color);
+  const Icon = getSubjectIcon(subject.icon);
+  const pattern = getSubjectPattern(subject.id);
 
   const currentIndex = contentItems.findIndex((c) => c.id === contentId);
   const hasNext = currentIndex < contentItems.length - 1;
@@ -103,39 +109,61 @@ const StudentContentViewer = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
+      {/* Header with subject branding */}
       <header className={cn(
-        "flex items-center justify-between px-4 py-3",
-        "bg-white/80 backdrop-blur-xl border-b border-slate-100",
+        "relative overflow-hidden",
+        "bg-gradient-to-br backdrop-blur-xl border-b",
+        colors.gradient,
+        colors.border,
         "safe-area-inset-top"
       )}>
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="flex-shrink-0"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          
-          <div className="flex-1 min-w-0">
-            <h1 className="font-semibold text-foreground truncate text-sm lg:text-base">
-              {content.title}
-            </h1>
-            <p className="text-xs text-muted-foreground truncate">
-              {bundle.title} • {currentIndex + 1}/{contentItems.length}
-            </p>
+        {/* Background Pattern - subtle */}
+        <SubjectBackgroundPattern 
+          pattern={pattern} 
+          className={cn(colors.patternColor, "opacity-30")}
+        />
+
+        {/* Header content */}
+        <div className="relative z-10 flex items-center justify-between px-3 py-2.5 md:px-4 md:py-3">
+          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="flex-shrink-0 h-8 w-8 md:h-9 md:w-9"
+            >
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            </Button>
+            
+            <div className="flex-1 min-w-0">
+              <h1 className="font-semibold text-foreground truncate text-sm lg:text-base">
+                {content.title}
+              </h1>
+              <p className={cn("text-xs truncate", colors.textAccent)}>
+                {bundle.title} • {currentIndex + 1}/{contentItems.length}
+              </p>
+            </div>
+          </div>
+
+          {/* Right side: Completion badge + Subject icon */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Completion badge */}
+            {content.isCompleted && (
+              <div className="flex items-center gap-1 px-2 py-0.5 bg-green-100 rounded-full">
+                <CheckCircle2 className="w-3 h-3 text-green-600" />
+                <span className="text-xs font-medium text-green-700 hidden sm:inline">Completed</span>
+              </div>
+            )}
+
+            {/* Subject icon */}
+            <div className={cn(
+              "flex w-7 h-7 md:w-8 md:h-8 rounded-lg items-center justify-center",
+              colors.iconBg
+            )}>
+              <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+            </div>
           </div>
         </div>
-
-        {/* Completion badge */}
-        {content.isCompleted && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-100 rounded-full flex-shrink-0">
-            <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-            <span className="text-xs font-medium text-green-700">Completed</span>
-          </div>
-        )}
       </header>
 
       {/* Content Viewer */}
