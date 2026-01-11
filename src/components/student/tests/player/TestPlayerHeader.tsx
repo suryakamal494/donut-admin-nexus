@@ -26,22 +26,32 @@ interface TestPlayerHeaderProps {
   onExit: () => void;
 }
 
-const sectionColors: Record<string, { active: string; inactive: string }> = {
+// Bold, visually distinct colors - always visible, not just on hover
+const sectionColors: Record<string, { active: string; inactive: string; ring: string }> = {
   physics: {
-    active: "bg-purple-500 text-white border-purple-500",
-    inactive: "bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100",
+    active: "bg-purple-600 text-white border-purple-600 shadow-lg shadow-purple-200/50",
+    inactive: "bg-purple-500/90 text-white border-purple-500/80",
+    ring: "ring-purple-400",
   },
   chemistry: {
-    active: "bg-emerald-500 text-white border-emerald-500",
-    inactive: "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100",
+    active: "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200/50",
+    inactive: "bg-emerald-500/90 text-white border-emerald-500/80",
+    ring: "ring-emerald-400",
   },
   mathematics: {
-    active: "bg-blue-500 text-white border-blue-500",
-    inactive: "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100",
+    active: "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200/50",
+    inactive: "bg-blue-500/90 text-white border-blue-500/80",
+    ring: "ring-blue-400",
   },
   biology: {
-    active: "bg-rose-500 text-white border-rose-500",
-    inactive: "bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100",
+    active: "bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-200/50",
+    inactive: "bg-rose-500/90 text-white border-rose-500/80",
+    ring: "ring-rose-400",
+  },
+  english: {
+    active: "bg-amber-600 text-white border-amber-600 shadow-lg shadow-amber-200/50",
+    inactive: "bg-amber-500/90 text-white border-amber-500/80",
+    ring: "ring-amber-400",
   },
 };
 
@@ -63,13 +73,16 @@ const TestPlayerHeader = memo(function TestPlayerHeader({
 
   const getColorClasses = useCallback((subject: string, isActive: boolean) => {
     const colors = sectionColors[subject.toLowerCase()] || sectionColors.physics;
-    return isActive ? colors.active : colors.inactive;
+    return {
+      base: isActive ? colors.active : colors.inactive,
+      ring: colors.ring,
+    };
   }, []);
 
   return (
-    <header className="bg-white border-b border-border sticky top-0 z-50">
-      {/* Top Row: Timer + Actions */}
-      <div className="flex items-center justify-between px-3 py-2 sm:px-4">
+    <header className="bg-white border-b border-border sticky top-0 z-50 safe-area-top">
+      {/* Top Row: Timer + Actions - Compact on mobile */}
+      <div className="flex items-center justify-between px-2 py-1.5 sm:px-4 sm:py-2">
         {/* Exit Button (Mobile) */}
         <Button
           variant="ghost"
@@ -175,35 +188,45 @@ const TestPlayerHeader = memo(function TestPlayerHeader({
         </div>
       </div>
 
-      {/* Subject Tabs - Horizontal Scroll on Mobile */}
+      {/* Subject Tabs - Horizontal Scroll with no visible scrollbar */}
       {sections.length > 1 && (
-        <div className="flex gap-2 px-3 pb-2 overflow-x-auto scrollbar-hide sm:px-4 sm:justify-center">
-          {sections.map((section) => {
-            const isActive = section.id === currentSectionId;
-            const stats = getSectionStats(sessionQuestions, section.id);
+        <div className="relative">
+          {/* Fade gradients to indicate more content */}
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none sm:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none sm:hidden" />
+          
+          <div className="flex gap-1.5 sm:gap-2 px-2 sm:px-4 pb-2 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory sm:justify-center">
+            {sections.map((section) => {
+              const isActive = section.id === currentSectionId;
+              const stats = getSectionStats(sessionQuestions, section.id);
+              const colors = getColorClasses(section.subject, isActive);
 
-            return (
-              <button
-                key={section.id}
-                onClick={() => onSectionChange(section.id)}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-medium",
-                  "transition-all duration-200 shrink-0",
-                  getColorClasses(section.subject, isActive)
-                )}
-              >
-                <span>{section.name}</span>
-                <span
+              return (
+                <motion.button
+                  key={section.id}
+                  onClick={() => onSectionChange(section.id)}
+                  whileTap={{ scale: 0.95 }}
                   className={cn(
-                    "px-1.5 py-0.5 rounded text-[10px] font-bold",
-                    isActive ? "bg-white/20" : "bg-current/10"
+                    "flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-medium",
+                    "transition-all duration-200 shrink-0 snap-start",
+                    "min-h-[36px] min-w-[80px] justify-center",
+                    colors.base,
+                    isActive && `ring-2 ring-offset-1 ${colors.ring}`
                   )}
                 >
-                  {stats.answered}/{stats.total}
-                </span>
-              </button>
-            );
-          })}
+                  <span className="truncate max-w-[60px] sm:max-w-none">{section.name}</span>
+                  <span
+                    className={cn(
+                      "px-1.5 py-0.5 rounded text-[10px] font-bold",
+                      isActive ? "bg-white/25" : "bg-white/20"
+                    )}
+                  >
+                    {stats.answered}/{stats.total}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
       )}
     </header>

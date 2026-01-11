@@ -188,6 +188,18 @@
 }
 
 @layer utilities {
+  /* Cross-browser Scrollbar Hide */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+    width: 0;
+    height: 0;
+  }
+
   /* Animation Utilities */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
@@ -242,5 +254,14 @@
 
   .hover-lift:hover {
     @apply -translate-y-1 shadow-xl;
+  }
+  
+  /* Safe area padding for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
