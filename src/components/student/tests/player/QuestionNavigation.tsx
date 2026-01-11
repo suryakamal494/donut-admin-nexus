@@ -54,7 +54,7 @@ const QuestionNavigation = memo(function QuestionNavigation({
       className={cn(
         "bg-white border-t border-border",
         "px-3 py-2 sm:px-4 sm:py-3",
-        "safe-area-pb" // For devices with home indicator
+        "pb-safe" // For devices with home indicator
       )}
     >
       {/* Mobile Layout: Compact 2 rows */}
