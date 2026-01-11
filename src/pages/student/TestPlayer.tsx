@@ -2,26 +2,30 @@
 // Full-screen test execution environment
 // Mobile-first with no bottom navigation
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   TestPlayerHeader,
   QuestionDisplay,
   QuestionNavigation,
   QuestionPalette,
   TestSubmitDialog,
+  TimerWarningOverlay,
 } from "@/components/student/tests/player";
 import type { AnswerValue } from "@/components/student/tests/player/QuestionDisplay";
 import {
   sampleTestSession,
   getQuestionsBySection,
+  formatTimeDisplay,
 } from "@/data/student/testSession";
 import type { QuestionStatus } from "@/data/student/testQuestions";
 
 const StudentTestPlayer = () => {
   const navigate = useNavigate();
   const { testId } = useParams<{ testId: string }>();
+  const { toast } = useToast();
 
   // Test session state
   const [session, setSession] = useState(sampleTestSession);
@@ -35,6 +39,14 @@ const StudentTestPlayer = () => {
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
+  const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
+
+  // Alert tracking refs (to prevent duplicate alerts)
+  const alertsShown = useRef({
+    halfTime: false,
+    fiveMinutes: false,
+    oneMinute: false,
+  });
 
   // Current question
   const currentSessionQuestion = session.sessionQuestions[currentQuestionIndex];
@@ -42,22 +54,81 @@ const StudentTestPlayer = () => {
     (q) => q.id === currentSessionQuestion?.id
   );
 
-  // Timer effect
+  // Calculate time thresholds
+  const totalSeconds = session.totalDuration * 60;
+  const halfTimeThreshold = Math.floor(totalSeconds / 2);
+  const fiveMinuteThreshold = 5 * 60; // 5 minutes
+  const oneMinuteThreshold = 60; // 1 minute
+
+  // Timer effect with warning alerts
   useEffect(() => {
     const timer = setInterval(() => {
       setRemainingTime((prev) => {
-        if (prev <= 1) {
+        const newTime = prev - 1;
+
+        // Half-time warning
+        if (newTime === halfTimeThreshold && !alertsShown.current.halfTime) {
+          alertsShown.current.halfTime = true;
+          toast({
+            title: "⏰ Half Time!",
+            description: `${formatTimeDisplay(newTime)} remaining. Keep up the pace!`,
+            variant: "default",
+            duration: 5000,
+          });
+        }
+
+        // 5 minutes warning
+        if (newTime === fiveMinuteThreshold && !alertsShown.current.fiveMinutes) {
+          alertsShown.current.fiveMinutes = true;
+          toast({
+            title: "⚠️ 5 Minutes Left!",
+            description: "Review your answers and prepare to submit.",
+            variant: "destructive",
+            duration: 8000,
+          });
+        }
+
+        // 1 minute warning
+        if (newTime === oneMinuteThreshold && !alertsShown.current.oneMinute) {
+          alertsShown.current.oneMinute = true;
+          toast({
+            title: "🚨 1 Minute Left!",
+            description: "Your test will auto-submit when time expires.",
+            variant: "destructive",
+            duration: 10000,
+          });
+        }
+
+        // Auto-submit when time expires
+        if (newTime <= 0) {
           clearInterval(timer);
-          // Auto-submit on time expiry
-          handleSubmitTest();
+          handleAutoSubmit();
           return 0;
         }
-        return prev - 1;
+
+        return newTime;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [halfTimeThreshold, toast]);
+
+  // Auto-submit handler (different from manual submit)
+  const handleAutoSubmit = useCallback(() => {
+    setIsAutoSubmitting(true);
+    toast({
+      title: "⏱️ Time's Up!",
+      description: "Your test is being submitted automatically...",
+      variant: "destructive",
+      duration: 3000,
+    });
+
+    // Delay navigation slightly to show the toast
+    setTimeout(() => {
+      console.log("Test auto-submitted!", { answers, sessionQuestions: session.sessionQuestions });
+      navigate("/student/tests");
+    }, 2000);
+  }, [answers, session.sessionQuestions, navigate, toast]);
 
   // Mark current question as visited
   useEffect(() => {
@@ -196,11 +267,16 @@ const StudentTestPlayer = () => {
     }
   }, [currentQuestionIndex, currentSessionQuestion?.status, currentQuestion, answers, updateQuestionStatus]);
 
-  // Submit test
+  // Submit test (manual)
   const handleSubmitTest = useCallback(() => {
-    console.log("Test submitted!", session.sessionQuestions);
+    toast({
+      title: "✅ Test Submitted!",
+      description: "Your responses have been recorded successfully.",
+      duration: 3000,
+    });
+    console.log("Test submitted!", { answers, sessionQuestions: session.sessionQuestions });
     navigate("/student/tests");
-  }, [navigate, session.sessionQuestions]);
+  }, [navigate, session.sessionQuestions, answers, toast]);
 
   // Fullscreen toggle
   const handleToggleFullscreen = useCallback(() => {
@@ -319,6 +395,12 @@ const StudentTestPlayer = () => {
         onConfirm={handleSubmitTest}
         sessionQuestions={session.sessionQuestions}
         testName={session.testName}
+      />
+
+      {/* Final countdown overlay (last 30 seconds) */}
+      <TimerWarningOverlay
+        remainingTime={remainingTime}
+        isVisible={!isAutoSubmitting}
       />
     </div>
   );

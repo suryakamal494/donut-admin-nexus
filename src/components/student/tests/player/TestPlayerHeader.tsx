@@ -1,11 +1,12 @@
 // Test Player Header Component
 // Timer, subject tabs, and test info
-// Mobile-first with compact layout
+// Mobile-first with compact layout and timer urgency animations
 
 import { memo, useCallback } from "react";
-import { X, Clock, Calculator, Maximize2, Minimize2 } from "lucide-react";
+import { X, Clock, Calculator, Maximize2, Minimize2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 import type { TestSection } from "@/data/student/testQuestions";
 import { formatTimeDisplay, getTimeUrgency, getSectionStats } from "@/data/student/testSession";
 import type { TestSessionQuestion } from "@/data/student/testSession";
@@ -86,18 +87,58 @@ const TestPlayerHeader = memo(function TestPlayerHeader({
           </h1>
         </div>
 
-        {/* Timer - Always Centered/Visible */}
-        <div
+        {/* Timer - Always Centered/Visible with urgency animations */}
+        <motion.div
+          animate={{
+            scale: timeUrgency === "danger" ? [1, 1.05, 1] : 1,
+          }}
+          transition={{
+            duration: 0.5,
+            repeat: timeUrgency === "danger" ? Infinity : 0,
+            repeatType: "reverse",
+          }}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono font-bold text-sm",
+            "transition-colors duration-300",
             timeUrgency === "normal" && "bg-muted text-foreground",
-            timeUrgency === "warning" && "bg-amber-100 text-amber-700",
-            timeUrgency === "danger" && "bg-red-100 text-red-600 animate-pulse"
+            timeUrgency === "warning" && "bg-amber-100 text-amber-700 shadow-md shadow-amber-200/50",
+            timeUrgency === "danger" && "bg-red-100 text-red-600 shadow-lg shadow-red-200/50"
           )}
         >
-          <Clock className="w-4 h-4" />
+          {/* Animated clock icon */}
+          <motion.div
+            animate={{
+              rotate: timeUrgency === "danger" ? [0, -10, 10, 0] : 0,
+            }}
+            transition={{
+              duration: 0.3,
+              repeat: timeUrgency === "danger" ? Infinity : 0,
+              repeatDelay: 0.7,
+            }}
+          >
+            {timeUrgency === "danger" ? (
+              <AlertTriangle className="w-4 h-4" />
+            ) : (
+              <Clock className="w-4 h-4" />
+            )}
+          </motion.div>
+          
+          {/* Time display */}
           <span>{formatTimeDisplay(remainingTime)}</span>
-        </div>
+          
+          {/* Urgency indicator dot */}
+          {timeUrgency !== "normal" && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className={cn(
+                "w-2 h-2 rounded-full",
+                timeUrgency === "warning" && "bg-amber-500",
+                timeUrgency === "danger" && "bg-red-500 animate-ping"
+              )}
+            />
+          )}
+        </motion.div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1">
