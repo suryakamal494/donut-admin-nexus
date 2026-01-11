@@ -1,7 +1,9 @@
-// My Path Mode - AI-personalized learning prescriptions
+// My Path Mode - AI-personalized learning prescriptions with virtualization
 
+import { useCallback, useMemo } from "react";
 import { Target, ChevronRight, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VirtualizedList } from "./VirtualizedList";
 import type { AIPathItem } from "@/data/student/lessonBundles";
 
 interface MyPathModeProps {
@@ -33,16 +35,90 @@ const priorityConfig = {
 };
 
 export function MyPathMode({ pathItems }: MyPathModeProps) {
-  const pendingItems = pathItems.filter(item => !item.isCompleted);
-  const completedItems = pathItems.filter(item => item.isCompleted);
+  // Memoize filtered and sorted lists
+  const { pendingItems, completedItems, sortedPending } = useMemo(() => {
+    const pending = pathItems.filter(item => !item.isCompleted);
+    const completed = pathItems.filter(item => item.isCompleted);
+    
+    // Sort by priority: high > medium > low
+    const sorted = [...pending].sort((a, b) => {
+      const order = { high: 0, medium: 1, low: 2 };
+      return order[a.priority] - order[b.priority];
+    });
+    
+    return { pendingItems: pending, completedItems: completed, sortedPending: sorted };
+  }, [pathItems]);
+
   const completedCount = completedItems.length;
   const totalCount = pathItems.length;
 
-  // Sort by priority: high > medium > low
-  const sortedPending = [...pendingItems].sort((a, b) => {
-    const order = { high: 0, medium: 1, low: 2 };
-    return order[a.priority] - order[b.priority];
-  });
+  // Memoize handlers
+  const handleItemClick = useCallback((itemId: string) => {
+    console.log("Start AI path:", itemId);
+  }, []);
+
+  // Render functions
+  const renderPendingItem = useCallback((item: AIPathItem) => {
+    const config = priorityConfig[item.priority];
+    const PriorityIcon = config.icon;
+
+    return (
+      <button
+        onClick={() => handleItemClick(item.id)}
+        className={cn(
+          "w-full text-left group",
+          "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",
+          "p-4 shadow-sm hover:shadow-md transition-all duration-300",
+          "active:scale-[0.98]",
+          "border-l-4",
+          config.borderColor
+        )}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className={cn(
+                "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-bold",
+                config.bgColor,
+                config.color
+              )}>
+                <PriorityIcon className="w-3 h-3" />
+                {config.label}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                ~{item.estimatedTime}
+              </span>
+            </div>
+
+            <h3 className="font-semibold text-foreground leading-snug">
+              {item.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+              {item.description}
+            </p>
+          </div>
+
+          <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-foreground/70 transition-colors flex-shrink-0" />
+        </div>
+      </button>
+    );
+  }, [handleItemClick]);
+
+  const renderCompletedItem = useCallback((item: AIPathItem) => (
+    <div className={cn(
+      "bg-white/50 backdrop-blur-xl rounded-xl border border-white/50",
+      "p-3 opacity-60"
+    )}>
+      <div className="flex items-center gap-3">
+        <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+        <span className="font-medium text-foreground line-through">
+          {item.title}
+        </span>
+      </div>
+    </div>
+  ), []);
+
+  const getItemKey = useCallback((item: AIPathItem) => item.id, []);
 
   return (
     <div className="space-y-6">
@@ -70,55 +146,12 @@ export function MyPathMode({ pathItems }: MyPathModeProps) {
           <h2 className="text-sm font-semibold text-foreground mb-3 px-1">
             NEEDS YOUR ATTENTION
           </h2>
-          <div className="space-y-3">
-            {sortedPending.map((item) => {
-              const config = priorityConfig[item.priority];
-              const PriorityIcon = config.icon;
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => console.log("Start AI path:", item.id)}
-                  className={cn(
-                    "w-full text-left group",
-                    "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",
-                    "p-4 shadow-sm hover:shadow-md transition-all duration-300",
-                    "active:scale-[0.98]",
-                    "border-l-4",
-                    config.borderColor
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      {/* Priority badge */}
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className={cn(
-                          "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-bold",
-                          config.bgColor,
-                          config.color
-                        )}>
-                          <PriorityIcon className="w-3 h-3" />
-                          {config.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          ~{item.estimatedTime}
-                        </span>
-                      </div>
-
-                      <h3 className="font-semibold text-foreground leading-snug">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-foreground/70 transition-colors flex-shrink-0" />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <VirtualizedList
+            items={sortedPending}
+            renderItem={renderPendingItem}
+            getItemKey={getItemKey}
+            estimatedItemHeight={110}
+          />
         </section>
       )}
 
@@ -128,24 +161,13 @@ export function MyPathMode({ pathItems }: MyPathModeProps) {
           <h2 className="text-sm font-semibold text-muted-foreground mb-3 px-1">
             COMPLETED
           </h2>
-          <div className="space-y-2">
-            {completedItems.map((item) => (
-              <div
-                key={item.id}
-                className={cn(
-                  "bg-white/50 backdrop-blur-xl rounded-xl border border-white/50",
-                  "p-3 opacity-60"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="font-medium text-foreground line-through">
-                    {item.title}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <VirtualizedList
+            items={completedItems}
+            renderItem={renderCompletedItem}
+            getItemKey={getItemKey}
+            estimatedItemHeight={52}
+            gap={8}
+          />
         </section>
       )}
 

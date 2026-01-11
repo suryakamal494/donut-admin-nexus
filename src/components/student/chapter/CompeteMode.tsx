@@ -1,7 +1,9 @@
-// Compete Mode - Challenge cards for testing mastery
+// Compete Mode - Challenge cards for testing mastery with virtualization
 
+import { useCallback, useMemo } from "react";
 import { Trophy, ChevronRight, Star, Zap, Award, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VirtualizedList } from "./VirtualizedList";
 import type { ChallengeItem } from "@/data/student/lessonBundles";
 
 interface CompeteModeProps {
@@ -33,17 +35,128 @@ const difficultyConfig = {
 };
 
 export function CompeteMode({ challenges }: CompeteModeProps) {
-  const pendingChallenges = challenges.filter(c => !c.isCompleted);
-  const completedChallenges = challenges.filter(c => c.isCompleted);
+  // Memoize filtered and sorted lists
+  const { pendingChallenges, completedChallenges, sortedPending, totalPoints, earnedPoints } = useMemo(() => {
+    const pending = challenges.filter(c => !c.isCompleted);
+    const completed = challenges.filter(c => c.isCompleted);
+    
+    // Sort by difficulty: easy > medium > hard
+    const sorted = [...pending].sort((a, b) => {
+      const order = { easy: 0, medium: 1, hard: 2 };
+      return order[a.difficulty] - order[b.difficulty];
+    });
+    
+    const total = challenges.reduce((sum, c) => sum + c.points, 0);
+    const earned = completed.reduce((sum, c) => sum + (c.userScore || 0), 0);
+    
+    return { 
+      pendingChallenges: pending, 
+      completedChallenges: completed, 
+      sortedPending: sorted,
+      totalPoints: total,
+      earnedPoints: earned
+    };
+  }, [challenges]);
 
-  // Sort by difficulty: easy > medium > hard
-  const sortedPending = [...pendingChallenges].sort((a, b) => {
-    const order = { easy: 0, medium: 1, hard: 2 };
-    return order[a.difficulty] - order[b.difficulty];
-  });
+  // Memoize handlers
+  const handleChallengeClick = useCallback((challengeId: string) => {
+    console.log("Start challenge:", challengeId);
+  }, []);
 
-  const totalPoints = challenges.reduce((sum, c) => sum + c.points, 0);
-  const earnedPoints = completedChallenges.reduce((sum, c) => sum + (c.userScore || 0), 0);
+  // Render functions
+  const renderPendingChallenge = useCallback((challenge: ChallengeItem) => {
+    const config = difficultyConfig[challenge.difficulty];
+    const DifficultyIcon = config.icon;
+
+    return (
+      <button
+        onClick={() => handleChallengeClick(challenge.id)}
+        className={cn(
+          "w-full text-left group",
+          "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",
+          "p-4 shadow-sm hover:shadow-md transition-all duration-300",
+          "active:scale-[0.98]",
+          "border-l-4",
+          config.borderColor
+        )}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className={cn(
+                "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-bold",
+                config.bgColor,
+                config.color
+              )}>
+                <DifficultyIcon className="w-3 h-3" />
+                {config.label}
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                <Trophy className="w-3 h-3" />
+                {challenge.points} pts
+              </span>
+            </div>
+
+            <h3 className="font-semibold text-foreground leading-snug">
+              {challenge.title}
+            </h3>
+            
+            <p className="text-xs text-muted-foreground mt-1">
+              Top 10% score: {challenge.topPercentileScore}+
+            </p>
+          </div>
+
+          <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-foreground/70 transition-colors flex-shrink-0" />
+        </div>
+      </button>
+    );
+  }, [handleChallengeClick]);
+
+  const renderCompletedChallenge = useCallback((challenge: ChallengeItem) => {
+    const config = difficultyConfig[challenge.difficulty];
+    const isTopScore = (challenge.userScore || 0) >= challenge.topPercentileScore;
+
+    return (
+      <div className={cn(
+        "bg-white/50 backdrop-blur-xl rounded-xl border border-white/50",
+        "p-3"
+      )}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+            <div>
+              <span className="font-medium text-foreground">
+                {challenge.title}
+              </span>
+              <span className={cn(
+                "ml-2 text-xs px-1.5 py-0.5 rounded",
+                config.bgColor,
+                config.color
+              )}>
+                {config.label}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {isTopScore && (
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+            )}
+            <span className={cn(
+              "font-bold",
+              isTopScore ? "text-amber-600" : "text-foreground"
+            )}>
+              {challenge.userScore}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              /{challenge.points}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }, []);
+
+  const getChallengeKey = useCallback((challenge: ChallengeItem) => challenge.id, []);
 
   return (
     <div className="space-y-6">
@@ -75,56 +188,12 @@ export function CompeteMode({ challenges }: CompeteModeProps) {
           <h2 className="text-sm font-semibold text-foreground mb-3 px-1">
             AVAILABLE CHALLENGES
           </h2>
-          <div className="space-y-3">
-            {sortedPending.map((challenge) => {
-              const config = difficultyConfig[challenge.difficulty];
-              const DifficultyIcon = config.icon;
-
-              return (
-                <button
-                  key={challenge.id}
-                  onClick={() => console.log("Start challenge:", challenge.id)}
-                  className={cn(
-                    "w-full text-left group",
-                    "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",
-                    "p-4 shadow-sm hover:shadow-md transition-all duration-300",
-                    "active:scale-[0.98]",
-                    "border-l-4",
-                    config.borderColor
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className={cn(
-                          "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-bold",
-                          config.bgColor,
-                          config.color
-                        )}>
-                          <DifficultyIcon className="w-3 h-3" />
-                          {config.label}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
-                          <Trophy className="w-3 h-3" />
-                          {challenge.points} pts
-                        </span>
-                      </div>
-
-                      <h3 className="font-semibold text-foreground leading-snug">
-                        {challenge.title}
-                      </h3>
-                      
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Top 10% score: {challenge.topPercentileScore}+
-                      </p>
-                    </div>
-
-                    <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-foreground/70 transition-colors flex-shrink-0" />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <VirtualizedList
+            items={sortedPending}
+            renderItem={renderPendingChallenge}
+            getItemKey={getChallengeKey}
+            estimatedItemHeight={100}
+          />
         </section>
       )}
 
@@ -134,54 +203,13 @@ export function CompeteMode({ challenges }: CompeteModeProps) {
           <h2 className="text-sm font-semibold text-muted-foreground mb-3 px-1">
             COMPLETED
           </h2>
-          <div className="space-y-2">
-            {completedChallenges.map((challenge) => {
-              const config = difficultyConfig[challenge.difficulty];
-              const isTopScore = (challenge.userScore || 0) >= challenge.topPercentileScore;
-
-              return (
-                <div
-                  key={challenge.id}
-                  className={cn(
-                    "bg-white/50 backdrop-blur-xl rounded-xl border border-white/50",
-                    "p-3"
-                  )}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium text-foreground">
-                          {challenge.title}
-                        </span>
-                        <span className={cn(
-                          "ml-2 text-xs px-1.5 py-0.5 rounded",
-                          config.bgColor,
-                          config.color
-                        )}>
-                          {config.label}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {isTopScore && (
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                      )}
-                      <span className={cn(
-                        "font-bold",
-                        isTopScore ? "text-amber-600" : "text-foreground"
-                      )}>
-                        {challenge.userScore}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        /{challenge.points}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <VirtualizedList
+            items={completedChallenges}
+            renderItem={renderCompletedChallenge}
+            getItemKey={getChallengeKey}
+            estimatedItemHeight={60}
+            gap={8}
+          />
         </section>
       )}
 
