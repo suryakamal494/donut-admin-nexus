@@ -1,7 +1,7 @@
 // Subject Header - Creative island design with subject-specific styling
 
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingUp } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { StudentSubject } from "@/data/student/subjects";
 import SubjectBackgroundPattern from "./SubjectBackgroundPattern";
@@ -150,39 +150,29 @@ const SubjectHeader = ({ subject }: SubjectHeaderProps) => {
             </div>
           </div>
 
-          {/* Progress section */}
-          <div className="mt-5">
-            {/* Progress bar */}
-            <div className={cn("h-3 rounded-full overflow-hidden", colors.progressBg)}>
-              <div 
-                className={cn(
-                  "h-full rounded-full bg-gradient-to-r transition-all duration-500",
-                  colors.progressFill
-                )}
-                style={{ width: `${subject.progress}%` }}
-              />
+          {/* Stats section - Pills instead of progress bar */}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            {/* Chapters stat */}
+            <div className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+              colors.progressBg
+            )}>
+              <span className={cn("text-sm font-semibold", colors.textAccent)}>
+                {subject.chaptersCompleted}/{subject.chaptersTotal}
+              </span>
+              <span className="text-xs text-muted-foreground">chapters</span>
             </div>
-
-            {/* Progress stats */}
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-2">
-                <TrendingUp className={cn("w-4 h-4", colors.textAccent)} />
-                <span className={cn("text-sm font-semibold", colors.textAccent)}>
-                  {subject.progress}% Complete
-                </span>
-              </div>
-              
-              {/* Status badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/60 backdrop-blur-sm">
-                <span className="text-xs font-medium text-muted-foreground">
-                  {subject.status === "doing-well" ? "🔥 Doing Well" :
-                   subject.status === "on-track" ? "✨ On Track" :
-                   subject.status === "needs-attention" ? "⚡ Needs Focus" :
-                   subject.status === "almost-done" ? "🎯 Almost Done" :
-                   subject.status === "just-started" ? "🌱 Just Started" :
-                   "📚 In Progress"}
-                </span>
-              </div>
+            
+            {/* Status badge */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-sm">
+              <span className="text-sm font-medium text-foreground">
+                {subject.status === "doing-well" ? "🔥 Doing Well" :
+                 subject.status === "on-track" ? "✨ On Track" :
+                 subject.status === "needs-attention" ? "⚡ Needs Focus" :
+                 subject.status === "almost-done" ? "🎯 Almost Done" :
+                 subject.status === "just-started" ? "🌱 Just Started" :
+                 "📚 In Progress"}
+              </span>
             </div>
           </div>
         </div>

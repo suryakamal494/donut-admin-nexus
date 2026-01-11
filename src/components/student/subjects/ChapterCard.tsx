@@ -6,24 +6,13 @@ import { cn } from "@/lib/utils";
 import type { StudentChapter } from "@/data/student/chapters";
 import LearningStateBadge from "./LearningStateBadge";
 
-// Color configurations for progress bars based on state
-const progressColors: Record<string, string> = {
-  "not-started": "from-slate-300 to-slate-400",
-  "in-progress": "from-blue-400 to-blue-600",
-  "struggling": "from-amber-400 to-orange-500",
-  "on-track": "from-emerald-400 to-green-500",
-  "completed": "from-green-400 to-green-600",
-  "mastered": "from-amber-400 to-yellow-500",
-};
-
 interface ChapterCardProps {
   chapter: StudentChapter;
   subjectColor?: string;
 }
 
-const ChapterCard = ({ chapter, subjectColor = "blue" }: ChapterCardProps) => {
+const ChapterCard = ({ chapter }: ChapterCardProps) => {
   const navigate = useNavigate();
-  const progressColor = progressColors[chapter.state] || progressColors["in-progress"];
 
   const handleClick = () => {
     navigate(`/student/subjects/${chapter.subjectId}/${chapter.id}`);
@@ -48,48 +37,29 @@ const ChapterCard = ({ chapter, subjectColor = "blue" }: ChapterCardProps) => {
     >
       {/* Main content row */}
       <div className="flex items-start justify-between gap-3">
-        {/* Left: Chapter number + Name */}
+        {/* Left: Chapter number + Name + Topics */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2.5 mb-1">
+          <div className="flex items-start gap-3">
             {/* Chapter number pill */}
             <span className={cn(
-              "flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold",
+              "flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold mt-0.5",
               chapter.state === "not-started" 
                 ? "bg-slate-100 text-slate-500" 
-                : "bg-gradient-to-br from-slate-700 to-slate-900 text-white"
+                : "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-sm"
             )}>
               {chapter.order}
             </span>
             
-            {/* Chapter name */}
-            <h3 className="font-semibold text-foreground truncate">
-              {chapter.name}
-            </h3>
-          </div>
-
-          {/* Progress bar */}
-          <div className="mt-3">
-            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div 
-                className={cn(
-                  "h-full rounded-full bg-gradient-to-r transition-all duration-500",
-                  progressColor
-                )}
-                style={{ width: `${chapter.progress}%` }}
-              />
-            </div>
-            
-            {/* Bottom row: Progress % and topics */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-muted-foreground">
+            <div className="flex-1 min-w-0">
+              {/* Chapter name - allows wrapping */}
+              <h3 className="font-semibold text-foreground leading-snug">
+                {chapter.name}
+              </h3>
+              
+              {/* Topics count */}
+              <p className="text-sm text-muted-foreground mt-1">
                 {chapter.topicsCompleted}/{chapter.topicsTotal} topics
-              </span>
-              <span className={cn(
-                "text-xs font-semibold",
-                chapter.progress === 0 ? "text-slate-400" : "text-foreground"
-              )}>
-                {chapter.progress}%
-              </span>
+              </p>
             </div>
           </div>
         </div>
@@ -97,16 +67,16 @@ const ChapterCard = ({ chapter, subjectColor = "blue" }: ChapterCardProps) => {
         {/* Right: Badge + Arrow */}
         <div className="flex flex-col items-end gap-2 flex-shrink-0">
           <LearningStateBadge state={chapter.state} />
-          <ChevronRight className="w-5 h-5 text-muted-foreground/50 group-hover:text-foreground/70 transition-colors" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-foreground/70 transition-colors" />
         </div>
       </div>
 
-      {/* AI Path indicator */}
+      {/* AI Path indicator - Enhanced visibility */}
       {chapter.hasAIPath && (
-        <div className="mt-3 flex items-center gap-1.5 text-xs">
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-donut-coral/10 to-donut-orange/10">
-            <Sparkles className="w-3 h-3 text-donut-coral" />
-            <span className="font-medium bg-gradient-to-r from-donut-coral to-donut-orange bg-clip-text text-transparent">
+        <div className="mt-3 ml-11">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-donut-coral/20 to-donut-orange/15 border border-donut-coral/25">
+            <Sparkles className="w-3.5 h-3.5 text-donut-coral" />
+            <span className="text-sm font-semibold text-donut-coral">
               AI Path Available
             </span>
           </div>
