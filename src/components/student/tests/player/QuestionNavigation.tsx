@@ -128,7 +128,7 @@ const QuestionNavigation = memo(function QuestionNavigation({
           ) : (
             <Button
               size="sm"
-              className="flex-1 gap-1 bg-gradient-to-r from-donut-peach to-donut-coral hover:opacity-90"
+              className="flex-1 gap-1 bg-gradient-to-r from-donut-orange to-donut-coral hover:opacity-90"
               onClick={onNext}
             >
               Save & Next
@@ -193,7 +193,7 @@ const QuestionNavigation = memo(function QuestionNavigation({
           ) : (
             <Button
               size="sm"
-              className="gap-1.5 bg-gradient-to-r from-donut-peach to-donut-coral hover:opacity-90"
+              className="gap-1.5 bg-gradient-to-r from-donut-orange to-donut-coral hover:opacity-90"
               onClick={onNext}
             >
               Save & Next

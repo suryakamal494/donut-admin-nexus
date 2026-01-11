@@ -20,6 +20,7 @@ export type SubjectColorKey = "blue" | "purple" | "green" | "red" | "amber" | "c
 export interface SubjectColorScheme {
   // Backgrounds & gradients
   gradient: string;
+  headerGradient: string;
   iconBg: string;
   numberBg: string;
   progressBg: string;
@@ -64,6 +65,7 @@ export const subjectPatternMap: Record<string, SubjectPattern> = {
 export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = {
   blue: {
     gradient: "from-blue-50/90 via-blue-100/50 to-white/80",
+    headerGradient: "from-blue-500 to-blue-600",
     iconBg: "bg-gradient-to-br from-blue-400 to-blue-600",
     numberBg: "from-blue-500 to-blue-700",
     progressBg: "bg-blue-100",
@@ -76,6 +78,7 @@ export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = 
   },
   purple: {
     gradient: "from-violet-50/90 via-purple-100/50 to-white/80",
+    headerGradient: "from-purple-500 to-violet-600",
     iconBg: "bg-gradient-to-br from-violet-400 to-purple-600",
     numberBg: "from-violet-500 to-purple-700",
     progressBg: "bg-violet-100",
@@ -88,6 +91,7 @@ export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = 
   },
   green: {
     gradient: "from-emerald-50/90 via-green-100/50 to-white/80",
+    headerGradient: "from-green-500 to-emerald-600",
     iconBg: "bg-gradient-to-br from-emerald-400 to-green-600",
     numberBg: "from-emerald-500 to-green-700",
     progressBg: "bg-emerald-100",
@@ -100,6 +104,7 @@ export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = 
   },
   red: {
     gradient: "from-rose-50/90 via-red-100/50 to-white/80",
+    headerGradient: "from-rose-500 to-red-600",
     iconBg: "bg-gradient-to-br from-rose-400 to-red-500",
     numberBg: "from-rose-500 to-red-600",
     progressBg: "bg-rose-100",
@@ -112,6 +117,7 @@ export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = 
   },
   amber: {
     gradient: "from-amber-50/90 via-orange-100/50 to-white/80",
+    headerGradient: "from-amber-500 to-orange-500",
     iconBg: "bg-gradient-to-br from-amber-400 to-orange-500",
     numberBg: "from-amber-500 to-orange-600",
     progressBg: "bg-amber-100",
@@ -124,6 +130,7 @@ export const subjectColorSchemes: Record<SubjectColorKey, SubjectColorScheme> = 
   },
   cyan: {
     gradient: "from-cyan-50/90 via-teal-100/50 to-white/80",
+    headerGradient: "from-cyan-500 to-teal-600",
     iconBg: "bg-gradient-to-br from-cyan-400 to-teal-500",
     numberBg: "from-cyan-500 to-teal-600",
     progressBg: "bg-cyan-100",
