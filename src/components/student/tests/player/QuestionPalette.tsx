@@ -1,11 +1,12 @@
 // Question Palette Component
 // Mobile: Bottom sheet | Desktop: Sidebar panel
-// Shows all questions with status colors
+// Shows all questions with animated status colors
 
 import { memo, useMemo } from "react";
 import { X, CheckCircle2, Circle, Flag, Eye, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -55,23 +56,35 @@ const statusStyles = {
   },
 };
 
-// Legend Item
+// Legend Item with animated count
 const LegendItem = memo(function LegendItem({
   icon: Icon,
   label,
   count,
   colorClass,
+  bgClass,
 }: {
   icon: typeof Circle;
   label: string;
   count: number;
   colorClass: string;
+  bgClass?: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 text-xs">
+    <div className={cn(
+      "flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg",
+      bgClass || "bg-transparent"
+    )}>
       <Icon className={cn("w-3.5 h-3.5", colorClass)} />
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold text-foreground">{count}</span>
+      <motion.span 
+        key={count}
+        initial={{ scale: 1.3, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="font-bold text-foreground min-w-[1.25rem] text-center"
+      >
+        {count}
+      </motion.span>
     </div>
   );
 });
@@ -94,15 +107,25 @@ const PaletteGrid = memo(function PaletteGrid({
         const globalIndex = allQuestions.findIndex((aq) => aq.id === q.id);
         const isCurrent = globalIndex === currentQuestionIndex;
         const style = statusStyles[q.status];
+        const isAnswered = q.status === "answered" || q.status === "answered_marked";
+        const isMarked = q.status === "marked_review" || q.status === "answered_marked";
 
         return (
-          <button
+          <motion.button
             key={q.id}
             onClick={() => onQuestionSelect(globalIndex)}
+            initial={false}
+            animate={{
+              scale: isCurrent ? 1.05 : 1,
+              boxShadow: isCurrent 
+                ? "0 4px 12px rgba(0,0,0,0.15)" 
+                : "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className={cn(
-              "w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-semibold text-sm",
-              "border-2 transition-all duration-150",
-              "hover:scale-105 active:scale-95",
+              "relative w-10 h-10 sm:w-11 sm:h-11 rounded-lg font-semibold text-sm",
+              "border-2 transition-colors duration-300",
               style.bg,
               style.border,
               style.text,
@@ -110,7 +133,29 @@ const PaletteGrid = memo(function PaletteGrid({
             )}
           >
             {q.questionNumber}
-          </button>
+            
+            {/* Answered checkmark indicator */}
+            {isAnswered && (
+              <motion.span
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center"
+              >
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              </motion.span>
+            )}
+            
+            {/* Marked flag indicator */}
+            {isMarked && !isAnswered && (
+              <motion.span
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center"
+              >
+                <Flag className="w-2.5 h-2.5 text-white" />
+              </motion.span>
+            )}
+          </motion.button>
         );
       })}
     </div>
@@ -188,32 +233,36 @@ const QuestionPalette = memo(function QuestionPalette({
         </div>
       )}
 
-      {/* Legend */}
-      <div className="px-4 py-3 border-b border-border">
-        <div className="flex flex-wrap gap-x-4 gap-y-2">
+      {/* Legend with highlighted stats */}
+      <div className="px-4 py-3 border-b border-border bg-muted/30">
+        <div className="grid grid-cols-2 gap-2">
           <LegendItem
             icon={CheckCircle2}
             label="Answered"
             count={overallStats.answered}
-            colorClass="text-emerald-500"
+            colorClass="text-emerald-600"
+            bgClass="bg-emerald-50"
           />
           <LegendItem
             icon={Circle}
             label="Not Answered"
             count={overallStats.notAnswered}
-            colorClass="text-red-500"
+            colorClass="text-red-600"
+            bgClass="bg-red-50"
           />
           <LegendItem
             icon={Flag}
             label="Marked"
             count={overallStats.marked}
-            colorClass="text-purple-500"
+            colorClass="text-purple-600"
+            bgClass="bg-purple-50"
           />
           <LegendItem
             icon={HelpCircle}
             label="Not Visited"
             count={overallStats.notVisited}
             colorClass="text-muted-foreground"
+            bgClass="bg-muted"
           />
         </div>
       </div>
