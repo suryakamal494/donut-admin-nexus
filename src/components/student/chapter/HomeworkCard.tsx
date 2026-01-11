@@ -1,5 +1,6 @@
 // Homework Card - Displays homework items with urgency indicators
 
+import { memo, useMemo } from "react";
 import { ClipboardList, ChevronRight, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO, differenceInDays, isToday, isTomorrow, isPast } from "date-fns";
@@ -11,21 +12,19 @@ interface HomeworkCardProps {
   onClick?: () => void;
 }
 
-export function HomeworkCard({ homework, onClick }: HomeworkCardProps) {
+export const HomeworkCard = memo(function HomeworkCard({ homework, onClick }: HomeworkCardProps) {
   const dueDate = parseISO(homework.dueDate);
   const daysUntilDue = differenceInDays(dueDate, new Date());
   
-  // Determine urgency level
-  const getUrgency = () => {
+  // Determine urgency level - memoized for performance
+  const urgency = useMemo(() => {
     if (homework.isCompleted) return "completed";
     if (isPast(dueDate) && !isToday(dueDate)) return "overdue";
     if (isToday(dueDate)) return "today";
     if (isTomorrow(dueDate)) return "tomorrow";
     if (daysUntilDue <= 3) return "soon";
     return "normal";
-  };
-
-  const urgency = getUrgency();
+  }, [homework.isCompleted, dueDate, daysUntilDue]);
 
   const urgencyStyles = {
     completed: {
@@ -147,6 +146,7 @@ export function HomeworkCard({ homework, onClick }: HomeworkCardProps) {
       </div>
     </button>
   );
-}
+});
 
+HomeworkCard.displayName = "HomeworkCard";
 export default HomeworkCard;

@@ -1,5 +1,6 @@
 // Lesson Bundle Card - Displays a teacher's lesson plan bundle
 
+import { memo } from "react";
 import { 
   ChevronRight, 
   Video, 
@@ -36,7 +37,7 @@ interface LessonBundleCardProps {
   onClick?: () => void;
 }
 
-export function LessonBundleCard({ bundle, onClick }: LessonBundleCardProps) {
+export const LessonBundleCard = memo(function LessonBundleCard({ bundle, onClick }: LessonBundleCardProps) {
   const formattedDate = format(parseISO(bundle.date), "MMM d");
 
   return (
@@ -107,6 +108,7 @@ export function LessonBundleCard({ bundle, onClick }: LessonBundleCardProps) {
       </div>
     </button>
   );
-}
+});
 
+LessonBundleCard.displayName = "LessonBundleCard";
 export default LessonBundleCard;

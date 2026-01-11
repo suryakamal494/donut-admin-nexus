@@ -11,4 +11,4 @@ export { HomeworkCard } from "./HomeworkCard";
 export { BundleHeader } from "./BundleHeader";
 export { ContentItemCard } from "./ContentItemCard";
 export { ScreenshotGallery } from "./ScreenshotGallery";
-export { ScreenshotViewer } from "./ScreenshotViewer";
+export { ScreenshotViewer } from "./screenshot-viewer";

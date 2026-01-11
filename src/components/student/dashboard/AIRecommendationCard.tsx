@@ -1,6 +1,7 @@
 // AI Recommendation Card Component
 // Light card design with orange accent for AI-powered learning suggestions
 
+import { memo } from "react";
 import { ChevronRight, Play, AlertCircle, Trophy, Sparkles } from "lucide-react";
 import type { AIRecommendation } from "@/data/student/dashboard";
 
@@ -22,7 +23,7 @@ const getIcon = (type: AIRecommendation['type']) => {
   }
 };
 
-const AIRecommendationCard = ({ recommendation, compact = false }: AIRecommendationCardProps) => {
+const AIRecommendationCard = memo(function AIRecommendationCard({ recommendation, compact = false }: AIRecommendationCardProps) {
   return (
     <div 
       className={`
@@ -57,6 +58,7 @@ const AIRecommendationCard = ({ recommendation, compact = false }: AIRecommendat
       </div>
     </div>
   );
-};
+});
 
+AIRecommendationCard.displayName = "AIRecommendationCard";
 export default AIRecommendationCard;
