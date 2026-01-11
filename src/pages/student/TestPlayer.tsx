@@ -12,6 +12,7 @@ import {
   QuestionPalette,
   TestSubmitDialog,
 } from "@/components/student/tests/player";
+import type { AnswerValue } from "@/components/student/tests/player/QuestionDisplay";
 import {
   sampleTestSession,
   getQuestionsBySection,
@@ -33,6 +34,7 @@ const StudentTestPlayer = () => {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
 
   // Current question
   const currentSessionQuestion = session.sessionQuestions[currentQuestionIndex];
@@ -75,6 +77,27 @@ const StudentTestPlayer = () => {
       }));
     },
     []
+  );
+
+  // Answer change handler
+  const handleAnswerChange = useCallback(
+    (questionId: string, answer: AnswerValue) => {
+      setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+      
+      // Update question status to answered
+      const questionIndex = session.sessionQuestions.findIndex(
+        (q) => q.id === questionId
+      );
+      if (questionIndex !== -1) {
+        const currentStatus = session.sessionQuestions[questionIndex].status;
+        if (currentStatus === "not_answered" || currentStatus === "not_visited") {
+          updateQuestionStatus(questionIndex, "answered");
+        } else if (currentStatus === "marked_review") {
+          updateQuestionStatus(questionIndex, "answered_marked");
+        }
+      }
+    },
+    [session.sessionQuestions, updateQuestionStatus]
   );
 
   // Navigation handlers
@@ -234,6 +257,8 @@ const StudentTestPlayer = () => {
           question={currentQuestion}
           questionNumber={currentSessionQuestion.questionNumber}
           totalQuestions={session.sessionQuestions.length}
+          answer={answers[currentQuestion.id]}
+          onAnswerChange={handleAnswerChange}
           className="flex-1"
         />
 
