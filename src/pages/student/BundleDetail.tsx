@@ -15,7 +15,7 @@ import {
 import { BundleHeader } from "@/components/student/chapter/BundleHeader";
 import { ContentItemCard } from "@/components/student/chapter/ContentItemCard";
 import { ScreenshotGallery } from "@/components/student/chapter/ScreenshotGallery";
-import { ScreenshotViewer } from "@/components/student/chapter/ScreenshotViewer";
+import { ScreenshotViewer } from "@/components/student/chapter/screenshot-viewer";
 
 const StudentBundleDetail = () => {
   const navigate = useNavigate();

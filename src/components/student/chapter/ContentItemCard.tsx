@@ -1,5 +1,6 @@
 // Content Item Card - Displays individual content items in a bundle
 
+import { memo, useMemo } from "react";
 import { 
   Play, 
   FileText, 
@@ -61,19 +62,17 @@ interface ContentItemCardProps {
   onClick?: () => void;
 }
 
-export function ContentItemCard({ item, onClick }: ContentItemCardProps) {
+export const ContentItemCard = memo(function ContentItemCard({ item, onClick }: ContentItemCardProps) {
   const config = contentConfig[item.type];
   const Icon = config.icon;
 
-  // Build meta info string
-  const getMetaInfo = () => {
+  // Build meta info string - memoized for performance
+  const metaInfo = useMemo(() => {
     if (item.duration) return item.duration;
     if (item.pageCount) return `${item.pageCount} pages`;
     if (item.questionCount) return `${item.questionCount} questions`;
     return null;
-  };
-
-  const metaInfo = getMetaInfo();
+  }, [item.duration, item.pageCount, item.questionCount]);
 
   return (
     <button
@@ -125,6 +124,7 @@ export function ContentItemCard({ item, onClick }: ContentItemCardProps) {
       </div>
     </button>
   );
-}
+});
 
+ContentItemCard.displayName = "ContentItemCard";
 export default ContentItemCard;
