@@ -30,42 +30,42 @@ const headerColors: Record<string, {
     gradient: "from-blue-50/90 via-blue-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-blue-400 to-blue-600",
     textAccent: "text-blue-600",
-    patternColor: "text-blue-300/40",
+    patternColor: "text-blue-400",
     numberBg: "from-blue-500 to-blue-700",
   },
   purple: {
     gradient: "from-violet-50/90 via-purple-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-violet-400 to-purple-600",
     textAccent: "text-violet-600",
-    patternColor: "text-violet-300/40",
+    patternColor: "text-violet-400",
     numberBg: "from-violet-500 to-purple-700",
   },
   green: {
     gradient: "from-emerald-50/90 via-green-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-emerald-400 to-green-600",
     textAccent: "text-emerald-600",
-    patternColor: "text-emerald-300/40",
+    patternColor: "text-emerald-400",
     numberBg: "from-emerald-500 to-green-700",
   },
   red: {
     gradient: "from-rose-50/90 via-red-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-rose-400 to-red-500",
     textAccent: "text-rose-600",
-    patternColor: "text-rose-300/40",
+    patternColor: "text-rose-400",
     numberBg: "from-rose-500 to-red-600",
   },
   amber: {
     gradient: "from-amber-50/90 via-orange-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-amber-400 to-orange-500",
     textAccent: "text-amber-600",
-    patternColor: "text-amber-300/40",
+    patternColor: "text-amber-400",
     numberBg: "from-amber-500 to-orange-600",
   },
   cyan: {
     gradient: "from-cyan-50/90 via-teal-100/50 to-white/80",
     iconBg: "bg-gradient-to-br from-cyan-400 to-teal-500",
     textAccent: "text-cyan-600",
-    patternColor: "text-cyan-300/40",
+    patternColor: "text-cyan-400",
     numberBg: "from-cyan-500 to-teal-600",
   },
 };
@@ -144,10 +144,10 @@ export function ChapterHeader({ chapter, subject }: ChapterHeaderProps) {
           <div className="flex items-center gap-2 flex-shrink-0">
             <LearningStateBadge state={chapter.state} compact />
             <div className={cn(
-              "hidden md:flex w-8 h-8 rounded-lg items-center justify-center",
+              "flex w-7 h-7 md:w-8 md:h-8 rounded-lg items-center justify-center",
               colors.iconBg
             )}>
-              <Icon className="w-4 h-4 text-white" />
+              <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
             </div>
           </div>
         </div>
