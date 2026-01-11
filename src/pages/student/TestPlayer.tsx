@@ -177,12 +177,12 @@ const StudentTestPlayer = () => {
       duration: 3000,
     });
 
-    // Delay navigation slightly to show the toast
+    // Delay navigation slightly to show the toast, then go to results
     setTimeout(() => {
       console.log("Test auto-submitted!", { answers, sessionQuestions: session.sessionQuestions });
-      navigate("/student/tests");
+      navigate(`/student/tests/${testId}/results`);
     }, 2000);
-  }, [answers, session.sessionQuestions, navigate, toast, clearSession]);
+  }, [answers, session.sessionQuestions, navigate, toast, clearSession, testId]);
 
   // Mark current question as visited
   useEffect(() => {
@@ -330,8 +330,8 @@ const StudentTestPlayer = () => {
       duration: 3000,
     });
     console.log("Test submitted!", { answers, sessionQuestions: session.sessionQuestions });
-    navigate("/student/tests");
-  }, [navigate, session.sessionQuestions, answers, toast, clearSession]);
+    navigate(`/student/tests/${testId}/results`);
+  }, [navigate, session.sessionQuestions, answers, toast, clearSession, testId]);
 
   // Fullscreen toggle
   const handleToggleFullscreen = useCallback(() => {
