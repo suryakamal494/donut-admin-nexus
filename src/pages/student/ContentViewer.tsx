@@ -1,6 +1,8 @@
-// Content Viewer Page - Full-screen content viewing experience with subject branding
+// Content Viewer Page - Full-screen content viewing experience with subject branding and swipe navigation
 
+import { useState, useCallback } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,10 @@ import {
 import SubjectBackgroundPattern from "@/components/student/subjects/SubjectBackgroundPattern";
 import { getSubjectColors, getSubjectIcon, getSubjectPattern } from "@/components/student/shared/subjectColors";
 
+// Swipe threshold for navigation
+const SWIPE_THRESHOLD = 50;
+const SWIPE_VELOCITY_THRESHOLD = 500;
+
 const StudentContentViewer = () => {
   const navigate = useNavigate();
   const { subjectId, chapterId, bundleId, contentId } = useParams<{
@@ -27,6 +33,9 @@ const StudentContentViewer = () => {
     bundleId: string;
     contentId: string;
   }>();
+
+  // Swipe animation state
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
 
   // Find subject
   const subject = studentSubjects.find((s) => s.id === subjectId);
@@ -67,24 +76,40 @@ const StudentContentViewer = () => {
     navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}`);
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (hasNext) {
+      setSwipeDirection("left");
       const nextContent = contentItems[currentIndex + 1];
       navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${nextContent.id}`);
     }
-  };
+  }, [hasNext, contentItems, currentIndex, navigate, subjectId, chapterId, bundleId]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (hasPrev) {
+      setSwipeDirection("right");
       const prevContent = contentItems[currentIndex - 1];
       navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${prevContent.id}`);
     }
-  };
+  }, [hasPrev, contentItems, currentIndex, navigate, subjectId, chapterId, bundleId]);
 
   const handleComplete = () => {
-    // Mark as complete logic would go here
     console.log("Content completed:", contentId);
   };
+
+  // Handle swipe gesture
+  const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const { offset, velocity } = info;
+    
+    // Check if swipe meets threshold (distance or velocity)
+    const swipedLeft = offset.x < -SWIPE_THRESHOLD || velocity.x < -SWIPE_VELOCITY_THRESHOLD;
+    const swipedRight = offset.x > SWIPE_THRESHOLD || velocity.x > SWIPE_VELOCITY_THRESHOLD;
+
+    if (swipedLeft && hasNext) {
+      handleNext();
+    } else if (swipedRight && hasPrev) {
+      handlePrev();
+    }
+  }, [hasNext, hasPrev, handleNext, handlePrev]);
 
   // Render appropriate viewer based on content type
   const renderViewer = () => {
@@ -107,8 +132,26 @@ const StudentContentViewer = () => {
     }
   };
 
+  // Animation variants for swipe transitions
+  const contentVariants = {
+    initial: (direction: "left" | "right" | null) => ({
+      x: direction === "left" ? 100 : direction === "right" ? -100 : 0,
+      opacity: 0,
+    }),
+    animate: {
+      x: 0,
+      opacity: 1,
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+    },
+    exit: (direction: "left" | "right" | null) => ({
+      x: direction === "left" ? -100 : direction === "right" ? 100 : 0,
+      opacity: 0,
+      transition: { duration: 0.2 },
+    }),
+  };
+
   return (
-    <div className="h-[100dvh] flex flex-col bg-background">
+    <div className="h-[100dvh] flex flex-col bg-background overflow-hidden">
       {/* Header with subject branding - compact for mobile */}
       <header className={cn(
         "relative overflow-hidden flex-shrink-0",
@@ -165,10 +208,39 @@ const StudentContentViewer = () => {
         </div>
       </header>
 
-      {/* Content Viewer - takes remaining space */}
-      <main className="flex-1 overflow-hidden">
-        {renderViewer()}
-      </main>
+      {/* Swipeable Content Area */}
+      <motion.main 
+        className="flex-1 overflow-hidden relative touch-pan-y"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={handleDragEnd}
+        whileDrag={{ cursor: "grabbing" }}
+      >
+        <AnimatePresence mode="wait" custom={swipeDirection}>
+          <motion.div
+            key={contentId}
+            custom={swipeDirection}
+            variants={contentVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="h-full w-full"
+          >
+            {renderViewer()}
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* Swipe indicators */}
+        <div className="absolute inset-y-0 left-0 w-8 pointer-events-none flex items-center justify-start pl-1 opacity-0 transition-opacity lg:hidden"
+             style={{ opacity: hasPrev ? 0.3 : 0 }}>
+          <div className="w-1 h-12 bg-black/20 rounded-full" />
+        </div>
+        <div className="absolute inset-y-0 right-0 w-8 pointer-events-none flex items-center justify-end pr-1 opacity-0 transition-opacity lg:hidden"
+             style={{ opacity: hasNext ? 0.3 : 0 }}>
+          <div className="w-1 h-12 bg-black/20 rounded-full" />
+        </div>
+      </motion.main>
 
       {/* Navigation footer (for non-quiz content) - mobile optimized */}
       {content.type !== "quiz" && (
@@ -187,9 +259,14 @@ const StudentContentViewer = () => {
             Previous
           </Button>
           
-          <span className="text-xs text-muted-foreground font-medium">
-            {currentIndex + 1} / {contentItems.length}
-          </span>
+          <div className="flex flex-col items-center">
+            <span className="text-xs text-muted-foreground font-medium">
+              {currentIndex + 1} / {contentItems.length}
+            </span>
+            <span className="text-[10px] text-muted-foreground/60 lg:hidden">
+              Swipe to navigate
+            </span>
+          </div>
 
           <Button
             size="sm"
