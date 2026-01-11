@@ -8,3 +8,6 @@ export * from './dashboard';
 
 // Subject Components
 export * from './subjects';
+
+// Chapter Components
+export * from './chapter';
