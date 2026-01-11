@@ -82,7 +82,7 @@ const StudentTests = () => {
         <TabsList className="w-full grid grid-cols-2 mb-4 bg-white/60 backdrop-blur-sm p-1 rounded-xl border border-white/50">
           <TabsTrigger
             value="my-tests"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-peach data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-orange data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
           >
             <ClipboardList className="w-4 h-4 mr-1.5" />
             My Tests
@@ -94,7 +94,7 @@ const StudentTests = () => {
           </TabsTrigger>
           <TabsTrigger
             value="grand-tests"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-peach data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-donut-orange data-[state=active]:to-donut-coral data-[state=active]:text-white rounded-lg text-xs sm:text-sm font-medium"
           >
             <GraduationCap className="w-4 h-4 mr-1.5" />
             Grand Tests

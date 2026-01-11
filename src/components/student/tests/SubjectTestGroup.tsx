@@ -44,7 +44,7 @@ const SubjectTestGroup = memo(function SubjectTestGroup({
           "w-full flex items-center justify-between",
           "px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl",
           "bg-gradient-to-r transition-all duration-200",
-          colors.gradient,
+          colors.headerGradient,
           "hover:opacity-95"
         )}
       >

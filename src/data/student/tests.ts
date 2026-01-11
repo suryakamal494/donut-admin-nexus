@@ -37,9 +37,9 @@ export const subjectColorMap: Record<string, string> = {
   chemistry: "green",
   mathematics: "blue",
   math: "blue",
-  biology: "coral",
+  biology: "red",
   english: "amber",
-  cs: "pink",
+  cs: "cyan",
 };
 
 // Teacher-assigned tests (single subject)
