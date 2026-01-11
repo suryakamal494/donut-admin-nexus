@@ -173,16 +173,28 @@ const StudentTestPlayer = () => {
     updateQuestionStatus(currentQuestionIndex, newStatus);
   }, [currentQuestionIndex, currentSessionQuestion?.status, updateQuestionStatus]);
 
-  // Clear response
+  // Clear response - removes answer and updates status
   const handleClearResponse = useCallback(() => {
+    if (!currentQuestion) return;
+    
     const currentStatus = currentSessionQuestion?.status;
-    if (currentStatus === "answered" || currentStatus === "answered_marked") {
+    const hasCurrentAnswer = answers[currentQuestion.id] !== undefined;
+    
+    if (hasCurrentAnswer || currentStatus === "answered" || currentStatus === "answered_marked") {
+      // Remove the answer
+      setAnswers((prev) => {
+        const newAnswers = { ...prev };
+        delete newAnswers[currentQuestion.id];
+        return newAnswers;
+      });
+      
+      // Update status
       updateQuestionStatus(
         currentQuestionIndex,
         currentStatus === "answered_marked" ? "marked_review" : "not_answered"
       );
     }
-  }, [currentQuestionIndex, currentSessionQuestion?.status, updateQuestionStatus]);
+  }, [currentQuestionIndex, currentSessionQuestion?.status, currentQuestion, answers, updateQuestionStatus]);
 
   // Submit test
   const handleSubmitTest = useCallback(() => {
@@ -212,11 +224,19 @@ const StudentTestPlayer = () => {
     }
   }, [navigate]);
 
-  // Check if current question has answer
+  // Check if current question has answer (use actual answers state)
   const hasAnswer = useMemo(() => {
-    const status = currentSessionQuestion?.status;
-    return status === "answered" || status === "answered_marked";
-  }, [currentSessionQuestion?.status]);
+    if (!currentQuestion) return false;
+    const answer = answers[currentQuestion.id];
+    
+    // Check based on answer type
+    if (answer === undefined || answer === null) return false;
+    if (typeof answer === "string" && answer.trim() === "") return false;
+    if (Array.isArray(answer) && answer.length === 0) return false;
+    if (typeof answer === "object" && !Array.isArray(answer) && Object.keys(answer).length === 0) return false;
+    
+    return true;
+  }, [currentQuestion, answers]);
 
   // Check if current question is marked
   const isMarked = useMemo(() => {
