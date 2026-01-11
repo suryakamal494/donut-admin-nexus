@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -92,22 +92,23 @@ const StudentNotifications = () => {
     achievement: notifications.filter(n => n.type === "achievement" && !n.read).length,
   }), [notifications]);
 
-  const handleMarkAsRead = (id: string) => {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
     toast.success("Marked as read");
-  };
+  }, []);
 
-  const handleDismiss = (id: string) => {
+  const handleDismiss = useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
     toast.success("Notification dismissed");
-  };
+  }, []);
 
-  const handleMarkAllAsRead = () => {
+  const handleMarkAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     toast.success("All notifications marked as read");
-  };
+  }, []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
