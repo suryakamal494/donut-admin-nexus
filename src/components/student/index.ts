@@ -11,3 +11,6 @@ export * from './subjects';
 
 // Chapter Components
 export * from './chapter';
+
+// Content Viewer Components
+export * from './content-viewer';

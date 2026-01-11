@@ -50,8 +50,7 @@ const StudentBundleDetail = () => {
   };
 
   const handleContentClick = (contentId: string) => {
-    // For now, just log - will implement content viewer later
-    console.log("Open content:", contentId);
+    navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${contentId}`);
   };
 
   const handleScreenshotClick = (screenshotId: string) => {
