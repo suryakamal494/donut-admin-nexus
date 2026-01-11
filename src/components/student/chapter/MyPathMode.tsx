@@ -1,9 +1,11 @@
 // My Path Mode - AI-personalized learning prescriptions with virtualization
 
 import { useCallback, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Target, ChevronRight, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VirtualizedList } from "./VirtualizedList";
+import { useToast } from "@/hooks/use-toast";
 import type { AIPathItem } from "@/data/student/lessonBundles";
 
 interface MyPathModeProps {
@@ -35,6 +37,10 @@ const priorityConfig = {
 };
 
 export function MyPathMode({ pathItems }: MyPathModeProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
+
   // Memoize filtered and sorted lists
   const { pendingItems, completedItems, sortedPending } = useMemo(() => {
     const pending = pathItems.filter(item => !item.isCompleted);
@@ -53,9 +59,17 @@ export function MyPathMode({ pathItems }: MyPathModeProps) {
   const totalCount = pathItems.length;
 
   // Memoize handlers
-  const handleItemClick = useCallback((itemId: string) => {
-    console.log("Start AI path:", itemId);
-  }, []);
+  const handleItemClick = useCallback((item: AIPathItem) => {
+    toast({
+      title: "Starting AI Prescription",
+      description: `Loading: ${item.title}`,
+      duration: 2000,
+    });
+    
+    // Navigate to the chapter view where the AI path content would be shown
+    // In a full implementation, this would open a specific content viewer
+    navigate(`/student/subjects/${subjectId}/${chapterId}`);
+  }, [navigate, subjectId, chapterId, toast]);
 
   // Render functions
   const renderPendingItem = useCallback((item: AIPathItem) => {
@@ -64,7 +78,7 @@ export function MyPathMode({ pathItems }: MyPathModeProps) {
 
     return (
       <button
-        onClick={() => handleItemClick(item.id)}
+        onClick={() => handleItemClick(item)}
         className={cn(
           "w-full text-left group",
           "bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50",

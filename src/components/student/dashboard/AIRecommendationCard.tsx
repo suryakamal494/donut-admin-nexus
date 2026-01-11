@@ -2,6 +2,7 @@
 // Light card design with orange accent for AI-powered learning suggestions
 
 import { memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronRight, Play, AlertCircle, Trophy, Sparkles } from "lucide-react";
 import type { AIRecommendation } from "@/data/student/dashboard";
 
@@ -23,9 +24,50 @@ const getIcon = (type: AIRecommendation['type']) => {
   }
 };
 
+// Map subject names to subject IDs
+const subjectIdMap: Record<string, string> = {
+  physics: 'physics',
+  math: 'math',
+  chemistry: 'chemistry',
+  biology: 'biology',
+  english: 'english',
+  cs: 'cs',
+};
+
 const AIRecommendationCard = memo(function AIRecommendationCard({ recommendation, compact = false }: AIRecommendationCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    const subjectId = recommendation.subject ? subjectIdMap[recommendation.subject] : null;
+    
+    if (!subjectId) {
+      // Fallback to subjects page if no subject specified
+      navigate('/student/subjects');
+      return;
+    }
+
+    switch (recommendation.type) {
+      case 'continue':
+        // Navigate to subject detail page to continue learning
+        navigate(`/student/subjects/${subjectId}`);
+        break;
+      case 'focus':
+        // Navigate to subject with AI Path mode (My Personalized Journey)
+        // The ChapterView will default show mode options
+        navigate(`/student/subjects/${subjectId}`);
+        break;
+      case 'quick-win':
+        // Navigate to specific subject to complete quick wins
+        navigate(`/student/subjects/${subjectId}`);
+        break;
+      default:
+        navigate('/student/subjects');
+    }
+  };
+
   return (
     <div 
+      onClick={handleClick}
       className={`
         bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm
         border-l-4 border-l-donut-coral

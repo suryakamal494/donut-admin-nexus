@@ -52,11 +52,12 @@ const StudentTests = () => {
   };
 
   const handleViewTest = (testId: string) => {
-    console.log("View test:", testId);
+    // Navigate to test player for viewing (test will show details/instructions)
+    navigate(`/student/tests/${testId}`);
   };
 
   const handleViewResults = (testId: string) => {
-    console.log("View results:", testId);
+    navigate(`/student/tests/${testId}/results`);
   };
 
   return (

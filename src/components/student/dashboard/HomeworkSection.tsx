@@ -2,11 +2,15 @@
 // Collapsible list showing pending homework with urgency indicators
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BookOpen, ChevronDown, ChevronRight, Clock, AlertTriangle } from "lucide-react";
 import { studentHomework, getHomeworkUrgency, formatRelativeDate, subjectColors } from "@/data/student/dashboard";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const HomeworkSection = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [expanded, setExpanded] = useState(false);
   const pendingHomework = studentHomework.filter(hw => hw.status === 'pending');
   const displayCount = expanded ? pendingHomework.length : 3;
@@ -43,6 +47,18 @@ const HomeworkSection = () => {
     );
   };
 
+  const handleHomeworkClick = (homework: typeof pendingHomework[0]) => {
+    // Navigate to the subject page where homework is located
+    // For now, show toast until homework viewer is implemented
+    toast({
+      title: "Opening Homework",
+      description: `${homework.title} - Homework viewer coming soon!`,
+      duration: 2000,
+    });
+    // Navigate to subject page as a fallback
+    navigate(`/student/subjects/${homework.subject}`);
+  };
+
   return (
     <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm p-4">
       {/* Header */}
@@ -74,7 +90,8 @@ const HomeworkSection = () => {
           return (
             <div 
               key={hw.id}
-              className="flex items-center gap-3 p-3 bg-white/60 rounded-xl hover:bg-white/80 transition-colors cursor-pointer"
+              onClick={() => handleHomeworkClick(hw)}
+              className="flex items-center gap-3 p-3 bg-white/60 rounded-xl hover:bg-white/80 transition-colors cursor-pointer active:scale-[0.98]"
             >
               {getSubjectIcon(hw.subject)}
               
