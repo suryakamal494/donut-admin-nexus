@@ -4,8 +4,8 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useTestSessionPersistence } from "@/hooks/useTestSessionPersistence";
 import {
   TestPlayerHeader,
   QuestionDisplay,
@@ -26,6 +26,10 @@ const StudentTestPlayer = () => {
   const navigate = useNavigate();
   const { testId } = useParams<{ testId: string }>();
   const { toast } = useToast();
+  const { loadSession, saveSession, clearSession } = useTestSessionPersistence(testId);
+
+  // Track if session has been restored
+  const isInitialized = useRef(false);
 
   // Test session state
   const [session, setSession] = useState(sampleTestSession);
@@ -47,6 +51,55 @@ const StudentTestPlayer = () => {
     fiveMinutes: false,
     oneMinute: false,
   });
+
+  // Restore session on mount
+  useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
+    const persistedSession = loadSession();
+    if (persistedSession) {
+      // Restore answers
+      setAnswers(persistedSession.answers);
+      
+      // Restore question statuses
+      setSession((prev) => ({
+        ...prev,
+        sessionQuestions: prev.sessionQuestions.map((q) => {
+          const persisted = persistedSession.sessionQuestions.find((pq) => pq.id === q.id);
+          return persisted ? { ...q, status: persisted.status } : q;
+        }),
+      }));
+      
+      // Restore navigation state
+      setCurrentQuestionIndex(persistedSession.currentQuestionIndex);
+      setCurrentSectionId(persistedSession.currentSectionId);
+      setRemainingTime(persistedSession.remainingTime);
+      
+      // Restore alert states
+      alertsShown.current = persistedSession.alertsShown;
+
+      toast({
+        title: "📝 Session Restored",
+        description: "Your previous progress has been restored.",
+        duration: 3000,
+      });
+    }
+  }, [loadSession, toast]);
+
+  // Auto-save session on state changes
+  useEffect(() => {
+    if (!isInitialized.current) return;
+
+    saveSession({
+      answers,
+      sessionQuestions: session.sessionQuestions,
+      remainingTime,
+      currentQuestionIndex,
+      currentSectionId,
+      alertsShown: alertsShown.current,
+    });
+  }, [answers, session.sessionQuestions, remainingTime, currentQuestionIndex, currentSectionId, saveSession]);
 
   // Current question
   const currentSessionQuestion = session.sessionQuestions[currentQuestionIndex];
@@ -116,6 +169,7 @@ const StudentTestPlayer = () => {
   // Auto-submit handler (different from manual submit)
   const handleAutoSubmit = useCallback(() => {
     setIsAutoSubmitting(true);
+    clearSession(); // Clear localStorage on submit
     toast({
       title: "⏱️ Time's Up!",
       description: "Your test is being submitted automatically...",
@@ -128,7 +182,7 @@ const StudentTestPlayer = () => {
       console.log("Test auto-submitted!", { answers, sessionQuestions: session.sessionQuestions });
       navigate("/student/tests");
     }, 2000);
-  }, [answers, session.sessionQuestions, navigate, toast]);
+  }, [answers, session.sessionQuestions, navigate, toast, clearSession]);
 
   // Mark current question as visited
   useEffect(() => {
@@ -269,6 +323,7 @@ const StudentTestPlayer = () => {
 
   // Submit test (manual)
   const handleSubmitTest = useCallback(() => {
+    clearSession(); // Clear localStorage on submit
     toast({
       title: "✅ Test Submitted!",
       description: "Your responses have been recorded successfully.",
@@ -276,7 +331,7 @@ const StudentTestPlayer = () => {
     });
     console.log("Test submitted!", { answers, sessionQuestions: session.sessionQuestions });
     navigate("/student/tests");
-  }, [navigate, session.sessionQuestions, answers, toast]);
+  }, [navigate, session.sessionQuestions, answers, toast, clearSession]);
 
   // Fullscreen toggle
   const handleToggleFullscreen = useCallback(() => {
@@ -289,11 +344,11 @@ const StudentTestPlayer = () => {
     }
   }, []);
 
-  // Exit test
+  // Exit test (progress is auto-saved, just navigate)
   const handleExit = useCallback(() => {
     if (
       window.confirm(
-        "Are you sure you want to exit? Your progress will be saved."
+        "Are you sure you want to exit? Your progress will be saved and you can resume later."
       )
     ) {
       navigate("/student/tests");
