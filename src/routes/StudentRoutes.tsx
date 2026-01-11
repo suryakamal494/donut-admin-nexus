@@ -24,6 +24,9 @@ export default function StudentRoutes() {
       {/* Login outside layout */}
       <Route path="login" element={<StudentLogin />} />
       
+      {/* ContentViewer - STANDALONE full-screen (no bottom nav overlap) */}
+      <Route path="subjects/:subjectId/:chapterId/:bundleId/:contentId" element={<StudentContentViewer />} />
+      
       {/* Main student routes with layout */}
       <Route element={<StudentLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
@@ -32,7 +35,6 @@ export default function StudentRoutes() {
         <Route path="subjects/:subjectId" element={<StudentSubjectDetail />} />
         <Route path="subjects/:subjectId/:chapterId" element={<StudentChapterView />} />
         <Route path="subjects/:subjectId/:chapterId/:bundleId" element={<StudentBundleDetail />} />
-        <Route path="subjects/:subjectId/:chapterId/:bundleId/:contentId" element={<StudentContentViewer />} />
         <Route path="tests" element={<StudentTests />} />
         <Route path="progress" element={<StudentProgress />} />
         <Route path="notifications" element={<StudentNotifications />} />
