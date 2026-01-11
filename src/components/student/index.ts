@@ -5,3 +5,6 @@ export { default as StudentSubjectCard } from './SubjectCard';
 
 // Dashboard Components
 export * from './dashboard';
+
+// Subject Components
+export * from './subjects';

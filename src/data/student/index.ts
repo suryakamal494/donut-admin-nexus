@@ -3,4 +3,5 @@
 
 export * from './profile';
 export * from './subjects';
+export * from './chapters';
 export * from './dashboard';
