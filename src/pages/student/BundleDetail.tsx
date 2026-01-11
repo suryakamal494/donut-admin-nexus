@@ -1,5 +1,6 @@
 // Lesson Bundle Detail Page - View all content in a lesson bundle
 
+import { useState } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,10 +10,12 @@ import {
   getLessonBundleById,
   getContentByBundle,
   getScreenshotsByBundle,
+  type TeacherScreenshot,
 } from "@/data/student/lessonBundles";
 import { BundleHeader } from "@/components/student/chapter/BundleHeader";
 import { ContentItemCard } from "@/components/student/chapter/ContentItemCard";
 import { ScreenshotGallery } from "@/components/student/chapter/ScreenshotGallery";
+import { ScreenshotViewer } from "@/components/student/chapter/ScreenshotViewer";
 
 const StudentBundleDetail = () => {
   const navigate = useNavigate();
@@ -21,6 +24,9 @@ const StudentBundleDetail = () => {
     chapterId: string;
     bundleId: string;
   }>();
+
+  const [screenshotViewerOpen, setScreenshotViewerOpen] = useState(false);
+  const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState(0);
 
   // Find subject
   const subject = studentSubjects.find((s) => s.id === subjectId);
@@ -53,9 +59,10 @@ const StudentBundleDetail = () => {
     navigate(`/student/subjects/${subjectId}/${chapterId}/${bundleId}/${contentId}`);
   };
 
-  const handleScreenshotClick = (screenshotId: string) => {
-    // For now, just log - will implement screenshot viewer later
-    console.log("Open screenshot:", screenshotId);
+  const handleScreenshotClick = (screenshot: TeacherScreenshot) => {
+    const index = screenshots.findIndex(s => s.id === screenshot.id);
+    setSelectedScreenshotIndex(index >= 0 ? index : 0);
+    setScreenshotViewerOpen(true);
   };
 
   return (
@@ -74,9 +81,17 @@ const StudentBundleDetail = () => {
         {screenshots.length > 0 && (
           <ScreenshotGallery
             screenshots={screenshots}
-            onScreenshotClick={(s) => handleScreenshotClick(s.id)}
+            onScreenshotClick={handleScreenshotClick}
           />
         )}
+
+        {/* Screenshot Viewer Modal */}
+        <ScreenshotViewer
+          screenshots={screenshots}
+          initialIndex={selectedScreenshotIndex}
+          open={screenshotViewerOpen}
+          onClose={() => setScreenshotViewerOpen(false)}
+        />
 
         {/* Content Items */}
         <section className="space-y-3">
