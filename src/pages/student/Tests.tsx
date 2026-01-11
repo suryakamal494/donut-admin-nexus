@@ -3,6 +3,7 @@
 // Mobile-first responsive design
 
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Trophy, ClipboardList, GraduationCap } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,6 +21,7 @@ import {
 import type { ExamPattern } from "@/data/student/tests";
 
 const StudentTests = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("my-tests");
   const [selectedPattern, setSelectedPattern] = useState<ExamPattern | "all">("all");
 
@@ -46,8 +48,7 @@ const StudentTests = () => {
   const liveGrandTests = getLiveTestsCount(allGrandTests);
 
   const handleStartTest = (testId: string) => {
-    console.log("Start test:", testId);
-    // TODO: Navigate to test player
+    navigate(`/student/tests/${testId}`);
   };
 
   const handleViewTest = (testId: string) => {
