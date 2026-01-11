@@ -1,17 +1,37 @@
 // Question Display Component
-// Renders question content with proper mobile spacing
-// Supports all question types (Phase 3 will add type-specific renderers)
+// Renders question content with type-specific interactive renderers
+// Mobile-first with proper answer state management
 
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { TestQuestion } from "@/data/student/testQuestions";
 import { questionTypeLabels } from "@/data/student/testQuestions";
+import {
+  MCQSingleRenderer,
+  MCQMultipleRenderer,
+  IntegerRenderer,
+  FillBlankRenderer,
+  MatrixMatchRenderer,
+  AssertionReasoningRenderer,
+  ParagraphRenderer,
+  ShortAnswerRenderer,
+  LongAnswerRenderer,
+} from "../renderers";
+
+// Answer types for different question types
+export type AnswerValue =
+  | string // MCQ Single, Assertion-Reasoning, Paragraph
+  | string[] // MCQ Multiple
+  | number // Integer
+  | Record<string, string>; // Fill Blank, Matrix Match
 
 interface QuestionDisplayProps {
   question: TestQuestion;
   questionNumber: number;
   totalQuestions: number;
+  answer?: AnswerValue;
+  onAnswerChange: (questionId: string, answer: AnswerValue) => void;
   className?: string;
 }
 
@@ -25,8 +45,158 @@ const QuestionDisplay = memo(function QuestionDisplay({
   question,
   questionNumber,
   totalQuestions,
+  answer,
+  onAnswerChange,
   className,
 }: QuestionDisplayProps) {
+  // Type-safe answer handlers
+  const handleSingleSelect = useCallback(
+    (optionId: string) => {
+      onAnswerChange(question.id, optionId);
+    },
+    [question.id, onAnswerChange]
+  );
+
+  const handleMultipleToggle = useCallback(
+    (optionId: string) => {
+      const currentSelection = (answer as string[]) || [];
+      const newSelection = currentSelection.includes(optionId)
+        ? currentSelection.filter((id) => id !== optionId)
+        : [...currentSelection, optionId];
+      onAnswerChange(question.id, newSelection);
+    },
+    [question.id, answer, onAnswerChange]
+  );
+
+  const handleIntegerChange = useCallback(
+    (value: number | undefined) => {
+      onAnswerChange(question.id, value as any);
+    },
+    [question.id, onAnswerChange]
+  );
+
+  const handleFillBlankChange = useCallback(
+    (blankId: string, value: string) => {
+      const currentAnswers = (answer as Record<string, string>) || {};
+      onAnswerChange(question.id, { ...currentAnswers, [blankId]: value });
+    },
+    [question.id, answer, onAnswerChange]
+  );
+
+  const handleMatrixChange = useCallback(
+    (rowId: string, columnId: string) => {
+      const currentMatches = (answer as Record<string, string>) || {};
+      onAnswerChange(question.id, { ...currentMatches, [rowId]: columnId });
+    },
+    [question.id, answer, onAnswerChange]
+  );
+
+  const handleTextChange = useCallback(
+    (value: string) => {
+      onAnswerChange(question.id, value);
+    },
+    [question.id, onAnswerChange]
+  );
+
+  // Render the appropriate question type renderer
+  const renderQuestionType = () => {
+    switch (question.type) {
+      case "mcq_single":
+        return (
+          <MCQSingleRenderer
+            options={question.options}
+            selectedOption={answer as string | undefined}
+            onSelect={handleSingleSelect}
+          />
+        );
+
+      case "mcq_multiple":
+        return (
+          <MCQMultipleRenderer
+            options={question.options}
+            selectedOptions={(answer as string[]) || []}
+            onToggle={handleMultipleToggle}
+          />
+        );
+
+      case "integer":
+        return (
+          <IntegerRenderer
+            value={answer as number | undefined}
+            onChange={handleIntegerChange}
+            minValue={question.minValue}
+            maxValue={question.maxValue}
+          />
+        );
+
+      case "fill_blank":
+        return (
+          <FillBlankRenderer
+            blanks={question.blanks}
+            answers={(answer as Record<string, string>) || {}}
+            onChange={handleFillBlankChange}
+          />
+        );
+
+      case "matrix_match":
+        return (
+          <MatrixMatchRenderer
+            rows={question.rows}
+            columns={question.columns}
+            matches={(answer as Record<string, string>) || {}}
+            onChange={handleMatrixChange}
+          />
+        );
+
+      case "assertion_reasoning":
+        return (
+          <AssertionReasoningRenderer
+            assertion={question.assertion}
+            reason={question.reason}
+            options={question.options}
+            selectedOption={answer as string | undefined}
+            onSelect={handleSingleSelect}
+          />
+        );
+
+      case "paragraph":
+        return (
+          <ParagraphRenderer
+            paragraphText={question.paragraphText}
+            questionText={question.text}
+            options={question.options || []}
+            selectedOption={answer as string | undefined}
+            onSelect={handleSingleSelect}
+          />
+        );
+
+      case "short_answer":
+        return (
+          <ShortAnswerRenderer
+            value={(answer as string) || ""}
+            onChange={handleTextChange}
+            wordLimit={question.wordLimit}
+          />
+        );
+
+      case "long_answer":
+        return (
+          <LongAnswerRenderer
+            value={(answer as string) || ""}
+            onChange={handleTextChange}
+            wordLimit={question.wordLimit}
+          />
+        );
+
+      default:
+        return (
+          <div className="p-4 bg-muted rounded-lg text-center text-muted-foreground">
+            Unsupported question type
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={cn("flex-1 overflow-y-auto", className)}>
       <div className="p-4 sm:p-6 max-w-3xl mx-auto">
@@ -64,218 +234,28 @@ const QuestionDisplay = memo(function QuestionDisplay({
           </span>
         </div>
 
-        {/* Question Text */}
-        <div className="mb-6">
-          <p className="text-foreground text-base sm:text-lg leading-relaxed">
-            {question.text}
-          </p>
-
-          {/* Question Image (if any) */}
-          {question.imageUrl && (
-            <div className="mt-4 rounded-lg overflow-hidden border border-border">
-              <img
-                src={question.imageUrl}
-                alt="Question diagram"
-                className="w-full max-w-md mx-auto"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Assertion-Reasoning Special Display */}
-        {question.type === "assertion_reasoning" && (
-          <div className="space-y-3 mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs font-semibold text-blue-600 mb-1">Assertion (A):</p>
-              <p className="text-sm text-foreground">{question.assertion}</p>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-              <p className="text-xs font-semibold text-purple-600 mb-1">Reason (R):</p>
-              <p className="text-sm text-foreground">{question.reason}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Paragraph-based Special Display */}
-        {question.type === "paragraph" && (
-          <div className="bg-muted/50 border border-border rounded-lg p-4 mb-6">
-            <p className="text-xs font-semibold text-muted-foreground mb-2">
-              Read the following passage:
+        {/* Question Text (except for paragraph and assertion types which handle their own) */}
+        {question.type !== "paragraph" && question.type !== "assertion_reasoning" && (
+          <div className="mb-6">
+            <p className="text-foreground text-base sm:text-lg leading-relaxed">
+              {question.text}
             </p>
-            <p className="text-sm text-foreground leading-relaxed">
-              {question.paragraphText}
-            </p>
-          </div>
-        )}
 
-        {/* Options for MCQ Types */}
-        {(question.type === "mcq_single" ||
-          question.type === "mcq_multiple" ||
-          question.type === "assertion_reasoning" ||
-          question.type === "paragraph") &&
-          "options" in question &&
-          question.options && (
-            <div className="space-y-2.5">
-              {question.type === "mcq_multiple" && (
-                <p className="text-xs text-muted-foreground mb-3">
-                  (Select one or more options)
-                </p>
-              )}
-              {question.options.map((option, index) => (
-                <button
-                  key={option.id}
-                  className={cn(
-                    "w-full flex items-start gap-3 p-3 sm:p-4 rounded-xl border-2 text-left",
-                    "transition-all duration-200",
-                    "border-border hover:border-primary/50 hover:bg-primary/5",
-                    "active:scale-[0.98]"
-                  )}
-                >
-                  {/* Option Letter */}
-                  <span
-                    className={cn(
-                      "shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
-                      "text-xs font-bold border-2 border-current",
-                      "text-muted-foreground"
-                    )}
-                  >
-                    {String.fromCharCode(65 + index)}
-                  </span>
-
-                  {/* Option Text */}
-                  <span className="text-sm sm:text-base text-foreground pt-0.5">
-                    {option.text}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-        {/* Integer/Numerical Input */}
-        {question.type === "integer" && (
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              Enter your answer (numerical value only):
-            </p>
-            <input
-              type="number"
-              placeholder="Enter answer"
-              className={cn(
-                "w-full max-w-xs px-4 py-3 rounded-xl border-2 border-border",
-                "text-lg font-mono focus:border-primary focus:outline-none",
-                "transition-colors"
-              )}
-            />
-            {"minValue" in question && "maxValue" in question && (
-              <p className="text-xs text-muted-foreground">
-                (Range: {question.minValue} to {question.maxValue})
-              </p>
+            {/* Question Image (if any) */}
+            {question.imageUrl && (
+              <div className="mt-4 rounded-lg overflow-hidden border border-border">
+                <img
+                  src={question.imageUrl}
+                  alt="Question diagram"
+                  className="w-full max-w-md mx-auto"
+                />
+              </div>
             )}
           </div>
         )}
 
-        {/* Fill in the Blanks */}
-        {question.type === "fill_blank" && "blanks" in question && (
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              Fill in the blanks:
-            </p>
-            <div className="space-y-2">
-              {question.blanks.map((blank, index) => (
-                <div key={blank.id} className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Blank {index + 1}:
-                  </span>
-                  <input
-                    type="text"
-                    placeholder={`Answer ${index + 1}`}
-                    className={cn(
-                      "flex-1 max-w-xs px-3 py-2 rounded-lg border-2 border-border",
-                      "text-sm focus:border-primary focus:outline-none"
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Matrix Match */}
-        {question.type === "matrix_match" && "rows" in question && "columns" in question && (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[320px] text-sm">
-              <thead>
-                <tr>
-                  <th className="p-2 text-left font-medium text-muted-foreground">
-                    Column I
-                  </th>
-                  {question.columns.map((col) => (
-                    <th
-                      key={col.id}
-                      className="p-2 text-center font-medium text-muted-foreground"
-                    >
-                      {col.text}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {question.rows.map((row) => (
-                  <tr key={row.id} className="border-t border-border">
-                    <td className="p-2 text-foreground">{row.text}</td>
-                    {question.columns.map((col) => (
-                      <td key={col.id} className="p-2 text-center">
-                        <input
-                          type="radio"
-                          name={`match-${row.id}`}
-                          className="w-4 h-4 accent-primary"
-                        />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Short Answer */}
-        {question.type === "short_answer" && (
-          <div className="space-y-3">
-            <textarea
-              placeholder="Type your answer here..."
-              rows={4}
-              className={cn(
-                "w-full px-4 py-3 rounded-xl border-2 border-border",
-                "text-sm focus:border-primary focus:outline-none resize-none"
-              )}
-            />
-            {"wordLimit" in question && question.wordLimit && (
-              <p className="text-xs text-muted-foreground text-right">
-                Word limit: {question.wordLimit} words
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Long Answer */}
-        {question.type === "long_answer" && (
-          <div className="space-y-3">
-            <textarea
-              placeholder="Type your detailed answer here..."
-              rows={8}
-              className={cn(
-                "w-full px-4 py-3 rounded-xl border-2 border-border",
-                "text-sm focus:border-primary focus:outline-none resize-none"
-              )}
-            />
-            {"wordLimit" in question && question.wordLimit && (
-              <p className="text-xs text-muted-foreground text-right">
-                Word limit: {question.wordLimit} words
-              </p>
-            )}
-          </div>
-        )}
+        {/* Type-Specific Renderer */}
+        {renderQuestionType()}
       </div>
     </div>
   );
