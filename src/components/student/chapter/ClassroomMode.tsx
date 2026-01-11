@@ -1,11 +1,9 @@
-// Classroom Mode - Displays lesson bundles and homework with virtualization
+// Classroom Mode - Displays lesson bundles with integrated homework
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
-import { BookOpen, ClipboardList } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { BookOpen } from "lucide-react";
 import { LessonBundleCard } from "./LessonBundleCard";
-import { HomeworkCard } from "./HomeworkCard";
 import { VirtualizedList } from "./VirtualizedList";
 import type { LessonBundle, HomeworkItem } from "@/data/student/lessonBundles";
 
@@ -18,15 +16,18 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
   const navigate = useNavigate();
   const { subjectId, chapterId } = useParams<{ subjectId: string; chapterId: string }>();
   
-  // Memoize filtered lists
-  const pendingHomework = useMemo(
-    () => homeworkItems.filter(h => !h.isCompleted),
-    [homeworkItems]
-  );
-  const completedHomework = useMemo(
-    () => homeworkItems.filter(h => h.isCompleted),
-    [homeworkItems]
-  );
+  // Group homework by linked session ID
+  const homeworkByBundle = useMemo(() => {
+    const map = new Map<string, HomeworkItem[]>();
+    homeworkItems.forEach(hw => {
+      if (hw.linkedSessionId) {
+        const existing = map.get(hw.linkedSessionId) || [];
+        existing.push(hw);
+        map.set(hw.linkedSessionId, existing);
+      }
+    });
+    return map;
+  }, [homeworkItems]);
 
   // Memoize handlers
   const handleBundleClick = useCallback((bundleId: string) => {
@@ -34,97 +35,43 @@ export function ClassroomMode({ lessonBundles, homeworkItems }: ClassroomModePro
   }, [navigate, subjectId, chapterId]);
 
   const handleHomeworkClick = useCallback((homeworkId: string) => {
+    // Navigate to homework detail or start homework
     console.log("Start homework:", homeworkId);
   }, []);
 
-  // Render functions for virtualized lists
-  const renderBundle = useCallback((bundle: LessonBundle) => (
-    <LessonBundleCard
-      bundle={bundle}
-      onClick={() => handleBundleClick(bundle.id)}
-    />
-  ), [handleBundleClick]);
-
-  const renderHomework = useCallback((homework: HomeworkItem) => (
-    <HomeworkCard
-      homework={homework}
-      onClick={!homework.isCompleted ? () => handleHomeworkClick(homework.id) : undefined}
-    />
-  ), [handleHomeworkClick]);
+  // Render function for virtualized list
+  const renderBundle = useCallback((bundle: LessonBundle) => {
+    const linkedHomework = homeworkByBundle.get(bundle.id) || [];
+    return (
+      <LessonBundleCard
+        bundle={bundle}
+        linkedHomework={linkedHomework}
+        onClick={() => handleBundleClick(bundle.id)}
+        onHomeworkClick={handleHomeworkClick}
+      />
+    );
+  }, [handleBundleClick, handleHomeworkClick, homeworkByBundle]);
 
   const getBundleKey = useCallback((bundle: LessonBundle) => bundle.id, []);
-  const getHomeworkKey = useCallback((homework: HomeworkItem) => homework.id, []);
-
-  // Combine pending and completed homework for single virtualized list
-  const allHomework = useMemo(
-    () => [...pendingHomework, ...completedHomework],
-    [pendingHomework, completedHomework]
-  );
 
   return (
-    <div className="space-y-6">
-      {/* Lesson Bundles Section */}
-      <section>
-        <div className="flex items-center gap-2 mb-3 px-1">
-          <BookOpen className="w-4 h-4 text-cyan-600" />
-          <h2 className="text-sm font-semibold text-foreground">CLASS SESSIONS</h2>
-          <span className="text-xs text-muted-foreground">({lessonBundles.length})</span>
-        </div>
+    <div className="space-y-3">
+      {/* Lesson Bundles Section Header */}
+      <div className="flex items-center gap-2 px-1">
+        <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-cyan-600" />
+        <h2 className="text-xs md:text-sm font-semibold text-foreground">CLASS SESSIONS</h2>
+        <span className="text-xs text-muted-foreground">({lessonBundles.length})</span>
+      </div>
 
-        <VirtualizedList
-          items={lessonBundles}
-          renderItem={renderBundle}
-          getItemKey={getBundleKey}
-          estimatedItemHeight={100}
-          emptyMessage="No class sessions yet for this chapter"
-          emptyIcon={<BookOpen className="w-8 h-8 text-muted-foreground/40 mx-auto" />}
-        />
-      </section>
-
-      {/* Homework Section */}
-      {allHomework.length > 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-3 px-1">
-            <ClipboardList className="w-4 h-4 text-amber-600" />
-            <h2 className="text-sm font-semibold text-foreground">HOMEWORK</h2>
-            {pendingHomework.length > 0 && (
-              <span className={cn(
-                "text-xs px-2 py-0.5 rounded-full font-medium",
-                "bg-amber-100 text-amber-700"
-              )}>
-                {pendingHomework.length} pending
-              </span>
-            )}
-          </div>
-
-          <VirtualizedList
-            items={allHomework}
-            renderItem={renderHomework}
-            getItemKey={getHomeworkKey}
-            estimatedItemHeight={80}
-          />
-        </section>
-      )}
-
-      {/* Empty state for no homework */}
-      {homeworkItems.length === 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-3 px-1">
-            <ClipboardList className="w-4 h-4 text-amber-600" />
-            <h2 className="text-sm font-semibold text-foreground">HOMEWORK</h2>
-          </div>
-          
-          <div className={cn(
-            "bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50",
-            "p-6 text-center"
-          )}>
-            <ClipboardList className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">
-              No homework assigned yet
-            </p>
-          </div>
-        </section>
-      )}
+      {/* Virtualized lesson bundles with integrated homework */}
+      <VirtualizedList
+        items={lessonBundles}
+        renderItem={renderBundle}
+        getItemKey={getBundleKey}
+        estimatedItemHeight={90}
+        emptyMessage="No class sessions yet for this chapter"
+        emptyIcon={<BookOpen className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground/40 mx-auto" />}
+      />
     </div>
   );
 }

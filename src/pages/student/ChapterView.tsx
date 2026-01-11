@@ -52,7 +52,7 @@ const StudentChapterView = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="max-w-3xl mx-auto px-4 py-4 lg:py-6 space-y-4">
+      <div className="max-w-3xl mx-auto px-3 md:px-4 py-3 md:py-6 space-y-3 md:space-y-4">
         {/* Chapter Header */}
         <ChapterHeader chapter={chapter} subject={subject} />
 
